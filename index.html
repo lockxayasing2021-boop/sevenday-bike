@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="lo" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sevenday Bike — ຮ້ານຈັກຍານ ວຽງຈັນ</title>
+<meta name="description" content="Sevenday Bike — ຮ້ານຈັກຍານ ອຸປະກອນ ແລະ ບໍລິການ ໃນວຽງຈັນ. New &amp; used bicycles, parts, accessories, and full workshop service.">
+<meta property="og:title" content="Sevenday Bike — ວຽງຈັນ, ລາວ">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚴</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =====================================================
+   SEVENDAY BIKE — DESIGN SYSTEM v2
+   Professional Retail · Inspired by 99 Bikes structure
+   ===================================================== */
+:root {
+  --red:        #D42B2B;
+  --red-h:      #B52222;
+  --red-lite:   #FFF0F0;
+  --ink:        #111111;
+  --ink-2:      #444444;
+  --ink-3:      #888888;
+  --white:      #FFFFFF;
+  --base:       #F5F5F5;
+  --card:       #FFFFFF;
+  --border:     #E0E0E0;
+  --border-2:   #CCCCCC;
+  --lime:       #5C8A00;
+  --lime-bg:    #EFF5E0;
+  --promo:      #FF6B00;
+
+  --font-ui:      'Inter', -apple-system, sans-serif;
+  --font-display: 'Barlow Condensed', 'Inter', sans-serif;
+
+  --max-w: 1280px;
+  --r: 6px;
+  --r-lg: 10px;
+  --shadow: 0 1px 4px rgba(0,0,0,.1);
+  --shadow-h: 0 4px 16px rgba(0,0,0,.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-ui);background:var(--base);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+
+/* ── Utility ── */
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* =====================================================
+   ANNOUNCEMENT BAR
+   ===================================================== */
+.announce{
+  background:var(--ink);
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+  text-align:center;
+  padding:8px 20px;
+  display:flex;align-items:center;justify-content:center;gap:0;
+  position:relative;
+}
+.announce-items{display:flex;gap:0;overflow:hidden;width:100%;justify-content:center}
+.announce-item{
+  display:flex;align-items:center;gap:6px;
+  padding:0 20px;
+  border-right:1px solid rgba(255,255,255,.15);
+  white-space:nowrap;
+}
+.announce-item:last-child{border-right:none}
+.announce-item a{color:#FFC72C;text-decoration:underline}
+.announce-close{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  color:rgba(255,255,255,.5);font-size:18px;line-height:1;cursor:pointer;
+}
+@media(max-width:768px){
+  .announce-item:nth-child(2),.announce-item:nth-child(3){display:none}
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+.site-header{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:500;
+}
+.header-top{
+  display:flex;align-items:center;gap:16px;
+  height:68px;
+  padding:0 20px;
+  max-width:var(--max-w);margin:0 auto;
+}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;user-select:none}
+.logo-mark{
+  width:42px;height:42px;
+  background:var(--red);
+  border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.logo-mark svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.logo-text{line-height:1.1}
+.logo-name{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+.logo-sub{font-size:10px;font-weight:500;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+
+/* Search */
+.header-search{flex:1;max-width:520px;position:relative}
+.header-search input{
+  width:100%;height:44px;
+  border:2px solid var(--border);border-radius:22px;
+  padding:0 48px 0 18px;
+  font-size:14px;font-family:var(--font-ui);
+  background:var(--base);color:var(--ink);
+  transition:border-color .15s,background .15s;
+  outline:none;
+}
+.header-search input:focus{border-color:var(--red);background:var(--white)}
+.header-search input::placeholder{color:var(--ink-3)}
+.search-btn{
+  position:absolute;right:4px;top:4px;
+  width:36px;height:36px;
+  background:var(--red);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;transition:background .15s;
+}
+.search-btn:hover{background:var(--red-h)}
+.search-btn svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none}
+
+/* Header actions */
+.header-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-action{
+  display:flex;flex-direction:column;align-items:center;
+  gap:2px;padding:6px 12px;
+  border-radius:var(--r);
+  color:var(--ink-2);font-size:10px;font-weight:600;
+  letter-spacing:.02em;text-transform:uppercase;
+  transition:background .12s,color .12s;
+  position:relative;cursor:pointer;
+  white-space:nowrap;
+}
+.hdr-action:hover{background:var(--base);color:var(--red)}
+.hdr-action svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hdr-badge{
+  position:absolute;top:4px;right:8px;
+  background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;
+  min-width:17px;height:17px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 3px;
+}
+.lang-cur{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r);
+  font-size:12px;font-weight:600;color:var(--ink-2);background:var(--base);cursor:pointer;
+  flex-shrink:0;transition:border-color .12s;
+}
+.lang-cur:hover{border-color:var(--red)}
+.lang-cur span{color:var(--ink-3);font-weight:400}
+
+/* Mobile nav toggle */
+.mob-toggle{display:none;flex-direction:column;gap:5px;padding:8px;border-radius:var(--r);color:var(--ink)}
+.mob-toggle b{display:block;width:22px;height:2px;background:currentColor;border-radius:2px;transition:all .2s}
+.mob-toggle.open b:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.mob-toggle.open b:nth-child(2){opacity:0}
+.mob-toggle.open b:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* =====================================================
+   NAV BAR (like 99 Bikes top nav categories)
+   ===================================================== */
+.nav-bar{
+  background:var(--red);
+  border-top:1px solid rgba(0,0,0,.12);
+}
+.nav-bar-inner{
+  max-width:var(--max-w);margin:0 auto;padding:0 20px;
+  display:flex;align-items:stretch;
+  height:46px;
+}
+.nav-item{position:relative}
+.nav-link{
+  display:flex;align-items:center;gap:5px;
+  height:46px;padding:0 14px;
+  font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.92);
+  letter-spacing:.01em;white-space:nowrap;
+  transition:background .12s,color .12s;
+}
+.nav-link:hover,.nav-item:hover .nav-link{background:rgba(0,0,0,.12);color:#fff}
+.nav-link.sale-link{color:#FFC72C}
+.nav-link svg{width:11px;height:11px;fill:currentColor;flex-shrink:0;transition:transform .12s}
+.nav-item:hover .nav-link svg{transform:rotate(180deg)}
+
+/* Divider between nav items */
+.nav-link+.nav-link,.nav-item+.nav-item .nav-link::before{
+  border-left:1px solid rgba(255,255,255,.15);
+}
+
+/* Workshop button in nav */
+.nav-workshop{
+  margin-left:auto;
+  display:flex;align-items:center;
+  padding:0 16px;gap:6px;
+  font-size:12px;font-weight:700;
+  color:#fff;
+  background:rgba(0,0,0,.2);
+  border-left:1px solid rgba(255,255,255,.15);
+  letter-spacing:.02em;
+  transition:background .12s;white-space:nowrap;
+}
+.nav-workshop:hover{background:rgba(0,0,0,.35)}
+.nav-workshop svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+
+/* ── Dropdown ── */
+.nav-drop{
+  position:absolute;top:100%;left:0;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-top:3px solid var(--red);
+  border-radius:0 0 var(--r-lg) var(--r-lg);
+  box-shadow:var(--shadow-h);
+  min-width:210px;
+  padding:8px 0;
+  opacity:0;visibility:hidden;
+  transform:translateY(-6px);
+  transition:all .15s;
+  z-index:600;
+}
+.nav-item:hover .nav-drop{opacity:1;visibility:visible;transform:none}
+.nav-drop a{
+  display:block;padding:9px 18px;
+  font-size:13px;font-weight:500;
+  color:var(--ink-2);
+  transition:background .1s,color .1s;
+}
+.nav-drop a:hover{background:var(--red-lite);color:var(--red)}
+.nav-drop-divider{height:1px;background:var(--border);margin:6px 0}
+.nav-drop a.featured{color:var(--red);font-weight:700}
+
+/* Mega drop (Bikes) */
+.nav-mega{
+  min-width:640px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  padding:20px;gap:0;
+}
+.nav-mega-col{padding:0 16px}
+.nav-mega-col+.nav-mega-col{border-left:1px solid var(--border)}
+.nav-mega-col h4{
+  font-size:10px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.nav-mega-col a{padding:7px 0;border:none;color:var(--ink-2);font-size:13px;font-weight:500}
+.nav-mega-col a:hover{background:none;color:var(--red);padding-left:6px}
+
+@media(max-width:900px){.nav-bar{display:none}}
+@media(max-width:768px){
+  .header-search{display:none}
+  .mob-toggle{display:flex}
+  .hdr-action span{display:none}
+  .lang-cur span{display:none}
+  .logo-sub{display:none}
+}
+
+/* =====================================================
+   MOBILE DRAWER
+   ===================================================== */
+.mob-drawer{
+  position:fixed;inset:0;z-index:800;pointer-events:none;
+}
+.mob-drawer.open{pointer-events:all}
+.mob-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.5);
+  opacity:0;transition:opacity .22s;
+}
+.mob-drawer.open .mob-overlay{opacity:1}
+.mob-panel{
+  position:absolute;top:0;left:0;bottom:0;
+  width:min(310px,90vw);background:var(--white);
+  transform:translateX(-100%);transition:transform .22s;
+  overflow-y:auto;
+}
+.mob-drawer.open .mob-panel{transform:none}
+.mob-head{
+  background:var(--red);padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mob-head .logo-name,.mob-head .logo-sub{color:#fff}
+.mob-head .logo-sub{opacity:.7}
+.mob-close{color:#fff;opacity:.7;font-size:22px;line-height:1;padding:2px 4px}
+.mob-search{padding:14px 18px;border-bottom:1px solid var(--border)}
+.mob-search input{
+  width:100%;height:40px;border:1.5px solid var(--border);
+  border-radius:20px;padding:0 14px;font-size:14px;font-family:var(--font-ui);
+  outline:none;
+}
+.mob-search input:focus{border-color:var(--red)}
+.mob-section{border-bottom:1px solid var(--border);padding:8px 0}
+.mob-section-label{
+  padding:6px 18px 4px;
+  font-size:10px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.mob-nav-link{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;font-size:14px;font-weight:600;color:var(--ink);
+}
+.mob-nav-link:hover{color:var(--red);background:var(--red-lite)}
+.mob-sub-link{
+  display:block;padding:9px 18px 9px 32px;
+  font-size:13px;color:var(--ink-3);
+}
+.mob-sub-link:hover{color:var(--red)}
+.mob-actions{padding:16px 18px;display:flex;gap:8px}
+.mob-actions .btn{flex:1;justify-content:center}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-ui);font-weight:700;
+  border-radius:var(--r);cursor:pointer;border:none;
+  transition:all .14s;white-space:nowrap;
+}
+.btn-primary{background:var(--red);color:#fff;padding:11px 22px;font-size:14px}
+.btn-primary:hover{background:var(--red-h)}
+.btn-outline{background:none;color:var(--ink);border:2px solid var(--ink);padding:9px 20px;font-size:14px}
+.btn-outline:hover{background:var(--ink);color:#fff}
+.btn-outline-red{background:none;color:var(--red);border:2px solid var(--red);padding:9px 20px;font-size:14px}
+.btn-outline-red:hover{background:var(--red);color:#fff}
+.btn-white{background:#fff;color:var(--red);padding:11px 22px;font-size:14px}
+.btn-white:hover{background:var(--red-lite)}
+.btn-outline-white{background:none;color:#fff;border:2px solid rgba(255,255,255,.6);padding:9px 20px;font-size:14px}
+.btn-outline-white:hover{background:rgba(255,255,255,.12);border-color:#fff}
+.btn-lg{padding:14px 28px;font-size:16px;border-radius:var(--r-lg)}
+.btn-sm{padding:7px 14px;font-size:12px}
+
+/* =====================================================
+   HERO — full retail hero like 99 Bikes
+   ===================================================== */
+.hero{
+  background:var(--ink);
+  position:relative;overflow:hidden;
+  min-height:520px;display:flex;flex-direction:column;
+}
+.hero-slides{flex:1;position:relative}
+.hero-slide{
+  position:absolute;inset:0;
+  display:flex;align-items:center;
+  opacity:0;transition:opacity .5s;pointer-events:none;
+}
+.hero-slide.active{opacity:1;pointer-events:all}
+
+/* Slide 1 — Dark promo */
+.slide-1{background:linear-gradient(110deg,#0D0D0D 0%,#1A1A1A 40%,#2A2A2A 100%)}
+.slide-2{background:linear-gradient(110deg,#1A0A0A 0%,#2D1010 40%,#1A0A0A 100%)}
+.slide-3{background:linear-gradient(110deg,#0A0A1A 0%,#101028 40%,#0A0A1A 100%)}
+
+.hero-bg-img{
+  position:absolute;right:0;top:0;bottom:0;width:60%;
+  background:linear-gradient(to right,transparent 0%,rgba(0,0,0,.1) 100%);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-bike-svg{width:85%;max-width:620px;opacity:.22}
+@media(max-width:768px){.hero-bike-svg{opacity:.1}}
+
+.hero-content{
+  position:relative;z-index:2;
+  padding:60px 20px 60px;
+  max-width:var(--max-w);margin:0 auto;width:100%;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--red);margin-bottom:14px;
+}
+.hero-eyebrow::before{content:'';width:28px;height:2px;background:var(--red)}
+.hero-heading{
+  font-family:var(--font-display);
+  font-size:clamp(44px,7vw,88px);
+  font-weight:900;color:#fff;
+  line-height:.95;letter-spacing:-.02em;
+  text-transform:uppercase;
+  margin-bottom:18px;max-width:640px;
+}
+.hero-heading em{font-style:normal;color:var(--red)}
+.hero-body{
+  font-size:15px;color:rgba(255,255,255,.65);
+  max-width:420px;line-height:1.65;margin-bottom:28px;
+}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-badge{
+  display:inline-block;
+  background:var(--red);color:#fff;
+  font-family:var(--font-display);
+  font-size:clamp(16px,2.5vw,22px);
+  font-weight:900;letter-spacing:.02em;text-transform:uppercase;
+  padding:5px 14px;border-radius:4px;margin-bottom:16px;
+}
+
+/* Slide dots */
+.hero-dots{
+  display:flex;justify-content:center;gap:8px;
+  padding:16px;position:relative;z-index:2;
+}
+.hero-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.25);border:none;cursor:pointer;
+  transition:background .15s,transform .15s;padding:0;
+}
+.hero-dot.active{background:var(--red);transform:scale(1.25)}
+
+/* =====================================================
+   PROMO STRIP (under hero — like 99 Bikes)
+   ===================================================== */
+.promo-strip{
+  background:var(--red);
+  padding:0;
+}
+.promo-strip-inner{
+  max-width:var(--max-w);margin:0 auto;
+  display:flex;
+}
+.promo-strip-item{
+  flex:1;display:flex;align-items:center;gap:10px;
+  padding:14px 20px;
+  border-right:1px solid rgba(255,255,255,.18);
+  color:#fff;cursor:pointer;
+  transition:background .12s;
+}
+.promo-strip-item:last-child{border-right:none}
+.promo-strip-item:hover{background:rgba(0,0,0,.1)}
+.promo-strip-icon{
+  width:36px;height:36px;flex-shrink:0;
+  background:rgba(255,255,255,.12);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.promo-strip-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+.promo-strip-text strong{display:block;font-size:13px;font-weight:700}
+.promo-strip-text span{font-size:11px;opacity:.8}
+@media(max-width:768px){
+  .promo-strip-inner{flex-wrap:wrap}
+  .promo-strip-item{flex-basis:50%}
+  .promo-strip-item:nth-child(2){border-right:none}
+  .promo-strip-item:nth-child(3){border-top:1px solid rgba(255,255,255,.18)}
+  .promo-strip-item:nth-child(4){border-top:1px solid rgba(255,255,255,.18);border-right:none}
+}
+@media(max-width:480px){
+  .promo-strip-item{flex-basis:100%;border-right:none;border-top:1px solid rgba(255,255,255,.18)}
+  .promo-strip-item:first-child{border-top:none}
+}
+
+/* =====================================================
+   SECTION HEADER
+   ===================================================== */
+.sec-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:20px;gap:12px;
+}
+.sec-head-left{}
+.sec-eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--red);
+  margin-bottom:4px;
+}
+.sec-title{
+  font-family:var(--font-display);
+  font-size:clamp(22px,3.5vw,32px);
+  font-weight:900;letter-spacing:-.01em;
+  text-transform:uppercase;color:var(--ink);line-height:1;
+}
+.sec-link{
+  font-size:13px;font-weight:700;color:var(--red);
+  display:flex;align-items:center;gap:4px;
+  white-space:nowrap;flex-shrink:0;
+  transition:color .12s;text-transform:uppercase;letter-spacing:.03em;
+}
+.sec-link:hover{color:var(--red-h)}
+.sec-link svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .12s}
+.sec-link:hover svg{transform:translateX(3px)}
+
+/* =====================================================
+   CATEGORY TILES (big visual tiles like 99 Bikes)
+   ===================================================== */
+.cat-section{padding:40px 0;background:var(--white)}
+.cat-grid-main{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:12px;
+}
+@media(max-width:1000px){.cat-grid-main{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:640px){.cat-grid-main{grid-template-columns:repeat(3,1fr);gap:8px}}
+
+.cat-tile{
+  background:var(--base);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  border:1.5px solid var(--border);
+  cursor:pointer;
+  transition:all .18s;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 12px 16px;
+  text-align:center;
+  gap:10px;
+}
+.cat-tile:hover{
+  border-color:var(--red);
+  box-shadow:var(--shadow-h);
+  transform:translateY(-2px);
+}
+.cat-tile-icon{
+  width:60px;height:60px;
+  background:var(--white);
+  border-radius:50%;
+  border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .15s,background .15s;
+}
+.cat-tile:hover .cat-tile-icon{border-color:var(--red);background:var(--red-lite)}
+.cat-tile-icon svg{width:30px;height:30px;stroke:var(--ink-2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .15s}
+.cat-tile:hover .cat-tile-icon svg{stroke:var(--red)}
+.cat-tile-name{font-size:12px;font-weight:700;color:var(--ink-2);letter-spacing:.01em}
+.cat-tile:hover .cat-tile-name{color:var(--red)}
+
+/* =====================================================
+   PROMO BANNERS (2-up, 3-up like 99 Bikes)
+   ===================================================== */
+.promo-section{padding:32px 0}
+.promo-2up{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.promo-3up{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:768px){.promo-2up,.promo-3up{grid-template-columns:1fr}}
+
+.promo-banner{
+  position:relative;overflow:hidden;border-radius:var(--r-lg);
+  min-height:180px;display:flex;align-items:flex-end;
+  cursor:pointer;transition:transform .18s;
+}
+.promo-banner:hover{transform:scale(1.01)}
+.promo-banner-bg{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:flex-end;
+  overflow:hidden;
+}
+.promo-banner-bg svg{width:60%;opacity:.18;flex-shrink:0}
+.promo-banner-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.25) 100%);
+}
+.promo-banner-content{
+  position:relative;z-index:2;
+  padding:22px;
+}
+.promo-banner-label{
+  font-size:10px;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.7);
+  margin-bottom:5px;
+}
+.promo-banner-title{
+  font-family:var(--font-display);
+  font-size:clamp(22px,3vw,32px);
+  font-weight:900;text-transform:uppercase;
+  color:#fff;line-height:1;margin-bottom:10px;
+}
+.promo-banner-title em{font-style:normal;color:#FFC72C}
+.promo-banner-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#fff;color:var(--ink);
+  font-size:12px;font-weight:700;
+  padding:7px 14px;border-radius:var(--r);
+  transition:background .12s;
+}
+.promo-banner:hover .promo-banner-cta{background:var(--red);color:#fff}
+
+/* Promo bg colours */
+.promo-bg-dark{background:#111}
+.promo-bg-red{background:#8B0000}
+.promo-bg-navy{background:#0A0A2A}
+.promo-bg-forest{background:#0A1F0A}
+.promo-bg-orange{background:#7A2E00}
+
+/* =====================================================
+   PRODUCT GRID & CARDS (like 99 Bikes product grid)
+   ===================================================== */
+.products-section{padding:40px 0}
+.products-section.alt-bg{background:var(--white)}
+
+.prod-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+@media(max-width:1024px){.prod-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.prod-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+
+.prod-card{
+  background:var(--card);
+  border-radius:var(--r-lg);
+  border:1.5px solid var(--border);
+  overflow:hidden;
+  cursor:pointer;
+  transition:box-shadow .18s,transform .18s,border-color .18s;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+.prod-card:hover{
+  box-shadow:var(--shadow-h);
+  transform:translateY(-3px);
+  border-color:var(--border-2);
+}
+
+/* Image area */
+.prod-img{
+  aspect-ratio:4/3;
+  background:#F8F8F8;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.prod-img-icon{font-size:56px;opacity:.35}
+.prod-img svg.bike-art{
+  width:75%;height:75%;
+  stroke:var(--ink-3);fill:none;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+  opacity:.25;
+}
+
+/* Badges */
+.prod-badge{
+  position:absolute;top:10px;left:10px;z-index:2;
+  font-size:10px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;padding:3px 8px;border-radius:4px;
+}
+.badge-new{background:var(--lime);color:#fff}
+.badge-sale{background:var(--red);color:#fff}
+.badge-used{background:var(--ink);color:#fff}
+.badge-hot{background:#FF6B00;color:#fff}
+
+/* Wishlist */
+.prod-wish{
+  position:absolute;top:8px;right:8px;z-index:2;
+  width:30px;height:30px;background:rgba(255,255,255,.85);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .15s;border:1px solid var(--border);
+}
+.prod-card:hover .prod-wish{opacity:1}
+.prod-wish svg{width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:2}
+.prod-wish:hover{background:#fff}
+.prod-wish:hover svg{stroke:var(--red)}
+.prod-wish.saved svg{stroke:var(--red);fill:var(--red)}
+
+/* Body */
+.prod-body{padding:14px;flex:1;display:flex;flex-direction:column}
+.prod-brand{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.prod-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:10px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod-prices{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.price-now{font-size:17px;font-weight:800;color:var(--ink)}
+.price-was{font-size:12px;color:var(--ink-3);text-decoration:line-through}
+.price-save{
+  font-size:10px;font-weight:700;color:var(--red);
+  background:var(--red-lite);padding:2px 6px;border-radius:20px;
+}
+.prod-sub-price{font-size:11px;color:var(--ink-3);margin-bottom:10px}
+.prod-stock{font-size:11px;font-weight:600;margin-bottom:10px}
+.in-stock{color:var(--lime)}
+.low-stock{color:var(--promo)}
+.out-stock{color:var(--ink-3)}
+.prod-add{
+  width:100%;padding:9px;
+  background:var(--ink);color:#fff;
+  font-size:12px;font-weight:700;
+  border-radius:var(--r);
+  border:2px solid var(--ink);
+  transition:background .14s,color .14s;
+  opacity:0;transform:translateY(4px);
+  transition:opacity .14s,transform .14s,background .14s,color .14s;
+}
+.prod-card:hover .prod-add{opacity:1;transform:none}
+.prod-add:hover{background:var(--red);border-color:var(--red)}
+
+/* =====================================================
+   SALE BANNER (full width, like 99 Bikes sale blocks)
+   ===================================================== */
+.sale-section{padding:32px 0;background:var(--ink)}
+.sale-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.sale-title{
+  font-family:var(--font-display);
+  font-size:clamp(28px,5vw,52px);
+  font-weight:900;text-transform:uppercase;
+  color:#fff;line-height:1;
+  display:flex;align-items:center;gap:12px;
+}
+.sale-tag{
+  background:var(--red);color:#fff;
+  font-size:clamp(14px,2vw,20px);
+  padding:5px 14px;border-radius:4px;
+  font-family:var(--font-display);
+  font-weight:900;text-transform:uppercase;
+}
+.sale-link{color:#FFC72C;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:4px}
+.sale-link svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .12s}
+.sale-link:hover svg{transform:translateX(3px)}
+.sale-section .prod-card{background:#1A1A1A;border-color:#2A2A2A}
+.sale-section .prod-card:hover{border-color:#333;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.sale-section .prod-img{background:#111;border-color:#222}
+.sale-section .prod-name{color:rgba(255,255,255,.9)}
+.sale-section .prod-brand{color:rgba(255,255,255,.4)}
+.sale-section .price-now{color:#fff}
+.sale-section .prod-sub-price{color:rgba(255,255,255,.4)}
+.sale-section .prod-add{background:#2A2A2A;border-color:#2A2A2A;color:#fff}
+.sale-section .prod-add:hover{background:var(--red);border-color:var(--red)}
+
+/* =====================================================
+   SERVICE SECTION
+   ===================================================== */
+.service-section{padding:48px 0;background:var(--white)}
+.service-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  margin-top:24px;
+}
+@media(max-width:860px){.service-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.service-grid{grid-template-columns:1fr}}
+
+.svc-card{
+  background:var(--base);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:24px;
+  transition:all .18s;cursor:pointer;
+}
+.svc-card:hover{border-color:var(--red);box-shadow:var(--shadow-h);background:var(--white)}
+.svc-icon{
+  width:44px;height:44px;
+  background:var(--red-lite);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+  transition:background .15s;
+}
+.svc-card:hover .svc-icon{background:var(--red)}
+.svc-icon svg{width:22px;height:22px;stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .15s}
+.svc-card:hover .svc-icon svg{stroke:#fff}
+.svc-name{font-family:var(--font-display);font-size:20px;font-weight:800;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+.svc-desc{font-size:13px;color:var(--ink-3);line-height:1.6;margin-bottom:14px}
+.svc-price{font-size:20px;font-weight:800;color:var(--red);margin-bottom:2px}
+.svc-note{font-size:11px;color:var(--ink-3);margin-bottom:14px}
+.svc-link{font-size:12px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:4px;transition:color .12s}
+.svc-card:hover .svc-link{color:var(--red)}
+.svc-link svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Book service CTA */
+.svc-book{
+  margin-top:24px;
+  background:var(--ink);
+  border-radius:var(--r-lg);
+  padding:28px 32px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.svc-book-text h3{
+  font-family:var(--font-display);
+  font-size:clamp(20px,3vw,28px);font-weight:900;
+  text-transform:uppercase;color:#fff;margin-bottom:5px;
+}
+.svc-book-text p{font-size:13px;color:rgba(255,255,255,.55)}
+@media(max-width:600px){.svc-book{flex-direction:column;align-items:flex-start}}
+
+/* =====================================================
+   FILM / CUSTOM SECTION
+   ===================================================== */
+.film-section{padding:48px 0;background:var(--base)}
+.film-inner{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.film-inner{grid-template-columns:1fr}.film-visual{order:-1}}
+.film-visual{
+  background:var(--ink);
+  border-radius:var(--r-lg);
+  aspect-ratio:4/3;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.film-bike-preview{width:80%;transition:all .4s;will-change:filter}
+.film-swatches{
+  position:absolute;bottom:16px;left:16px;right:16px;
+  display:flex;gap:8px;align-items:center;
+  background:rgba(0,0,0,.5);padding:10px 12px;border-radius:30px;
+  backdrop-filter:blur(4px);
+}
+.film-swatches span{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em;margin-right:4px;flex-shrink:0}
+.swatch{
+  width:24px;height:24px;border-radius:50%;cursor:pointer;
+  border:2px solid transparent;transition:transform .14s,border-color .14s;flex-shrink:0;
+}
+.swatch:hover,.swatch.on{transform:scale(1.2);border-color:#fff}
+
+.film-content .sec-eyebrow{margin-bottom:6px}
+.film-content .sec-title{font-size:clamp(26px,4vw,38px);margin-bottom:14px}
+.film-content p{font-size:14px;color:var(--ink-2);line-height:1.7;max-width:380px;margin-bottom:20px}
+.film-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.film-step{display:flex;align-items:flex-start;gap:12px}
+.film-step-n{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--red);color:#fff;
+  font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  margin-top:1px;
+}
+.film-step p{font-size:13px;color:var(--ink-2);line-height:1.5;margin:0}
+.film-step strong{color:var(--ink)}
+
+/* =====================================================
+   USED BIKES
+   ===================================================== */
+.used-section{padding:40px 0;background:var(--white)}
+.used-promo{
+  background:var(--ink);
+  border-radius:var(--r-lg);
+  padding:28px 32px;
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+  margin-bottom:28px;position:relative;overflow:hidden;
+}
+.used-promo-bg{
+  position:absolute;right:0;top:0;bottom:0;width:50%;
+  display:flex;align-items:center;justify-content:flex-end;padding-right:80px;
+}
+.used-promo-bg svg{width:200px;opacity:.06}
+.used-promo h3{font-family:var(--font-display);font-size:clamp(22px,3vw,32px);font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:6px}
+.used-promo p{font-size:13px;color:rgba(255,255,255,.55);max-width:360px}
+@media(max-width:600px){.used-promo{grid-template-columns:1fr}}
+
+/* =====================================================
+   BRANDS STRIP
+   ===================================================== */
+.brands-section{padding:32px 0;background:var(--base);border-top:1px solid var(--border)}
+.brands-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px;text-align:center}
+.brands-row{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  justify-content:flex-start;
+}
+.brands-row::-webkit-scrollbar{display:none}
+.brand-pill{
+  flex-shrink:0;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:20px;padding:8px 18px;
+  font-size:12px;font-weight:700;color:var(--ink-3);
+  letter-spacing:.04em;cursor:pointer;
+  transition:all .14s;
+}
+.brand-pill:hover{border-color:var(--red);color:var(--red)}
+
+/* =====================================================
+   STORE SECTION
+   ===================================================== */
+.store-section{padding:48px 0;background:var(--white)}
+.store-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+@media(max-width:768px){.store-inner{grid-template-columns:1fr}}
+.store-map{
+  background:#E8E8E8;border-radius:var(--r-lg);
+  aspect-ratio:4/3;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  border:1.5px solid var(--border);color:var(--ink-3);font-size:14px;
+}
+.store-map-icon{font-size:40px}
+.store-info-title{
+  font-family:var(--font-display);font-size:28px;font-weight:900;
+  text-transform:uppercase;margin-bottom:20px;
+}
+.store-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.store-row-icon{
+  width:38px;height:38px;background:var(--red-lite);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.store-row-icon svg{width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.store-row strong{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.store-row span{font-size:13px;color:var(--ink-2);line-height:1.55}
+.hours-table{width:100%;margin-top:4px}
+.hours-table td{font-size:12px;padding:2px 0}
+.hours-table td:first-child{color:var(--ink-2);width:60%}
+.hours-table td:last-child{font-weight:700;color:var(--ink);text-align:right}
+
+/* =====================================================
+   NEWSLETTER
+   ===================================================== */
+.nl-section{padding:48px 0;background:var(--red)}
+.nl-inner{display:flex;align-items:center;justify-content:space-between;gap:40px}
+@media(max-width:768px){.nl-inner{flex-direction:column}}
+.nl-text h3{
+  font-family:var(--font-display);font-size:clamp(24px,4vw,36px);
+  font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:6px;
+}
+.nl-text p{font-size:13px;color:rgba(255,255,255,.75)}
+.nl-form{display:flex;gap:8px;flex-shrink:0;min-width:360px}
+@media(max-width:560px){.nl-form{min-width:0;width:100%}}
+.nl-form input{
+  flex:1;height:46px;border:none;border-radius:var(--r);
+  padding:0 16px;font-size:14px;font-family:var(--font-ui);
+  background:rgba(255,255,255,.15);color:#fff;
+  border:1.5px solid rgba(255,255,255,.3);outline:none;
+  transition:border-color .14s;
+}
+.nl-form input:focus{border-color:rgba(255,255,255,.8)}
+.nl-form input::placeholder{color:rgba(255,255,255,.5)}
+.nl-form button{
+  height:46px;padding:0 20px;background:#fff;color:var(--red);
+  font-weight:700;font-size:14px;border-radius:var(--r);border:none;cursor:pointer;
+  white-space:nowrap;transition:background .14s;
+}
+.nl-form button:hover{background:var(--red-lite)}
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+.site-footer{background:#111;padding:48px 0 24px;color:rgba(255,255,255,.65)}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;margin-bottom:40px;
+}
+@media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr;gap:32px}}
+@media(max-width:540px){.footer-grid{grid-template-columns:1fr}}
+.footer-brand-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.footer-brand-logo .logo-name{color:#fff}
+.footer-brand p{font-size:13px;line-height:1.65;max-width:260px;margin-bottom:20px}
+.footer-socials{display:flex;gap:8px}
+.social-btn{
+  width:36px;height:36px;background:rgba(255,255,255,.07);
+  border-radius:var(--r);display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:background .14s;cursor:pointer;
+}
+.social-btn:hover{background:var(--red)}
+.footer-col h5{
+  font-size:11px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);
+  margin-bottom:14px;
+}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:8px}
+.footer-col ul li a{font-size:13px;color:rgba(255,255,255,.55);transition:color .12s}
+.footer-col ul li a:hover{color:#fff}
+.footer-bottom{
+  padding-top:24px;border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.footer-bottom p{font-size:11px;color:rgba(255,255,255,.3)}
+.footer-currencies{display:flex;gap:8px}
+.cur-tag{
+  font-size:11px;font-weight:600;
+  background:rgba(255,255,255,.07);border-radius:20px;
+  padding:3px 10px;color:rgba(255,255,255,.45);
+}
+
+/* =====================================================
+   CART DRAWER
+   ===================================================== */
+.cart-drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(420px,100vw);
+  background:var(--white);
+  box-shadow:-4px 0 32px rgba(0,0,0,.18);
+  z-index:900;
+  transform:translateX(100%);transition:transform .24s;
+  display:flex;flex-direction:column;
+}
+.cart-drawer.open{transform:none}
+.cart-drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);
+}
+.cart-drawer-head h3{font-size:16px;font-weight:700}
+.cart-drawer-close{color:var(--ink-3);padding:5px;border-radius:var(--r);transition:color .12s,background .12s}
+.cart-drawer-close:hover{color:var(--ink);background:var(--base)}
+.cart-drawer-close svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.cart-body{flex:1;overflow-y:auto;padding:20px 22px}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--ink-3)}
+.cart-empty-icon{font-size:48px;margin-bottom:14px}
+.cart-empty p{font-size:14px}
+.cart-foot{padding:18px 22px;border-top:1px solid var(--border)}
+.cart-total-row{display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-bottom:14px}
+.backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:800;opacity:0;pointer-events:none;transition:opacity .24s;
+}
+.backdrop.on{opacity:1;pointer-events:all}
+
+/* =====================================================
+   SCROLL TO TOP
+   ===================================================== */
+.scroll-top{
+  position:fixed;bottom:24px;right:24px;
+  width:44px;height:44px;background:var(--red);color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(212,43,43,.4);
+  opacity:0;pointer-events:none;
+  transition:opacity .15s,transform .15s;z-index:200;
+}
+.scroll-top.show{opacity:1;pointer-events:all}
+.scroll-top:hover{transform:translateY(-2px)}
+.scroll-top svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<!-- BACKDROP -->
+<div class="backdrop" id="backdrop"></div>
+
+<!-- ══════════════════════════════════════════════════
+     ANNOUNCEMENT BAR
+══════════════════════════════════════════════════ -->
+<div class="announce" role="status">
+  <div class="announce-items">
+    <div class="announce-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Click &amp; Collect ທີ່ຮ້ານ — <a href="#">ຮ້ານ Sevenday</a>
+    </div>
+    <div class="announce-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ເປີດ 7 ມື້ / ອາທິດ · 09:00–18:00
+    </div>
+    <div class="announce-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      ຮັບ LAK · THB · USD
+    </div>
+  </div>
+  <button class="announce-close" onclick="this.parentElement.style.display='none'" aria-label="Close">×</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SITE HEADER
+══════════════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-top">
+
+    <button class="mob-toggle" id="mobToggle" aria-label="Menu" aria-expanded="false">
+      <b></b><b></b><b></b>
+    </button>
+
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="Sevenday Bike Home">
+      <div class="logo-mark" aria-hidden="true">
+        <!-- Bike wheel icon -->
+        <svg viewBox="0 0 24 24">
+          <circle cx="5.5" cy="17.5" r="3.5"/>
+          <circle cx="18.5" cy="17.5" r="3.5"/>
+          <path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/>
+          <path d="M10 7l6 0"/>
+          <circle cx="14" cy="7" r="1"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-name">Sevenday Bike</span>
+        <span class="logo-sub">Vientiane · ວຽງຈັນ</span>
+      </div>
+    </a>
+
+    <!-- Search -->
+    <div class="header-search" role="search">
+      <input type="search" id="mainSearch" placeholder="ຄົ້ນຫາ ຈັກຍານ, ອຸປະກອນ, ຍີ່ຫໍ້... / Search bikes, parts, brands..." aria-label="Search">
+      <button class="search-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+
+    <!-- Utility -->
+    <button class="lang-cur" aria-label="Language and currency">
+      🇱🇦 <strong>LO</strong> <span>|</span> <strong>₭ LAK</strong>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <a href="/account" class="hdr-action" aria-label="My Account">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>ບັນຊີ</span>
+      </a>
+      <button class="hdr-action" id="cartBtn" aria-label="Cart">
+        <div style="position:relative;display:inline-flex">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="hdr-badge" id="cartCount" aria-live="polite">0</span>
+        </div>
+        <span>ກະຕ່າ</span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════
+     NAV BAR
+══════════════════════════════════════════════════ -->
+<nav class="nav-bar" role="navigation" aria-label="Main">
+  <div class="nav-bar-inner">
+
+    <div class="nav-item">
+      <a href="/bikes" class="nav-link">
+        ຈັກຍານ / Bikes
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+      <div class="nav-drop nav-mega">
+        <div class="nav-mega-col">
+          <h4>ປະເພດ</h4>
+          <a href="/bikes/road">Road Bikes · ຈັກຍານຖະໜົນ</a>
+          <a href="/bikes/mountain">Mountain · ຈັກຍານພູ</a>
+          <a href="/bikes/city">City / Hybrid</a>
+          <a href="/bikes/kids">Kids · ເດັກ</a>
+          <a href="/bikes/bmx">BMX</a>
+          <a href="/bikes/folding">Folding · ພັບໄດ</a>
+        </div>
+        <div class="nav-mega-col">
+          <h4>ຍີ່ຫໍ້</h4>
+          <a href="/brands/trek">Trek</a>
+          <a href="/brands/giant">Giant</a>
+          <a href="/brands/specialized">Specialized</a>
+          <a href="/brands/merida">Merida</a>
+          <a href="/brands/polygon">Polygon</a>
+          <a href="/brands/all">ທຸກຍີ່ຫໍ້ →</a>
+        </div>
+        <div class="nav-mega-col">
+          <h4>ພິເສດ</h4>
+          <a href="/bikes/used" class="featured">🔄 ມືສອງ / Used Bikes</a>
+          <a href="/bikes/sale" class="featured">🔥 Sale / ລາຄາພິເສດ</a>
+          <a href="/bikes/new">✨ New Arrivals</a>
+          <a href="/bike-guide">📖 Bike Guide</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="/parts" class="nav-link">
+        ອາໄຫຼ່ / Parts
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+      <div class="nav-drop">
+        <a href="/parts/brakes">Brakes · ເບລກ</a>
+        <a href="/parts/drivetrain">Drivetrain</a>
+        <a href="/parts/wheels">Wheels · ລໍ້</a>
+        <a href="/parts/handlebars">Handlebars</a>
+        <a href="/parts/saddles">Saddles · ອານ</a>
+        <a href="/parts/tyres">Tyres &amp; Tubes</a>
+        <div class="nav-drop-divider"></div>
+        <a href="/parts/all" class="featured">ທຸກ Parts →</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="/accessories" class="nav-link">
+        ອຸປະກອນ / Accessories
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+      <div class="nav-drop">
+        <a href="/accessories/helmets">Helmets · ໝວກ</a>
+        <a href="/accessories/lights">Lights · ໄຟ</a>
+        <a href="/accessories/locks">Locks · ກຸນແຈ</a>
+        <a href="/accessories/bags">Bags · ກະເປົ໋າ</a>
+        <a href="/accessories/computers">Bike Computers</a>
+        <a href="/accessories/pumps">Pumps · ສູບ</a>
+        <div class="nav-drop-divider"></div>
+        <a href="/accessories/all" class="featured">ທຸກ Accessories →</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="/clothing" class="nav-link">ເຄື່ອງນຸ່ງ</a>
+    </div>
+
+    <div class="nav-item">
+      <a href="/service" class="nav-link">
+        ບໍລິການ / Service
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+      <div class="nav-drop">
+        <a href="/service/basic">Basic Service</a>
+        <a href="/service/standard">Standard Service</a>
+        <a href="/service/ultimate">Ultimate Service</a>
+        <a href="/service/repair">ຊ່ອມ / Repair</a>
+        <div class="nav-drop-divider"></div>
+        <a href="/service/custom">🎨 Film / Customization</a>
+        <a href="/service/book" class="featured">📅 ຈອງ / Book Now →</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="/bikes/used" class="nav-link">ມືສອງ / Used</a>
+    </div>
+
+    <div class="nav-item">
+      <a href="/store" class="nav-link">ຮ້ານ / Store</a>
+    </div>
+
+    <div class="nav-item">
+      <a href="/bikes/sale" class="nav-link sale-link">🔥 Sale</a>
+    </div>
+
+    <a href="/service/book" class="nav-workshop">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      ຈອງ Workshop
+    </a>
+
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════
+     MOBILE DRAWER
+══════════════════════════════════════════════════ -->
+<div class="mob-drawer" id="mobDrawer" role="dialog" aria-label="Navigation" aria-modal="true">
+  <div class="mob-overlay" id="mobOverlay"></div>
+  <div class="mob-panel">
+    <div class="mob-head">
+      <div class="logo">
+        <div class="logo-mark" style="width:32px;height:32px" aria-hidden="true">
+          <svg viewBox="0 0 24 24" style="width:18px;height:18px"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/><circle cx="14" cy="7" r="1"/></svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name" style="font-size:15px">Sevenday Bike</span>
+          <span class="logo-sub">ວຽງຈັນ, ລາວ</span>
+        </div>
+      </div>
+      <button class="mob-close" id="mobClose" aria-label="Close menu">×</button>
+    </div>
+    <div class="mob-search">
+      <input type="search" placeholder="ຄົ້ນຫາ... / Search...">
+    </div>
+    <nav>
+      <div class="mob-section">
+        <div class="mob-section-label">ສິນຄ້າ / Shop</div>
+        <a href="/bikes" class="mob-nav-link">🚲 ຈັກຍານ / Bikes</a>
+        <a href="/bikes/used" class="mob-sub-link">↳ Used / ມືສອງ</a>
+        <a href="/bikes/sale" class="mob-sub-link">↳ Sale 🔥</a>
+        <a href="/parts" class="mob-nav-link">⚙️ ອາໄຫຼ່ / Parts</a>
+        <a href="/accessories" class="mob-nav-link">🎒 ອຸປະກອນ</a>
+        <a href="/accessories/helmets" class="mob-sub-link">↳ Helmets / ໝວກ</a>
+        <a href="/clothing" class="mob-nav-link">👕 ເຄື່ອງນຸ່ງ</a>
+      </div>
+      <div class="mob-section">
+        <div class="mob-section-label">ບໍລິການ</div>
+        <a href="/service" class="mob-nav-link">🔧 Workshop</a>
+        <a href="/service/book" class="mob-nav-link" style="color:var(--red)">📅 ຈອງ / Book Now</a>
+        <a href="/service/custom" class="mob-nav-link">🎨 Film Customization</a>
+      </div>
+      <div class="mob-section">
+        <div class="mob-section-label">ຂໍ້ມູນ</div>
+        <a href="/store" class="mob-nav-link">📍 ຮ້ານ / Store</a>
+        <a href="/about" class="mob-nav-link">ℹ️ ກ່ຽວກັບ</a>
+        <a href="/contact" class="mob-nav-link">📞 ຕິດຕໍ່</a>
+      </div>
+    </nav>
+    <div class="mob-actions">
+      <a href="/account" class="btn btn-outline btn-sm" style="flex:1;justify-content:center">ບັນຊີ</a>
+      <a href="/service/book" class="btn btn-primary btn-sm" style="flex:1;justify-content:center">ຈອງ</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════════ -->
+<main id="main">
+
+<!-- ── HERO ── -->
+<section class="hero" aria-label="Hero">
+  <div class="hero-slides">
+
+    <!-- Slide 1 -->
+    <div class="hero-slide slide-1 active">
+      <div class="hero-bg-img" aria-hidden="true">
+        <!-- Large bike SVG background art -->
+        <svg class="hero-bike-svg" viewBox="0 0 700 480" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="170" cy="320" r="150" stroke-width="14"/>
+          <circle cx="530" cy="320" r="150" stroke-width="14"/>
+          <circle cx="170" cy="320" r="22" fill="white" stroke-width="0"/>
+          <circle cx="530" cy="320" r="22" fill="white" stroke-width="0"/>
+          <path d="M170 320 L320 100 L460 230 L530 320" stroke-width="14"/>
+          <path d="M320 100 L530 320" stroke-width="10"/>
+          <path d="M170 320 L410 230 L460 230" stroke-width="10"/>
+          <path d="M460 230 L472 148 L430 130 L490 130" stroke-width="10"/>
+          <path d="M320 100 L335 48" stroke-width="9"/>
+          <line x1="308" y1="44" x2="364" y2="44" stroke-width="11"/>
+          <circle cx="408" cy="240" r="18" stroke-width="7"/>
+          <line x1="388" y1="240" x2="372" y2="265" stroke-width="7"/>
+          <line x1="428" y1="240" x2="444" y2="215" stroke-width="7"/>
+          <line x1="170" y1="170" x2="170" y2="320" stroke-width="2.5" opacity=".35"/>
+          <line x1="62" y1="258" x2="170" y2="320" stroke-width="2.5" opacity=".35"/>
+          <line x1="278" y1="258" x2="170" y2="320" stroke-width="2.5" opacity=".35"/>
+          <line x1="530" y1="170" x2="530" y2="320" stroke-width="2.5" opacity=".35"/>
+          <line x1="422" y1="258" x2="530" y2="320" stroke-width="2.5" opacity=".35"/>
+          <line x1="638" y1="258" x2="530" y2="320" stroke-width="2.5" opacity=".35"/>
+        </svg>
+      </div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">Sevenday Bike · ວຽງຈັນ, ລາວ</div>
+        <div class="hero-badge">New 2024 Models</div>
+        <h1 class="hero-heading">
+          ຈັກຍານ<br>
+          <em>ທຸກ</em><br>
+          ຄວາມຕ້ອງການ
+        </h1>
+        <p class="hero-body">Road · Mountain · City · Kids · Used — ຮ້ານຈັກຍານ ແລະ Workshop ຄຸນນະພາບ ໃນວຽງຈັນ</p>
+        <div class="hero-actions">
+          <a href="/bikes" class="btn btn-primary btn-lg">ເລືອກຊົມ Bikes</a>
+          <a href="/service" class="btn btn-outline-white btn-lg">Workshop</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="hero-slide slide-2">
+      <div class="hero-bg-img" aria-hidden="true">
+        <svg class="hero-bike-svg" viewBox="0 0 700 480" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" opacity=".2">
+          <circle cx="170" cy="320" r="150" stroke-width="14"/>
+          <circle cx="530" cy="320" r="150" stroke-width="14"/>
+          <path d="M170 320 L320 100 L460 230 L530 320" stroke-width="14"/>
+          <path d="M320 100 L530 320" stroke-width="10"/>
+          <path d="M170 320 L410 230 L460 230" stroke-width="10"/>
+        </svg>
+      </div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">Sevenday Workshop</div>
+        <div class="hero-badge">Professional Service</div>
+        <h1 class="hero-heading">
+          ບໍລິການ<br>
+          <em>ໂດຍ</em><br>
+          ຊ່າງມືອາຊີບ
+        </h1>
+        <p class="hero-body">Basic · Standard · Ultimate Service · Repair · Film Wrap — ຈອງໄດ້ທຸກວັນ</p>
+        <div class="hero-actions">
+          <a href="/service/book" class="btn btn-primary btn-lg">ຈອງ Workshop</a>
+          <a href="/service" class="btn btn-outline-white btn-lg">ດູ Services</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="hero-slide slide-3">
+      <div class="hero-bg-img" aria-hidden="true">
+        <svg class="hero-bike-svg" viewBox="0 0 700 480" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" opacity=".2">
+          <circle cx="170" cy="320" r="150" stroke-width="14"/>
+          <circle cx="530" cy="320" r="150" stroke-width="14"/>
+          <path d="M170 320 L320 100 L460 230 L530 320" stroke-width="14"/>
+        </svg>
+      </div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">Film / Color Customization</div>
+        <div class="hero-badge">Change Your Color</div>
+        <h1 class="hero-heading">
+          ປ່ຽນສີ<br>
+          <em>ດ້ວຍ</em><br>
+          Film Wrap
+        </h1>
+        <p class="hero-body">ສ້າງເອກລັກ ຈັກຍານຂອງທ່ານ ດ້ວຍ Film ຄຸນນະພາບ ຫຼາຍກວ່າ 80 ສີ</p>
+        <div class="hero-actions">
+          <a href="/service/custom" class="btn btn-primary btn-lg">ເລືອກສີ</a>
+          <a href="/contact" class="btn btn-outline-white btn-lg">ຂໍລາຄາ</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="hero-dots" role="tablist" aria-label="Hero slides">
+    <button class="hero-dot active" data-slide="0" role="tab" aria-selected="true" aria-label="Slide 1"></button>
+    <button class="hero-dot" data-slide="1" role="tab" aria-selected="false" aria-label="Slide 2"></button>
+    <button class="hero-dot" data-slide="2" role="tab" aria-selected="false" aria-label="Slide 3"></button>
+  </div>
+</section>
+
+<!-- ── PROMO STRIP ── -->
+<div class="promo-strip">
+  <div class="promo-strip-inner">
+    <div class="promo-strip-item" onclick="window.location='/store'">
+      <div class="promo-strip-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="promo-strip-text">
+        <strong>Click &amp; Collect</strong>
+        <span>ສັ່ງ Online · ຮັບທີ່ຮ້ານ</span>
+      </div>
+    </div>
+    <div class="promo-strip-item" onclick="window.location='/service/book'">
+      <div class="promo-strip-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="promo-strip-text">
+        <strong>ຈອງ Workshop</strong>
+        <span>ຈອງ Online ງ່າຍ ສະດວກ</span>
+      </div>
+    </div>
+    <div class="promo-strip-item">
+      <div class="promo-strip-icon">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      </div>
+      <div class="promo-strip-text">
+        <strong>LAK · THB · USD</strong>
+        <span>ຮັບ 3 ສະກຸນເງິນ</span>
+      </div>
+    </div>
+    <div class="promo-strip-item">
+      <div class="promo-strip-icon">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="promo-strip-text">
+        <strong>ຊ່າງຊ່ຽວຊານ</strong>
+        <span>ບໍລິການ 7 ມື້ / ອາທິດ</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SHOP BY CATEGORY ── -->
+<section class="cat-section" aria-labelledby="cat-heading">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-eyebrow">ເລືອກໂດຍ</div>
+        <h2 class="sec-title" id="cat-heading">ໝວດສິນຄ້າ</h2>
+      </div>
+      <a href="/shop" class="sec-link">ທຸກສິນຄ້າ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="cat-grid-main">
+      <a href="/bikes/road" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg>
+        </div>
+        <span class="cat-tile-name">Road Bikes</span>
+      </a>
+      <a href="/bikes/mountain" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><polygon points="3 20 9 4 15 14 18 10 21 20"/><line x1="3" y1="20" x2="21" y2="20"/></svg>
+        </div>
+        <span class="cat-tile-name">Mountain</span>
+      </a>
+      <a href="/bikes/city" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <span class="cat-tile-name">City / Hybrid</span>
+      </a>
+      <a href="/bikes/kids" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M15 8H9l-3 8"/><path d="M12 8v6l3 4"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M5 17l7-9 7 9"/></svg>
+        </div>
+        <span class="cat-tile-name">Kids · ເດັກ</span>
+      </a>
+      <a href="/accessories/helmets" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2a9 9 0 019 9v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a9 9 0 019-9z"/><path d="M3 14v3a2 2 0 002 2h14a2 2 0 002-2v-3"/></svg>
+        </div>
+        <span class="cat-tile-name">Helmets · ໝວກ</span>
+      </a>
+      <a href="/parts" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-3M6 12H3M12 21v-3M12 6V3"/></svg>
+        </div>
+        <span class="cat-tile-name">Parts · ອາໄຫຼ່</span>
+      </a>
+      <a href="/accessories" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        </div>
+        <span class="cat-tile-name">Accessories</span>
+      </a>
+      <a href="/clothing" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
+        </div>
+        <span class="cat-tile-name">Clothing</span>
+      </a>
+      <a href="/bikes/bmx" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="M5 18L8 9l7 4 4-5 3 3"/></svg>
+        </div>
+        <span class="cat-tile-name">BMX</span>
+      </a>
+      <a href="/service/custom" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="0.5"/><circle cx="17.5" cy="10.5" r="0.5"/><circle cx="8.5" cy="7.5" r="0.5"/><circle cx="6.5" cy="12.5" r="0.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125C12.99 18.859 12.8 18.36 12.8 17.8c0-1.025.845-1.8 1.872-1.8H17c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/></svg>
+        </div>
+        <span class="cat-tile-name">Film Wrap</span>
+      </a>
+      <a href="/bikes/used" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </div>
+        <span class="cat-tile-name">Used · ມືສອງ</span>
+      </a>
+      <a href="/service" class="cat-tile">
+        <div class="cat-tile-icon">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <span class="cat-tile-name">Workshop</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMO BANNERS 2-UP ── -->
+<section class="promo-section">
+  <div class="wrap">
+    <div class="promo-2up">
+      <a href="/bikes/new" class="promo-banner promo-bg-dark">
+        <div class="promo-banner-bg" aria-hidden="true">
+          <svg viewBox="0 0 300 200" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6">
+            <circle cx="75" cy="140" r="60"/><circle cx="225" cy="140" r="60"/>
+            <path d="M75 140L135 40L175 90L225 140"/><path d="M135 40L225 140"/><path d="M75 140L165 95L175 95"/>
+          </svg>
+        </div>
+        <div class="promo-banner-overlay"></div>
+        <div class="promo-banner-content">
+          <div class="promo-banner-label">2024 Collection</div>
+          <div class="promo-banner-title">New <em>Arrivals</em></div>
+          <div class="promo-banner-cta">ເບິ່ງທັງໝົດ →</div>
+        </div>
+      </a>
+      <a href="/bikes/sale" class="promo-banner promo-bg-red">
+        <div class="promo-banner-bg" aria-hidden="true">
+          <svg viewBox="0 0 300 200" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" opacity=".4">
+            <circle cx="75" cy="140" r="60"/><circle cx="225" cy="140" r="60"/>
+            <path d="M75 140L135 40L175 90L225 140"/>
+          </svg>
+        </div>
+        <div class="promo-banner-overlay"></div>
+        <div class="promo-banner-content">
+          <div class="promo-banner-label">ລາຄາພິເສດ</div>
+          <div class="promo-banner-title"><em>Sale</em> 🔥</div>
+          <div class="promo-banner-cta">ດູ Deals →</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED BIKES ── -->
+<section class="products-section alt-bg" aria-labelledby="feat-heading">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-eyebrow">ໃໝ່ · Featured</div>
+        <h2 class="sec-title" id="feat-heading">ຈັກຍານເດັ່ນ</h2>
+      </div>
+      <a href="/bikes" class="sec-link">ທຸກ Bikes <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="prod-grid" id="featGrid"></div>
+  </div>
+</section>
+
+<!-- ── SALE SECTION ── -->
+<section class="sale-section" aria-labelledby="sale-heading">
+  <div class="wrap">
+    <div class="sale-header">
+      <div class="sale-title">
+        ລາຄາພິເສດ
+        <span class="sale-tag">🔥 Sale</span>
+      </div>
+      <a href="/bikes/sale" class="sale-link">ດູທັງໝົດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="prod-grid" id="saleGrid"></div>
+  </div>
+</section>
+
+<!-- ── SERVICE ── -->
+<section class="service-section" aria-labelledby="svc-heading">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-eyebrow">Sevenday Workshop</div>
+        <h2 class="sec-title" id="svc-heading">ບໍລິການ &amp; ຊ່ອມ</h2>
+      </div>
+      <a href="/service" class="sec-link">ທຸກ Services <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="service-grid">
+      <div class="svc-card" onclick="window.location='/service/basic'">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="svc-name">Basic Service</div>
+        <div class="svc-desc">Chain lube · Brake adjust · Tyre pressure · Quick check</div>
+        <div class="svc-price">₭ 80,000</div>
+        <div class="svc-note">≈ 150 THB · ≈ 4 USD · 45–60 min</div>
+        <div class="svc-link">ລາຍລະອຽດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div class="svc-card" onclick="window.location='/service/standard'">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-3M6 12H3M12 21v-3M12 6V3"/></svg>
+        </div>
+        <div class="svc-name">Standard Service</div>
+        <div class="svc-desc">Basic + Derailleur tune · Cable check · Headset & BB check</div>
+        <div class="svc-price">₭ 200,000</div>
+        <div class="svc-note">≈ 360 THB · ≈ 10 USD · 2–3 ຊ.ມ.</div>
+        <div class="svc-link">ລາຍລະອຽດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div class="svc-card" onclick="window.location='/service/ultimate'" style="border-color:#CCDA88">
+        <div class="svc-icon" style="background:#EFF5E0">
+          <svg viewBox="0 0 24 24" style="stroke:var(--lime)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="svc-name">Ultimate Service</div>
+        <div class="svc-desc">Full strip · Clean all · Bearing check · Complete rebuild & setup</div>
+        <div class="svc-price" style="color:var(--lime)">₭ 500,000</div>
+        <div class="svc-note">≈ 900 THB · ≈ 25 USD · 1 ວັນ</div>
+        <div class="svc-link">ລາຍລະອຽດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div class="svc-card" onclick="window.location='/service/repair'">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div class="svc-name">Repair · ຊ່ອມ</div>
+        <div class="svc-desc">Flat tyre · Cable replace · Derailleur fix · Any repair job</div>
+        <div class="svc-price">ຈາກ ₭ 30,000</div>
+        <div class="svc-note">ຂຶ້ນກັບຊະນິດງານ + ອາໄຫຼ່</div>
+        <div class="svc-link">ລາຍລະອຽດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div class="svc-card" onclick="window.location='/service/installation'">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="svc-name">Installation</div>
+        <div class="svc-desc">Parts fitting · Cockpit setup · Groupset install · Component swap</div>
+        <div class="svc-price">ຈາກ ₭ 50,000</div>
+        <div class="svc-note">ຂຶ້ນກັບ part</div>
+        <div class="svc-link">ລາຍລະອຽດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div class="svc-card" onclick="window.location='/service/custom'">
+        <div class="svc-icon" style="background:#FFF5F5">
+          <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="0.5" fill="var(--red)"/><circle cx="17.5" cy="10.5" r="0.5" fill="var(--red)"/><circle cx="8.5" cy="7.5" r="0.5" fill="var(--red)"/><circle cx="6.5" cy="12.5" r="0.5" fill="var(--red)"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125C12.99 18.859 12.8 18.36 12.8 17.8c0-1.025.845-1.8 1.872-1.8H17c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/></svg>
+        </div>
+        <div class="svc-name">Film Wrap 🎨</div>
+        <div class="svc-desc">Color film · Frame wrap · 80+ colors · Scratch protection</div>
+        <div class="svc-price">ຂໍ Quotation</div>
+        <div class="svc-note">ຂຶ້ນກັບຂະໜາດ + ສີ</div>
+        <div class="svc-link" style="color:var(--red)">ເລືອກສີ / ຂໍລາຄາ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </div>
+    <div class="svc-book">
+      <div class="svc-book-text">
+        <h3>ຈອງ Workshop ງ່າຍ · Easy Booking</h3>
+        <p>WhatsApp · LINE · Facebook — ຮັບ slot ໄວ, ບໍ່ຕ້ອງລໍ</p>
+      </div>
+      <a href="/service/book" class="btn btn-primary btn-lg">📅 ຈອງດຽວນີ້</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FILM CUSTOMIZATION ── -->
+<section class="film-section" aria-labelledby="film-heading">
+  <div class="wrap">
+    <div class="film-inner">
+      <div class="film-visual" id="filmVisual">
+        <svg id="filmBike" class="film-bike-preview" viewBox="0 0 500 340" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="120" cy="230" r="105" stroke-width="12"/>
+          <circle cx="380" cy="230" r="105" stroke-width="12"/>
+          <circle cx="120" cy="230" r="16" fill="white" stroke-width="0"/>
+          <circle cx="380" cy="230" r="16" fill="white" stroke-width="0"/>
+          <path d="M120 230L220 70L310 160L380 230" stroke-width="12"/>
+          <path d="M220 70L380 230" stroke-width="9"/>
+          <path d="M120 230L290 162L310 162" stroke-width="9"/>
+          <path d="M310 162L320 100L292 86 L338 86" stroke-width="9"/>
+          <path d="M220 70 L230 30" stroke-width="8"/>
+          <line x1="208" y1="27" x2="244" y2="27" stroke-width="10"/>
+          <circle cx="275" cy="168" r="14" stroke-width="6"/>
+          <line x1="262" y1="168" x2="250" y2="186" stroke-width="6"/>
+          <line x1="288" y1="168" x2="300" y2="150" stroke-width="6"/>
+          <line x1="120" y1="125" x2="120" y2="230" stroke-width="2" opacity=".4"/>
+          <line x1="35" y1="178" x2="120" y2="230" stroke-width="2" opacity=".4"/>
+          <line x1="205" y1="178" x2="120" y2="230" stroke-width="2" opacity=".4"/>
+          <line x1="380" y1="125" x2="380" y2="230" stroke-width="2" opacity=".4"/>
+          <line x1="295" y1="178" x2="380" y2="230" stroke-width="2" opacity=".4"/>
+          <line x1="465" y1="178" x2="380" y2="230" stroke-width="2" opacity=".4"/>
+        </svg>
+        <div class="film-swatches">
+          <span>ສີ:</span>
+          <button class="swatch on" style="background:#D42B2B" onclick="setFilm(this,'#7A0000','#D42B2B')" aria-label="Red"></button>
+          <button class="swatch" style="background:#1A6FBF" onclick="setFilm(this,'#001A40','#1A6FBF')" aria-label="Blue"></button>
+          <button class="swatch" style="background:#5C8A00" onclick="setFilm(this,'#1A2800','#5C8A00')" aria-label="Green"></button>
+          <button class="swatch" style="background:#FF6B00" onclick="setFilm(this,'#3A1400','#FF6B00')" aria-label="Orange"></button>
+          <button class="swatch" style="background:#8B4FBF" onclick="setFilm(this,'#1A0030','#8B4FBF')" aria-label="Purple"></button>
+          <button class="swatch" style="background:#FFC72C" onclick="setFilm(this,'#2A1800','#FFC72C')" aria-label="Gold"></button>
+          <button class="swatch" style="background:#111111" onclick="setFilm(this,'#000','#333')" aria-label="Black"></button>
+          <button class="swatch" style="background:#C0C0C0" onclick="setFilm(this,'#444','#C0C0C0')" aria-label="Silver"></button>
+        </div>
+      </div>
+      <div class="film-content">
+        <div class="sec-eyebrow">Sevenday Special Service</div>
+        <h2 class="sec-title" id="film-heading">Film / Color<br>Customization</h2>
+        <p>ປ່ຽນໃໝ່ frame ດ້ວຍ Vinyl Film ຄຸນນະພາບ — ເລືອກໄດ້ຫຼາຍກວ່າ 80 ສີ, ງ່າຍຕໍ່ການຖອດ, ປ້ອງກັນ scratch ແລະ UV ຈາກແດດ</p>
+        <div class="film-steps">
+          <div class="film-step">
+            <div class="film-step-n">1</div>
+            <p><strong>ເລືອກ Bike</strong> — ນຳຈັກຍານມາທີ່ຮ້ານ ຫຼື ແຈ້ງ Model ໃຫ້ Sevenday</p>
+          </div>
+          <div class="film-step">
+            <div class="film-step-n">2</div>
+            <p><strong>ເລືອກສີ Film</strong> — ເລືອກຈາກ palette 80+ ສີ ຫຼື Custom ໄດ້</p>
+          </div>
+          <div class="film-step">
+            <div class="film-step-n">3</div>
+            <p><strong>ຮັບ Quotation</strong> — Sevenday ໃຫ້ລາຄາ + ເວລາ ໃນ 24 ຊ.ມ.</p>
+          </div>
+          <div class="film-step">
+            <div class="film-step-n">4</div>
+            <p><strong>ຮັບ Bike ໃໝ່</strong> — ຊ່າງ Sevenday ຕິດ film ໃຫ້ສຳເລັດ 100%</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="/service/custom" class="btn btn-primary">ເລືອກສີ / Request</a>
+          <a href="/contact" class="btn btn-outline">ສອບຖາມ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACCESSORIES ── -->
+<section class="products-section alt-bg" aria-labelledby="acc-heading">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-eyebrow">ຕ້ອງການ</div>
+        <h2 class="sec-title" id="acc-heading">ອຸປະກອນ &amp; ໝວກ</h2>
+      </div>
+      <a href="/accessories" class="sec-link">ທຸກ Accessories <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="prod-grid" id="accGrid"></div>
+  </div>
+</section>
+
+<!-- ── PROMO 3-UP ── -->
+<section class="promo-section">
+  <div class="wrap">
+    <div class="promo-3up">
+      <a href="/bikes/mountain" class="promo-banner promo-bg-forest">
+        <div class="promo-banner-bg" aria-hidden="true">
+          <svg viewBox="0 0 200 160" fill="none" stroke="white" stroke-width="5" opacity=".3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="50" cy="110" r="45"/><circle cx="150" cy="110" r="45"/>
+            <path d="M50 110L90 40L120 75L150 110"/>
+          </svg>
+        </div>
+        <div class="promo-banner-overlay"></div>
+        <div class="promo-banner-content">
+          <div class="promo-banner-label">Trail Ready</div>
+          <div class="promo-banner-title">Mountain <em>Bikes</em></div>
+          <div class="promo-banner-cta">ເລືອກ →</div>
+        </div>
+      </a>
+      <a href="/bikes/road" class="promo-banner promo-bg-navy">
+        <div class="promo-banner-bg" aria-hidden="true">
+          <svg viewBox="0 0 200 160" fill="none" stroke="white" stroke-width="5" opacity=".3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="50" cy="110" r="45"/><circle cx="150" cy="110" r="45"/>
+            <path d="M50 110L90 40L120 75L150 110"/>
+          </svg>
+        </div>
+        <div class="promo-banner-overlay"></div>
+        <div class="promo-banner-content">
+          <div class="promo-banner-label">Speed &amp; Distance</div>
+          <div class="promo-banner-title">Road <em>Bikes</em></div>
+          <div class="promo-banner-cta">ເລືອກ →</div>
+        </div>
+      </a>
+      <a href="/bikes/used" class="promo-banner promo-bg-orange">
+        <div class="promo-banner-bg" aria-hidden="true">
+          <svg viewBox="0 0 200 160" fill="none" stroke="white" stroke-width="5" opacity=".3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="50" cy="110" r="45"/><circle cx="150" cy="110" r="45"/>
+            <path d="M50 110L90 40L150 110"/>
+          </svg>
+        </div>
+        <div class="promo-banner-overlay"></div>
+        <div class="promo-banner-content">
+          <div class="promo-banner-label">Value Deals</div>
+          <div class="promo-banner-title">Used <em>Bikes</em> 🔄</div>
+          <div class="promo-banner-cta">ເລືອກ →</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── USED BIKES ── -->
+<section class="used-section" aria-labelledby="used-heading">
+  <div class="wrap">
+    <div class="used-promo">
+      <div>
+        <h3>ຈັກຍານ ມືສອງ · Used Bikes</h3>
+        <p>ຄຸນນະພາບ ຄັດເລືອກ · ກວດ &amp; Service ກ່ອນຂາຍທຸກຄັນ · ລາຄາ Fair</p>
+      </div>
+      <a href="/bikes/used" class="btn btn-outline-white btn-lg">ເບິ່ງທັງໝົດ →</a>
+      <div class="used-promo-bg" aria-hidden="true">
+        <svg viewBox="0 0 200 140" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="50" cy="95" r="45"/><circle cx="150" cy="95" r="45"/>
+          <path d="M50 95L90 25L120 60L150 95"/>
+        </svg>
+      </div>
+    </div>
+    <div class="sec-head">
+      <h2 class="sec-title" id="used-heading" style="font-size:22px">ມີໃນສະຕ໋ອກ</h2>
+      <a href="/bikes/used" class="sec-link">ທຸກຄັນ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="prod-grid" id="usedGrid"></div>
+  </div>
+</section>
+
+<!-- ── BRANDS ── -->
+<div class="brands-section">
+  <div class="wrap">
+    <div class="brands-label">ຍີ່ຫໍ້ທີ່ Sevenday ຈຳໜ່າຍ</div>
+    <div class="brands-row">
+      <div class="brand-pill">Trek</div>
+      <div class="brand-pill">Giant</div>
+      <div class="brand-pill">Specialized</div>
+      <div class="brand-pill">Merida</div>
+      <div class="brand-pill">Polygon</div>
+      <div class="brand-pill">Shimano</div>
+      <div class="brand-pill">SRAM</div>
+      <div class="brand-pill">Campagnolo</div>
+      <div class="brand-pill">Fox Racing</div>
+      <div class="brand-pill">RockShox</div>
+      <div class="brand-pill">Continental</div>
+      <div class="brand-pill">Maxxis</div>
+      <div class="brand-pill">Schwalbe</div>
+      <div class="brand-pill">Giro</div>
+      <div class="brand-pill">POC</div>
+      <div class="brand-pill">Bontrager</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STORE ── -->
+<section class="store-section" aria-labelledby="store-heading">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-eyebrow">ຫາ Sevenday</div>
+        <h2 class="sec-title" id="store-heading">ຮ້ານຂອງພວກເຮົາ</h2>
+      </div>
+      <a href="/store" class="sec-link">ຂໍ້ມູນຮ້ານ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="store-inner">
+      <div class="store-map">
+        <div class="store-map-icon">📍</div>
+        <strong>Sevenday Bike</strong>
+        <span style="font-size:12px;color:var(--ink-3)">ວຽງຈັນ, ສ.ປ.ປ. ລາວ</span>
+        <a href="https://maps.google.com" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:8px">Google Maps →</a>
+      </div>
+      <div>
+        <div class="store-info-title">Sevenday Bike<br><span style="font-size:14px;font-weight:500;text-transform:none;color:var(--ink-3)">ວຽງຈັນ, ສ.ປ.ປ. ລາວ</span></div>
+        <div class="store-row">
+          <div class="store-row-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <strong>ທີ່ຕັ້ງ / Address</strong>
+            <span>ວຽງຈັນ, ສ.ປ.ປ. ລາວ<br>(Address ຈະໃສ່ທີ່ນີ້)</span>
+          </div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <strong>ເວລາເປີດ / Hours</strong>
+            <table class="hours-table">
+              <tr><td>ຈ–ສ (Mon–Sat)</td><td>09:00–18:00</td></tr>
+              <tr><td>ອາທິດ (Sunday)</td><td>10:00–16:00</td></tr>
+              <tr><td>ວັນພັກ Public Holiday</td><td>ຕ້ອງກວດກ່ອນ</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.86 9.11 19.79 19.79 0 01.77 .5 2 2 0 012.66 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.9a16 16 0 006.16 6.16l.97-.97a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div>
+            <strong>ຕິດຕໍ່ / Contact</strong>
+            <span>WhatsApp · LINE · Facebook<br>ເລກໂທ: (ໃສ່ທີ່ນີ້)</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+          <a href="/contact" class="btn btn-primary">ຕິດຕໍ່</a>
+          <a href="/service/book" class="btn btn-outline">ຈອງ Workshop</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── NEWSLETTER ── -->
+<section class="nl-section" aria-labelledby="nl-heading">
+  <div class="wrap">
+    <div class="nl-inner">
+      <div class="nl-text">
+        <h3 id="nl-heading">ຕິດຕາມຂ່າວ Sevenday</h3>
+        <p>ໂປຣ · ສິນຄ້າໃໝ່ · ຄູ່ມືຈັກຍານ — ສ່ົງໃຫ້ທ່ານ ກ່ອນໃຜ</p>
+      </div>
+      <form class="nl-form" onsubmit="submitNL(event)" novalidate>
+        <input type="email" placeholder="your@email.com" aria-label="Email address" required>
+        <button type="submit">ສະໝັກ</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-logo">
+          <div class="logo-mark" style="width:36px;height:36px" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-name">Sevenday Bike</span>
+            <span class="logo-sub">ວຽງຈັນ, ລາວ</span>
+          </div>
+        </div>
+        <p>ຮ້ານຈັກຍານ · Workshop · ອຸປະກອນ ຄຸນນະພາບ ໃນວຽງຈັນ. ເປີດ 7 ມື້ / ອາທິດ.</p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#" aria-label="Facebook">📘</a>
+          <a class="social-btn" href="#" aria-label="Instagram">📷</a>
+          <a class="social-btn" href="#" aria-label="LINE">💬</a>
+          <a class="social-btn" href="#" aria-label="WhatsApp">📱</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>ສິນຄ້າ</h5>
+        <ul>
+          <li><a href="/bikes">ຈັກຍານ</a></li>
+          <li><a href="/bikes/used">ມືສອງ</a></li>
+          <li><a href="/parts">ອາໄຫຼ່</a></li>
+          <li><a href="/accessories">ອຸປະກອນ</a></li>
+          <li><a href="/accessories/helmets">ໝວກ</a></li>
+          <li><a href="/clothing">ເຄື່ອງນຸ່ງ</a></li>
+          <li><a href="/bikes/sale">Sale 🔥</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>ບໍລິການ</h5>
+        <ul>
+          <li><a href="/service">Workshop</a></li>
+          <li><a href="/service/basic">Basic Service</a></li>
+          <li><a href="/service/standard">Standard Service</a></li>
+          <li><a href="/service/ultimate">Ultimate Service</a></li>
+          <li><a href="/service/repair">ຊ່ອມ / Repair</a></li>
+          <li><a href="/service/custom">Film Wrap</a></li>
+          <li><a href="/service/book">ຈອງ 📅</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>ຂໍ້ມູນ</h5>
+        <ul>
+          <li><a href="/about">ກ່ຽວກັບ</a></li>
+          <li><a href="/store">ຮ້ານ</a></li>
+          <li><a href="/contact">ຕິດຕໍ່</a></li>
+          <li><a href="/bike-guide">Bike Guide</a></li>
+          <li><a href="/account">ບັນຊີ</a></li>
+          <li><a href="/cart">ກະຕ່າ</a></li>
+          <li><a href="/search">ຄົ້ນຫາ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 Sevenday Bike · ວຽງຈັນ, ສ.ປ.ປ. ລາວ · All rights reserved</p>
+      <div class="footer-currencies">
+        <span class="cur-tag">₭ LAK</span>
+        <span class="cur-tag">฿ THB</span>
+        <span class="cur-tag">$ USD</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Shopping Cart" aria-modal="true">
+  <div class="cart-drawer-head">
+    <h3>ກະຕ່າ / Cart (<span id="cartItemCount">0</span>)</h3>
+    <button class="cart-drawer-close" id="cartClose" aria-label="Close">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <p>ກະຕ່າຍັງວ່າງ<br><small style="color:var(--ink-3)">Add items to get started</small></p>
+    </div>
+  </div>
+  <div class="cart-foot">
+    <div class="cart-total-row">
+      <span>ລວມ</span>
+      <span id="cartTotal">₭ 0</span>
+    </div>
+    <a href="/checkout" class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:13px">ຊຳລະ / Checkout →</a>
+  </div>
+</div>
+
+<!-- SCROLL TOP -->
+<button class="scroll-top" id="scrollTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+/* ── POS V2 API ── */
+const API_URL    = 'https://script.google.com/macros/s/AKfycby3Mty8os72Y_RBjtgLFr_R5zJ3CWQ9pfg7rQUtZPg-OOk1Z9oSzKdLADrMhrYL-mZt/exec';
+const API_SECRET = 'open';
+const LAK = n => `₭ ${n.toLocaleString()}`;
+
+// แปลง POS V2 product → homepage card format
+function _mapP(p, opts) {
+  opts = opts || {};
+  const stock = p.stock <= 0 ? 'out' : p.stock <= 2 ? 'low' : 'in';
+  const stockTxt = stock === 'out' ? 'ໝົດ' : stock === 'low' ? `ເຫຼືອ ${p.stock} ຄັນ` : 'In Stock';
+  const cat = (p.category || p.type || '').toLowerCase();
+  const icon = cat.includes('mountain')||cat.includes('mtb') ? '🚵'
+             : cat.includes('road') ? '🚴'
+             : cat.includes('used') ? '🔄'
+             : cat.includes('accessories')||cat.includes('helmet') ? '⛑️'
+             : '🚲';
+  return {
+    id      : p.sku,
+    brand   : (p.name||'').split(' ')[0] || '',
+    name    : p.name || '',
+    price   : p.price_lak || Math.round((p.price_thb||0)*698),
+    was     : opts.was || null,
+    badge   : opts.badge || null,
+    badgeClass: opts.badge ? 'badge-'+opts.badge : null,
+    icon    : icon,
+    stock   : stock,
+    stockTxt: stockTxt,
+    cond    : opts.cond || null,
+    note    : opts.note || null,
+  };
+}
+
+// Fallback data ถ้า API ไม่ตอบสนอง
+const _FALLBACK = {
+  featured: [
+    {id:'b1',brand:'Trek',name:'Marlin 5 Gen 3 MTB 2024',price:8900000,badge:'new',badgeClass:'badge-new',icon:'🚵',stock:'in',stockTxt:'In Stock'},
+    {id:'b2',brand:'Giant',name:'Contend AR 2 Road 2024',price:14500000,icon:'🚴',stock:'in',stockTxt:'In Stock'},
+    {id:'b3',brand:'Merida',name:'Speeder 200 Road 2024',price:7200000,badge:'new',badgeClass:'badge-new',icon:'🚲',stock:'in',stockTxt:'In Stock'},
+    {id:'b4',brand:'Giant',name:'Talon 3 MTB 2024',price:7800000,icon:'🏔️',stock:'in',stockTxt:'In Stock'},
+  ],
+  sale: [
+    {id:'s1',brand:'Trek',name:'FX 1 Disc 2023',price:5800000,was:7500000,badge:'sale',badgeClass:'badge-sale',icon:'🚴',stock:'in',stockTxt:'In Stock'},
+    {id:'s2',brand:'Merida',name:'Big Nine 20 MTB 2023',price:4900000,was:6200000,badge:'sale',badgeClass:'badge-sale',icon:'🏔️',stock:'low',stockTxt:'ເຫຼືອ 1 ຄັນ'},
+  ],
+  accessories: [
+    {id:'a1',brand:'Giro',name:'Fixture MIPS Helmet 2024',price:1150000,badge:'new',badgeClass:'badge-new',icon:'⛑️',stock:'in',stockTxt:'In Stock'},
+    {id:'a2',brand:'Kryptonite',name:'Evolution Mini-6 U-Lock',price:950000,icon:'🔒',stock:'in',stockTxt:'In Stock'},
+  ],
+  used: [
+    {id:'u1',brand:'Trek',name:'FX 3 Disc 2021 — ສະພາບດີ',price:5500000,badge:'used',badgeClass:'badge-used',icon:'🚲',stock:'in',stockTxt:'ພ້ອມຂາຍ',cond:'Good',note:'56cm'},
+    {id:'u2',brand:'Giant',name:'Talon 3 MTB 2022',price:4800000,badge:'used',badgeClass:'badge-used',icon:'🏔️',stock:'in',stockTxt:'ພ້ອມຂາຍ',cond:'Good',note:'Medium'},
+  ],
+};
+
+// โหลดสินค้าจาก POS V2 แล้ว render ทั้ง 4 sections
+async function loadHomeProducts() {
+  try {
+    const url  = `${API_URL}?action=getProducts&secret=${API_SECRET}&limit=100`;
+    const res  = await fetch(url);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+
+    const all  = json.data.data || [];
+
+    // แบ่งสินค้าตาม type/category
+    const bikes       = all.filter(p => {
+      const t = (p.type||p.category||'').toLowerCase();
+      return !t.includes('service') && !t.includes('บริการ') && !t.includes('ບໍລິການ');
+    });
+    const accessories = all.filter(p => {
+      const t = (p.type||p.category||'').toLowerCase();
+      return t.includes('accessories')||t.includes('อุปกรณ์')||t.includes('helmet')||t.includes('light')||t.includes('lock');
+    });
+    const used        = all.filter(p => {
+      const t = (p.type||p.category||'').toLowerCase();
+      return t.includes('used')||t.includes('มือสอง')||t.includes('second');
+    });
+    const inStock     = bikes.filter(p => p.stock > 0);
+
+    // Featured — 4 สินค้าแรกที่มีสต็อก
+    const featured = inStock.slice(0,4).map(p => _mapP(p));
+
+    // Sale — สินค้าที่ stock น้อย (≤2) หรือ type=sale สูงสุด 4
+    const saleItems = inStock
+      .filter(p => p.stock <= 2)
+      .slice(0,4)
+      .map(p => _mapP(p, { badge:'sale' }));
+
+    // Accessories — สูงสุด 4
+    const accItems = (accessories.length ? accessories : inStock.slice(4,8))
+      .slice(0,4).map(p => _mapP(p));
+
+    // Used — สูงสุด 4
+    const usedItems = (used.length ? used : [])
+      .slice(0,4).map(p => _mapP(p, { badge:'used', cond:'Used' }));
+
+    // Render
+    const fEl = document.getElementById('featGrid');
+    const sEl = document.getElementById('saleGrid');
+    const aEl = document.getElementById('accGrid');
+    const uEl = document.getElementById('usedGrid');
+
+    if (fEl) fEl.innerHTML = (featured.length  ? featured  : _FALLBACK.featured).map(p=>card(p)).join('');
+    if (sEl) sEl.innerHTML = (saleItems.length  ? saleItems : _FALLBACK.sale).map(p=>card(p,true)).join('');
+    if (aEl) aEl.innerHTML = (accItems.length   ? accItems  : _FALLBACK.accessories).map(p=>card(p)).join('');
+    if (uEl) uEl.innerHTML = (usedItems.length  ? usedItems : _FALLBACK.used).map(p=>card(p,false,true)).join('');
+
+  } catch(err) {
+    console.warn('Homepage API failed, using fallback:', err.message);
+    const fEl = document.getElementById('featGrid');
+    const sEl = document.getElementById('saleGrid');
+    const aEl = document.getElementById('accGrid');
+    const uEl = document.getElementById('usedGrid');
+    if (fEl) fEl.innerHTML = _FALLBACK.featured.map(p=>card(p)).join('');
+    if (sEl) sEl.innerHTML = _FALLBACK.sale.map(p=>card(p,true)).join('');
+    if (aEl) aEl.innerHTML = _FALLBACK.accessories.map(p=>card(p)).join('');
+    if (uEl) uEl.innerHTML = _FALLBACK.used.map(p=>card(p,false,true)).join('');
+  }
+}
+
+/* ── RENDER PRODUCT CARD ── */
+const cart = [];
+
+function card(p, isDark=false, showCond=false) {
+  const disc = p.was ? Math.round((1-p.price/p.was)*100) : 0;
+  const stockCls = p.stock==='in'?'in-stock':p.stock==='low'?'low-stock':'out-stock';
+  return `
+<article class="prod-card" tabindex="0" role="button" aria-label="${p.brand} ${p.name}"
+  onclick="window.location='/product/${p.id}'"
+  onkeydown="if(event.key==='Enter')window.location='/product/${p.id}'">
+  <div class="prod-img">
+    <div class="prod-img-icon" aria-hidden="true">${p.icon}</div>
+    ${p.badge?`<span class="prod-badge ${p.badgeClass}">${p.badge}</span>`:''}
+    <button class="prod-wish" aria-label="Save ${p.name}" id="w${p.id}"
+      onclick="event.stopPropagation();toggleWish('${p.id}')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </button>
+  </div>
+  <div class="prod-body">
+    <div class="prod-brand">${p.brand}</div>
+    <h3 class="prod-name">${p.name}</h3>
+    ${showCond&&p.cond?`<div style="font-size:11px;color:var(--lime);font-weight:700;margin-bottom:8px">✓ ${p.cond}${p.note?' · '+p.note:''}</div>`:''}
+    <div class="prod-prices">
+      <span class="price-now">${LAK(p.price)}</span>
+      ${p.was?`<span class="price-was">${LAK(p.was)}</span>`:''}
+      ${disc?`<span class="price-save">-${disc}%</span>`:''}
+    </div>
+    <div class="prod-sub-price">${(p.price/20000).toFixed(0)} THB · ${(p.price/21000).toFixed(0)} USD</div>
+    <div class="prod-stock ${stockCls}">${p.stockTxt==='In Stock'?'✓ In Stock':p.stockTxt==='ພ້ອມຂາຍ'?'✓ ພ້ອມຂາຍ':'⚠ '+p.stockTxt}</div>
+    <button class="prod-add" onclick="event.stopPropagation();addCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price})">
+      + ໃສ່ກະຕ່າ
+    </button>
+  </div>
+</article>`;
+}
+
+loadHomeProducts(); // ดึงข้อมูลจาก POS V2
+
+/* ── CART ── */
+const saved = new Set();
+function toggleWish(id) {
+  const btn = document.getElementById('w'+id);
+  if (saved.has(id)) { saved.delete(id); btn.classList.remove('saved'); }
+  else { saved.add(id); btn.classList.add('saved'); }
+}
+function addCart(id, name, price) {
+  const ex = cart.find(i=>i.id===id);
+  ex ? ex.qty++ : cart.push({id,name,price,qty:1});
+  updateCart(); openCart();
+}
+function updateCart() {
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartItemCount').textContent = count;
+  document.getElementById('cartTotal').textContent = LAK(total);
+  const body = document.getElementById('cartBody');
+  if (!cart.length) {
+    body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>ກະຕ່າຍັງວ່າງ</p></div>`;
+  } else {
+    body.innerHTML = cart.map(item=>`
+      <div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+        <div style="width:50px;height:50px;background:var(--base);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🚲</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;margin-bottom:2px">${item.name}</div>
+          <div style="font-size:12px;color:var(--ink-3)">${LAK(item.price)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="chgQty('${item.id}',-1)" style="width:26px;height:26px;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">−</button>
+          <span style="font-size:13px;font-weight:700;min-width:16px;text-align:center">${item.qty}</span>
+          <button onclick="chgQty('${item.id}',1)" style="width:26px;height:26px;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">+</button>
+        </div>
+      </div>`).join('');
+  }
+}
+function chgQty(id, d) {
+  const i = cart.findIndex(x=>x.id===id);
+  if (i<0) return;
+  cart[i].qty += d;
+  if (cart[i].qty<=0) cart.splice(i,1);
+  updateCart();
+}
+function openCart() {
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('backdrop').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeCart() {
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('on');
+  document.body.style.overflow='';
+}
+document.getElementById('cartBtn').addEventListener('click', openCart);
+document.getElementById('cartClose').addEventListener('click', closeCart);
+
+/* ── MOBILE DRAWER ── */
+const mobDrawer = document.getElementById('mobDrawer');
+const mobToggleBtn = document.getElementById('mobToggle');
+function openMob() { mobDrawer.classList.add('open'); mobToggleBtn.classList.add('open'); mobToggleBtn.setAttribute('aria-expanded','true'); document.getElementById('backdrop').classList.add('on'); document.body.style.overflow='hidden'; }
+function closeMob() { mobDrawer.classList.remove('open'); mobToggleBtn.classList.remove('open'); mobToggleBtn.setAttribute('aria-expanded','false'); document.getElementById('backdrop').classList.remove('on'); document.body.style.overflow=''; }
+mobToggleBtn.addEventListener('click', ()=> mobDrawer.classList.contains('open') ? closeMob() : openMob());
+document.getElementById('mobOverlay').addEventListener('click', closeMob);
+document.getElementById('mobClose').addEventListener('click', closeMob);
+document.getElementById('backdrop').addEventListener('click', ()=>{ closeCart(); closeMob(); });
+
+/* ── HERO SLIDER ── */
+let slide=0, slideTimer;
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.hero-dot');
+function goSlide(n) {
+  slides[slide].classList.remove('active'); dots[slide].classList.remove('active'); dots[slide].setAttribute('aria-selected','false');
+  slide = (n+slides.length)%slides.length;
+  slides[slide].classList.add('active'); dots[slide].classList.add('active'); dots[slide].setAttribute('aria-selected','true');
+}
+function startSlider() { slideTimer = setInterval(()=>goSlide(slide+1), 5000); }
+dots.forEach(d=>d.addEventListener('click', ()=>{ clearInterval(slideTimer); goSlide(+d.dataset.slide); startSlider(); }));
+startSlider();
+
+/* ── FILM COLOUR ── */
+function setFilm(btn, bg, accent) {
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('filmVisual').style.background = `linear-gradient(135deg, ${bg} 0%, ${accent} 100%)`;
+}
+
+/* ── NEWSLETTER ── */
+function submitNL(e) {
+  e.preventDefault();
+  const inp=e.target.querySelector('input'), btn=e.target.querySelector('button');
+  btn.textContent='✓ ສຳເລັດ!'; btn.style.background='#155720'; btn.style.color='#fff';
+  inp.disabled=btn.disabled=true;
+}
+
+/* ── SCROLL TOP ── */
+const stBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', ()=>stBtn.classList.toggle('show', window.scrollY>400), {passive:true});
+stBtn.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeCart(); closeMob(); } });
+</script>
+</body>
+</html>

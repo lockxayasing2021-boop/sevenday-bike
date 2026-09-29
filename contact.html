@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="lo" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ຕິດຕໍ່ / Contact — Sevenday Bike</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;--ink:#111;--ink-2:#444;--ink-3:#888;--white:#FFF;--base:#F5F5F5;--border:#E0E0E0;--lime:#5C8A00;--lime-bg:#EFF5E0;--dark:#1A1A2A;--font-ui:'Inter',-apple-system,sans-serif;--font-d:'Barlow Condensed','Inter',sans-serif;--max-w:1280px;--r:6px;--r-lg:10px;--shadow-h:0 4px 20px rgba(0,0,0,.12)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+
+.announce{background:var(--ink);color:#fff;font-size:12px;font-weight:500;text-align:center;padding:7px 20px}
+.site-header{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
+.header-top{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;max-width:var(--max-w);margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:38px;height:38px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.logo-name{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.hdr-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto}
+.hdr-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-size:10px;font-weight:600;text-transform:uppercase;transition:background .12s,color .12s;position:relative}
+.hdr-btn:hover{background:var(--base);color:var(--red)}
+.hdr-btn svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hdr-badge{position:absolute;top:4px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.nav-bar{background:var(--red)}
+.nav-bar-inner{max-width:var(--max-w);margin:0 auto;padding:0 20px;display:flex;height:44px;align-items:stretch}
+.nav-link{display:flex;align-items:center;height:44px;padding:0 13px;font-size:13px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;transition:background .12s}
+.nav-link:hover,.nav-link.active{background:rgba(0,0,0,.15);color:#fff}
+.nav-link.sale{color:#FFC72C}
+.nav-ws{margin-left:auto;display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.15);white-space:nowrap}
+.nav-ws:hover{background:rgba(0,0,0,.35)}
+@media(max-width:768px){.hdr-btn span{display:none}.nav-bar{display:none}}
+
+/* PAGE HERO */
+.page-hero{background:var(--dark);padding:48px 0;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;right:-80px;top:-80px;width:360px;height:360px;border-radius:50%;background:rgba(212,43,43,.06)}
+.page-hero-inner{position:relative;z-index:1}
+.page-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.page-title{font-family:var(--font-d);font-size:clamp(32px,6vw,56px);font-weight:900;text-transform:uppercase;color:#fff;line-height:1;margin-bottom:12px}
+.page-sub{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;max-width:480px}
+
+/* CONTACT LAYOUT */
+.contact-page{padding:40px 0 60px}
+.contact-grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr}}
+
+/* CONTACT FORM */
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.form-card-head{padding:18px 22px;border-bottom:1px solid var(--border);background:var(--base)}
+.form-card-head h2{font-family:var(--font-d);font-size:24px;font-weight:900;text-transform:uppercase;margin-bottom:3px}
+.form-card-head p{font-size:13px;color:var(--ink-3)}
+.form-card-body{padding:22px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-row.full{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.form-label .req{color:var(--red)}
+.form-input,.form-select,.form-textarea{width:100%;height:42px;border:1.5px solid var(--border);border-radius:var(--r);padding:0 12px;font-size:13px;font-family:var(--font-ui);color:var(--ink);background:var(--white);outline:none;transition:border-color .14s,box-shadow .14s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(212,43,43,.08)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--ink-3)}
+.form-textarea{height:100px;padding:10px 12px;resize:vertical}
+.topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.topic-btn{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--ink-2);background:var(--white);cursor:pointer;transition:all .14s;text-align:left;display:flex;align-items:center;gap:7px}
+.topic-btn:hover{border-color:var(--red-h);color:var(--red)}
+.topic-btn.selected{border-color:var(--red);background:var(--red-lite);color:var(--red)}
+.btn-submit{width:100%;height:48px;background:var(--red);color:#fff;font-size:15px;font-weight:700;border-radius:var(--r-lg);border:none;cursor:pointer;transition:background .14s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.btn-submit:hover{background:var(--red-h)}
+.btn-submit svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+
+/* SUCCESS STATE */
+.form-success{text-align:center;padding:40px 20px;display:none}
+.form-success-icon{font-size:56px;margin-bottom:16px}
+.form-success h3{font-family:var(--font-d);font-size:26px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
+.form-success p{font-size:13px;color:var(--ink-3);line-height:1.7;margin-bottom:20px}
+
+/* CONTACT INFO */
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
+.ic-head{padding:13px 18px;background:var(--base);border-bottom:1px solid var(--border);font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+.ic-body{padding:16px 18px}
+.ch-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;margin:0 -18px;padding:10px 18px}
+.ch-row:last-child{border-bottom:none}
+.ch-row:hover{background:var(--base)}
+.ch-icon{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ch-info{flex:1}
+.ch-name{font-size:13px;font-weight:700;margin-bottom:1px}
+.ch-desc{font-size:11px;color:var(--ink-3)}
+.ch-arrow{color:var(--ink-3);font-size:16px}
+.response-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:3px}
+.resp-fast{background:var(--lime-bg);color:var(--lime)}
+.resp-med{background:#FFF5EB;color:#CC7700}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-h)}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="announce">ຕອບ LINE / WhatsApp ໄວທຸກວັນ · ເປີດ 7 ມື້</div>
+<header class="site-header">
+  <div class="header-top">
+    <a href="/" class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg></div>
+      <div><div class="logo-name">Sevenday Bike</div></div>
+    </a>
+    <div class="hdr-actions">
+      <a href="/account.html" class="hdr-btn"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>ບັນຊີ</span></a>
+      <a href="/cart.html" class="hdr-btn"><div style="position:relative;display:inline-flex"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="hdr-badge">2</span></div><span>ກະຕ່າ</span></a>
+    </div>
+  </div>
+</header>
+<nav class="nav-bar">
+  <div class="nav-bar-inner">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/catalogue.html" class="nav-link">Bikes</a>
+    <a href="/service.html" class="nav-link">Service</a>
+    <a href="/store.html" class="nav-link">Store</a>
+    <a href="/about.html" class="nav-link">About</a>
+    <a href="/contact.html" class="nav-link active">Contact</a>
+    <a href="/service.html#booking" class="nav-ws">📅 ຈອງ</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="wrap">
+    <div class="page-hero-inner">
+      <div class="page-eyebrow">📞 ຕິດຕໍ່ Sevenday</div>
+      <h1 class="page-title">ຕິດ ຕໍ່<br>ພວກ ເຮົາ</h1>
+      <p class="page-sub">ທີມ Sevenday ຍິນດີ ຊ່ວຍ ທ່ານ — ສິນຄ້າ, ບໍລິການ, ຄຳ ຖາມ ທຸກ ຢ່າງ ຕິດ ຕໍ່ ໄດ້ ທຸກ ວັນ</p>
+    </div>
+  </div>
+</div>
+
+<div class="contact-page">
+  <div class="wrap">
+    <div class="contact-grid">
+
+      <!-- FORM -->
+      <div class="form-card">
+        <div class="form-card-head">
+          <h2>ສົ່ງ ຂໍ້ ຄວາມ</h2>
+          <p>ທີມ Sevenday ຈະຕອບ ພາຍໃນ 24 ຊ.ມ.</p>
+        </div>
+        <div class="form-card-body" id="formBody">
+
+          <!-- Topic -->
+          <div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:8px">ຫົວຂໍ້ / Topic <span style="color:var(--red)">*</span></div>
+          <div class="topic-grid">
+            <button class="topic-btn selected" onclick="selectTopic(this,'สอบถามสินค้า')">🚲 ສິນ ຄ້າ / Bikes</button>
+            <button class="topic-btn" onclick="selectTopic(this,'จองบริการ')">🔧 ຈອງ Service</button>
+            <button class="topic-btn" onclick="selectTopic(this,'Film Wrap')">🎨 Film / Customization</button>
+            <button class="topic-btn" onclick="selectTopic(this,'ติดตาม Order')">📦 ຕິດ ຕາມ Order</button>
+            <button class="topic-btn" onclick="selectTopic(this,'ราคา/โปร')">💰 ລາ ຄາ / ໂປ ຣ</button>
+            <button class="topic-btn" onclick="selectTopic(this,'อื่นๆ')">💬 ອື່ນ ໆ / Other</button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">ຊື່ <span class="req">*</span></label>
+              <input class="form-input" id="cName" type="text" placeholder="ຊື່ ຂອງ ທ່ານ">
+            </div>
+            <div class="form-group">
+              <label class="form-label">ເບີ ໂທ <span class="req">*</span></label>
+              <input class="form-input" id="cPhone" type="tel" placeholder="020 xxxx xxxx">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" id="cEmail" type="email" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">LINE / WhatsApp</label>
+              <input class="form-input" id="cLine" type="text" placeholder="@LineID ຫຼື WhatsApp">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label class="form-label">ຂໍ້ ຄວາມ <span class="req">*</span></label>
+              <textarea class="form-textarea" id="cMsg" placeholder="ຂຽນ ລາຍ ລະ ອຽດ ທີ່ ຕ້ອງ ການ — ສິນ ຄ້າ, ບໍ ລິ ການ, ຄຳ ຖາມ..."></textarea>
+            </div>
+          </div>
+
+          <div style="background:var(--base);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--ink-3);margin-bottom:14px;line-height:1.6">
+            💡 <strong style="color:var(--ink-2)">ຕ້ອງ ການ ໄວ?</strong> ສ່ົງ ຂໍ້ ຄວາມ ຜ່ານ <strong>WhatsApp ຫຼື LINE</strong> ໂດຍ ກົງ — ຕອບ ພາຍ ໃນ 1–2 ຊ.ມ. ທຸກ ວັນ
+          </div>
+
+          <button class="btn-submit" onclick="submitContact()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            ສົ່ງ ຂໍ້ ຄວາມ
+          </button>
+        </div>
+
+        <!-- Success -->
+        <div class="form-success" id="formSuccess">
+          <div class="form-success-icon">✅</div>
+          <h3>ສົ່ງ ສຳ ເລັດ!</h3>
+          <p>Sevenday ໄດ້ ຮັບ ຂໍ້ ຄວາມ ຂ້ອຍ ແລ້ວ<br>ຈະ ຕອບ ພາຍ ໃນ 24 ຊ.ມ. ທາງ ອີ ເມວ ຫຼື LINE/WhatsApp ທີ່ ທ່ານ ໃຫ້ ໄວ້</p>
+          <button onclick="resetContactForm()" style="padding:10px 24px;background:var(--red);color:#fff;border:none;border-radius:var(--r-lg);font-size:14px;font-weight:700;cursor:pointer">ສົ່ງ ອີກ ຄັ້ງ</button>
+        </div>
+      </div>
+
+      <!-- RIGHT INFO -->
+      <div>
+
+        <!-- Quick channels -->
+        <div class="info-card">
+          <div class="ic-head"><span>⚡</span> ຕິດ ຕໍ່ ໄວ / Quick Contact</div>
+          <div class="ic-body">
+            <div class="ch-row" onclick="showToast('📱 ເປີດ WhatsApp +856 20 XXXX XXXX')">
+              <div class="ch-icon" style="background:#DCF8C6">📱</div>
+              <div class="ch-info">
+                <div class="ch-name">WhatsApp</div>
+                <div class="ch-desc">+856 20 XXXX XXXX</div>
+                <span class="response-badge resp-fast">⚡ ຕອບ ໃນ 1–2 ຊ.ມ.</span>
+              </div>
+              <div class="ch-arrow">→</div>
+            </div>
+            <div class="ch-row" onclick="showToast('💬 LINE @SevendayBike')">
+              <div class="ch-icon" style="background:#C8F7C5">💬</div>
+              <div class="ch-info">
+                <div class="ch-name">LINE</div>
+                <div class="ch-desc">@SevendayBike</div>
+                <span class="response-badge resp-fast">⚡ ຕອບ ໃນ 1–2 ຊ.ມ.</span>
+              </div>
+              <div class="ch-arrow">→</div>
+            </div>
+            <div class="ch-row" onclick="showToast('📘 facebook.com/SevendayBike')">
+              <div class="ch-icon" style="background:#D8E4FF">📘</div>
+              <div class="ch-info">
+                <div class="ch-name">Facebook</div>
+                <div class="ch-desc">Sevenday Bike Vientiane</div>
+                <span class="response-badge resp-med">🕐 ຕອບ ໃນ 2–4 ຊ.ມ.</span>
+              </div>
+              <div class="ch-arrow">→</div>
+            </div>
+            <div class="ch-row" onclick="showToast('📷 @SevendayBike.la')">
+              <div class="ch-icon" style="background:#FFE4E1">📷</div>
+              <div class="ch-info">
+                <div class="ch-name">Instagram</div>
+                <div class="ch-desc">@SevendayBike.la</div>
+                <span class="response-badge resp-med">🕐 ຕອບ ໃນ 4–8 ຊ.ມ.</span>
+              </div>
+              <div class="ch-arrow">→</div>
+            </div>
+            <div class="ch-row" onclick="showToast('📧 hello@sevendaybike.la')">
+              <div class="ch-icon" style="background:#FFF3E0">📧</div>
+              <div class="ch-info">
+                <div class="ch-name">Email</div>
+                <div class="ch-desc">hello@sevendaybike.la</div>
+                <span class="response-badge resp-med">🕐 ຕອບ ພາຍ ໃນ 24 ຊ.ມ.</span>
+              </div>
+              <div class="ch-arrow">→</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visit store -->
+        <div class="info-card">
+          <div class="ic-head"><span>📍</span> ມາ ຫາ ເຮົາ ໂດຍ ກົງ</div>
+          <div class="ic-body">
+            <div style="font-size:13px;color:var(--ink-2);line-height:1.8;margin-bottom:14px">
+              <strong style="color:var(--ink)">Sevenday Bike</strong><br>
+              ວຽງ ຈັນ, ສ.ປ.ປ. ລາວ<br>
+              ໂທ: <a href="tel:+856XXXXXXXX" style="color:var(--red);font-weight:600">+856 20 XXXX XXXX</a>
+            </div>
+            <div style="background:var(--base);border-radius:var(--r);padding:10px 14px;font-size:12px;margin-bottom:14px">
+              <div style="font-weight:700;color:var(--ink-2);margin-bottom:6px">ເວລາ ເປີດ-ປິດ</div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:var(--ink-3)">ຈັນ – ເສົາ</span><span style="font-weight:700">09:00 – 18:00</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">ອາ ທິດ</span><span style="font-weight:700">10:00 – 16:00</span></div>
+            </div>
+            <button onclick="showToast('🗺 ເປີດ Google Maps')" style="width:100%;padding:10px;background:var(--red);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer">📍 ເສັ້ນ ທາງ Google Maps</button>
+          </div>
+        </div>
+
+        <!-- Service booking shortcut -->
+        <div style="background:var(--dark);border-radius:var(--r-lg);padding:18px 20px">
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:5px">ຕ້ອງ ການ ຈອງ Workshop?</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.55);margin-bottom:14px">ຈອງ Service Slot ໄດ້ ໂດຍ ກົງ — ຮວດ ເຣວ ກວ່າ ສ່ົງ ຂໍ້ ຄວາມ</div>
+          <a href="/service.html#booking" style="display:block;width:100%;padding:11px;background:var(--red);color:#fff;border-radius:var(--r);font-size:14px;font-weight:700;text-align:center;transition:background .14s" onmouseover="this.style.background='var(--red-h)'" onmouseout="this.style.background='var(--red)'">📅 ຈອງ Workshop ດຽວ ນີ້</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let selectedTopic = 'ສິນ ຄ້າ / Bikes';
+
+function selectTopic(btn, topic) {
+  document.querySelectorAll('.topic-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedTopic = topic;
+}
+
+function submitContact() {
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const msg = document.getElementById('cMsg').value.trim();
+  if (!name || !phone || !msg) { showToast('⚠ ກະ ລຸ ນາ ໃສ່ ຂໍ້ ມູນ ໃຫ້ ຄົບ'); return; }
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = '⏳ ກຳ ລັງ ສົ່ງ...';
+  btn.disabled = true;
+  setTimeout(() => {
+    document.getElementById('formBody').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }, 1200);
+}
+
+function resetContactForm() {
+  document.getElementById('formBody').style.display = 'block';
+  document.getElementById('formSuccess').style.display = 'none';
+  ['cName','cPhone','cEmail','cLine','cMsg'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const btn = document.querySelector('.btn-submit');
+  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ສົ່ງ ຂໍ້ ຄວາມ';
+  btn.disabled = false;
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>

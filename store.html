@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="lo" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ຮ້ານ Sevenday Bike — ວຽງຈັນ, ລາວ</title>
+<meta name="description" content="Sevenday Bike ຮ້ານຈັກຍານ ວຽງຈັນ — ທີ່ຕັ້ງ, ເວລາເປີດ, ການຕິດຕໍ່, ແລະ ບໍລິການ">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;
+  --ink:#111;--ink-2:#444;--ink-3:#888;
+  --white:#FFF;--base:#F5F5F5;--border:#E0E0E0;
+  --lime:#5C8A00;--lime-bg:#EFF5E0;
+  --dark:#1A1A2A;
+  --font-ui:'Inter',-apple-system,sans-serif;
+  --font-d:'Barlow Condensed','Inter',sans-serif;
+  --max-w:1280px;--r:6px;--r-lg:10px;
+  --shadow-h:0 4px 20px rgba(0,0,0,.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+
+/* HEADER */
+.announce{background:var(--ink);color:#fff;font-size:12px;font-weight:500;text-align:center;padding:7px 20px}
+.site-header{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
+.header-top{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;max-width:var(--max-w);margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:38px;height:38px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.logo-name{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.logo-sub{font-size:10px;font-weight:500;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.hdr-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto}
+.hdr-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-size:10px;font-weight:600;text-transform:uppercase;transition:background .12s,color .12s;position:relative;white-space:nowrap}
+.hdr-btn:hover{background:var(--base);color:var(--red)}
+.hdr-btn svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hdr-badge{position:absolute;top:4px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.nav-bar{background:var(--red)}
+.nav-bar-inner{max-width:var(--max-w);margin:0 auto;padding:0 20px;display:flex;height:44px;align-items:stretch}
+.nav-link{display:flex;align-items:center;height:44px;padding:0 13px;font-size:13px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;transition:background .12s}
+.nav-link:hover,.nav-link.active{background:rgba(0,0,0,.15);color:#fff}
+.nav-link.sale{color:#FFC72C}
+.nav-ws{margin-left:auto;display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.15);white-space:nowrap}
+.nav-ws:hover{background:rgba(0,0,0,.35)}
+@media(max-width:768px){.logo-sub{display:none}.hdr-btn span{display:none}.nav-bar{display:none}}
+
+/* PAGE HERO */
+.page-hero{background:var(--dark);padding:48px 0;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;right:-80px;top:-80px;width:360px;height:360px;border-radius:50%;background:rgba(212,43,43,.06)}
+.page-hero-inner{position:relative;z-index:1}
+.page-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.page-title{font-family:var(--font-d);font-size:clamp(32px,6vw,56px);font-weight:900;text-transform:uppercase;color:#fff;line-height:1;margin-bottom:12px}
+.page-sub{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;max-width:480px}
+
+/* QUICK INFO BAR */
+.quick-bar{background:var(--red);padding:0}
+.quick-bar-inner{display:flex;max-width:var(--max-w);margin:0 auto}
+.quick-item{flex:1;display:flex;align-items:center;gap:10px;padding:14px 20px;border-right:1px solid rgba(255,255,255,.18);color:#fff;cursor:pointer;transition:background .12s}
+.quick-item:last-child{border-right:none}
+.quick-item:hover{background:rgba(0,0,0,.1)}
+.quick-item svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;flex-shrink:0}
+.quick-item-text strong{display:block;font-size:13px;font-weight:700}
+.quick-item-text span{font-size:11px;opacity:.8}
+@media(max-width:640px){.quick-bar-inner{flex-wrap:wrap}.quick-item{flex-basis:50%;border-bottom:1px solid rgba(255,255,255,.18)}}
+
+/* STORE MAIN */
+.store-page{padding:40px 0 60px}
+.store-grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+@media(max-width:960px){.store-grid{grid-template-columns:1fr}}
+
+/* MAP */
+.map-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;position:sticky;top:88px}
+.map-placeholder{
+  height:340px;background:linear-gradient(135deg,#E8EEF4 0%,#D0DCE8 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  position:relative;
+}
+.map-placeholder-icon{font-size:48px}
+.map-placeholder strong{font-size:14px;font-weight:700;color:var(--ink-2)}
+.map-placeholder span{font-size:12px;color:var(--ink-3)}
+/* Map roads decoration */
+.map-road{position:absolute;background:rgba(255,255,255,.6);border-radius:2px}
+.map-road.h{height:6px;left:0;right:0}
+.map-road.v{width:6px;top:0;bottom:0}
+.map-pin{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-80%);
+  display:flex;flex-direction:column;align-items:center;z-index:2;
+}
+.map-pin-dot{width:28px;height:28px;background:var(--red);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(212,43,43,.4)}
+.map-pin-label{background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-top:4px;white-space:nowrap;box-shadow:var(--shadow-h)}
+
+.map-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--border);background:var(--base)}
+.map-btn{flex:1;padding:10px;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .14s;display:flex;align-items:center;justify-content:center;gap:6px}
+.map-btn-primary{background:var(--red);color:#fff}
+.map-btn-primary:hover{background:var(--red-h)}
+.map-btn-outline{background:none;color:var(--ink-2);border:1.5px solid var(--border)}
+.map-btn-outline:hover{border-color:var(--ink);color:var(--ink)}
+
+/* STORE INFO */
+.store-info-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
+.sic-head{padding:14px 18px;border-bottom:1px solid var(--border);background:var(--base);display:flex;align-items:center;gap:8px}
+.sic-head h3{font-size:14px;font-weight:700}
+.sic-head span{font-size:18px}
+.sic-body{padding:16px 18px}
+
+/* Info rows */
+.info-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.info-row:last-child{margin-bottom:0}
+.info-icon{width:36px;height:36px;background:var(--red-lite);border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.info-icon svg{width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.info-content strong{display:block;font-size:13px;font-weight:700;margin-bottom:3px}
+.info-content span,.info-content p{font-size:13px;color:var(--ink-2);line-height:1.6}
+.info-content a{color:var(--red);font-weight:600}
+
+/* Hours table */
+.hours-table{width:100%;margin-top:4px}
+.hours-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px}
+.hours-row:last-child{border-bottom:none}
+.hours-row .day{color:var(--ink-2)}
+.hours-row .time{font-weight:700;color:var(--ink)}
+.hours-row .closed{color:var(--ink-3);font-weight:400}
+.hours-row.today .day{color:var(--lime);font-weight:700}
+.hours-row.today .time{color:var(--lime)}
+.open-badge{display:inline-flex;align-items:center;gap:5px;background:var(--lime-bg);color:var(--lime);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.open-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--lime);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Contact channels */
+.contact-channels{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ch-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;border-radius:var(--r);
+  font-size:13px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--white);
+  transition:all .14s;color:var(--ink-2);
+}
+.ch-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-lite)}
+.ch-btn span{font-size:20px;flex-shrink:0}
+
+/* Services list */
+.services-list{display:flex;flex-wrap:wrap;gap:6px}
+.svc-chip{background:var(--base);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--ink-2)}
+
+/* Branch card */
+.branch-card{background:var(--base);border:1.5px dashed var(--border-2);border-radius:var(--r-lg);padding:16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.branch-soon{font-size:10px;font-weight:700;background:var(--ink);color:#fff;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
+
+/* PHOTOS */
+.photos-section{padding:40px 0;background:var(--white)}
+.photo-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:8px;margin-top:20px}
+.photo-item{background:var(--base);border-radius:var(--r-lg);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+.photo-item.tall{grid-row:1/3}
+.photo-emoji{font-size:48px;opacity:.25}
+.photo-label{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.photo-item.tall{height:320px}
+.photo-item:not(.tall){height:154px}
+@media(max-width:640px){.photo-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}.photo-item.tall{grid-row:auto;height:160px}.photo-item:not(.tall){height:140px}}
+
+/* TEAM */
+.team-section{padding:40px 0;background:var(--base)}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+@media(max-width:760px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+.team-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;text-align:center;transition:all .18s}
+.team-card:hover{box-shadow:var(--shadow-h);transform:translateY(-2px)}
+.team-avatar{height:120px;background:var(--base);display:flex;align-items:center;justify-content:center;font-size:48px;border-bottom:1px solid var(--border)}
+.team-body{padding:14px 12px}
+.team-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.team-role{font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.team-exp{font-size:12px;color:var(--ink-3)}
+
+/* SECTION HEADER */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:0;gap:12px}
+.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+.sec-title{font-family:var(--font-d);font-size:clamp(22px,3.5vw,32px);font-weight:900;text-transform:uppercase;color:var(--ink);line-height:1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-weight:700;border-radius:var(--r);cursor:pointer;border:none;transition:all .14s}
+.btn-primary{background:var(--red);color:#fff;padding:10px 20px;font-size:14px}
+.btn-primary:hover{background:var(--red-h)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-h)}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="announce">ເປີດ 7 ມື້ · ຈ–ສ 09:00–18:00 · ອາທິດ 10:00–16:00 · LAK · THB · USD</div>
+<header class="site-header">
+  <div class="header-top">
+    <a href="/" class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg></div>
+      <div><div class="logo-name">Sevenday Bike</div><div class="logo-sub">Vientiane</div></div>
+    </a>
+    <div class="hdr-actions">
+      <a href="/account.html" class="hdr-btn"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>ບັນຊີ</span></a>
+      <a href="/cart.html" class="hdr-btn"><div style="position:relative;display:inline-flex"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="hdr-badge">2</span></div><span>ກະຕ່າ</span></a>
+    </div>
+  </div>
+</header>
+<nav class="nav-bar">
+  <div class="nav-bar-inner">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/catalogue.html" class="nav-link">Bikes</a>
+    <a href="/parts" class="nav-link">Parts</a>
+    <a href="/service.html" class="nav-link">Service</a>
+    <a href="/store.html" class="nav-link active">ຮ້ານ / Store</a>
+    <a href="/about.html" class="nav-link">About</a>
+    <a href="/bikes/sale" class="nav-link sale">🔥 Sale</a>
+    <a href="/service.html#booking" class="nav-ws">📅 ຈອງ Workshop</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="wrap">
+    <div class="page-hero-inner">
+      <div class="page-eyebrow">📍 ຮ້ານ Sevenday Bike</div>
+      <h1 class="page-title">ຮ້ານຂອງ<br>ພວກເຮົາ</h1>
+      <p class="page-sub">ຮ້ານຈັກຍານ Workshop ແລະ ສູນຈຳໜ່າຍ ອຸປະກອນ ທີ່ໃຫຍ່ທີ່ສຸດ ໃນວຽງຈັນ — ເປີດ 7 ມື້ ຕໍ່ ອາທິດ</p>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK BAR -->
+<div class="quick-bar">
+  <div class="quick-bar-inner">
+    <div class="quick-item" onclick="showToast('🗺 ເປີດ Google Maps')">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div class="quick-item-text"><strong>ທີ່ຕັ້ງ</strong><span>ວຽງຈັນ, ລາວ</span></div>
+    </div>
+    <div class="quick-item" onclick="showToast('📞 020 XXXX XXXX')">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.86 9.11 19.79 19.79 0 01.77 .5 2 2 0 012.66 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 8.9a16 16 0 006.16 6.16l1-.98a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+      <div class="quick-item-text"><strong>ໂທ</strong><span>020 XXXX XXXX</span></div>
+    </div>
+    <div class="quick-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <div class="quick-item-text"><strong id="storeStatusText">ກຳລັງກວດ...</strong><span id="storeHoursText">ຈ–ສ 09:00–18:00</span></div>
+    </div>
+    <div class="quick-item" onclick="window.location='service.html#booking'">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="quick-item-text"><strong>ຈອງ Workshop</strong><span>ຈອງ Slot ທີ່ Sevenday</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STORE PAGE -->
+<div class="store-page">
+  <div class="wrap">
+    <div class="store-grid">
+
+      <!-- MAP -->
+      <div>
+        <div class="map-box">
+          <div class="map-placeholder">
+            <!-- Decorative roads -->
+            <div class="map-road h" style="top:30%"></div>
+            <div class="map-road h" style="top:55%"></div>
+            <div class="map-road h" style="top:75%"></div>
+            <div class="map-road v" style="left:25%"></div>
+            <div class="map-road v" style="left:60%"></div>
+            <div class="map-road v" style="left:80%"></div>
+            <div class="map-pin">
+              <div class="map-pin-dot"></div>
+              <div class="map-pin-label">📍 Sevenday Bike</div>
+            </div>
+            <div style="position:absolute;bottom:16px;font-size:12px;color:var(--ink-3)">Google Maps · ວຽງຈັນ, ລາວ</div>
+          </div>
+          <div class="map-actions">
+            <button class="map-btn map-btn-primary" onclick="showToast('🗺 ເປີດ Google Maps')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Google Maps
+            </button>
+            <button class="map-btn map-btn-outline" onclick="showToast('🧭 ເປີດ Directions')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              ເສັ້ນທາງ
+            </button>
+          </div>
+        </div>
+
+        <!-- Photos grid -->
+        <div style="margin-top:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:10px">ຮູບຮ້ານ / Store Photos</div>
+          <div class="photo-grid">
+            <div class="photo-item tall"><div class="photo-emoji">🚲</div><div class="photo-label">ໜ້າຮ້ານ</div></div>
+            <div class="photo-item"><div class="photo-emoji">🔧</div><div class="photo-label">Workshop</div></div>
+            <div class="photo-item"><div class="photo-emoji">⛑️</div><div class="photo-label">ສິນຄ້າ</div></div>
+            <div class="photo-item"><div class="photo-emoji">🏪</div><div class="photo-label">ພາຍໃນ</div></div>
+            <div class="photo-item"><div class="photo-emoji">👷</div><div class="photo-label">ທີມຊ່າງ</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div>
+
+        <!-- Location -->
+        <div class="store-info-card">
+          <div class="sic-head"><span>📍</span><h3>ທີ່ຕັ້ງ / Location</h3></div>
+          <div class="sic-body">
+            <div class="info-row">
+              <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div class="info-content">
+                <strong>Sevenday Bike</strong>
+                <span>ບ. [ຊື່ບ້ານ], ເມືອງ [ເມືອງ]<br>ນະຄອນຫຼວງວຽງຈັນ, ສ.ປ.ປ. ລາວ</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div class="info-content">
+                <strong>ເວລາເປີດ-ປິດ</strong>
+                <div class="open-badge" id="openBadge">⬤ ກຳລັງກວດ...</div>
+                <div class="hours-table" id="hoursTable"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="store-info-card">
+          <div class="sic-head"><span>📞</span><h3>ຕິດຕໍ່ / Contact</h3></div>
+          <div class="sic-body">
+            <div class="info-row">
+              <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.86 9.11 19.79 19.79 0 01.77 .5 2 2 0 012.66 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 8.9a16 16 0 006.16 6.16l1-.98a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+              <div class="info-content">
+                <strong>ເບີໂທ / Phone</strong>
+                <span><a href="tel:+856XXXXXXXX">+856 20 XXXX XXXX</a></span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></div>
+              <div class="info-content">
+                <strong>Email</strong>
+                <span><a href="mailto:hello@sevendaybike.la">hello@sevendaybike.la</a></span>
+              </div>
+            </div>
+            <div class="contact-channels">
+              <button class="ch-btn" onclick="showToast('📱 WhatsApp Sevenday')"><span>📱</span>WhatsApp</button>
+              <button class="ch-btn" onclick="showToast('💬 LINE @SevendayBike')"><span>💬</span>LINE</button>
+              <button class="ch-btn" onclick="showToast('📘 Facebook Sevenday')"><span>📘</span>Facebook</button>
+              <button class="ch-btn" onclick="showToast('📷 Instagram Sevenday')"><span>📷</span>Instagram</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services at store -->
+        <div class="store-info-card">
+          <div class="sic-head"><span>🔧</span><h3>ບໍລິການໃນຮ້ານ</h3></div>
+          <div class="sic-body">
+            <div class="services-list">
+              <span class="svc-chip">🚲 ຈຳໜ່າຍ Bikes</span>
+              <span class="svc-chip">🔧 Workshop</span>
+              <span class="svc-chip">🛠 ຊ່ອມ Repair</span>
+              <span class="svc-chip">⚙️ Parts</span>
+              <span class="svc-chip">🎽 Accessories</span>
+              <span class="svc-chip">⛑️ Helmets</span>
+              <span class="svc-chip">🎨 Film Wrap</span>
+              <span class="svc-chip">🔄 Used Bikes</span>
+              <span class="svc-chip">📅 Booking</span>
+              <span class="svc-chip">🧪 Test Ride</span>
+              <span class="svc-chip">📦 Click &amp; Collect</span>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+              <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px;font-weight:600">💳 ຊຳລະໄດ້</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="svc-chip">₭ LAK</span>
+                <span class="svc-chip">฿ THB</span>
+                <span class="svc-chip">$ USD</span>
+                <span class="svc-chip">📱 QR Code</span>
+                <span class="svc-chip">🏦 BCEL Transfer</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other branches (future) -->
+        <div class="store-info-card">
+          <div class="sic-head"><span>🏪</span><h3>ສາຂາ / Branches</h3></div>
+          <div class="sic-body">
+            <div class="branch-card">
+              <span style="font-size:28px">📍</span>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;margin-bottom:2px">Sevenday Bike — ວຽງຈັນ (Main)</div>
+                <div style="font-size:12px;color:var(--ink-3)">ນະຄອນຫຼວງວຽງຈັນ · ສາຂາຫຼັກ</div>
+              </div>
+              <div style="background:var(--lime-bg);color:var(--lime);font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px">ເປີດແລ້ວ</div>
+            </div>
+            <div class="branch-card" style="opacity:.6">
+              <span style="font-size:28px">🔮</span>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;margin-bottom:2px">Sevenday Bike — ສາຂາ 2</div>
+                <div style="font-size:12px;color:var(--ink-3)">ວຽງຈັນ · ເຂດໃໝ່ · ກຳລັງວາງແຜນ</div>
+              </div>
+              <span class="branch-soon">Coming Soon</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink-3);margin-top:8px">ສົນໃຈ Franchise? <a href="/contact.html" style="color:var(--red);font-weight:600">ຕິດຕໍ່ Sevenday</a></div>
+          </div>
+        </div>
+
+        <a href="/service.html#booking" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px">
+          📅 ຈອງ Workshop ດຽວນີ້
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<section class="team-section">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:0">
+      <div>
+        <div class="sec-eyebrow">ທີມງານ</div>
+        <h2 class="sec-title">ທີມ Sevenday</h2>
+      </div>
+    </div>
+    <div class="team-grid" style="margin-top:24px">
+      <div class="team-card">
+        <div class="team-avatar">👨‍🔧</div>
+        <div class="team-body">
+          <div class="team-name">ບຸນມີ ສ.</div>
+          <div class="team-role">Head Mechanic</div>
+          <div class="team-exp">10+ ປີ ປະສົບການ · Shimano Certified</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👩‍💼</div>
+        <div class="team-body">
+          <div class="team-name">ມາລີ ພ.</div>
+          <div class="team-role">Store Manager</div>
+          <div class="team-exp">ດູແລ ລູກຄ້າ ແລະ Operations</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👨‍🔧</div>
+        <div class="team-body">
+          <div class="team-name">ສີ ວ.</div>
+          <div class="team-role">Workshop Tech</div>
+          <div class="team-exp">MTB Specialist · 5+ ປີ</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👨‍💼</div>
+        <div class="team-body">
+          <div class="team-name">ໂຈ ທ.</div>
+          <div class="team-role">Sales Advisor</div>
+          <div class="team-exp">Road &amp; City Bike Expert</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Store hours
+const HOURS = [
+  {day:'ຈັນ (Mon)',open:'09:00',close:'18:00'},
+  {day:'ອັງຄານ (Tue)',open:'09:00',close:'18:00'},
+  {day:'ພຸດ (Wed)',open:'09:00',close:'18:00'},
+  {day:'ພະຫັດ (Thu)',open:'09:00',close:'18:00'},
+  {day:'ສຸກ (Fri)',open:'09:00',close:'18:00'},
+  {day:'ເສົາ (Sat)',open:'09:00',close:'18:00'},
+  {day:'ອາທິດ (Sun)',open:'10:00',close:'16:00'},
+];
+const DOW = ['ອາທິດ (Sun)','ຈັນ (Mon)','ອັງຄານ (Tue)','ພຸດ (Wed)','ພະຫັດ (Thu)','ສຸກ (Fri)','ເສົາ (Sat)'];
+
+function checkStoreStatus() {
+  const now = new Date();
+  const dow = now.getDay(); // 0=Sun
+  const h = now.getHours(), m = now.getMinutes();
+  const cur = h * 60 + m;
+  const todayHours = dow===0 ? {open:'10:00',close:'16:00'} : {open:'09:00',close:'18:00'};
+  const [oh,om] = todayHours.open.split(':').map(Number);
+  const [ch,cm] = todayHours.close.split(':').map(Number);
+  const isOpen = cur >= oh*60+om && cur < ch*60+cm;
+
+  document.getElementById('storeStatusText').textContent = isOpen ? '🟢 ເປີດຢູ່' : '🔴 ປິດ';
+  document.getElementById('storeHoursText').textContent = `ມື້ນີ້ ${todayHours.open}–${todayHours.close}`;
+  const badge = document.getElementById('openBadge');
+  if (isOpen) {
+    badge.textContent = `⬤ ເປີດຢູ່ — ປິດ ${todayHours.close}`;
+    badge.style.background='var(--lime-bg)';badge.style.color='var(--lime)';
+  } else {
+    badge.textContent = '⬤ ປິດ — ເປີດ ມື້ຫນ້າ 09:00';
+    badge.style.background='var(--red-lite)';badge.style.color='var(--red)';
+    badge.style.setProperty('--blink-color','var(--red)');
+  }
+
+  const table = document.getElementById('hoursTable');
+  const todayIdx = dow===0 ? 6 : dow-1;
+  table.innerHTML = HOURS.map((h,i)=>`
+    <div class="hours-row${i===todayIdx?' today':''}">
+      <span class="day">${h.day}${i===todayIdx?' (ມື້ນີ້)':''}</span>
+      <span class="time">${h.open} – ${h.close}</span>
+    </div>`).join('');
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+checkStoreStatus();
+</script>
+</body>
+</html>

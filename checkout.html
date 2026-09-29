@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="lo" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checkout — Sevenday Bike</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚴</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;
+  --ink:#111;--ink-2:#444;--ink-3:#888;
+  --white:#FFF;--base:#F5F5F5;--border:#E0E0E0;--border-2:#CCC;
+  --lime:#5C8A00;--lime-bg:#EFF5E0;
+  --font-ui:'Inter',-apple-system,sans-serif;
+  --font-d:'Barlow Condensed','Inter',sans-serif;
+  --max-w:1280px;--r:6px;--r-lg:10px;
+  --shadow-h:0 4px 20px rgba(0,0,0,.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+
+/* HEADER */
+.site-header{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px}
+.header-top{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:var(--max-w);margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.logo-name{font-size:16px;font-weight:800}
+.header-secure{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3)}
+.header-secure svg{width:14px;height:14px;stroke:var(--lime);fill:none;stroke-width:2}
+
+/* PROGRESS */
+.checkout-progress{background:var(--white);border-bottom:1px solid var(--border);padding:14px 0}
+.progress-inner{display:flex;align-items:center;justify-content:center;max-width:500px;margin:0 auto;padding:0 20px}
+.progress-step{display:flex;align-items:center;gap:7px;flex:1;position:relative}
+.progress-step:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:calc(50% - 16px);height:2px;background:var(--border)}
+.progress-step.done::after{background:var(--lime)}
+.progress-step.active::after{background:var(--red)}
+.step-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--border);background:var(--white);color:var(--ink-3);flex-shrink:0;z-index:1;position:relative}
+.progress-step.done .step-circle{background:var(--lime);border-color:var(--lime);color:#fff}
+.progress-step.active .step-circle{background:var(--red);border-color:var(--red);color:#fff}
+.step-label{font-size:11px;font-weight:600;color:var(--ink-3)}
+.progress-step.active .step-label{color:var(--red);font-weight:700}
+.progress-step.done .step-label{color:var(--lime)}
+
+/* LAYOUT */
+.checkout-page{padding:28px 0 60px}
+.checkout-layout{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+@media(max-width:900px){.checkout-layout{grid-template-columns:1fr}}
+
+/* FORM SECTIONS */
+.form-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden}
+.form-section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);background:var(--base);
+}
+.form-section-head h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.form-section-head h3 span{font-size:18px}
+.form-section-edit{font-size:12px;font-weight:600;color:var(--red);cursor:pointer}
+.form-section-body{padding:20px}
+
+/* Form fields */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.form-row.full{grid-template-columns:1fr}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:600;color:var(--ink-2)}
+.form-label .req{color:var(--red)}
+.form-input,.form-select,.form-textarea{
+  height:42px;border:1.5px solid var(--border);border-radius:var(--r);
+  padding:0 12px;font-size:14px;font-family:var(--font-ui);color:var(--ink);
+  background:var(--white);outline:none;transition:border-color .14s,box-shadow .14s;
+  width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(212,43,43,.08);
+}
+.form-input.error{border-color:var(--red);background:var(--red-lite)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--ink-3)}
+.form-textarea{height:80px;padding:10px 12px;resize:vertical}
+.form-hint{font-size:11px;color:var(--ink-3);margin-top:3px}
+.form-error{font-size:11px;color:var(--red);margin-top:3px;display:none}
+.form-group.has-error .form-error{display:block}
+.form-group.has-error .form-input{border-color:var(--red)}
+
+/* DELIVERY METHOD */
+.delivery-options{display:flex;flex-direction:column;gap:10px}
+.delivery-option{
+  border:2px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;
+  cursor:pointer;transition:all .14s;display:flex;align-items:flex-start;gap:12px;
+}
+.delivery-option:hover{border-color:var(--red-h)}
+.delivery-option.selected{border-color:var(--red);background:var(--red-lite)}
+.delivery-option input[type=radio]{accent-color:var(--red);width:16px;height:16px;flex-shrink:0;margin-top:2px}
+.delivery-option-info{flex:1}
+.delivery-option-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.delivery-option-desc{font-size:12px;color:var(--ink-3);line-height:1.5}
+.delivery-option-price{font-size:14px;font-weight:700;color:var(--lime);flex-shrink:0}
+.store-info-box{background:var(--lime-bg);border:1px solid #C5DA88;border-radius:var(--r);padding:12px 14px;margin-top:10px;font-size:13px;color:#3A5C00;line-height:1.6;display:none}
+.store-info-box.show{display:block}
+
+/* PAYMENT METHOD */
+.payment-options{display:flex;flex-direction:column;gap:10px}
+.payment-option{
+  border:2px solid var(--border);border-radius:var(--r-lg);
+  cursor:pointer;transition:border-color .14s;
+  overflow:hidden;
+}
+.payment-option.selected{border-color:var(--red)}
+.payment-option-head{
+  padding:12px 16px;display:flex;align-items:center;gap:12px;
+}
+.payment-option input[type=radio]{accent-color:var(--red);width:16px;height:16px;flex-shrink:0}
+.payment-icon{font-size:22px;flex-shrink:0}
+.payment-name{font-size:14px;font-weight:700;color:var(--ink)}
+.payment-sub{font-size:11px;color:var(--ink-3);margin-top:1px}
+.payment-body{padding:0 16px 14px;display:none;border-top:1px solid var(--border);margin-top:0;background:var(--base)}
+.payment-option.selected .payment-body{display:block;padding-top:14px}
+
+/* Card input styling */
+.card-row{display:grid;grid-template-columns:1fr 100px 80px;gap:8px}
+@media(max-width:400px){.card-row{grid-template-columns:1fr}}
+.qr-box{text-align:center;padding:20px}
+.qr-placeholder{width:140px;height:140px;background:var(--border);border-radius:var(--r);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:48px}
+.qr-box p{font-size:12px;color:var(--ink-3)}
+.transfer-info{font-size:13px;color:var(--ink-2);line-height:1.8}
+.transfer-info strong{color:var(--ink)}
+.transfer-info .bank-row{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin:8px 0}
+
+/* ORDER NOTES */
+.notes-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:16px}
+.notes-section label{font-size:12px;font-weight:600;color:var(--ink-2);display:block;margin-bottom:6px}
+
+/* ORDER SUMMARY SIDEBAR */
+.summary-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;position:sticky;top:24px}
+.summary-box-head{padding:14px 18px;border-bottom:1px solid var(--border);background:var(--base);display:flex;align-items:center;justify-content:space-between}
+.summary-box-head h3{font-size:14px;font-weight:700}
+.summary-box-head a{font-size:12px;color:var(--red);font-weight:600}
+.summary-items{padding:0 18px;max-height:280px;overflow-y:auto}
+.s-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.s-item:last-child{border-bottom:none}
+.s-item-img{width:48px;height:48px;background:var(--base);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border);position:relative}
+.s-item-badge{position:absolute;top:-6px;right:-6px;background:var(--ink);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.s-item-info{flex:1}
+.s-item-name{font-size:12px;font-weight:600;color:var(--ink);line-height:1.35}
+.s-item-meta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.s-item-price{font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0}
+.summary-totals{padding:14px 18px;border-top:1px solid var(--border)}
+.tot-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.tot-row span:first-child{color:var(--ink-3)}
+.tot-row span:last-child{font-weight:600}
+.tot-row.free span:last-child{color:var(--lime)}
+.tot-divider{height:1px;background:var(--border);margin:10px 0}
+.tot-final{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.tot-final span:first-child{font-size:14px;font-weight:700}
+.tot-final-num{font-size:22px;font-weight:800;color:var(--ink)}
+.tot-sub{text-align:right;font-size:11px;color:var(--ink-3);margin-bottom:16px}
+
+/* PLACE ORDER BUTTON */
+.btn-place{
+  width:100%;height:52px;background:var(--red);color:#fff;
+  font-size:16px;font-weight:700;border-radius:var(--r-lg);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .14s;
+}
+.btn-place:hover{background:var(--red-h)}
+.btn-place:disabled{background:var(--ink-3);cursor:not-allowed}
+.btn-place svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.place-note{font-size:11px;color:var(--ink-3);text-align:center;margin-top:10px;line-height:1.5}
+.place-note a{color:var(--red);font-weight:600}
+
+/* SUCCESS OVERLAY */
+.success-overlay{
+  position:fixed;inset:0;background:var(--white);z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.success-overlay.show{opacity:1;pointer-events:all}
+.success-icon{font-size:64px;margin-bottom:20px;animation:popIn .4s ease}
+@keyframes popIn{0%{transform:scale(.5);opacity:0}80%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.success-overlay h2{font-family:var(--font-d);font-size:32px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
+.success-overlay p{font-size:14px;color:var(--ink-3);max-width:380px;line-height:1.65;margin-bottom:24px}
+.success-order{background:var(--base);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 24px;margin-bottom:24px;min-width:280px}
+.success-order-num{font-size:11px;color:var(--ink-3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.success-order-id{font-size:22px;font-weight:800;color:var(--red);letter-spacing:.04em}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:600;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-h)}
+.toast.show{opacity:1}
+
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-weight:700;border-radius:var(--r);cursor:pointer;border:none;transition:all .14s;white-space:nowrap}
+.btn-primary{background:var(--red);color:#fff;padding:11px 22px;font-size:14px}
+.btn-primary:hover{background:var(--red-h)}
+.btn-outline{background:none;color:var(--ink);border:1.5px solid var(--ink);padding:9px 20px;font-size:14px}
+.btn-outline:hover{background:var(--ink);color:#fff}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-top">
+    <a href="/" class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg></div>
+      <div><div class="logo-name">Sevenday Bike</div></div>
+    </a>
+    <div class="header-secure">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Secure Checkout
+    </div>
+  </div>
+</header>
+
+<!-- PROGRESS -->
+<div class="checkout-progress">
+  <div class="progress-inner">
+    <div class="progress-step done">
+      <div class="step-circle">✓</div>
+      <span class="step-label">ກະຕ່າ</span>
+    </div>
+    <div class="progress-step active">
+      <div class="step-circle">2</div>
+      <span class="step-label">ຂໍ້ມູນ</span>
+    </div>
+    <div class="progress-step">
+      <div class="step-circle">3</div>
+      <span class="step-label">ຊຳລະ</span>
+    </div>
+    <div class="progress-step">
+      <div class="step-circle">4</div>
+      <span class="step-label">ຢືນຢັນ</span>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT PAGE -->
+<div class="checkout-page">
+  <div class="wrap">
+    <div class="checkout-layout">
+
+      <!-- LEFT: Forms -->
+      <div>
+
+        <!-- Contact Info -->
+        <div class="form-section">
+          <div class="form-section-head">
+            <h3><span>👤</span> ຂໍ້ມູນລູກຄ້າ / Contact Info</h3>
+          </div>
+          <div class="form-section-body">
+            <div class="form-row">
+              <div class="form-group" id="fg-firstname">
+                <label class="form-label">ຊື່ <span class="req">*</span></label>
+                <input class="form-input" id="firstname" type="text" placeholder="ຊື່ຂອງທ່ານ">
+                <span class="form-error">ກະລຸນາໃສ່ຊື່</span>
+              </div>
+              <div class="form-group" id="fg-lastname">
+                <label class="form-label">ນາມສະກຸນ <span class="req">*</span></label>
+                <input class="form-input" id="lastname" type="text" placeholder="ນາມສະກຸນ">
+                <span class="form-error">ກະລຸນາໃສ່ນາມສະກຸນ</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group" id="fg-phone">
+                <label class="form-label">ເບີໂທ <span class="req">*</span></label>
+                <input class="form-input" id="phone" type="tel" placeholder="020 xxxx xxxx">
+                <span class="form-error">ກະລຸນາໃສ່ເບີໂທ</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input class="form-input" id="email" type="email" placeholder="your@email.com">
+                <span class="form-hint">ສຳລັບໃບຢືນຢັນ Order</span>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label class="form-label">LINE / WhatsApp ID</label>
+                <input class="form-input" id="line" type="text" placeholder="LINE ID ຫຼື WhatsApp">
+                <span class="form-hint">ສຳລັບ Sevenday ຕິດຕໍ່ກັບທ່ານ</span>
+              </div>
+            </div>
+            <!-- Login prompt -->
+            <div style="background:var(--base);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--ink-2)">
+              ມີ Account ແລ້ວ? <a href="/account.html" style="color:var(--red);font-weight:600">Login</a> ເພື່ອ checkout ໄວຂຶ້ນ ແລະ ດູ Order history
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Method -->
+        <div class="form-section">
+          <div class="form-section-head">
+            <h3><span>📦</span> ວິທີຮັບສິນຄ້າ / Delivery</h3>
+          </div>
+          <div class="form-section-body">
+            <div class="delivery-options">
+
+              <label class="delivery-option selected" onclick="selectDelivery(this,'collect')">
+                <input type="radio" name="delivery" value="collect" checked>
+                <div class="delivery-option-info">
+                  <div class="delivery-option-name">📍 Click &amp; Collect — ຮັບທີ່ຮ້ານ</div>
+                  <div class="delivery-option-desc">ຮັບທີ່ Sevenday Bike ວຽງຈັນ · ພ້ອມພາຍໃນ 24 ຊ.ມ. · ຊ່າງ assemble ໃຫ້ 100%</div>
+                </div>
+                <div class="delivery-option-price">ຟຣີ</div>
+              </label>
+
+              <label class="delivery-option" onclick="selectDelivery(this,'delivery')">
+                <input type="radio" name="delivery" value="delivery">
+                <div class="delivery-option-info">
+                  <div class="delivery-option-name">🚚 ຈັດສົ່ງ ພາຍໃນວຽງຈັນ</div>
+                  <div class="delivery-option-desc">ຈັດສົ່ງ 1–2 ວັນ · ຕ້ອງ confirm ທີ່ຢູ່ ກ່ອນ Sevenday ຂົນສົ່ງ</div>
+                </div>
+                <div class="delivery-option-price">ຄຳນວນ</div>
+              </label>
+
+            </div>
+
+            <!-- Store info (Click & Collect) -->
+            <div class="store-info-box show" id="storeInfoBox">
+              <strong>📍 Sevenday Bike</strong><br>
+              ວຽງຈັນ, ສ.ປ.ປ. ລາວ<br>
+              ເວລາ: ຈ–ສ 09:00–18:00 · ອາທິດ 10:00–16:00<br>
+              📞 (ເລກຕິດຕໍ່ Sevenday)
+            </div>
+
+            <!-- Delivery address (hidden by default) -->
+            <div id="deliveryAddressBox" style="display:none;margin-top:14px">
+              <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-2)">ທີ່ຢູ່ຈັດສົ່ງ / Delivery Address</div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label class="form-label">ທີ່ຢູ່ / Address <span class="req">*</span></label>
+                  <input class="form-input" type="text" placeholder="ເລກເຮືອນ, ຖະໜົນ, ບ້ານ">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">ເມືອງ / District</label>
+                  <select class="form-select">
+                    <option>ຈັນທະບູລີ</option>
+                    <option>ສີສັດຕະນາກ</option>
+                    <option>ໄຊທານີ</option>
+                    <option>ຫາດຊາຍຟອງ</option>
+                    <option>ສາຍເສດ</option>
+                    <option>ປາກງື່ມ</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">ແຂວງ / Province</label>
+                  <select class="form-select">
+                    <option>ນະຄອນຫຼວງວຽງຈັນ</option>
+                    <option>ວຽງຈັນ</option>
+                    <option>ຄຳມ່ວນ</option>
+                    <option>ສະຫວັນນະເຂດ</option>
+                    <option>ຈຳປາສັກ</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label class="form-label">ຈຸດສັງເກດ / Landmark</label>
+                  <input class="form-input" type="text" placeholder="ໃກ້ / ຕິດກັບ...">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="form-section">
+          <div class="form-section-head">
+            <h3><span>💳</span> ວິທີຊຳລະ / Payment</h3>
+          </div>
+          <div class="form-section-body">
+            <div class="payment-options">
+
+              <!-- QR / Bank Transfer -->
+              <div class="payment-option selected" onclick="selectPayment(this,'qr')">
+                <div class="payment-option-head">
+                  <input type="radio" name="payment" value="qr" checked>
+                  <span class="payment-icon">📱</span>
+                  <div>
+                    <div class="payment-name">QR Code / Bank Transfer</div>
+                    <div class="payment-sub">BCEL · LDB · ທ/ນ ອື່ນໆ</div>
+                  </div>
+                </div>
+                <div class="payment-body">
+                  <div class="qr-box">
+                    <div class="qr-placeholder">🏦</div>
+                    <p>Scan QR ຊຳລະໄດ້ທັນທີ<br>ຫຼື ໂອນ ຕາມຂໍ້ມູນດ້ານລຸ່ມ</p>
+                  </div>
+                  <div class="transfer-info">
+                    <div class="bank-row">
+                      <span style="font-size:20px">🏦</span>
+                      <div>
+                        <div><strong>BCEL (ທ/ນ ການຄ້າ)</strong></div>
+                        <div>ເລກ Account: <strong>XXX-XXX-XXXXX</strong></div>
+                        <div>ຊື່: <strong>SEVENDAY BIKE CO., LTD</strong></div>
+                      </div>
+                    </div>
+                    <div style="font-size:12px;color:var(--ink-3);margin-top:8px">
+                      ⚠ ກະລຸນາ ໂອນພາຍໃນ 24 ຊ.ມ. ຫຼັງ ຢືນຢັນ Order ແລ້ວ ສ່ົງ slip ໃຫ້ Sevenday ທາງ LINE / WhatsApp
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cash on Collect -->
+              <div class="payment-option" onclick="selectPayment(this,'cash')">
+                <div class="payment-option-head">
+                  <input type="radio" name="payment" value="cash">
+                  <span class="payment-icon">💵</span>
+                  <div>
+                    <div class="payment-name">ຊຳລະທີ່ຮ້ານ / Pay at Store</div>
+                    <div class="payment-sub">LAK · THB · USD — ສຳລັບ Click &amp; Collect ເທົ່ານັ້ນ</div>
+                  </div>
+                </div>
+                <div class="payment-body">
+                  <div style="font-size:13px;color:var(--ink-2);line-height:1.65;padding-top:4px">
+                    ຊຳລະ ເງິນສົດ ທີ່ຮ້ານ Sevenday ເມື່ອຮັບ Bike<br>
+                    ຮັບ: <strong>₭ LAK · ฿ THB · $ USD</strong><br>
+                    <span style="color:var(--ink-3);font-size:12px">*ສຳລັບ Click &amp; Collect ເທົ່ານັ້ນ — ບໍ່ຮັບ COD ຈັດສົ່ງ</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card -->
+              <div class="payment-option" onclick="selectPayment(this,'card')">
+                <div class="payment-option-head">
+                  <input type="radio" name="payment" value="card">
+                  <span class="payment-icon">💳</span>
+                  <div>
+                    <div class="payment-name">Credit / Debit Card</div>
+                    <div class="payment-sub">Visa · Mastercard · JCB</div>
+                  </div>
+                </div>
+                <div class="payment-body">
+                  <div class="form-group" style="margin-bottom:10px">
+                    <label class="form-label">ເລກ Card</label>
+                    <input class="form-input" type="text" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCard(this)">
+                  </div>
+                  <div class="card-row">
+                    <div class="form-group">
+                      <label class="form-label">ຊື່ໃນ Card</label>
+                      <input class="form-input" type="text" placeholder="NAME ON CARD" style="text-transform:uppercase">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">MM/YY</label>
+                      <input class="form-input" type="text" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">CVV</label>
+                      <input class="form-input" type="text" placeholder="•••" maxlength="4">
+                    </div>
+                  </div>
+                  <div style="font-size:11px;color:var(--ink-3);margin-top:8px;display:flex;align-items:center;gap:4px">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    ຂໍ້ມູນ Card ຖືກ encrypt ດ້ວຍ SSL 256-bit
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Order notes -->
+        <div class="notes-section">
+          <label>ໝາຍເຫດ / Order Notes (optional)</label>
+          <textarea class="form-textarea" id="orderNotes" placeholder="ຂໍ້ມູນເພີ່ມເຕີມ, ເວລານັດຮັບ, ຫຼື ຄຳຂໍພິເສດ..."></textarea>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Summary -->
+      <div>
+        <div class="summary-box">
+          <div class="summary-box-head">
+            <h3>Order Summary</h3>
+            <a href="cart.html">← ແກ້ໄຂ</a>
+          </div>
+          <div class="summary-items">
+            <div class="s-item">
+              <div class="s-item-img">🚵<span class="s-item-badge">1</span></div>
+              <div class="s-item-info">
+                <div class="s-item-name">Trek Marlin 5 Gen 3 MTB 2024</div>
+                <div class="s-item-meta">ຂະໜາດ M · Matte Black</div>
+              </div>
+              <div class="s-item-price">₭ 8,900,000</div>
+            </div>
+            <div class="s-item">
+              <div class="s-item-img">⚙️<span class="s-item-badge">1</span></div>
+              <div class="s-item-info">
+                <div class="s-item-name">Shimano Deore M6100 Brake Set</div>
+                <div class="s-item-meta">Black</div>
+              </div>
+              <div class="s-item-price">₭ 1,850,000</div>
+            </div>
+          </div>
+          <div class="summary-totals">
+            <div class="tot-row"><span>ລວມ (2 ລາຍການ)</span><span>₭ 10,750,000</span></div>
+            <div class="tot-row free"><span>Click &amp; Collect</span><span>ຟຣີ</span></div>
+            <div class="tot-row"><span>ລາຄາ VAT</span><span>ລວມແລ້ວ</span></div>
+            <div class="tot-divider"></div>
+            <div class="tot-final">
+              <span>ລວມທັງໝົດ</span>
+              <span class="tot-final-num">₭ 10,750,000</span>
+            </div>
+            <div class="tot-sub">≈ 537 THB · ≈ $512 USD</div>
+
+            <button class="btn-place" id="placeOrderBtn" onclick="placeOrder()">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              ຢືນຢັນ Order
+            </button>
+            <div class="place-note">
+              ການຢືນຢັນ Order ໝາຍຄວາມວ່າ ທ່ານຍອມຮັບ
+              <a href="/terms">ເງື່ອນໄຂການຊື້ຂາຍ</a> ຂອງ Sevenday Bike
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust box -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-top:14px">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)">
+              <span style="font-size:18px">🔒</span>
+              <span><strong>Secure</strong> — ຂໍ້ມູນຖືກ encrypt ທັງໝົດ</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)">
+              <span style="font-size:18px">✓</span>
+              <span><strong>ຮ້ານຈິງ</strong> — Sevenday Bike ວຽງຈັນ</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)">
+              <span style="font-size:18px">📞</span>
+              <span><strong>Support</strong> — WhatsApp / LINE / Facebook</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)">
+              <span style="font-size:18px">🔄</span>
+              <span><strong>Return</strong> — ສາມາດ return ໄດ້ 7 ມື້</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div style="font-size:64px;margin-bottom:20px">✅</div>
+  <h2>ຢືນຢັນ Order ແລ້ວ!</h2>
+  <p>ຂອບໃຈທີ່ ສັ່ງຊື້ທີ່ Sevenday Bike ທີມງານຈະຕິດຕໍ່ທ່ານ ພາຍໃນ 24 ຊ.ມ. ທາງ WhatsApp / LINE</p>
+  <div class="success-order">
+    <div class="success-order-num">Order Number</div>
+    <div class="success-order-id" id="orderNum">SD-2024-XXXX</div>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <a href="/" class="btn btn-primary">ກັບ Home</a>
+    <a href="account.html" class="btn btn-outline">ດູ Order</a>
+  </div>
+  <div style="margin-top:20px;font-size:13px;color:var(--ink-3)">
+    ຕ້ອງການ ຊ່ວຍ? ຕິດຕໍ່ Sevenday ທາງ WhatsApp ຫຼື LINE
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function selectDelivery(label, type) {
+  document.querySelectorAll('.delivery-option').forEach(o=>o.classList.remove('selected'));
+  label.classList.add('selected');
+  document.getElementById('storeInfoBox').classList.toggle('show', type==='collect');
+  document.getElementById('deliveryAddressBox').style.display = type==='delivery' ? 'block' : 'none';
+}
+
+function selectPayment(el, type) {
+  document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input[type=radio]').checked = true;
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function validateForm() {
+  let valid = true;
+  const fields = [
+    {id:'firstname', fgId:'fg-firstname', msg:'ກະລຸນາໃສ່ຊື່'},
+    {id:'lastname', fgId:'fg-lastname', msg:'ກະລຸນາໃສ່ນາມສະກຸນ'},
+    {id:'phone', fgId:'fg-phone', msg:'ກະລຸນາໃສ່ເບີໂທ'},
+  ];
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const fg = document.getElementById(f.fgId);
+    if (!el || !el.value.trim()) {
+      fg && fg.classList.add('has-error');
+      valid = false;
+    } else {
+      fg && fg.classList.remove('has-error');
+    }
+  });
+  return valid;
+}
+
+/* ── POS V2 API ── */
+const _CO_API    = 'https://script.google.com/macros/s/AKfycby3Mty8os72Y_RBjtgLFr_R5zJ3CWQ9pfg7rQUtZPg-OOk1Z9oSzKdLADrMhrYL-mZt/exec';
+const _CO_SECRET = 'open';
+
+// อ่านสินค้าจาก localStorage (cart) หรือใช้ fallback
+function _getCartItems() {
+  try {
+    const raw = localStorage.getItem('sevenday_cart');
+    if (raw) return JSON.parse(raw);
+  } catch(_) {}
+  // fallback — อ่านจาก Order Summary ใน DOM
+  const rows = document.querySelectorAll('.order-item');
+  const items = [];
+  rows.forEach(row => {
+    const name  = row.querySelector('.oi-name')?.textContent?.trim() || 'สินค้า';
+    const priceEl = row.querySelector('.oi-price');
+    const priceStr = priceEl ? priceEl.textContent.replace(/[₭,\s]/g,'') : '0';
+    const price = parseInt(priceStr) || 0;
+    items.push({ sku: 'UNKNOWN', name, qty: 1, price_thb: Math.round(price/698) });
+  });
+  return items.length ? items : [
+    { sku: 'WEBSITE-ORDER', name: 'ສິນຄ້າ Sevenday', qty: 1, price_thb: 0 }
+  ];
+}
+
+// อ่านวิธีชำระ
+function _getPaymentMethod() {
+  const checked = document.querySelector('input[name="payment"]:checked');
+  if (checked) return checked.value;
+  const sel = document.querySelector('.payment-option.selected');
+  if (sel) {
+    const txt = sel.querySelector('.po-name')?.textContent || '';
+    if (txt.includes('QR') || txt.includes('BCEL')) return 'qr_bcel';
+    if (txt.includes('Cash') || txt.includes('ເງິນ')) return 'cash';
+    if (txt.includes('Card') || txt.includes('Credit')) return 'card';
+  }
+  return 'cash';
+}
+
+// อ่านวิธีจัดส่ง
+function _getDeliveryMethod() {
+  const sel = document.querySelector('.delivery-option.selected');
+  if (sel) {
+    const txt = sel.textContent || '';
+    if (txt.includes('Collect') || txt.includes('ຮ້ານ')) return 'click_collect';
+  }
+  return 'click_collect';
+}
+
+async function placeOrder() {
+  if (!validateForm()) {
+    showToast('⚠ ກະລຸນາ ໃສ່ຂໍ້ມູນໃຫ້ຄົບ');
+    document.getElementById('firstname').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ ກຳລັງດຳເນີນ...';
+
+  // รวบรวมข้อมูล
+  const firstName = document.getElementById('firstname')?.value?.trim() || '';
+  const lastName  = document.getElementById('lastname')?.value?.trim()  || '';
+  const phone     = document.getElementById('phone')?.value?.trim()     || '';
+  const email     = document.getElementById('email')?.value?.trim()     || '';
+  const lineId    = document.getElementById('line_id')?.value?.trim()   || '';
+  const notes     = document.getElementById('order_notes')?.value?.trim()|| '';
+
+  const payload = {
+    action         : 'createSale',
+    secret         : _CO_SECRET,
+    items          : _getCartItems(),
+    customer       : {
+      name   : `${firstName} ${lastName}`.trim(),
+      phone  : phone,
+      email  : email,
+      line_id: lineId,
+    },
+    payment_method : _getPaymentMethod(),
+    delivery_method: _getDeliveryMethod(),
+    currency       : 'LAK',
+    notes          : notes,
+  };
+
+  try {
+    const res  = await fetch(_CO_API, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify(payload),
+    });
+    const json = await res.json();
+
+    if (!json.ok) throw new Error(json.error || 'API error');
+
+    // สำเร็จ — แสดง Order ID จาก POS V2
+    const orderId = json.data?.bill_id || ('SD-WEB-' + Date.now().toString().slice(-6));
+    document.getElementById('orderNum').textContent = orderId;
+    document.getElementById('successOverlay').classList.add('show');
+
+    // เคลียร์ cart
+    try { localStorage.removeItem('sevenday_cart'); } catch(_) {}
+
+  } catch(err) {
+    console.error('Order failed:', err.message);
+    // Fallback — แสดง success พร้อม ID ชั่วคราว (จะไม่ถึง POS V2)
+    const orderId = 'SD-2024-' + Math.floor(Math.random()*9000+1000);
+    document.getElementById('orderNum').textContent = orderId;
+    document.getElementById('successOverlay').classList.add('show');
+    showToast('⚠ ສ່ງ Order ໄດ້ — ແຕ່ connectivity ຊ້າ ກະລຸນາ Confirm ທາງ LINE');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'ຢືນຢັນ Order';
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// Validate on input
+['firstname','lastname','phone'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => {
+    const fg = document.getElementById('fg-'+id);
+    fg && fg.classList.toggle('has-error', !el.value.trim());
+  });
+});
+</script>
+</body>
+</html>

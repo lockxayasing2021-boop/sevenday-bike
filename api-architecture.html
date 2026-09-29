@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Architecture — Sevenday Bike Website × ERP</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D42B2B;--red-lite:#FFF0F0;
+  --ink:#111;--ink-2:#444;--ink-3:#777;
+  --white:#fff;--base:#F6F7F9;--border:#E2E4E9;
+  --lime:#5C8A00;--lime-bg:#EFF5E0;
+  --blue:#1A6FBF;--blue-bg:#EBF3FF;--blue-lite:#F0F6FF;
+  --purple:#6B3FA0;--purple-bg:#F3EBFF;
+  --orange:#CC7700;--orange-bg:#FFF3E0;
+  --dark:#0E1117;
+  --font-ui:'Inter',system-ui,sans-serif;
+  --font-d:'Barlow Condensed',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --max-w:1100px;--r:6px;--r-lg:10px;
+  --shadow:0 1px 4px rgba(0,0,0,.07);
+  --shadow-h:0 4px 20px rgba(0,0,0,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+
+/* ── COVER ── */
+.cover{
+  background:var(--dark);
+  padding:56px 0 48px;
+  border-bottom:3px solid var(--red);
+}
+.cover-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.cover-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(212,43,43,.15);border:1px solid rgba(212,43,43,.3);
+  color:#FF8080;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 12px;border-radius:20px;margin-bottom:14px;
+}
+.cover-title{
+  font-family:var(--font-d);font-size:clamp(36px,5vw,56px);
+  font-weight:900;text-transform:uppercase;color:#fff;
+  letter-spacing:-.01em;line-height:.95;margin-bottom:12px;
+}
+.cover-title em{font-style:normal;color:var(--red)}
+.cover-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.75;max-width:520px}
+.cover-meta{
+  display:flex;flex-direction:column;gap:10px;flex-shrink:0;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r-lg);padding:18px 22px;
+}
+.meta-row{display:flex;gap:12px;align-items:baseline}
+.meta-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);min-width:80px}
+.meta-val{font-size:13px;font-weight:600;color:rgba(255,255,255,.8)}
+.meta-val.tag{background:rgba(212,43,43,.2);color:#FF8080;padding:2px 8px;border-radius:20px;font-size:11px}
+
+/* ── NAV / TOC ── */
+.toc{
+  background:var(--white);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+  overflow-x:auto;
+}
+.toc-inner{display:flex;gap:0;max-width:var(--max-w);margin:0 auto;padding:0 24px}
+.toc-link{
+  display:flex;align-items:center;gap:6px;
+  padding:12px 14px;font-size:12px;font-weight:600;color:var(--ink-3);
+  border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer;
+  transition:color .14s,border-color .14s;
+}
+.toc-link:hover{color:var(--ink)}
+.toc-link.active{color:var(--red);border-bottom-color:var(--red)}
+.toc-num{
+  width:18px;height:18px;border-radius:50%;background:var(--base);
+  font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;
+}
+.toc-link.active .toc-num{background:var(--red);color:#fff}
+
+/* ── SECTIONS ── */
+.doc-section{padding:48px 0;border-bottom:1px solid var(--border)}
+.doc-section:last-child{border-bottom:none}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.section-title{font-family:var(--font-d);font-size:clamp(22px,3.5vw,34px);font-weight:900;text-transform:uppercase;color:var(--ink);margin-bottom:4px}
+.section-sub{font-size:13px;color:var(--ink-3);margin-bottom:28px;max-width:640px}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch-diagram{
+  background:var(--dark);border-radius:var(--r-lg);
+  padding:32px;margin:28px 0;
+  display:flex;flex-direction:column;gap:0;
+  position:relative;overflow:hidden;
+}
+.arch-diagram::before{
+  content:'';position:absolute;left:-60px;top:-60px;
+  width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,43,43,.08) 0%,transparent 70%);
+}
+.arch-layer{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 20px;border-radius:var(--r-lg);
+  border:1px solid rgba(255,255,255,.07);
+  margin-bottom:0;position:relative;z-index:1;
+}
+.arch-arrow{
+  text-align:center;color:rgba(255,255,255,.2);font-size:20px;
+  padding:8px;user-select:none;
+}
+.arch-layer-icon{font-size:28px;flex-shrink:0}
+.arch-layer-body{flex:1}
+.arch-layer-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.arch-layer-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5}
+.arch-layer-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.arch-tag{
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;
+  background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);
+}
+.arch-layer.layer-web{background:rgba(212,43,43,.08);border-color:rgba(212,43,43,.2)}
+.arch-layer.layer-api{background:rgba(26,111,191,.08);border-color:rgba(26,111,191,.2)}
+.arch-layer.layer-bridge{background:rgba(92,138,0,.08);border-color:rgba(92,138,0,.2)}
+.arch-layer.layer-erp{background:rgba(107,63,160,.08);border-color:rgba(107,63,160,.2)}
+
+/* ── DATA FLOW ── */
+.flow-diagram{
+  display:grid;grid-template-columns:1fr auto 1fr auto 1fr;
+  gap:0;align-items:center;margin:24px 0;
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:24px;overflow-x:auto;
+}
+@media(max-width:640px){.flow-diagram{grid-template-columns:1fr;gap:8px}}
+.flow-node{
+  background:var(--base);border:1.5px solid var(--border);border-radius:var(--r-lg);
+  padding:14px 16px;text-align:center;
+}
+.flow-node-icon{font-size:26px;margin-bottom:6px}
+.flow-node-title{font-size:13px;font-weight:700;color:var(--ink)}
+.flow-node-sub{font-size:11px;color:var(--ink-3);margin-top:3px}
+.flow-arrow{text-align:center;font-size:20px;color:var(--border);padding:0 8px}
+@media(max-width:640px){.flow-arrow{display:none}}
+
+/* ── ENDPOINT CARDS ── */
+.endpoint-group{margin-bottom:28px}
+.endpoint-group-title{
+  font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:8px;border-bottom:2px solid var(--border);
+}
+.endpoint-group-title span{font-size:18px}
+.endpoint-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  margin-bottom:10px;overflow:hidden;
+  transition:box-shadow .14s;
+}
+.endpoint-card:hover{box-shadow:var(--shadow-h)}
+.endpoint-head{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;cursor:pointer;
+  border-bottom:1px solid transparent;transition:border-color .14s;
+}
+.endpoint-head.open{border-bottom-color:var(--border)}
+.method{
+  font-family:var(--font-mono);font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:var(--r);min-width:52px;text-align:center;flex-shrink:0;
+}
+.method.GET{background:#EBF3FF;color:var(--blue)}
+.method.POST{background:#EFF5E0;color:var(--lime)}
+.method.PUT{background:#FFF3E0;color:var(--orange)}
+.method.DELETE{background:var(--red-lite);color:var(--red)}
+.endpoint-path{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--ink);flex:1}
+.endpoint-desc{font-size:12px;color:var(--ink-3);margin-left:auto;flex-shrink:0}
+.endpoint-body{padding:16px;background:var(--base);display:none}
+.endpoint-body.open{display:block}
+.endpoint-section{margin-bottom:14px}
+.endpoint-section:last-child{margin-bottom:0}
+.endpoint-section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.code-block{
+  background:var(--dark);border-radius:var(--r);padding:14px 16px;
+  font-family:var(--font-mono);font-size:12px;line-height:1.7;color:#E2E8F0;
+  overflow-x:auto;
+}
+.code-block .key{color:#93C5FD}
+.code-block .str{color:#86EFAC}
+.code-block .num{color:#FCA5A5}
+.code-block .bool{color:#FCD34D}
+.code-block .comment{color:rgba(255,255,255,.3)}
+
+/* ── DATA MODELS ── */
+.model-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.model-grid{grid-template-columns:1fr}}
+.model-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;
+}
+.model-head{
+  padding:12px 16px;background:var(--base);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.model-head-icon{font-size:18px}
+.model-head-title{font-size:14px;font-weight:700}
+.model-head-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:auto}
+.model-fields{padding:12px 0}
+.model-field{
+  display:flex;align-items:baseline;gap:10px;
+  padding:7px 16px;border-bottom:1px solid var(--border);font-size:12px;
+}
+.model-field:last-child{border-bottom:none}
+.field-name{font-family:var(--font-mono);font-weight:600;color:var(--ink);min-width:130px;flex-shrink:0}
+.field-type{color:var(--blue);font-size:11px;min-width:70px;flex-shrink:0;font-family:var(--font-mono)}
+.field-desc{color:var(--ink-3);flex:1}
+.field-req{color:var(--red);font-size:10px;font-weight:700;flex-shrink:0}
+
+/* ── AUTH SECTION ── */
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:640px){.auth-grid{grid-template-columns:1fr}}
+.auth-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;
+}
+.auth-card-title{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.auth-card p{font-size:13px;color:var(--ink-2);line-height:1.7;margin-bottom:10px}
+
+/* ── SYNC TABLE ── */
+.sync-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border)}
+.sync-table th{background:var(--base);padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);text-align:left;border-bottom:2px solid var(--border)}
+.sync-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
+.sync-table tr:last-child td{border-bottom:none}
+.sync-table tr:hover td{background:#FAFBFF}
+.direction{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px}
+.dir-push{background:var(--blue-bg);color:var(--blue)}
+.dir-pull{background:var(--lime-bg);color:var(--lime)}
+.dir-both{background:var(--purple-bg);color:var(--purple)}
+.trigger-chip{font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--base);color:var(--ink-3);display:inline-flex;align-items:center;gap:4px}
+
+/* ── INFO BOXES ── */
+.info-box{border-radius:var(--r-lg);padding:14px 18px;margin:16px 0;font-size:13px;line-height:1.7}
+.info-box.warning{background:var(--orange-bg);border:1px solid #FBBF24;color:#7A4A00}
+.info-box.tip{background:var(--lime-bg);border:1px solid #A3C94A;color:#3A5A00}
+.info-box.note{background:var(--blue-bg);border:1px solid #93C5FD;color:#1A3A6E}
+.info-box strong{font-weight:700}
+
+/* ── PHASE CARDS ── */
+.phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.phase-grid{grid-template-columns:1fr}}
+.phase-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;
+}
+.phase-card.done{border-left:4px solid var(--lime)}
+.phase-card.active{border-left:4px solid var(--blue)}
+.phase-card.upcoming{border-left:4px solid var(--border)}
+.phase-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:8px;display:inline-block}
+.phase-badge.done{background:var(--lime-bg);color:var(--lime)}
+.phase-badge.active{background:var(--blue-bg);color:var(--blue)}
+.phase-badge.upcoming{background:var(--base);color:var(--ink-3)}
+.phase-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.phase-items{font-size:12px;color:var(--ink-3);line-height:1.8;list-style:none}
+.phase-items li::before{content:'·  '}
+
+/* Responsive */
+@media(max-width:640px){.endpoint-desc{display:none}}
+@media print{.toc{display:none}.doc-section{page-break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="wrap">
+    <div class="cover-inner">
+      <div>
+        <div class="cover-badge">🔌 Technical Document · v1.0</div>
+        <h1 class="cover-title">Sevenday<br><em>API</em><br>Architecture</h1>
+        <p class="cover-sub">แผนการเชื่อมต่อ Website E-Commerce กับ Sevenday ERP (Google Apps Script + Sheets) — ออกแบบให้ Bridge ทั้งสองระบบได้ทันทีและขยายได้ในอนาคต</p>
+      </div>
+      <div class="cover-meta">
+        <div class="meta-row"><span class="meta-label">Version</span><span class="meta-val">1.0.0</span></div>
+        <div class="meta-row"><span class="meta-label">ERP Stack</span><span class="meta-val">Google Apps Script + Sheets</span></div>
+        <div class="meta-row"><span class="meta-label">API Style</span><span class="meta-val">REST / JSON</span></div>
+        <div class="meta-row"><span class="meta-label">Auth</span><span class="meta-val">API Key + JWT</span></div>
+        <div class="meta-row"><span class="meta-label">Currency</span><span class="meta-val tag">LAK · THB · USD</span></div>
+        <div class="meta-row"><span class="meta-label">Scope</span><span class="meta-val">Single Branch — วียงจันทน์</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOC ══ -->
+<nav class="toc">
+  <div class="toc-inner">
+    <a class="toc-link active" href="#s1"><span class="toc-num">1</span>Overview</a>
+    <a class="toc-link" href="#s2"><span class="toc-num">2</span>Architecture</a>
+    <a class="toc-link" href="#s3"><span class="toc-num">3</span>Auth</a>
+    <a class="toc-link" href="#s4"><span class="toc-num">4</span>Endpoints</a>
+    <a class="toc-link" href="#s5"><span class="toc-num">5</span>Data Models</a>
+    <a class="toc-link" href="#s6"><span class="toc-num">6</span>Sync Strategy</a>
+    <a class="toc-link" href="#s7"><span class="toc-num">7</span>ERP Bridge</a>
+    <a class="toc-link" href="#s8"><span class="toc-num">8</span>Roadmap</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ══ S1: OVERVIEW ══ -->
+<section class="doc-section" id="s1">
+  <div class="section-eyebrow">§ 1 · Overview</div>
+  <h2 class="section-title">ภาพรวมระบบ</h2>
+  <p class="section-sub">API ชั้นกลางที่เชื่อม Website กับ Sevenday ERP — ไม่ต้องสร้าง Backend ใหม่ทั้งหมด</p>
+
+  <!-- Data Flow -->
+  <div class="flow-diagram">
+    <div class="flow-node">
+      <div class="flow-node-icon">🌐</div>
+      <div class="flow-node-title">Website</div>
+      <div class="flow-node-sub">HTML/JS<br>sevendaybike.la</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:var(--blue);background:var(--blue-lite)">
+      <div class="flow-node-icon">🔌</div>
+      <div class="flow-node-title">REST API</div>
+      <div class="flow-node-sub">api.sevendaybike.la<br>JSON · Auth · Rate limit</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:var(--lime);background:var(--lime-bg)">
+      <div class="flow-node-icon">⚙️</div>
+      <div class="flow-node-title">GAS Bridge</div>
+      <div class="flow-node-sub">doGet / doPost<br>Google Apps Script</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:var(--purple);background:var(--purple-bg)">
+      <div class="flow-node-icon">📊</div>
+      <div class="flow-node-title">Sevenday ERP</div>
+      <div class="flow-node-sub">Google Sheets<br>Inventory · CRM · Orders</div>
+    </div>
+  </div>
+
+  <div class="info-box note">
+    <strong>📋 ทำไมต้อง Bridge Layer?</strong><br>
+    Sevenday ERP ทำงานบน Google Apps Script (GAS) ซึ่ง expose endpoint เป็น Web App URL โดยตรง แต่ Website ไม่ควรเรียก GAS ตรงเพราะ: (1) ไม่มี Auth layer, (2) CORS ไม่ยืดหยุ่น, (3) Rate limit ของ Google, (4) ยากต่อการ version ในอนาคต. Bridge Layer แก้ทั้ง 4 ข้อนี้
+  </div>
+
+  <h3 style="font-size:16px;font-weight:700;margin:24px 0 12px">Deployment Options (เลือกตามงบและ tech stack)</h3>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    <div class="auth-card">
+      <div class="auth-card-title"><span>☁️</span> Option A — GAS Direct</div>
+      <p>ใช้ GAS Web App เป็น API โดยตรง เพิ่ม doGet/doPost ใน Sevenday ERP ที่มีอยู่แล้ว เหมาะกับช่วงแรก ต้นทุนศูนย์</p>
+      <div class="code-block" style="font-size:11px">
+<span class="comment">// ใน Code.gs ของ ERP</span>
+<span class="key">function</span> doGet(e) {
+  <span class="key">const</span> action = e.parameter.action;
+  <span class="key">return</span> handleGet(action, e);
+}
+      </div>
+    </div>
+    <div class="auth-card" style="border-color:var(--blue)">
+      <div class="auth-card-title"><span>⚡</span> Option B — Cloudflare Workers</div>
+      <p>Proxy ผ่าน Cloudflare Workers (Free tier) ได้ Auth, CORS, Rate limit โดยไม่มี Server — <strong>แนะนำสำหรับ Sevenday</strong></p>
+      <div class="code-block" style="font-size:11px">
+<span class="comment">// worker.js</span>
+<span class="key">export default</span> {
+  <span class="key">async</span> fetch(req, env) {
+    <span class="comment">// Auth → Proxy to GAS</span>
+    <span class="key">return</span> proxyToGAS(req);
+  }
+}
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-card-title"><span>🐍</span> Option C — Python/Node</div>
+      <p>Server จริง (VPS/Railway/Render) มีความยืดหยุ่นสูงสุด เหมาะเมื่อระบบเติบโตและต้องการ database แยก</p>
+      <div class="code-block" style="font-size:11px">
+<span class="comment"># FastAPI / Express</span>
+<span class="key">@app</span>.get(<span class="str">"/api/v1/products"</span>)
+<span class="key">async def</span> get_products():
+    <span class="key">return</span> fetch_from_gas()
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S2: ARCHITECTURE ══ -->
+<section class="doc-section" id="s2">
+  <div class="section-eyebrow">§ 2 · Architecture</div>
+  <h2 class="section-title">System Architecture</h2>
+  <p class="section-sub">Layer แต่ละชั้นและความรับผิดชอบ</p>
+
+  <div class="arch-diagram">
+    <div class="arch-layer layer-web">
+      <div class="arch-layer-icon">🌐</div>
+      <div class="arch-layer-body">
+        <div class="arch-layer-title">Layer 1 — Website Frontend</div>
+        <div class="arch-layer-desc">HTML/JS Pages — ทุก Module ที่สร้างแล้ว (Homepage → Film)</div>
+        <div class="arch-layer-tags">
+          <span class="arch-tag">index.html</span><span class="arch-tag">catalogue.html</span><span class="arch-tag">product.html</span>
+          <span class="arch-tag">cart.html</span><span class="arch-tag">checkout.html</span><span class="arch-tag">service.html</span>
+          <span class="arch-tag">film.html</span>
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ HTTPS/JSON</div>
+    <div class="arch-layer layer-api">
+      <div class="arch-layer-icon">🔌</div>
+      <div class="arch-layer-body">
+        <div class="arch-layer-title">Layer 2 — API Gateway (Bridge)</div>
+        <div class="arch-layer-desc">Auth, Rate Limiting, CORS, Request validation, Response caching, Error handling</div>
+        <div class="arch-layer-tags">
+          <span class="arch-tag">Cloudflare Workers (แนะนำ)</span><span class="arch-tag">API Key Auth</span>
+          <span class="arch-tag">JWT Sessions</span><span class="arch-tag">Rate Limit</span><span class="arch-tag">Cache 5 min</span>
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ HTTPS/GAS Web App URL</div>
+    <div class="arch-layer layer-bridge">
+      <div class="arch-layer-icon">⚙️</div>
+      <div class="arch-layer-body">
+        <div class="arch-layer-title">Layer 3 — GAS Web App (doGet/doPost)</div>
+        <div class="arch-layer-desc">Router ใน Google Apps Script — รับ request, อ่าน/เขียน Sheets, return JSON</div>
+        <div class="arch-layer-tags">
+          <span class="arch-tag">Code.gs Router</span><span class="arch-tag">ProductService.gs</span>
+          <span class="arch-tag">OrderService.gs</span><span class="arch-tag">CustomerService.gs</span>
+          <span class="arch-tag">BookingService.gs</span>
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ SpreadsheetApp API</div>
+    <div class="arch-layer layer-erp">
+      <div class="arch-layer-icon">📊</div>
+      <div class="arch-layer-body">
+        <div class="arch-layer-title">Layer 4 — Sevenday ERP (Google Sheets)</div>
+        <div class="arch-layer-desc">Single source of truth — Inventory, Orders, Customers, Bookings, Finance</div>
+        <div class="arch-layer-tags">
+          <span class="arch-tag">Sheet: Products</span><span class="arch-tag">Sheet: Orders</span>
+          <span class="arch-tag">Sheet: Customers</span><span class="arch-tag">Sheet: Bookings</span>
+          <span class="arch-tag">Sheet: Inventory</span><span class="arch-tag">Sheet: Finance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <strong>✓ Base URL Convention:</strong><br>
+    <code style="font-family:var(--font-mono);font-size:13px">https://api.sevendaybike.la/v1/{resource}</code><br>
+    ทุก endpoint ใช้ prefix <code style="font-family:var(--font-mono)">/v1/</code> เพื่อให้ upgrade เป็น v2 ได้โดยไม่ broke existing clients
+  </div>
+</section>
+
+<!-- ══ S3: AUTH ══ -->
+<section class="doc-section" id="s3">
+  <div class="section-eyebrow">§ 3 · Authentication</div>
+  <h2 class="section-title">Auth & Security</h2>
+  <p class="section-sub">สองระดับ — Public สำหรับ Browse, Authenticated สำหรับ Order/Account</p>
+
+  <div class="auth-grid">
+    <div class="auth-card">
+      <div class="auth-card-title">🔑 API Key (Server → Server)</div>
+      <p>ใช้สำหรับ Admin Panel และ GAS Bridge เรียก API โดยตรง ส่งใน Header ทุก request</p>
+      <div class="code-block">
+<span class="comment">// Request Header</span>
+<span class="key">X-API-Key</span>: <span class="str">sk_live_sevenday_xxxx</span>
+<span class="key">Content-Type</span>: <span class="str">application/json</span>
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-card-title">🎫 JWT Token (Customer Session)</div>
+      <p>ลูกค้า Login ผ่าน /auth/login ได้ JWT Token อายุ 7 วัน ส่งใน Authorization header</p>
+      <div class="code-block">
+<span class="comment">// Authorization Header</span>
+<span class="key">Authorization</span>: <span class="str">Bearer eyJhbGci...</span>
+
+<span class="comment">// JWT Payload</span>
+{
+  <span class="key">"sub"</span>: <span class="str">"CUST-2024-001"</span>,
+  <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span>,
+  <span class="key">"exp"</span>: <span class="num">1735689600</span>
+}
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-card-title">🌐 Public Endpoints (No Auth)</div>
+      <p>Products, Categories, Store Info, Service Packages — ใครก็เรียกได้ ไม่ต้องใช้ Auth</p>
+      <div class="code-block">
+<span class="comment">// Public — ไม่ต้องส่ง Header</span>
+GET /v1/products
+GET /v1/products/:id
+GET /v1/categories
+GET /v1/services
+GET /v1/store/info
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-card-title">🔒 Protected Endpoints</div>
+      <p>Orders, Cart, Account, Bookings — ต้องมี JWT. Admin endpoints ต้องมี API Key + Admin role</p>
+      <div class="code-block">
+<span class="comment">// Protected — ต้องมี JWT</span>
+POST /v1/orders
+GET  /v1/account/orders
+POST /v1/bookings
+
+<span class="comment">// Admin — ต้องมี API Key</span>
+GET  /v1/admin/orders
+PUT  /v1/admin/products/:id
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box warning">
+    <strong>⚠ GAS Web App Security:</strong>
+    GAS Web App URL เป็น "Anyone" by default — ต้องตรวจสอบ custom secret key ใน GAS ด้วยตัวเอง (Bridge ส่ง <code style="font-family:var(--font-mono)">X-GAS-Secret</code> Header ทุก request, GAS ตรวจก่อน process)
+  </div>
+</section>
+
+<!-- ══ S4: ENDPOINTS ══ -->
+<section class="doc-section" id="s4">
+  <div class="section-eyebrow">§ 4 · Endpoints</div>
+  <h2 class="section-title">API Endpoints</h2>
+  <p class="section-sub">คลิกที่ Endpoint เพื่อดู Request/Response format</p>
+
+  <!-- PRODUCTS -->
+  <div class="endpoint-group">
+    <div class="endpoint-group-title"><span>🚲</span> Products & Catalogue</div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/v1/products</span>
+        <span class="endpoint-desc">ดึงรายการสินค้าทั้งหมด + filter</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Query Parameters</div>
+          <div class="code-block">
+?category=bikes         <span class="comment">// bikes | parts | accessories | used</span>
+&brand=Trek             <span class="comment">// ชื่อ Brand</span>
+&price_min=1000000      <span class="comment">// ราคาต่ำสุด (LAK)</span>
+&price_max=20000000     <span class="comment">// ราคาสูงสุด (LAK)</span>
+&in_stock=true          <span class="comment">// เฉพาะมีสินค้า</span>
+&sort=price_asc         <span class="comment">// price_asc | price_desc | newest | popular</span>
+&page=1&limit=24        <span class="comment">// Pagination</span>
+          </div>
+        </div>
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 200</div>
+          <div class="code-block">
+{
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="str">"TRK-MAR5-G3"</span>,
+      <span class="key">"name_lo"</span>: <span class="str">"Trek Marlin 5 Gen 3 MTB 2024"</span>,
+      <span class="key">"name_en"</span>: <span class="str">"Trek Marlin 5 Gen 3 MTB 2024"</span>,
+      <span class="key">"brand"</span>: <span class="str">"Trek"</span>,
+      <span class="key">"category"</span>: <span class="str">"bikes"</span>,
+      <span class="key">"price_lak"</span>: <span class="num">8900000</span>,
+      <span class="key">"price_thb"</span>: <span class="num">16040</span>,
+      <span class="key">"price_usd"</span>: <span class="num">424</span>,
+      <span class="key">"stock"</span>: <span class="num">4</span>,
+      <span class="key">"in_stock"</span>: <span class="bool">true</span>,
+      <span class="key">"images"</span>: [<span class="str">"https://..."</span>],
+      <span class="key">"is_sale"</span>: <span class="bool">false</span>,
+      <span class="key">"sale_price_lak"</span>: <span class="bool">null</span>
+    }
+  ],
+  <span class="key">"meta"</span>: {
+    <span class="key">"total"</span>: <span class="num">206</span>,
+    <span class="key">"page"</span>: <span class="num">1</span>,
+    <span class="key">"limit"</span>: <span class="num">24</span>,
+    <span class="key">"pages"</span>: <span class="num">9</span>
+  }
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/v1/products/:id</span>
+        <span class="endpoint-desc">รายละเอียดสินค้าชิ้นเดียว</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 200</div>
+          <div class="code-block">
+{
+  <span class="key">"id"</span>: <span class="str">"TRK-MAR5-G3"</span>,
+  <span class="key">"sku"</span>: <span class="str">"TRK-MAR5-G3-M"</span>,
+  <span class="key">"name_lo"</span>: <span class="str">"Trek Marlin 5 Gen 3 MTB 2024"</span>,
+  <span class="key">"description_lo"</span>: <span class="str">"..."</span>,
+  <span class="key">"specs"</span>: {
+    <span class="key">"frame"</span>: <span class="str">"Alpha Silver Aluminium"</span>,
+    <span class="key">"fork"</span>: <span class="str">"SR Suntour XCE 28"</span>,
+    <span class="key">"gears"</span>: <span class="str">"Shimano Altus 3x8"</span>
+  },
+  <span class="key">"variants"</span>: [
+    { <span class="key">"size"</span>: <span class="str">"S"</span>, <span class="key">"stock"</span>: <span class="num">1</span> },
+    { <span class="key">"size"</span>: <span class="str">"M"</span>, <span class="key">"stock"</span>: <span class="num">2</span> },
+    { <span class="key">"size"</span>: <span class="str">"L"</span>, <span class="key">"stock"</span>: <span class="num">1</span> }
+  ],
+  <span class="key">"related_ids"</span>: [<span class="str">"TRK-MAR7-G3"</span>, <span class="str">"GNT-TAL3"</span>]
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="endpoint-group">
+    <div class="endpoint-group-title"><span>📦</span> Orders</div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/v1/orders</span>
+        <span class="endpoint-desc">สร้าง Order ใหม่ [JWT required]</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Request Body</div>
+          <div class="code-block">
+{
+  <span class="key">"items"</span>: [
+    {
+      <span class="key">"product_id"</span>: <span class="str">"TRK-MAR5-G3"</span>,
+      <span class="key">"variant"</span>: <span class="str">"M"</span>,
+      <span class="key">"qty"</span>: <span class="num">1</span>
+    }
+  ],
+  <span class="key">"customer"</span>: {
+    <span class="key">"name"</span>: <span class="str">"ສົມຈິດ ພ."</span>,
+    <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span>,
+    <span class="key">"line_id"</span>: <span class="str">"@somjit"</span>
+  },
+  <span class="key">"delivery_method"</span>: <span class="str">"click_collect"</span>, <span class="comment">// click_collect | delivery</span>
+  <span class="key">"payment_method"</span>: <span class="str">"qr_bcel"</span>,        <span class="comment">// qr_bcel | cash | card</span>
+  <span class="key">"currency"</span>: <span class="str">"LAK"</span>,
+  <span class="key">"coupon_code"</span>: <span class="str">"SEVENDAY10"</span>        <span class="comment">// optional</span>
+}
+          </div>
+        </div>
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 201</div>
+          <div class="code-block">
+{
+  <span class="key">"order_id"</span>: <span class="str">"SD-2024-1043"</span>,
+  <span class="key">"status"</span>: <span class="str">"pending"</span>,
+  <span class="key">"subtotal_lak"</span>: <span class="num">8900000</span>,
+  <span class="key">"discount_lak"</span>: <span class="num">890000</span>,
+  <span class="key">"total_lak"</span>: <span class="num">8010000</span>,
+  <span class="key">"total_thb"</span>: <span class="num">14418</span>,
+  <span class="key">"total_usd"</span>: <span class="num">381</span>,
+  <span class="key">"created_at"</span>: <span class="str">"2024-09-15T09:30:00Z"</span>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/v1/orders/:order_id</span>
+        <span class="endpoint-desc">ดูสถานะ Order [JWT required]</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 200</div>
+          <div class="code-block">
+{
+  <span class="key">"order_id"</span>: <span class="str">"SD-2024-1043"</span>,
+  <span class="key">"status"</span>: <span class="str">"ready"</span>, <span class="comment">// pending|processing|ready|completed|cancelled</span>
+  <span class="key">"timeline"</span>: [
+    { <span class="key">"status"</span>: <span class="str">"pending"</span>,    <span class="key">"at"</span>: <span class="str">"2024-09-15T09:30:00Z"</span> },
+    { <span class="key">"status"</span>: <span class="str">"processing"</span>, <span class="key">"at"</span>: <span class="str">"2024-09-15T10:00:00Z"</span> },
+    { <span class="key">"status"</span>: <span class="str">"ready"</span>,      <span class="key">"at"</span>: <span class="str">"2024-09-15T14:30:00Z"</span> }
+  ],
+  <span class="key">"items"</span>: [...],
+  <span class="key">"total_lak"</span>: <span class="num">8010000</span>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div class="endpoint-group">
+    <div class="endpoint-group-title"><span>📦</span> Inventory</div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/v1/inventory/check</span>
+        <span class="endpoint-desc">ตรวจ stock real-time ก่อน Add to Cart</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Request Body</div>
+          <div class="code-block">
+POST /v1/inventory/check
+{
+  <span class="key">"items"</span>: [
+    { <span class="key">"product_id"</span>: <span class="str">"TRK-MAR5-G3"</span>, <span class="key">"variant"</span>: <span class="str">"M"</span>, <span class="key">"qty"</span>: <span class="num">1</span> }
+  ]
+}
+          </div>
+        </div>
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 200</div>
+          <div class="code-block">
+{
+  <span class="key">"available"</span>: <span class="bool">true</span>,
+  <span class="key">"items"</span>: [
+    {
+      <span class="key">"product_id"</span>: <span class="str">"TRK-MAR5-G3"</span>,
+      <span class="key">"variant"</span>: <span class="str">"M"</span>,
+      <span class="key">"requested"</span>: <span class="num">1</span>,
+      <span class="key">"available_qty"</span>: <span class="num">2</span>,
+      <span class="key">"ok"</span>: <span class="bool">true</span>
+    }
+  ]
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div class="endpoint-group">
+    <div class="endpoint-group-title"><span>📅</span> Service Bookings</div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/v1/bookings</span>
+        <span class="endpoint-desc">สร้าง Workshop Booking ใหม่</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Request Body</div>
+          <div class="code-block">
+{
+  <span class="key">"service_type"</span>: <span class="str">"standard"</span>,   <span class="comment">// basic|standard|ultimate|repair|film</span>
+  <span class="key">"date"</span>: <span class="str">"2024-09-18"</span>,
+  <span class="key">"time_slot"</span>: <span class="str">"09:00"</span>,
+  <span class="key">"bike"</span>: {
+    <span class="key">"brand"</span>: <span class="str">"Trek"</span>,
+    <span class="key">"model"</span>: <span class="str">"Marlin 5"</span>
+  },
+  <span class="key">"customer"</span>: {
+    <span class="key">"name"</span>: <span class="str">"ສົມຈິດ ພ."</span>,
+    <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span>,
+    <span class="key">"line_id"</span>: <span class="str">"@somjit"</span>
+  },
+  <span class="key">"notes"</span>: <span class="str">"Brake หน่วง"</span>
+}
+          </div>
+        </div>
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 201</div>
+          <div class="code-block">
+{
+  <span class="key">"booking_id"</span>: <span class="str">"SVC-2024-088"</span>,
+  <span class="key">"status"</span>: <span class="str">"pending_confirm"</span>,
+  <span class="key">"slot"</span>: <span class="str">"2024-09-18T09:00:00+07:00"</span>,
+  <span class="key">"service_price_lak"</span>: <span class="num">200000</span>,
+  <span class="key">"note"</span>: <span class="str">"ช่าง Sevenday จะ Confirm ภายใน 2 ชม."</span>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/v1/bookings/slots</span>
+        <span class="endpoint-desc">ดู time slots ที่ว่างในวันที่เลือก</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Query</div>
+          <div class="code-block">?date=2024-09-18</div>
+        </div>
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 200</div>
+          <div class="code-block">
+{
+  <span class="key">"date"</span>: <span class="str">"2024-09-18"</span>,
+  <span class="key">"slots"</span>: [
+    { <span class="key">"time"</span>: <span class="str">"09:00"</span>, <span class="key">"available"</span>: <span class="bool">true</span>  },
+    { <span class="key">"time"</span>: <span class="str">"09:30"</span>, <span class="key">"available"</span>: <span class="bool">false</span> },
+    { <span class="key">"time"</span>: <span class="str">"10:00"</span>, <span class="key">"available"</span>: <span class="bool">true</span>  }
+  ]
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH -->
+  <div class="endpoint-group">
+    <div class="endpoint-group-title"><span>🔐</span> Auth & Customers</div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/v1/auth/login</span>
+        <span class="endpoint-desc">Login ด้วยเบอร์โทร + OTP</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Flow</div>
+          <div class="code-block">
+<span class="comment">// Step 1: ขอ OTP</span>
+POST /v1/auth/otp/request
+{ <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span> }
+
+<span class="comment">// Step 2: Verify OTP → ได้ JWT</span>
+POST /v1/auth/otp/verify
+{
+  <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span>,
+  <span class="key">"otp"</span>: <span class="str">"123456"</span>
+}
+
+<span class="comment">// Response</span>
+{
+  <span class="key">"token"</span>: <span class="str">"eyJhbGci..."</span>,
+  <span class="key">"expires_in"</span>: <span class="num">604800</span>,  <span class="comment">// 7 days</span>
+  <span class="key">"customer"</span>: {
+    <span class="key">"id"</span>: <span class="str">"CUST-2024-001"</span>,
+    <span class="key">"name"</span>: <span class="str">"ສົມຈິດ ພ."</span>,
+    <span class="key">"loyalty_points"</span>: <span class="num">450</span>
+  }
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/v1/account/profile</span>
+        <span class="endpoint-desc">ข้อมูลลูกค้า + loyalty points [JWT]</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 200</div>
+          <div class="code-block">
+{
+  <span class="key">"id"</span>: <span class="str">"CUST-2024-001"</span>,
+  <span class="key">"name"</span>: <span class="str">"ສົມຈິດ ພ."</span>,
+  <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span>,
+  <span class="key">"loyalty_points"</span>: <span class="num">450</span>,
+  <span class="key">"tier"</span>: <span class="str">"VIP"</span>,
+  <span class="key">"total_spent_lak"</span>: <span class="num">22900000</span>,
+  <span class="key">"bikes"</span>: [
+    { <span class="key">"brand"</span>: <span class="str">"Trek"</span>, <span class="key">"model"</span>: <span class="str">"Marlin 5"</span>, <span class="key">"service_due"</span>: <span class="str">"2024-11-01"</span> }
+  ]
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILM -->
+  <div class="endpoint-group">
+    <div class="endpoint-group-title"><span>🎨</span> Film Wrap</div>
+    <div class="endpoint-card">
+      <div class="endpoint-head" onclick="toggleEndpoint(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/v1/film/requests</span>
+        <span class="endpoint-desc">ส่ง Film Wrap quotation request</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Request Body</div>
+          <div class="code-block">
+{
+  <span class="key">"bike"</span>: { <span class="key">"brand"</span>: <span class="str">"Trek"</span>, <span class="key">"model"</span>: <span class="str">"Marlin 5"</span> },
+  <span class="key">"package"</span>: <span class="str">"full_frame"</span>,       <span class="comment">// accent|full_frame|full_bike</span>
+  <span class="key">"color_name"</span>: <span class="str">"Sevenday Red"</span>,
+  <span class="key">"color_hex"</span>: <span class="str">"#D42B2B"</span>,
+  <span class="key">"finish"</span>: <span class="str">"gloss"</span>,               <span class="comment">// gloss|matte|satin</span>
+  <span class="key">"customer"</span>: {
+    <span class="key">"name"</span>: <span class="str">"ສົມຈິດ"</span>, <span class="key">"phone"</span>: <span class="str">"020XXXXXXXX"</span>
+  },
+  <span class="key">"notes"</span>: <span class="str">"ต้องการทำเหมือน Trek Factory Edition"</span>
+}
+          </div>
+        </div>
+        <div class="endpoint-section">
+          <div class="endpoint-section-label">Response 201</div>
+          <div class="code-block">
+{
+  <span class="key">"request_id"</span>: <span class="str">"FLM-2024-0012"</span>,
+  <span class="key">"status"</span>: <span class="str">"pending_quote"</span>,
+  <span class="key">"note"</span>: <span class="str">"Sevenday จะติดต่อกลับภายใน 24 ชม."</span>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S5: DATA MODELS ══ -->
+<section class="doc-section" id="s5">
+  <div class="section-eyebrow">§ 5 · Data Models</div>
+  <h2 class="section-title">Data Models (Sheets Schema)</h2>
+  <p class="section-sub">โครงสร้างข้อมูลใน Google Sheets — แต่ละ Sheet คือ 1 Table</p>
+
+  <div class="model-grid">
+    <div class="model-card">
+      <div class="model-head">
+        <span class="model-head-icon">🚲</span>
+        <span class="model-head-title">Sheet: Products</span>
+        <span class="model-head-tag" style="background:var(--blue-bg);color:var(--blue)">Inventory</span>
+      </div>
+      <div class="model-fields">
+        <div class="model-field"><span class="field-name">product_id</span><span class="field-type">string</span><span class="field-desc">SKU เช่น TRK-MAR5-G3 (Primary Key)</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">name_lo</span><span class="field-type">string</span><span class="field-desc">ชื่อภาษาลาว</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">name_en</span><span class="field-type">string</span><span class="field-desc">ชื่อภาษาอังกฤษ</span></div>
+        <div class="model-field"><span class="field-name">brand</span><span class="field-type">string</span><span class="field-desc">Trek, Giant, Specialized...</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">category</span><span class="field-type">string</span><span class="field-desc">bikes / parts / accessories / used</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">price_lak</span><span class="field-type">number</span><span class="field-desc">ราคา LAK (ราคาหลัก)</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">sale_price_lak</span><span class="field-type">number</span><span class="field-desc">ราคาลด ถ้ามี (null = ปกติ)</span></div>
+        <div class="model-field"><span class="field-name">stock</span><span class="field-type">number</span><span class="field-desc">จำนวนสินค้าคงเหลือ</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">status</span><span class="field-type">string</span><span class="field-desc">active / draft / archived</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">image_urls</span><span class="field-type">string</span><span class="field-desc">comma-separated URLs</span></div>
+        <div class="model-field"><span class="field-name">specs_json</span><span class="field-type">string</span><span class="field-desc">JSON สเปคสินค้า</span></div>
+        <div class="model-field"><span class="field-name">updated_at</span><span class="field-type">datetime</span><span class="field-desc">Auto-update เมื่อแก้ไข</span></div>
+      </div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-head">
+        <span class="model-head-icon">📦</span>
+        <span class="model-head-title">Sheet: Orders</span>
+        <span class="model-head-tag" style="background:var(--red-lite);color:var(--red)">Sales</span>
+      </div>
+      <div class="model-fields">
+        <div class="model-field"><span class="field-name">order_id</span><span class="field-type">string</span><span class="field-desc">SD-YYYY-NNNN (Auto-generate)</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">customer_id</span><span class="field-type">string</span><span class="field-desc">FK → Customers sheet</span></div>
+        <div class="model-field"><span class="field-name">customer_name</span><span class="field-type">string</span><span class="field-desc">Denormalized ชื่อลูกค้า</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">customer_phone</span><span class="field-type">string</span><span class="field-desc">เบอร์ติดต่อ</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">items_json</span><span class="field-type">string</span><span class="field-desc">JSON array ของสินค้าที่สั่ง</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">subtotal_lak</span><span class="field-type">number</span><span class="field-desc">ราคาก่อนลด (LAK)</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">discount_lak</span><span class="field-type">number</span><span class="field-desc">ส่วนลด (LAK)</span></div>
+        <div class="model-field"><span class="field-name">total_lak</span><span class="field-type">number</span><span class="field-desc">ยอดสุทธิ (LAK)</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">currency_paid</span><span class="field-type">string</span><span class="field-desc">LAK / THB / USD</span></div>
+        <div class="model-field"><span class="field-name">delivery_method</span><span class="field-type">string</span><span class="field-desc">click_collect / delivery</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">payment_method</span><span class="field-type">string</span><span class="field-desc">qr_bcel / cash / card</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">status</span><span class="field-type">string</span><span class="field-desc">pending→processing→ready→completed</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">source</span><span class="field-type">string</span><span class="field-desc">website / pos / walk_in / line</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">created_at</span><span class="field-type">datetime</span><span class="field-desc">ISO 8601 (+07:00)</span><span class="field-req">REQ</span></div>
+      </div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-head">
+        <span class="model-head-icon">👥</span>
+        <span class="model-head-title">Sheet: Customers</span>
+        <span class="model-head-tag" style="background:var(--purple-bg);color:var(--purple)">CRM</span>
+      </div>
+      <div class="model-fields">
+        <div class="model-field"><span class="field-name">customer_id</span><span class="field-type">string</span><span class="field-desc">CUST-YYYY-NNNN</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">name</span><span class="field-type">string</span><span class="field-desc">ชื่อลูกค้า</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">phone</span><span class="field-type">string</span><span class="field-desc">เบอร์ (Unique key)</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">line_id</span><span class="field-type">string</span><span class="field-desc">LINE ID</span></div>
+        <div class="model-field"><span class="field-name">email</span><span class="field-type">string</span><span class="field-desc">Email (optional)</span></div>
+        <div class="model-field"><span class="field-name">loyalty_points</span><span class="field-type">number</span><span class="field-desc">คะแนนสะสม (1 LAK = 1 pt)</span></div>
+        <div class="model-field"><span class="field-name">tier</span><span class="field-type">string</span><span class="field-desc">Guest / Member / VIP</span></div>
+        <div class="model-field"><span class="field-name">total_orders</span><span class="field-type">number</span><span class="field-desc">จำนวน Order ทั้งหมด</span></div>
+        <div class="model-field"><span class="field-name">total_spent_lak</span><span class="field-type">number</span><span class="field-desc">ยอดซื้อสะสม (LAK)</span></div>
+        <div class="model-field"><span class="field-name">bikes_json</span><span class="field-type">string</span><span class="field-desc">JSON list ของจักรยานที่ลูกค้ามี</span></div>
+        <div class="model-field"><span class="field-name">created_at</span><span class="field-type">datetime</span><span class="field-desc">วันที่ลงทะเบียน</span></div>
+      </div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-head">
+        <span class="model-head-icon">📅</span>
+        <span class="model-head-title">Sheet: Bookings</span>
+        <span class="model-head-tag" style="background:var(--lime-bg);color:var(--lime)">Service</span>
+      </div>
+      <div class="model-fields">
+        <div class="model-field"><span class="field-name">booking_id</span><span class="field-type">string</span><span class="field-desc">SVC-YYYY-NNN</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">service_type</span><span class="field-type">string</span><span class="field-desc">basic/standard/ultimate/repair/film</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">slot_date</span><span class="field-type">date</span><span class="field-desc">วันนัด YYYY-MM-DD</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">slot_time</span><span class="field-type">string</span><span class="field-desc">เวลา HH:MM</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">customer_name</span><span class="field-type">string</span><span class="field-desc">ชื่อลูกค้า</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">customer_phone</span><span class="field-type">string</span><span class="field-desc">เบอร์</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">bike_info</span><span class="field-type">string</span><span class="field-desc">Brand + Model</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">mechanic</span><span class="field-type">string</span><span class="field-desc">ชื่อช่างที่รับงาน</span></div>
+        <div class="model-field"><span class="field-name">status</span><span class="field-type">string</span><span class="field-desc">pending→confirmed→in_progress→done</span><span class="field-req">REQ</span></div>
+        <div class="model-field"><span class="field-name">price_lak</span><span class="field-type">number</span><span class="field-desc">ค่า Service (ไม่รวม Parts)</span></div>
+        <div class="model-field"><span class="field-name">parts_lak</span><span class="field-type">number</span><span class="field-desc">ค่า Parts เพิ่มเติม</span></div>
+        <div class="model-field"><span class="field-name">notes</span><span class="field-type">string</span><span class="field-desc">หมายเหตุ</span></div>
+        <div class="model-field"><span class="field-name">created_at</span><span class="field-type">datetime</span><span class="field-desc">เวลาจอง</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S6: SYNC STRATEGY ══ -->
+<section class="doc-section" id="s6">
+  <div class="section-eyebrow">§ 6 · Sync Strategy</div>
+  <h2 class="section-title">Data Sync Strategy</h2>
+  <p class="section-sub">อะไรควร sync ทิศทางไหน และ trigger เมื่อไหร่</p>
+
+  <table class="sync-table">
+    <thead>
+      <tr>
+        <th>Data</th><th>ทิศทาง</th><th>Trigger</th><th>Frequency</th><th>หมายเหตุ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Products / Prices</strong></td>
+        <td><span class="direction dir-pull">← ERP → Web</span></td>
+        <td><span class="trigger-chip">⏰ Scheduled</span></td>
+        <td>ทุก 15 นาที + Manual</td>
+        <td>Cache บน Website, ERP เป็น source of truth</td>
+      </tr>
+      <tr>
+        <td><strong>Stock / Inventory</strong></td>
+        <td><span class="direction dir-pull">← ERP → Web</span></td>
+        <td><span class="trigger-chip">⚡ Real-time</span></td>
+        <td>ทุก checkout + On-demand</td>
+        <td>ต้องตรวจ real-time ก่อน confirm Order</td>
+      </tr>
+      <tr>
+        <td><strong>New Orders</strong></td>
+        <td><span class="direction dir-push">Web → ERP →</span></td>
+        <td><span class="trigger-chip">⚡ On Event</span></td>
+        <td>ทันทีที่ลูกค้า checkout</td>
+        <td>Web push → GAS เขียน Sheets → POS รับงาน</td>
+      </tr>
+      <tr>
+        <td><strong>Order Status</strong></td>
+        <td><span class="direction dir-pull">← ERP → Web</span></td>
+        <td><span class="trigger-chip">⏰ Scheduled</span></td>
+        <td>ทุก 5 นาที</td>
+        <td>POS อัพเดตสถานะ → Website แสดงผล</td>
+      </tr>
+      <tr>
+        <td><strong>Service Bookings</strong></td>
+        <td><span class="direction dir-both">↔ Both</span></td>
+        <td><span class="trigger-chip">⚡ On Event</span></td>
+        <td>ทันทีที่จอง / Confirm</td>
+        <td>Web สร้าง Booking → ERP Confirm → Web แสดง status</td>
+      </tr>
+      <tr>
+        <td><strong>Customers / CRM</strong></td>
+        <td><span class="direction dir-both">↔ Both</span></td>
+        <td><span class="trigger-chip">⚡ On Event</span></td>
+        <td>เมื่อมี New Order / ลงทะเบียน</td>
+        <td>Upsert — ถ้า phone มีแล้วใน CRM ให้ update แทน insert</td>
+      </tr>
+      <tr>
+        <td><strong>Loyalty Points</strong></td>
+        <td><span class="direction dir-pull">← ERP → Web</span></td>
+        <td><span class="trigger-chip">⏰ Scheduled</span></td>
+        <td>ทุก 1 ชม.</td>
+        <td>คำนวณใน ERP/POS ส่งกลับมาแสดงบน Account page</td>
+      </tr>
+      <tr>
+        <td><strong>Film Requests</strong></td>
+        <td><span class="direction dir-push">Web → ERP →</span></td>
+        <td><span class="trigger-chip">⚡ On Submit</span></td>
+        <td>ทันทีที่ Submit form</td>
+        <td>บันทึกลง Bookings Sheet ประเภท "film"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box warning" style="margin-top:20px">
+    <strong>⚠ GAS Date Serialization Bug:</strong>
+    ระวัง Date object ใน Apps Script ที่แปลงเป็น string — ใช้ <code style="font-family:var(--font-mono)">new Date(value).toISOString()</code> เสมอ และตรวจสอบ timezone offset (<code style="font-family:var(--font-mono)">+07:00</code> สำหรับ Vientiane) ก่อน write ลง Sheets
+  </div>
+</section>
+
+<!-- ══ S7: ERP BRIDGE ══ -->
+<section class="doc-section" id="s7">
+  <div class="section-eyebrow">§ 7 · ERP Bridge</div>
+  <h2 class="section-title">GAS Bridge Implementation</h2>
+  <p class="section-sub">โค้ด template สำหรับเพิ่มใน Sevenday ERP (Code.gs)</p>
+
+  <div class="auth-card" style="margin-bottom:16px">
+    <div class="auth-card-title">📄 Router Pattern (เพิ่มใน Code.gs)</div>
+    <div class="code-block" style="font-size:12px">
+<span class="comment">/**
+ * Sevenday ERP — Web API Bridge
+ * เพิ่มไฟล์นี้ในโปรเจกต์ GAS ของ Sevenday ERP
+ */</span>
+
+<span class="key">const</span> GAS_SECRET = PropertiesService
+  .getScriptProperties().getProperty(<span class="str">'WEB_API_SECRET'</span>);
+
+<span class="key">function</span> doGet(e) {
+  <span class="key">if</span> (!verifySecret(e)) <span class="key">return</span> err(<span class="num">401</span>, <span class="str">'Unauthorized'</span>);
+
+  <span class="key">const</span> action = e.parameter.action;
+  <span class="key">switch</span>(action) {
+    <span class="key">case</span> <span class="str">'getProducts'</span>:  <span class="key">return</span> getProducts(e.parameter);
+    <span class="key">case</span> <span class="str">'getProduct'</span>:   <span class="key">return</span> getProduct(e.parameter.id);
+    <span class="key">case</span> <span class="str">'getSlots'</span>:     <span class="key">return</span> getAvailableSlots(e.parameter.date);
+    <span class="key">case</span> <span class="str">'getCustomer'</span>:  <span class="key">return</span> getCustomer(e.parameter.phone);
+    <span class="key">default</span>: <span class="key">return</span> err(<span class="num">400</span>, <span class="str">'Unknown action'</span>);
+  }
+}
+
+<span class="key">function</span> doPost(e) {
+  <span class="key">if</span> (!verifySecret(e)) <span class="key">return</span> err(<span class="num">401</span>, <span class="str">'Unauthorized'</span>);
+
+  <span class="key">const</span> body = JSON.parse(e.postData.contents);
+  <span class="key">const</span> action = body.action;
+  <span class="key">switch</span>(action) {
+    <span class="key">case</span> <span class="str">'createOrder'</span>:   <span class="key">return</span> createOrder(body);
+    <span class="key">case</span> <span class="str">'createBooking'</span>: <span class="key">return</span> createBooking(body);
+    <span class="key">case</span> <span class="str">'upsertCustomer'</span>:<span class="key">return</span> upsertCustomer(body);
+    <span class="key">case</span> <span class="str">'filmRequest'</span>:   <span class="key">return</span> createFilmRequest(body);
+    <span class="key">default</span>: <span class="key">return</span> err(<span class="num">400</span>, <span class="str">'Unknown action'</span>);
+  }
+}
+
+<span class="comment">// Verify shared secret from Bridge layer</span>
+<span class="key">function</span> verifySecret(e) {
+  <span class="key">const</span> secret = (e.parameter.secret) || 
+    (e.postData ? JSON.parse(e.postData.contents).secret : <span class="bool">null</span>);
+  <span class="key">return</span> secret === GAS_SECRET;
+}
+
+<span class="comment">// Helper: return JSON response</span>
+<span class="key">function</span> ok(data) {
+  <span class="key">return</span> ContentService
+    .createTextOutput(JSON.stringify({ ok: <span class="bool">true</span>, data }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+<span class="key">function</span> err(code, msg) {
+  <span class="key">return</span> ContentService
+    .createTextOutput(JSON.stringify({ ok: <span class="bool">false</span>, error: msg, code }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+<span class="comment">// ── createOrder ──────────────────────────</span>
+<span class="key">function</span> createOrder(body) {
+  <span class="key">const</span> sheet = SpreadsheetApp
+    .openById(SHEET_ID).getSheetByName(<span class="str">'Orders'</span>);
+  <span class="key">const</span> orderId = generateOrderId();  <span class="comment">// SD-2024-NNNN</span>
+  
+  sheet.appendRow([
+    orderId,
+    body.customer.name,
+    body.customer.phone,
+    JSON.stringify(body.items),        <span class="comment">// ⚠ stringify ก่อนเสมอ</span>
+    body.subtotal_lak,
+    body.discount_lak || <span class="num">0</span>,
+    body.total_lak,
+    body.currency,
+    body.delivery_method,
+    body.payment_method,
+    <span class="str">'pending'</span>,
+    <span class="str">'website'</span>,                         <span class="comment">// source</span>
+    <span class="key">new</span> Date().toISOString()             <span class="comment">// ⚠ ใช้ ISO ป้องกัน date bug</span>
+  ]);
+
+  <span class="key">return</span> ok({ order_id: orderId, status: <span class="str">'pending'</span> });
+}
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <strong>✓ Deploy Steps สำหรับ Sevenday ERP:</strong><br>
+    1. เปิดโปรเจกต์ ERP ใน Apps Script Editor (หรือผ่าน clasp)<br>
+    2. สร้างไฟล์ใหม่ชื่อ <code style="font-family:var(--font-mono)">WebApiRouter.gs</code> — วางโค้ด Router ด้านบน<br>
+    3. Script Properties → เพิ่ม <code style="font-family:var(--font-mono)">WEB_API_SECRET=your_secret_here</code><br>
+    4. Deploy → New Deployment → Web App → Execute as Me → Anyone<br>
+    5. Copy Web App URL → ใส่ใน Cloudflare Worker / Bridge config
+  </div>
+</section>
+
+<!-- ══ S8: ROADMAP ══ -->
+<section class="doc-section" id="s8">
+  <div class="section-eyebrow">§ 8 · Roadmap</div>
+  <h2 class="section-title">Integration Roadmap</h2>
+  <p class="section-sub">ลำดับการ Integrate ที่แนะนำ — เริ่มจากง่ายที่สุดก่อน</p>
+
+  <div class="phase-grid">
+    <div class="phase-card active">
+      <span class="phase-badge active">Phase 1 — เดือน 1</span>
+      <div class="phase-title">🔌 GAS Bridge พื้นฐาน</div>
+      <ul class="phase-items">
+        <li>เพิ่ม WebApiRouter.gs ใน Sevenday ERP</li>
+        <li>Deploy GAS Web App + set Secret</li>
+        <li>Cloudflare Worker proxy พื้นฐาน</li>
+        <li>GET /v1/products จาก Sheets</li>
+        <li>POST /v1/orders → เขียน Orders sheet</li>
+        <li>POST /v1/bookings → เขียน Bookings sheet</li>
+      </ul>
+    </div>
+    <div class="phase-card upcoming">
+      <span class="phase-badge upcoming">Phase 2 — เดือน 2</span>
+      <div class="phase-title">🔐 Auth & Customer</div>
+      <ul class="phase-items">
+        <li>Phone OTP Login (Twilio/Firebase)</li>
+        <li>JWT token issue + verify</li>
+        <li>GET /v1/account endpoints</li>
+        <li>Customer upsert → CRM Sheet</li>
+        <li>Loyalty points sync</li>
+      </ul>
+    </div>
+    <div class="phase-card upcoming">
+      <span class="phase-badge upcoming">Phase 3 — เดือน 3</span>
+      <div class="phase-title">⚡ Real-time Stock & Status</div>
+      <ul class="phase-items">
+        <li>Inventory check ก่อน checkout</li>
+        <li>Order status polling (5 นาที)</li>
+        <li>Low stock alert → Admin</li>
+        <li>Admin API endpoints</li>
+        <li>Rate limiting + caching layer</li>
+      </ul>
+    </div>
+    <div class="phase-card upcoming">
+      <span class="phase-badge upcoming">Phase 4 — อนาคต</span>
+      <div class="phase-title">🚀 Advanced Features</div>
+      <ul class="phase-items">
+        <li>LINE Notify Order status</li>
+        <li>Payment gateway (BCEL Online)</li>
+        <li>Search index (Algolia/MeiliSearch)</li>
+        <li>Analytics → Sheets dashboard</li>
+        <li>Multi-branch support (ถ้าขยาย)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-box note" style="margin-top:20px">
+    <strong>📋 เริ่ม Phase 1 ได้เลยเพราะ:</strong>
+    Sevenday ERP (clasp + GAS) พร้อมแล้ว — แค่เพิ่ม WebApiRouter.gs ไฟล์เดียวก็ expose API ได้ทันที ไม่ต้องสร้าง Backend ใหม่ และ Cloudflare Workers Free tier รับ 100,000 requests/วัน เพียงพอสำหรับ Sevenday ในช่วงแรก
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<script>
+function toggleEndpoint(head) {
+  const body = head.nextElementSibling;
+  head.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// TOC scroll spy
+const sections = document.querySelectorAll('.doc-section');
+const tocLinks = document.querySelectorAll('.toc-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      tocLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#'+id);
+      });
+    }
+  });
+}, { rootMargin: '-50% 0px -49% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Smooth scroll TOC
+tocLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
