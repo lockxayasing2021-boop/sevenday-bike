@@ -1,937 +1,238 @@
 <!DOCTYPE html>
-<html lang="lo" data-theme="light">
+<html lang="lo">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ບັນຊີຂອງຂ້ອຍ / My Account — Sevenday Bike</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚴</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ບັນຊີສະມາຊິກ — Sevenday Bike</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;
-  --ink:#111;--ink-2:#444;--ink-3:#888;
-  --white:#FFF;--base:#F5F5F5;--border:#E0E0E0;--border-2:#CCC;
-  --lime:#5C8A00;--lime-bg:#EFF5E0;
-  --orange:#FF6B00;--orange-bg:#FFF3EB;
-  --blue:#1A6FBF;--blue-bg:#EBF3FF;
-  --font-ui:'Inter',-apple-system,sans-serif;
-  --font-d:'Barlow Condensed','Inter',sans-serif;
-  --max-w:1280px;--r:6px;--r-lg:10px;
-  --shadow:0 1px 4px rgba(0,0,0,.08);
-  --shadow-h:0 4px 20px rgba(0,0,0,.12);
-}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;font-family:inherit;border:none;background:none}
-.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
-
-/* ── SHARED HEADER ── */
-.announce{background:var(--ink);color:#fff;font-size:12px;font-weight:500;text-align:center;padding:7px 20px}
-.site-header{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
-.header-top{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;max-width:var(--max-w);margin:0 auto}
-.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo-mark{width:38px;height:38px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
-.logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.logo-name{font-size:17px;font-weight:800;letter-spacing:-.4px}
-.logo-sub{font-size:10px;font-weight:500;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
-.header-search{flex:1;max-width:500px;position:relative}
-.header-search input{width:100%;height:42px;border:2px solid var(--border);border-radius:21px;padding:0 46px 0 16px;font-size:14px;font-family:var(--font-ui);background:var(--base);outline:none;transition:border-color .15s}
-.header-search input:focus{border-color:var(--red);background:var(--white)}
-.header-search input::placeholder{color:var(--ink-3)}
-.search-btn{position:absolute;right:4px;top:4px;width:34px;height:34px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center}
-.search-btn svg{width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none}
-.hdr-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.hdr-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-size:10px;font-weight:600;text-transform:uppercase;transition:background .12s,color .12s;position:relative;white-space:nowrap}
-.hdr-btn:hover,.hdr-btn.active{background:var(--red-lite);color:var(--red)}
-.hdr-btn svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.hdr-badge{position:absolute;top:4px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.nav-bar{background:var(--red)}
-.nav-bar-inner{max-width:var(--max-w);margin:0 auto;padding:0 20px;display:flex;height:44px;align-items:stretch}
-.nav-link{display:flex;align-items:center;height:44px;padding:0 13px;font-size:13px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;transition:background .12s}
-.nav-link:hover{background:rgba(0,0,0,.12);color:#fff}
-.nav-link.sale{color:#FFC72C}
-.nav-ws{margin-left:auto;display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.15);white-space:nowrap}
-.nav-ws:hover{background:rgba(0,0,0,.35)}
-@media(max-width:768px){.header-search{display:none}.logo-sub{display:none}.hdr-btn span{display:none}.nav-bar{display:none}}
-
-/* ── PAGE LAYOUT ── */
-.account-page{padding:28px 0 60px}
-.account-layout{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
-@media(max-width:900px){.account-layout{grid-template-columns:1fr}}
-
-/* ── SIDEBAR ── */
-.account-sidebar{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;position:sticky;top:88px}
-
-.profile-card{
-  background:linear-gradient(135deg,var(--ink) 0%,#2A2A3A 100%);
-  padding:20px;text-align:center;
+:root{--red:#D42B2B;--dark:#1A1A2A;--lime:#5C8A00;--card:#242438;--border:#333355;--text:#E8E8F0;--muted:#9090B0}
+body{background:var(--dark);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+nav{background:#111122;border-bottom:2px solid var(--red);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:#fff;text-decoration:none}
+.nav-logo span{color:var(--red)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-link{color:var(--muted);text-decoration:none;font-size:14px}
+.nav-link:hover{color:#fff}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+main{flex:1;max-width:900px;margin:0 auto;padding:32px 16px;width:100%}
+/* HERO */
+.hero{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;gap:24px}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.hero-info h2{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;margin-bottom:4px}
+.hero-info p{color:var(--muted);font-size:14px}
+.points-badge{margin-left:auto;text-align:center;background:#1A1A2A;border:1px solid var(--border);border-radius:12px;padding:16px 24px}
+.points-num{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:var(--lime);line-height:1}
+.points-label{font-size:12px;color:var(--muted);margin-top:4px}
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px}
+.tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;border-radius:7px;color:var(--muted);transition:.2s}
+.tab.active{background:var(--red);color:#fff}
+/* TABLE */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.section-head{padding:18px 24px;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{background:#1A1A2A;padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+td{padding:14px 16px;border-bottom:1px solid #2A2A3A;font-size:14px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-green{background:rgba(92,138,0,.2);color:#90c040}
+.badge-yellow{background:rgba(255,200,0,.15);color:#ffc800}
+.badge-blue{background:rgba(60,130,255,.15);color:#6090ff}
+.badge-red{background:rgba(212,43,43,.2);color:#ff8080}
+.empty{padding:48px;text-align:center;color:var(--muted)}
+.panel{display:none}
+.panel.active{display:block}
+.loading{padding:48px;text-align:center;color:var(--muted)}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:13px}
+@media(max-width:600px){
+  .hero{flex-wrap:wrap}
+  .points-badge{margin-left:0;width:100%}
+  .tabs .tab{font-size:12px;padding:8px 4px}
 }
-.profile-avatar{
-  width:72px;height:72px;border-radius:50%;
-  background:var(--red);border:3px solid rgba(255,255,255,.2);
-  margin:0 auto 12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;font-weight:800;color:#fff;position:relative;cursor:pointer;
-}
-.avatar-edit{
-  position:absolute;bottom:0;right:0;
-  width:22px;height:22px;background:var(--white);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 1px 4px rgba(0,0,0,.2);
-}
-.avatar-edit svg{width:12px;height:12px;stroke:var(--ink);fill:none;stroke-width:2}
-.profile-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
-.profile-email{font-size:11px;color:rgba(255,255,255,.55)}
-.profile-member{
-  display:inline-flex;align-items:center;gap:4px;
-  background:rgba(255,199,44,.15);color:#FFC72C;
-  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:3px 10px;border-radius:20px;margin-top:8px;
-}
-
-.sidebar-nav{padding:8px 0}
-.sidebar-link{
-  display:flex;align-items:center;gap:10px;
-  padding:11px 18px;font-size:13px;font-weight:600;color:var(--ink-2);
-  transition:background .12s,color .12s;cursor:pointer;
-  border-left:3px solid transparent;
-}
-.sidebar-link:hover{background:var(--base);color:var(--ink)}
-.sidebar-link.active{background:var(--red-lite);color:var(--red);border-left-color:var(--red)}
-.sidebar-link svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.sidebar-link .badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px}
-.sidebar-divider{height:1px;background:var(--border);margin:6px 0}
-.sidebar-link.logout{color:var(--ink-3)}
-.sidebar-link.logout:hover{color:var(--red);background:var(--red-lite)}
-
-/* ── MAIN CONTENT ── */
-.account-main{}
-
-/* Panel header */
-.panel-head{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:20px;gap:12px;
-}
-.panel-title{font-family:var(--font-d);font-size:clamp(20px,3vw,28px);font-weight:900;text-transform:uppercase}
-
-/* Cards */
-.white-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--base)}
-.card-head h3{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
-.card-head h3 span{font-size:16px}
-.card-body{padding:18px}
-.edit-btn{font-size:12px;font-weight:600;color:var(--red);cursor:pointer;display:flex;align-items:center;gap:4px;transition:color .12s}
-.edit-btn:hover{color:var(--red-h)}
-.edit-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
-
-/* Stats row */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-@media(max-width:640px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
-.stat-card{
-  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:14px;text-align:center;
-}
-.stat-num{font-family:var(--font-d);font-size:28px;font-weight:900;color:var(--ink);line-height:1}
-.stat-label{font-size:11px;font-weight:600;color:var(--ink-3);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
-.stat-card.red .stat-num{color:var(--red)}
-.stat-card.lime .stat-num{color:var(--lime)}
-.stat-card.blue .stat-num{color:var(--blue)}
-
-/* Form fields */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:540px){.form-grid{grid-template-columns:1fr}}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group.full{grid-column:1/-1}
-.form-label{font-size:12px;font-weight:600;color:var(--ink-2)}
-.form-input,.form-select{
-  height:40px;border:1.5px solid var(--border);border-radius:var(--r);
-  padding:0 12px;font-size:13px;font-family:var(--font-ui);color:var(--ink);
-  background:var(--white);outline:none;transition:border-color .14s;width:100%;
-}
-.form-input:focus,.form-select:focus{border-color:var(--red)}
-.form-input:disabled{background:var(--base);color:var(--ink-3);cursor:not-allowed}
-.form-input::placeholder{color:var(--ink-3)}
-
-/* ── ORDERS TABLE ── */
-.orders-table{width:100%;border-collapse:collapse;font-size:13px}
-.orders-table thead tr{border-bottom:2px solid var(--border)}
-.orders-table th{padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);text-align:left;white-space:nowrap}
-.orders-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-.orders-table tr:last-child td{border-bottom:none}
-.orders-table tr:hover td{background:#FAFAFA}
-.order-id{font-weight:700;color:var(--red)}
-.order-items-preview{font-size:12px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
-.status-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
-  letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
-}
-.status-confirmed{background:var(--blue-bg);color:var(--blue)}
-.status-ready{background:var(--lime-bg);color:var(--lime)}
-.status-completed{background:var(--base);color:var(--ink-3)}
-.status-pending{background:var(--orange-bg);color:var(--orange)}
-.status-cancelled{background:var(--red-lite);color:var(--red)}
-.order-action{font-size:12px;font-weight:600;color:var(--red);cursor:pointer;transition:color .12s;white-space:nowrap}
-.order-action:hover{color:var(--red-h)}
-
-/* Order detail drawer */
-.order-drawer{
-  position:fixed;top:0;right:0;bottom:0;
-  width:min(480px,100vw);background:var(--white);
-  box-shadow:-4px 0 32px rgba(0,0,0,.16);
-  z-index:700;transform:translateX(100%);
-  transition:transform .24s;display:flex;flex-direction:column;
-}
-.order-drawer.open{transform:none}
-.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
-.drawer-head h3{font-size:15px;font-weight:700}
-.drawer-close{color:var(--ink-3);padding:5px;border-radius:var(--r);transition:background .12s}
-.drawer-close:hover{background:var(--base);color:var(--ink)}
-.drawer-close svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-.drawer-body{flex:1;overflow-y:auto;padding:20px}
-.drawer-section{margin-bottom:20px}
-.drawer-section h4{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-
-/* Order timeline */
-.timeline{display:flex;flex-direction:column;gap:0}
-.timeline-step{display:flex;gap:14px;position:relative}
-.timeline-step:not(:last-child)::after{content:'';position:absolute;left:14px;top:30px;bottom:-2px;width:2px;background:var(--border)}
-.timeline-step.done::after{background:var(--lime)}
-.tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;border:2px solid var(--border);background:var(--white);color:var(--ink-3);position:relative;z-index:1}
-.timeline-step.done .tl-dot{background:var(--lime);border-color:var(--lime);color:#fff}
-.timeline-step.active .tl-dot{background:var(--red);border-color:var(--red);color:#fff;animation:pulse-dot 1.5s ease-in-out infinite}
-@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(212,43,43,.4)}50%{box-shadow:0 0 0 6px rgba(212,43,43,0)}}
-.tl-info{padding:4px 0 18px}
-.tl-title{font-size:13px;font-weight:700;color:var(--ink)}
-.tl-time{font-size:11px;color:var(--ink-3);margin-top:2px}
-.tl-desc{font-size:12px;color:var(--ink-2);margin-top:4px;line-height:1.5}
-
-/* ── SERVICE HISTORY ── */
-.service-card{
-  background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);
-  padding:16px;margin-bottom:12px;transition:border-color .14s;
-}
-.service-card:hover{border-color:var(--border-2)}
-.svc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
-.svc-title{font-size:14px;font-weight:700;color:var(--ink)}
-.svc-date{font-size:11px;color:var(--ink-3);margin-top:2px}
-.svc-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
-.svc-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px}
-.svc-detail-item label{color:var(--ink-3);display:block;margin-bottom:2px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.svc-detail-item span{color:var(--ink-2);font-weight:500}
-.svc-note{font-size:12px;color:var(--ink-3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);line-height:1.5}
-
-/* ── MY BIKES ── */
-.bike-card{
-  display:flex;align-items:center;gap:14px;
-  background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);
-  padding:14px 16px;margin-bottom:10px;
-  transition:border-color .14s;cursor:pointer;
-}
-.bike-card:hover{border-color:var(--border-2)}
-.bike-card-img{width:64px;height:64px;background:var(--base);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;border:1px solid var(--border)}
-.bike-card-info{flex:1}
-.bike-card-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
-.bike-card-meta{font-size:12px;color:var(--ink-3);line-height:1.5}
-.bike-card-action{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
-.bike-service-due{font-size:11px;font-weight:700;color:var(--orange);background:var(--orange-bg);padding:3px 8px;border-radius:20px}
-.bike-service-ok{font-size:11px;font-weight:700;color:var(--lime);background:var(--lime-bg);padding:3px 8px;border-radius:20px}
-
-/* ── WISHLIST ── */
-.wishlist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:640px){.wishlist-grid{grid-template-columns:repeat(2,1fr)}}
-.wish-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:all .18s;position:relative}
-.wish-card:hover{box-shadow:var(--shadow-h);transform:translateY(-2px)}
-.wish-img{aspect-ratio:4/3;background:var(--base);display:flex;align-items:center;justify-content:center;font-size:40px;border-bottom:1px solid var(--border)}
-.wish-remove{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;border:1px solid var(--border);transition:background .12s}
-.wish-remove:hover{background:var(--red-lite);color:var(--red)}
-.wish-body{padding:10px 12px}
-.wish-brand{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
-.wish-name{font-size:12px;font-weight:600;color:var(--ink);line-height:1.35;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.wish-price{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:8px}
-.wish-add{width:100%;padding:7px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;border-radius:var(--r);border:none;cursor:pointer;transition:background .14s}
-.wish-add:hover{background:var(--red)}
-
-/* ── ADDRESS ── */
-.address-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:540px){.address-grid{grid-template-columns:1fr}}
-.addr-card{background:var(--base);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px;position:relative}
-.addr-card.default{border-color:var(--lime)}
-.addr-default-tag{position:absolute;top:10px;right:10px;background:var(--lime-bg);color:var(--lime);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
-.addr-name{font-size:13px;font-weight:700;margin-bottom:5px}
-.addr-text{font-size:12px;color:var(--ink-2);line-height:1.65}
-.addr-actions{display:flex;gap:10px;margin-top:10px}
-.addr-action{font-size:12px;font-weight:600;color:var(--red);cursor:pointer;transition:color .12s}
-.addr-action:hover{color:var(--red-h)}
-.addr-add{border:2px dashed var(--border);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:var(--ink-3);transition:border-color .14s,color .14s;min-height:110px}
-.addr-add:hover{border-color:var(--red);color:var(--red)}
-.addr-add svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8}
-.addr-add span{font-size:13px;font-weight:600}
-
-/* ── NOTIFICATIONS ── */
-.notif-list{display:flex;flex-direction:column;gap:0}
-.notif-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);align-items:flex-start}
-.notif-item:last-child{border-bottom:none}
-.notif-item.unread{background:linear-gradient(to right,rgba(212,43,43,.03),transparent)}
-.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px}
-.notif-dot.read{background:var(--border)}
-.notif-icon{width:36px;height:36px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.notif-content{flex:1}
-.notif-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
-.notif-text{font-size:12px;color:var(--ink-3);line-height:1.5}
-.notif-time{font-size:11px;color:var(--ink-3);margin-top:3px}
-
-/* ── TABS ── */
-.panel-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none}
-.panel-tabs::-webkit-scrollbar{display:none}
-.panel-tab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .14s,border-color .14s}
-.panel-tab:hover{color:var(--ink)}
-.panel-tab.active{color:var(--red);border-bottom-color:var(--red)}
-.panel-content{display:none}
-.panel-content.active{display:block}
-
-/* ── PAGINATION ── */
-.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px}
-.page-btn{width:34px;height:34px;border-radius:var(--r);font-size:13px;font-weight:600;color:var(--ink-2);border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .14s}
-.page-btn:hover{border-color:var(--red);color:var(--red)}
-.page-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
-
-/* ── MOBILE SIDEBAR ── */
-.mob-account-nav{display:none;margin-bottom:16px}
-.mob-account-select{width:100%;height:44px;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0 14px;font-size:14px;font-family:var(--font-ui);background:var(--white);outline:none}
-@media(max-width:900px){.account-sidebar{display:none}.mob-account-nav{display:block}}
-
-/* ── OVERLAY ── */
-.overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;opacity:0;pointer-events:none;transition:opacity .24s}
-.overlay-bg.on{opacity:1;pointer-events:all}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-h)}
-.toast.show{opacity:1}
-
-/* BUTTON */
-.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-weight:700;border-radius:var(--r);cursor:pointer;border:none;transition:all .14s;white-space:nowrap}
-.btn-primary{background:var(--red);color:#fff;padding:9px 18px;font-size:13px}
-.btn-primary:hover{background:var(--red-h)}
-.btn-outline{background:none;color:var(--ink);border:1.5px solid var(--border);padding:8px 16px;font-size:13px}
-.btn-outline:hover{border-color:var(--ink)}
-.btn-sm{padding:6px 12px;font-size:12px}
 </style>
 </head>
 <body>
-
-<div class="announce">Click &amp; Collect · LAK · THB · USD · ເປີດ 7 ມື້</div>
-
-<header class="site-header">
-  <div class="header-top">
-    <a href="/" class="logo">
-      <div class="logo-mark"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg></div>
-      <div><div class="logo-name">Sevenday Bike</div><div class="logo-sub">Vientiane</div></div>
-    </a>
-    <div class="header-search">
-      <input type="search" placeholder="ຄົ້ນຫາ ຈັກຍານ, ອຸປະກອນ...">
-      <button class="search-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-    </div>
-    <div class="hdr-actions">
-      <a href="/account" class="hdr-btn active"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>ບັນຊີ</span></a>
-      <a href="/cart.html" class="hdr-btn"><div style="position:relative;display:inline-flex"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="hdr-badge">2</span></div><span>ກະຕ່າ</span></a>
-    </div>
-  </div>
-</header>
-
-<nav class="nav-bar">
-  <div class="nav-bar-inner">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/catalogue.html" class="nav-link">Bikes</a>
-    <a href="/parts" class="nav-link">Parts</a>
-    <a href="/accessories" class="nav-link">Accessories</a>
-    <a href="/service.html" class="nav-link">Service</a>
-    <a href="/bikes/used" class="nav-link">Used</a>
-    <a href="/bikes/sale" class="nav-link sale">🔥 Sale</a>
-    <a href="/service/book" class="nav-ws">📅 ຈອງ Workshop</a>
+<nav>
+  <a href="index.html" class="nav-logo">SEVEN<span>DAY</span></a>
+  <div class="nav-right">
+    <a href="catalogue.html" class="nav-link">ສິນຄ້າ</a>
+    <a href="service.html" class="nav-link">ບໍລິການ</a>
+    <button class="btn-logout" onclick="logout()">ອອກຈາກລະບົບ</button>
   </div>
 </nav>
 
-<div class="overlay-bg" id="overlayBg"></div>
-
-<div class="account-page">
-  <div class="wrap">
-
-    <!-- Mobile nav -->
-    <div class="mob-account-nav">
-      <select class="mob-account-select" onchange="switchPanel(this.value)">
-        <option value="overview">📊 ພາບລວມ / Overview</option>
-        <option value="orders">📦 Orders</option>
-        <option value="service">🔧 Service History</option>
-        <option value="bikes">🚲 ຈັກຍານຂອງຂ້ອຍ</option>
-        <option value="wishlist">♡ Wishlist</option>
-        <option value="addresses">📍 ທີ່ຢູ່</option>
-        <option value="profile">👤 Profile</option>
-        <option value="notifications">🔔 ແຈ້ງເຕືອນ</option>
-      </select>
+<main>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="avatar">👤</div>
+    <div class="hero-info">
+      <h2 id="user-name">ກຳລັງໂຫລດ...</h2>
+      <p id="user-email" style="color:var(--muted)"></p>
+      <p id="user-phone" style="color:var(--muted);margin-top:2px"></p>
     </div>
+    <div class="points-badge">
+      <div class="points-num" id="user-points">—</div>
+      <div class="points-label">ແຕ້ມສະສົມ</div>
+    </div>
+  </div>
 
-    <div class="account-layout">
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('orders')">🛒 ປະຫວັດຊື້</div>
+    <div class="tab" onclick="switchTab('repairs')">🔧 ປະຫວັດຊ່ອມ</div>
+    <div class="tab" onclick="switchTab('points')">⭐ ແຕ້ມ</div>
+  </div>
 
-      <!-- SIDEBAR -->
-      <aside class="account-sidebar">
-        <div class="profile-card">
-          <div class="profile-avatar" onclick="showToast('📷 ອັບໂຫຼດ ຮູບ Profile')">
-            ສ
-            <div class="avatar-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-          </div>
-          <div class="profile-name">ສົມຈິດ ພັດທະນາ</div>
-          <div class="profile-email">somjit@email.com</div>
-          <div class="profile-member">⭐ Sevenday Member</div>
+  <!-- ORDERS -->
+  <div class="panel active" id="panel-orders">
+    <div class="section">
+      <div class="section-head">ປະຫວັດຄຳສັ່ງຊື້</div>
+      <div class="loading" id="orders-loading">ກຳລັງໂຫລດ...</div>
+      <table id="orders-table" style="display:none">
+        <thead><tr><th>ເລກບິນ</th><th>ວັນທີ</th><th>ສິນຄ້າ</th><th>ຍອດຮວມ</th><th>ຊຳລະ</th></tr></thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+      <div class="empty" id="orders-empty" style="display:none">ຍັງບໍ່ມີປະຫວັດການຊື້</div>
+    </div>
+  </div>
+
+  <!-- REPAIRS -->
+  <div class="panel" id="panel-repairs">
+    <div class="section">
+      <div class="section-head">ປະຫວັດການຊ່ອມ</div>
+      <div class="loading" id="repairs-loading">ກຳລັງໂຫລດ...</div>
+      <table id="repairs-table" style="display:none">
+        <thead><tr><th>ເລກງານ</th><th>ວັນທີ</th><th>ຈັກຍານ</th><th>ອາການ</th><th>ສະຖານະ</th><th>ລາຄາ</th></tr></thead>
+        <tbody id="repairs-body"></tbody>
+      </table>
+      <div class="empty" id="repairs-empty" style="display:none">ຍັງບໍ່ມີປະຫວັດການຊ່ອມ</div>
+    </div>
+  </div>
+
+  <!-- POINTS -->
+  <div class="panel" id="panel-points">
+    <div class="section">
+      <div class="section-head">ແຕ້ມສະສົມຂອງທ່ານ</div>
+      <div style="padding:40px;text-align:center">
+        <div style="font-size:72px;font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--lime)" id="big-points">—</div>
+        <div style="color:var(--muted);margin-top:8px;font-size:16px">ແຕ້ມທີ່ສະສົມໄດ້</div>
+        <div style="margin-top:24px;padding:20px;background:#1A1A2A;border-radius:12px;color:var(--muted);font-size:14px;line-height:1.8">
+          ✅ ຊື້ 1 THB = 1 ແຕ້ມ<br>
+          ✅ ຊ່ອມ 1 THB = 1 ແຕ້ມ<br>
+          🎁 100 ແຕ້ມ = ສ່ວນຫລຸດ 10 THB
         </div>
-        <nav class="sidebar-nav">
-          <div class="sidebar-link active" onclick="switchPanel('overview')">
-            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            ພາບລວມ / Overview
-          </div>
-          <div class="sidebar-link" onclick="switchPanel('orders')">
-            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-            Orders
-            <span class="badge">2</span>
-          </div>
-          <div class="sidebar-link" onclick="switchPanel('service')">
-            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-            Service History
-          </div>
-          <div class="sidebar-link" onclick="switchPanel('bikes')">
-            <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg>
-            ຈັກຍານຂອງຂ້ອຍ
-          </div>
-          <div class="sidebar-link" onclick="switchPanel('wishlist')">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            Wishlist
-            <span class="badge" style="background:var(--ink)">3</span>
-          </div>
-          <div class="sidebar-link" onclick="switchPanel('addresses')">
-            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            ທີ່ຢູ່ / Addresses
-          </div>
-          <div class="sidebar-divider"></div>
-          <div class="sidebar-link" onclick="switchPanel('profile')">
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Profile &amp; Settings
-          </div>
-          <div class="sidebar-link" onclick="switchPanel('notifications')">
-            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-            ແຈ້ງເຕືອນ
-            <span class="badge">3</span>
-          </div>
-          <div class="sidebar-divider"></div>
-          <div class="sidebar-link logout" onclick="confirmLogout()">
-            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            ອອກຈາກລະບົບ
-          </div>
-        </nav>
-      </aside>
-
-      <!-- MAIN PANELS -->
-      <div class="account-main">
-
-        <!-- ── OVERVIEW ── -->
-        <div class="panel-content active" id="panel-overview">
-          <div class="panel-head">
-            <h1 class="panel-title">ສະວັດດີ, ສົມຈິດ 👋</h1>
-            <a href="/catalogue.html" class="btn btn-primary btn-sm">+ ຊ໋ອບຕໍ່</a>
-          </div>
-
-          <!-- Stats -->
-          <div class="stats-grid">
-            <div class="stat-card red">
-              <div class="stat-num">5</div>
-              <div class="stat-label">Orders ທັງໝົດ</div>
-            </div>
-            <div class="stat-card lime">
-              <div class="stat-num">3</div>
-              <div class="stat-label">Services</div>
-            </div>
-            <div class="stat-card blue">
-              <div class="stat-num">2</div>
-              <div class="stat-label">ຈັກຍານ</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-num">3</div>
-              <div class="stat-label">Wishlist</div>
-            </div>
-          </div>
-
-          <!-- Recent Orders -->
-          <div class="white-card">
-            <div class="card-head">
-              <h3><span>📦</span> Orders ລ່າສຸດ</h3>
-              <div class="edit-btn" onclick="switchPanel('orders')">ດູທັງໝົດ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-            </div>
-            <div class="card-body" style="padding:0">
-              <table class="orders-table" style="width:100%">
-                <thead><tr>
-                  <th>Order</th><th>ວັນທີ</th><th>ສະຖານະ</th><th>ລາຄາ</th><th></th>
-                </tr></thead>
-                <tbody>
-                  <tr>
-                    <td><div class="order-id">SD-2024-1042</div><div class="order-items-preview">Trek Marlin 5 Gen 3 + Shimano Brake</div></td>
-                    <td style="white-space:nowrap;color:var(--ink-3);font-size:12px">15 ກ.ຍ. 2024</td>
-                    <td><span class="status-badge status-ready">✓ ພ້ອມຮັບ</span></td>
-                    <td style="font-weight:700;white-space:nowrap">₭ 10,750,000</td>
-                    <td><span class="order-action" onclick="openOrderDetail('SD-2024-1042')">ລາຍລະອຽດ →</span></td>
-                  </tr>
-                  <tr>
-                    <td><div class="order-id">SD-2024-0891</div><div class="order-items-preview">Giro Helmet + Cateye Light</div></td>
-                    <td style="white-space:nowrap;color:var(--ink-3);font-size:12px">2 ສ.ຫ. 2024</td>
-                    <td><span class="status-badge status-completed">✓ ສຳເລັດ</span></td>
-                    <td style="font-weight:700;white-space:nowrap">₭ 1,630,000</td>
-                    <td><span class="order-action" onclick="openOrderDetail('SD-2024-0891')">ລາຍລະອຽດ →</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Service due -->
-          <div class="white-card">
-            <div class="card-head">
-              <h3><span>🔧</span> ຈັກຍານ · Service ທີ່ຄວນທຳ</h3>
-              <div class="edit-btn" onclick="switchPanel('bikes')">ດູ Bikes ຂ້ອຍ <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;align-items:center;gap:14px;padding:10px;background:var(--orange-bg);border-radius:var(--r-lg);border:1px solid #FFCCA0">
-                <span style="font-size:32px">🚵</span>
-                <div style="flex:1">
-                  <div style="font-size:13px;font-weight:700">Trek Marlin 5 Gen 3</div>
-                  <div style="font-size:12px;color:var(--ink-3)">ໃຊ້ໄປ 6 ເດືອນ · ຄ/ຂ ~1,200 km</div>
-                  <div style="font-size:12px;color:var(--orange);font-weight:600;margin-top:3px">⚠ ຄ/ຂ Standard Service ແລ້ວ</div>
-                </div>
-                <a href="/service.html" class="btn btn-primary btn-sm">ຈອງ Service</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── ORDERS ── -->
-        <div class="panel-content" id="panel-orders">
-          <div class="panel-head">
-            <h1 class="panel-title">Orders</h1>
-          </div>
-          <div class="panel-tabs">
-            <button class="panel-tab active" onclick="filterOrders(this,'all')">ທັງໝົດ (5)</button>
-            <button class="panel-tab" onclick="filterOrders(this,'active')">Active (2)</button>
-            <button class="panel-tab" onclick="filterOrders(this,'completed')">ສຳເລັດ (3)</button>
-          </div>
-          <div class="white-card">
-            <div style="padding:0;overflow-x:auto">
-              <table class="orders-table" style="width:100%;min-width:600px">
-                <thead><tr>
-                  <th>Order</th><th>ວັນທີ</th><th>ສະຖານະ</th><th>ລາຄາ</th><th>ວິທີຮັບ</th><th></th>
-                </tr></thead>
-                <tbody id="ordersTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="pagination">
-            <button class="page-btn">←</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">→</button>
-          </div>
-        </div>
-
-        <!-- ── SERVICE HISTORY ── -->
-        <div class="panel-content" id="panel-service">
-          <div class="panel-head">
-            <h1 class="panel-title">Service History</h1>
-            <a href="/service.html" class="btn btn-primary btn-sm">+ ຈອງ Service</a>
-          </div>
-          <div id="serviceList"></div>
-        </div>
-
-        <!-- ── MY BIKES ── -->
-        <div class="panel-content" id="panel-bikes">
-          <div class="panel-head">
-            <h1 class="panel-title">ຈັກຍານຂອງຂ້ອຍ</h1>
-            <button class="btn btn-primary btn-sm" onclick="showToast('+ ເພີ່ມ Bike ໃໝ່')">+ ເພີ່ມ Bike</button>
-          </div>
-          <div id="bikesList"></div>
-        </div>
-
-        <!-- ── WISHLIST ── -->
-        <div class="panel-content" id="panel-wishlist">
-          <div class="panel-head">
-            <h1 class="panel-title">Wishlist ຂ້ອຍ</h1>
-            <a href="/catalogue.html" class="btn btn-outline btn-sm">ຊ໋ອບຕໍ່</a>
-          </div>
-          <div class="wishlist-grid" id="wishlistGrid"></div>
-        </div>
-
-        <!-- ── ADDRESSES ── -->
-        <div class="panel-content" id="panel-addresses">
-          <div class="panel-head">
-            <h1 class="panel-title">ທີ່ຢູ່ / Addresses</h1>
-          </div>
-          <div class="address-grid" id="addressGrid"></div>
-        </div>
-
-        <!-- ── PROFILE ── -->
-        <div class="panel-content" id="panel-profile">
-          <div class="panel-head">
-            <h1 class="panel-title">Profile &amp; Settings</h1>
-          </div>
-
-          <div class="white-card">
-            <div class="card-head"><h3><span>👤</span> ຂໍ້ມູນສ່ວນຕົວ</h3><button class="btn btn-primary btn-sm" onclick="saveProfile()">ບັນທຶກ</button></div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group"><label class="form-label">ຊື່</label><input class="form-input" type="text" value="ສົມຈິດ"></div>
-                <div class="form-group"><label class="form-label">ນາມສະກຸນ</label><input class="form-input" type="text" value="ພັດທະນາ"></div>
-                <div class="form-group"><label class="form-label">ເບີໂທ</label><input class="form-input" type="tel" value="020 5555 1234"></div>
-                <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="somjit@email.com"></div>
-                <div class="form-group"><label class="form-label">LINE ID</label><input class="form-input" type="text" value="@somjit_p"></div>
-                <div class="form-group"><label class="form-label">ວັນເດືອນປີເກີດ</label><input class="form-input" type="date" value="1990-05-15"></div>
-                <div class="form-group full"><label class="form-label">ເພດ / Gender</label>
-                  <select class="form-select">
-                    <option>ຊາຍ</option><option>ຍິງ</option><option>ບໍ່ລະບຸ</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="white-card">
-            <div class="card-head"><h3><span>🔒</span> ຄວາມປອດໄພ</h3></div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group"><label class="form-label">ລະຫັດຜ່ານໃໝ່</label><input class="form-input" type="password" placeholder="••••••••"></div>
-                <div class="form-group"><label class="form-label">ຢືນຢັນ ລະຫັດ</label><input class="form-input" type="password" placeholder="••••••••"></div>
-              </div>
-              <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="showToast('✓ ປ່ຽນ ລະຫັດຜ່ານ ແລ້ວ')">ປ່ຽນ ລະຫັດຜ່ານ</button>
-            </div>
-          </div>
-
-          <div class="white-card">
-            <div class="card-head"><h3><span>🔔</span> ການແຈ້ງເຕືອນ / Notifications</h3></div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:14px">
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><div style="font-size:13px;font-weight:600">Order Updates</div><div style="font-size:12px;color:var(--ink-3)">Order ໃໝ່, ສະຖານະ ປ່ຽນ</div></div>
-                  <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--red)">
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><div style="font-size:13px;font-weight:600">Service Reminders</div><div style="font-size:12px;color:var(--ink-3)">ເຕືອນ Service ຈັກຍານ</div></div>
-                  <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--red)">
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><div style="font-size:13px;font-weight:600">Promotions &amp; Deals</div><div style="font-size:12px;color:var(--ink-3)">ໂປຣ, ສ່ວນຫຼຸດ, ສິນຄ້າໃໝ່</div></div>
-                  <input type="checkbox" style="width:18px;height:18px;accent-color:var(--red)">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="white-card">
-            <div class="card-head"><h3><span>💱</span> ສະກຸນເງິນ &amp; ພາສາ</h3></div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group"><label class="form-label">ສະກຸນເງິນ</label>
-                  <select class="form-select"><option>₭ LAK — ກີບ</option><option>฿ THB — ບາດ</option><option>$ USD — ໂດລາ</option></select>
-                </div>
-                <div class="form-group"><label class="form-label">ພາສາ / Language</label>
-                  <select class="form-select"><option>ລາວ</option><option>English</option></select>
-                </div>
-              </div>
-              <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="showToast('✓ ບັນທຶກການຕັ້ງຄ່າ')">ບັນທຶກ</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── NOTIFICATIONS ── -->
-        <div class="panel-content" id="panel-notifications">
-          <div class="panel-head">
-            <h1 class="panel-title">ແຈ້ງເຕືອນ</h1>
-            <button class="btn btn-outline btn-sm" onclick="markAllRead()">ອ່ານທັງໝົດ</button>
-          </div>
-          <div class="white-card">
-            <div class="card-body" style="padding:0 18px">
-              <div class="notif-list" id="notifList"></div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
-</div>
-
-<!-- ORDER DETAIL DRAWER -->
-<div class="order-drawer" id="orderDrawer">
-  <div class="drawer-head">
-    <h3 id="drawerOrderId">Order SD-2024-XXXX</h3>
-    <button class="drawer-close" onclick="closeOrderDetail()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
-  <div class="drawer-body">
-    <div class="drawer-section">
-      <h4>ສະຖານະ / Status</h4>
-      <div class="timeline" id="drawerTimeline"></div>
-    </div>
-    <div class="drawer-section">
-      <h4>ສິນຄ້າ / Items</h4>
-      <div id="drawerItems"></div>
-    </div>
-    <div class="drawer-section">
-      <h4>ສຸດທ້ານ / Summary</h4>
-      <div id="drawerSummary"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="showToast('📞 ຕິດຕໍ່ Sevenday ທາງ LINE / WhatsApp')">ຕິດຕໍ່ Sevenday</button>
-      <button class="btn btn-outline" onclick="showToast('🖨 ພິມ Invoice')" style="flex-shrink:0">Invoice</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
+</main>
+<footer>© 2024 Sevenday Bike — ວຽງຈັນທ໌, ລາວ</footer>
 
 <script>
-/* ── DATA ── */
-const LAK = n => '₭ ' + n.toLocaleString();
+const API = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const SEC = 'open';
 
-const ORDERS = [
-  {id:'SD-2024-1042',date:'15 ກ.ຍ. 2024',status:'ready',statusLabel:'✓ ພ້ອມຮັບ',statusClass:'status-ready',total:10750000,method:'Click & Collect',items:[{name:'Trek Marlin 5 Gen 3 MTB',size:'M',price:8900000,icon:'🚵'},{name:'Shimano Deore M6100 Brake',size:'—',price:1850000,icon:'⚙️'}]},
-  {id:'SD-2024-0891',date:'2 ສ.ຫ. 2024',status:'completed',statusLabel:'✓ ສຳເລັດ',statusClass:'status-completed',total:1630000,method:'Click & Collect',items:[{name:'Giro Fixture MIPS Helmet',size:'L',price:1150000,icon:'⛑️'},{name:'Cateye AMPP 500 Light',size:'—',price:480000,icon:'💡'}]},
-  {id:'SD-2024-0654',date:'10 ກ.ລ. 2024',status:'completed',statusLabel:'✓ ສຳເລັດ',statusClass:'status-completed',total:8900000,method:'Click & Collect',items:[{name:'Trek Marlin 5 Gen 3 MTB',size:'M',price:8900000,icon:'🚵'}]},
-  {id:'SD-2024-0421',date:'22 ພ.ພ. 2024',status:'completed',statusLabel:'✓ ສຳເລັດ',statusClass:'status-completed',total:950000,method:'Click & Collect',items:[{name:'Kryptonite U-Lock Mini-6',size:'—',price:950000,icon:'🔒'}]},
-  {id:'SD-2024-0201',date:'5 ມ.ກ. 2024',status:'completed',statusLabel:'✓ ສຳເລັດ',statusClass:'status-completed',total:520000,method:'Click & Collect',items:[{name:'Topeak Race Rocket Pump',size:'—',price:520000,icon:'🔧'}]},
-];
+// Auth guard
+const raw = sessionStorage.getItem('sd_user');
+if (!raw) { window.location.href = 'login.html'; }
+const user = JSON.parse(raw);
 
-const SERVICES = [
-  {id:'SVC-024-088',date:'10 ກ.ຍ. 2024',bike:'Trek Marlin 5 Gen 3',type:'Standard Service',status:'booked',statusLabel:'📅 ນັດ 18 ກ.ຍ.',statusClass:'status-pending',tech:'ຊ່າງ ບຸນມີ',note:'ລູກຄ້ານຳ Bike ມາ 09:00 — ຂໍ tune derailleur ດ້ວຍ',price:200000,parts:'Chain lube, Cable replace'},
-  {id:'SVC-024-055',date:'15 ກ.ລ. 2024',bike:'Trek Marlin 5 Gen 3',type:'Basic Service',status:'done',statusLabel:'✓ ສຳເລັດ',statusClass:'status-completed',tech:'ຊ່າງ ບຸນມີ',note:'ທຸກຢ່າງ OK — ກວດ brake, lube chain, pump tyre',price:80000,parts:'Chain lube'},
-  {id:'SVC-024-012',date:'3 ກ.ພ. 2024',bike:'Trek Marlin 5 Gen 3',type:'Basic Service',status:'done',statusLabel:'✓ ສຳເລັດ',statusClass:'status-completed',tech:'ຊ່າງ ສີ',note:'ປ່ຽນ brake pad ໜ້າ — pad ຫມົດແລ້ວ',price:80000,parts:'Brake pad front x1'},
-];
+// Fill hero
+document.getElementById('user-name').textContent   = user.name   || 'ສະມາຊິກ';
+document.getElementById('user-email').textContent  = user.email  || '';
+document.getElementById('user-phone').textContent  = user.phone  || '';
+document.getElementById('user-points').textContent = user.points || 0;
+document.getElementById('big-points').textContent  = user.points || 0;
 
-const BIKES = [
-  {name:'Trek Marlin 5 Gen 3 MTB',year:'2024',color:'Matte Black',size:'M',serial:'WTU24M5G3MB001',icon:'🚵',km:1200,service:'ຄ/ຂ Service ແລ້ວ',serviceDue:true},
-  {name:'Giant Escape 3 City',year:'2021',color:'Blue',size:'M',serial:'GNT21E3BL042',icon:'🚲',km:2800,service:'ໃຊ້ Standard Service ໃນ 1,200 km',serviceDue:false},
-];
-
-const WISHLIST = [
-  {brand:'Specialized',name:'Rockhopper Sport 29 MTB 2024',price:15800000,icon:'🚵'},
-  {brand:'Giro',name:'Synthe MIPS Road Helmet',price:3800000,icon:'⛑️'},
-  {brand:'Shimano',name:'XT M8100 Groupset 12-speed',price:8500000,icon:'⚙️'},
-];
-
-const ADDRESSES = [
-  {name:'ສົມຈິດ ພັດທະນາ',phone:'020 5555 1234',addr:'ບ.ໂນນສະຫວ່າງ, ເຮືອນ 123',district:'ຈັນທະບູລີ',province:'ວຽງຈັນ',isDefault:true},
-  {name:'ສົມຈິດ ພັດທະນາ',phone:'020 5555 1234',addr:'ບ.ໂພນທັນ, ຫ້ອງການ Sevenday',district:'ສີໂຄດຕະບອງ',province:'ວຽງຈັນ',isDefault:false},
-];
-
-const NOTIFS = [
-  {icon:'📦',title:'Order ຂ້ອຍ ພ້ອມ Collect ແລ້ວ!',text:'Order SD-2024-1042 (Trek Marlin 5) ພ້ອມ ຮັບທີ່ Sevenday ໄດ້ທັນທີ',time:'1 ຊ.ມ. ຜ່ານ',read:false},
-  {icon:'🔧',title:'ຢ່າລືມ Service ຈັກຍານ!',text:'Trek Marlin 5 ຂ້ອຍ ໃຊ້ 1,200 km ແລ້ວ — ຄ/ຂ Basic/Standard Service',time:'2 ມື້ ຜ່ານ',read:false},
-  {icon:'🔥',title:'Sale ພິເສດ — 15% Off Parts!',text:'ຊ/ລ 2–8 ກ.ຍ. ເທົ່ານັ້ນ — ລາຄາ Parts ຫຼຸດ 15% ທຸກລາຍການ',time:'5 ມື້ ຜ່ານ',read:false},
-  {icon:'✅',title:'Order SD-2024-0891 ສຳເລັດ',text:'Giro Helmet + Cateye Light — ຮັບ Bike ທີ່ Sevenday ສຳເລັດ',time:'3 ອາທິດ ຜ່ານ',read:true},
-  {icon:'📝',title:'ຂຽນ Review ໄດ້ເລີຍ!',text:'Trek Marlin 5 Gen 3 — ແບ່ງປັນ ປະສົບການຂ້ອຍ ໃຫ້ຄົນອື່ນ',time:'1 ເດືອນ ຜ່ານ',read:true},
-];
-
-/* ── RENDER FUNCTIONS ── */
-function renderOrders(filter='all') {
-  const data = filter==='all' ? ORDERS : filter==='active' ? ORDERS.filter(o=>o.status!=='completed') : ORDERS.filter(o=>o.status==='completed');
-  document.getElementById('ordersTableBody').innerHTML = data.map(o=>`
-    <tr>
-      <td><div class="order-id">${o.id}</div><div class="order-items-preview">${o.items.map(i=>i.name).join(', ')}</div></td>
-      <td style="white-space:nowrap;color:var(--ink-3);font-size:12px">${o.date}</td>
-      <td><span class="status-badge ${o.statusClass}">${o.statusLabel}</span></td>
-      <td style="font-weight:700;white-space:nowrap">${LAK(o.total)}</td>
-      <td style="font-size:11px;color:var(--ink-3)">${o.method}</td>
-      <td><span class="order-action" onclick="openOrderDetail('${o.id}')">ລາຍລະອຽດ →</span></td>
-    </tr>`).join('');
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const tabs=['orders','repairs','points'];
+    t.classList.toggle('active', tabs[i]===tab);
+  });
+  document.querySelectorAll('.panel').forEach((p,i)=>{
+    const tabs=['orders','repairs','points'];
+    p.classList.toggle('active', tabs[i]===tab);
+  });
 }
 
-function renderServices() {
-  document.getElementById('serviceList').innerHTML = SERVICES.map(s=>`
-    <div class="service-card">
-      <div class="svc-head">
-        <div>
-          <div class="svc-title">${s.type} — ${s.bike}</div>
-          <div class="svc-date">${s.date} · ${s.id}</div>
-        </div>
-        <span class="svc-status ${s.statusClass}">${s.statusLabel}</span>
-      </div>
-      <div class="svc-details">
-        <div class="svc-detail-item"><label>ຊ່າງ</label><span>${s.tech}</span></div>
-        <div class="svc-detail-item"><label>ລາຄາ</label><span>${LAK(s.price)}</span></div>
-        <div class="svc-detail-item"><label>Parts</label><span>${s.parts}</span></div>
-      </div>
-      <div class="svc-note">📝 ${s.note}</div>
-    </div>`).join('');
+function fmtDate(d) {
+  if (!d) return '—';
+  try { return new Date(d).toLocaleDateString('th-TH'); } catch(e) { return String(d).slice(0,10); }
+}
+function fmtThb(n) { return '฿' + (parseFloat(n)||0).toLocaleString(); }
+function statusBadge(s) {
+  const map = {
+    'completed':'badge-green','สำเร็จ':'badge-green','รับรถคืนแล้ว':'badge-green',
+    'pending':'badge-yellow','รับแล้ว':'badge-blue','กำลังซ่อม':'badge-yellow',
+    'cancelled':'badge-red','ยกเลิก':'badge-red'
+  };
+  const cls = map[s] || 'badge-blue';
+  return `<span class="badge ${cls}">${s||'—'}</span>`;
 }
 
-function renderBikes() {
-  document.getElementById('bikesList').innerHTML = BIKES.map(b=>`
-    <div class="bike-card">
-      <div class="bike-card-img">${b.icon}</div>
-      <div class="bike-card-info">
-        <div class="bike-card-name">${b.name}</div>
-        <div class="bike-card-meta">
-          ${b.year} · ${b.color} · Size ${b.size}<br>
-          S/N: ${b.serial}<br>
-          ລວມ ~${b.km.toLocaleString()} km
-        </div>
-      </div>
-      <div class="bike-card-action">
-        ${b.serviceDue ? `<span class="bike-service-due">⚠ ຄ/ຂ Service</span>` : `<span class="bike-service-ok">✓ OK</span>`}
-        <a href="/service.html" class="btn btn-primary btn-sm">ຈອງ</a>
-      </div>
-    </div>`).join('') + `
-    <div style="border:2px dashed var(--border);border-radius:var(--r-lg);padding:18px;text-align:center;cursor:pointer;color:var(--ink-3);transition:border-color .14s" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'" onclick="showToast('+ ເພີ່ມ Bike ໃໝ່')">
-      <div style="font-size:28px;margin-bottom:6px">+</div>
-      <div style="font-size:13px;font-weight:600">ເພີ່ມ Bike ໃໝ່</div>
-    </div>`;
+async function loadData() {
+  try {
+    const res  = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getCustomerOrders', secret:SEC, customer_id: user.customer_id })
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error('API error');
+    const { orders, repairs, points } = json.data;
+
+    // Update points
+    document.getElementById('user-points').textContent = points;
+    document.getElementById('big-points').textContent  = points;
+
+    // Orders
+    document.getElementById('orders-loading').style.display='none';
+    if (!orders||orders.length===0) {
+      document.getElementById('orders-empty').style.display='block';
+    } else {
+      const tbody = document.getElementById('orders-body');
+      tbody.innerHTML = orders.map(o=>`
+        <tr>
+          <td><code style="color:var(--lime)">${o.bill_id||'—'}</code></td>
+          <td>${fmtDate(o.date)}</td>
+          <td>${(o.items||[]).map(i=>i.name).join(', ')}</td>
+          <td>${fmtThb(o.total)}</td>
+          <td>${statusBadge(o.payment||'สำเร็จ')}</td>
+        </tr>`).join('');
+      document.getElementById('orders-table').style.display='table';
+    }
+
+    // Repairs
+    document.getElementById('repairs-loading').style.display='none';
+    if (!repairs||repairs.length===0) {
+      document.getElementById('repairs-empty').style.display='block';
+    } else {
+      const tbody = document.getElementById('repairs-body');
+      tbody.innerHTML = repairs.map(r=>`
+        <tr>
+          <td><code style="color:var(--lime)">${r.job_id||'—'}</code></td>
+          <td>${fmtDate(r.date)}</td>
+          <td>${r.bike||'—'}</td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.symptoms||'—'}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td>${fmtThb(r.total)}</td>
+        </tr>`).join('');
+      document.getElementById('repairs-table').style.display='table';
+    }
+  } catch(e) {
+    document.getElementById('orders-loading').textContent='ໂຫລດຂໍ້ມູນບໍ່ໄດ້';
+    document.getElementById('repairs-loading').textContent='ໂຫລດຂໍ້ມູນບໍ່ໄດ້';
+  }
 }
 
-function renderWishlist() {
-  document.getElementById('wishlistGrid').innerHTML = WISHLIST.map((w,i)=>`
-    <div class="wish-card">
-      <div class="wish-img">${w.icon}</div>
-      <button class="wish-remove" onclick="removeWish(${i})" aria-label="Remove">×</button>
-      <div class="wish-body">
-        <div class="wish-brand">${w.brand}</div>
-        <div class="wish-name">${w.name}</div>
-        <div class="wish-price">${LAK(w.price)}</div>
-        <button class="wish-add" onclick="showToast('✓ ໃສ່ກະຕ່າ: ${w.name.substring(0,20)}')">+ ໃສ່ກະຕ່າ</button>
-      </div>
-    </div>`).join('');
+function logout() {
+  sessionStorage.removeItem('sd_user');
+  window.location.href = 'login.html';
 }
 
-function renderAddresses() {
-  document.getElementById('addressGrid').innerHTML = ADDRESSES.map((a,i)=>`
-    <div class="addr-card${a.isDefault?' default':''}">
-      ${a.isDefault?'<span class="addr-default-tag">Default</span>':''}
-      <div class="addr-name">${a.name}</div>
-      <div class="addr-text">${a.addr}<br>${a.district}, ${a.province}<br>${a.phone}</div>
-      <div class="addr-actions">
-        <span class="addr-action" onclick="showToast('✏ ແກ້ໄຂ ທີ່ຢູ່')">ແກ້ໄຂ</span>
-        ${!a.isDefault?`<span class="addr-action" onclick="showToast('✓ ຕັ້ງເປັນ Default')">ຕັ້ງ Default</span>`:''}
-        ${!a.isDefault?`<span class="addr-action" style="color:var(--ink-3)" onclick="showToast('🗑 ລຶບທີ່ຢູ່')">ລຶບ</span>`:''}
-      </div>
-    </div>`).join('') + `
-    <div class="addr-add" onclick="showToast('+ ເພີ່ມທີ່ຢູ່ໃໝ່')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      <span>ເພີ່ມທີ່ຢູ່ໃໝ່</span>
-    </div>`;
-}
-
-function renderNotifications() {
-  document.getElementById('notifList').innerHTML = NOTIFS.map((n,i)=>`
-    <div class="notif-item${n.read?'':' unread'}" id="notif-${i}">
-      <div class="notif-dot${n.read?' read':''}"></div>
-      <div class="notif-icon" style="background:${n.read?'var(--base)':'var(--red-lite)'}">${n.icon}</div>
-      <div class="notif-content">
-        <div class="notif-title">${n.title}</div>
-        <div class="notif-text">${n.text}</div>
-        <div class="notif-time">${n.time}</div>
-      </div>
-    </div>`).join('');
-}
-
-/* ── ORDER DETAIL ── */
-function openOrderDetail(id) {
-  const order = ORDERS.find(o=>o.id===id);
-  if (!order) return;
-  document.getElementById('drawerOrderId').textContent = `Order ${order.id}`;
-
-  const steps = order.status==='ready'
-    ? [{label:'ຢືນຢັນ Order',time:'15 ກ.ຍ. 2024 09:12',done:true},{label:'ກຳລັງກຽມ',time:'15 ກ.ຍ. 2024 10:30',desc:'ຊ່າງ Assemble Bike ແລ້ວ',done:true},{label:'ພ້ອມ Collect',time:'15 ກ.ຍ. 2024 14:00',desc:'ສາມາດ ຮັບ Bike ໄດ້ທີ່ Sevenday',active:true},{label:'ຮັບ Bike ສຳເລັດ',time:'—',done:false}]
-    : [{label:'ຢືນຢັນ Order',time:order.date,done:true},{label:'ກຳລັງກຽມ',time:order.date,done:true},{label:'ພ້ອມ Collect',time:order.date,done:true},{label:'ຮັບ Bike ສຳເລັດ',time:order.date,done:true}];
-
-  document.getElementById('drawerTimeline').innerHTML = steps.map(s=>`
-    <div class="timeline-step ${s.done?'done':''} ${s.active?'active':''}">
-      <div class="tl-dot">${s.done||s.active?'✓':''}</div>
-      <div class="tl-info">
-        <div class="tl-title">${s.label}</div>
-        <div class="tl-time">${s.time}</div>
-        ${s.desc?`<div class="tl-desc">${s.desc}</div>`:''}
-      </div>
-    </div>`).join('');
-
-  document.getElementById('drawerItems').innerHTML = order.items.map(i=>`
-    <div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-      <div style="width:44px;height:44px;background:var(--base);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${i.icon}</div>
-      <div style="flex:1"><div style="font-size:13px;font-weight:600">${i.name}</div><div style="font-size:11px;color:var(--ink-3)">ຂະໜາດ: ${i.size}</div></div>
-      <div style="font-size:13px;font-weight:700">${LAK(i.price)}</div>
-    </div>`).join('');
-
-  document.getElementById('drawerSummary').innerHTML = `
-    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--ink-3)">ລວມ</span><span>${LAK(order.total)}</span></div>
-    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--ink-3)">Click &amp; Collect</span><span style="color:var(--lime);font-weight:600">ຟຣີ</span></div>
-    <div style="height:1px;background:var(--border);margin:8px 0"></div>
-    <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800"><span>ລວມທັງໝົດ</span><span style="color:var(--red)">${LAK(order.total)}</span></div>`;
-
-  document.getElementById('orderDrawer').classList.add('open');
-  document.getElementById('overlayBg').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-
-function closeOrderDetail() {
-  document.getElementById('orderDrawer').classList.remove('open');
-  document.getElementById('overlayBg').classList.remove('on');
-  document.body.style.overflow='';
-}
-
-document.getElementById('overlayBg').addEventListener('click', closeOrderDetail);
-
-/* ── PANEL SWITCHING ── */
-function switchPanel(id) {
-  document.querySelectorAll('.panel-content').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  const links = document.querySelectorAll('.sidebar-link');
-  const order = ['overview','orders','service','bikes','wishlist','addresses',null,null,'profile','notifications',null,'logout'];
-  const idx = ['overview','orders','service','bikes','wishlist','addresses','profile','notifications'].indexOf(id);
-  if (idx>=0) links[idx]?.classList.add('active');
-  const select = document.querySelector('.mob-account-select');
-  if (select) select.value = id;
-}
-
-function filterOrders(btn, filter) {
-  document.querySelectorAll('.panel-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderOrders(filter);
-}
-
-function removeWish(i) {
-  WISHLIST.splice(i,1);
-  renderWishlist();
-  document.querySelector('.sidebar-link:nth-child(5) .badge').textContent = WISHLIST.length;
-  showToast('♡ ລຶບອອກຈາກ Wishlist ແລ້ວ');
-}
-
-function markAllRead() {
-  NOTIFS.forEach(n=>n.read=true);
-  renderNotifications();
-  showToast('✓ ອ່ານທັງໝົດ ແລ້ວ');
-}
-
-function saveProfile() { showToast('✓ ບັນທຶກ Profile ແລ້ວ'); }
-function confirmLogout() { if(confirm('ຕ້ອງການ ອອກຈາກລະບົບ ໄຈ?')) showToast('👋 ອອກ ຈາກລະບົບ ແລ້ວ'); }
-
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2500);
-}
-
-/* ── INIT ── */
-renderOrders();
-renderServices();
-renderBikes();
-renderWishlist();
-renderAddresses();
-renderNotifications();
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOrderDetail()});
+loadData();
 </script>
 </body>
 </html>
