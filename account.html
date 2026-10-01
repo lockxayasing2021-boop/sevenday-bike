@@ -630,8 +630,8 @@ function render(){
 document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ tab=b.dataset.t; render(); });
 function logout(){ sessionStorage.removeItem('sd_user'); location.href='login.html'; }
 async function load(){
-  try{ const d=await apiPost('getCustomerOrders',{customer_id:user.customer_id}); data={orders:d.orders||[],repairs:d.repairs||[],points:d.points??user.points}; }
-  catch(e){ $('list').innerHTML=`<div class="empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b><p>${e.message}</p><button class="btn btn-black" onclick="load()">ລອງອີກຄັ້ງ</button></div>`; return; }
+  try{ const d=await apiPost('getCustomerOrders',{token:user.token}); data={orders:d.orders||[],repairs:d.repairs||[],points:d.points??user.points}; }
+  catch(e){ if(/SESSION_EXPIRED/.test(e.message)||!user.token){ sessionStorage.removeItem('sd_user'); location.replace('login.html'); return; } $('list').innerHTML=`<div class="empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b><p>${e.message}</p><button class="btn btn-black" onclick="load()">ລອງອີກຄັ້ງ</button></div>`; return; }
   render();
 }
 document.addEventListener('currencychange',render);
