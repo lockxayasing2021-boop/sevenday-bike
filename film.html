@@ -8,7 +8,7 @@
 <style>
 .crumbs{font-size:13px;color:var(--grey-600);padding:18px 0 6px}
 .crumbs a:hover{text-decoration:underline}
-.page-title{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.05}
+.page-title{font-size:clamp(28px,3.4vw,44px);font-weight:800;letter-spacing:-.01em;line-height:1.05}
 .page-sub{color:var(--grey-600);margin:8px 0 0;max-width:62ch}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-weight:700;font-size:14px}
@@ -31,7 +31,7 @@
 .stage svg{width:100%;height:auto;display:block}
 .stage .cap{display:flex;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--grey-300);font-size:14px;background:#fff}
 .stage .cap b{font-weight:800}
-.ctl h2{font-size:18px;font-weight:900;margin:24px 0 10px}
+.ctl h2{font-size:18px;font-weight:800;margin:24px 0 10px}
 .ctl h2:first-child{margin-top:0}
 .parts{display:flex;gap:8px;flex-wrap:wrap}
 .parts button{border:1px solid var(--grey-300);padding:10px 14px;font-weight:700;font-size:14px;display:flex;gap:8px;align-items:center}
@@ -139,7 +139,7 @@ async function send(e){
     const d=await apiPost('filmRequest',{customer:{name:$('fName').value.trim(),phone:$('fPhone').value.trim()},package:pkg,
       color_name:`ເຟຣມ ${pick.frame.n} ${pick.frame.h} / ໂຊັກ ${pick.fork.n} / ລໍ້ ${pick.wheels.n}`,finish:fin,
       bike:{model:$('fBike').value.trim()||'ບໍ່ລະບຸ'},notes:'ສົ່ງຈາກໜ້າອອກແບບຟິມ'});
-    $('reqBox').innerHTML=`<div class="done"><b style="font-size:22px;font-weight:900">ສົ່ງແບບແລ້ວ</b><p>ເລກທີ່ ${d.job_id||'—'} — ຮ້ານຈະຕິດຕໍ່ແຈ້ງລາຄາພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`;
+    $('reqBox').innerHTML=`<div class="done"><b style="font-size:22px;font-weight:800">ສົ່ງແບບແລ້ວ</b><p>ເລກທີ່ ${d.job_id||'—'} — ຮ້ານຈະຕິດຕໍ່ແຈ້ງລາຄາພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`;
   }catch(ex){ $('fMsg').hidden=false; $('fMsg').textContent='ສົ່ງບໍ່ສຳເລັດ: '+ex.message; b.disabled=false; b.textContent='ສົ່ງແບບ ແລະ ຂໍລາຄາ'; }
 }
 
