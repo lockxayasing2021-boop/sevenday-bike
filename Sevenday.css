@@ -264,3 +264,29 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
   .foot-grid{grid-template-columns:1fr 1fr}
   .collect a{display:none}
 }
+
+/* ══ Typography pass — ອ່ານພາສາລາວໄດ້ງ່າຍຂຶ້ນ ══
+   Noto Sans Lao ມີສູງສຸດ 800: ໃຊ້ 900 ຈະເປັນໂຕໜາປອມ ເບິ່ງບໍ່ງາມ
+   ສະຫຼະ/ວັນນະຍຸກລາວ ຢູ່ເທິງ-ລຸ່ມ: ຕ້ອງການ line-height ຫຼາຍກວ່າໂຕອັງກິດ */
+:root{--grey-600:#5C5C5C}
+body{font-size:16px;line-height:1.65;font-weight:400;letter-spacing:.005em}
+h1,h2,h3,h4,b,strong{font-weight:700}
+.page-title,.sec-head h2,main h1,main h2{font-weight:800!important;letter-spacing:-.01em!important;line-height:1.25!important}
+.page-title{font-size:clamp(30px,3.6vw,46px)!important;margin-bottom:4px}
+.page-sub,.alert,p{line-height:1.7}
+main h3{font-weight:700!important;letter-spacing:0!important;line-height:1.35}
+main small,.meta,.field .err,.secure,.note{font-size:14px!important;line-height:1.55}
+.crumbs{font-size:14px!important}
+.field label{font-weight:600!important;font-size:15px!important}
+.field input,.field select,.field textarea{font-size:16px!important}
+.btn,.add-btn{font-weight:700!important;letter-spacing:.01em}
+.card-name{font-weight:600!important;font-size:15px;line-height:1.4!important;min-height:42px!important}
+.card-brand{font-size:13px;font-weight:500!important}
+.price .now{font-weight:800!important}
+.nav-item>a{font-weight:600!important;font-size:15px!important}
+.footer{font-size:15px}
+.footer h4{font-weight:700!important}
+.mega h4{font-weight:700!important}
+.mega li a{font-size:15px!important}
+/* ຕົວເລກລາຄາໃຊ້ຕົວໜາສູງສຸດ (Archivo ມີ 900) */
+.pr,.pts b,.amt,.r.t span:last-child,.pd-price .now{font-weight:800!important;font-variant-numeric:tabular-nums}
