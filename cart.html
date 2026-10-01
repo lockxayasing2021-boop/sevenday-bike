@@ -4,8 +4,289 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ກະຕ່າສິນຄ້າ — Sevenday Bike</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="sevenday.css">
+
 <style>
+:root{
+  --black:#000;--ink:#1C1C1C;--grey-900:#2B2B2B;--grey-600:#6E6E6E;--grey-300:#D4D4D4;
+  --grey-100:#F3F3F3;--white:#FFF;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  --wrap:1320px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--white);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ── Announcement ── */
+.announce{background:var(--black);color:var(--white);font-size:13px;text-align:center;padding:8px 20px}
+.announce a{text-decoration:underline;text-underline-offset:3px}
+
+/* ── Header ── */
+.header{background:var(--white);border-bottom:1px solid var(--grey-300);position:sticky;top:0;z-index:50}
+.header-row{display:flex;align-items:center;gap:24px;height:76px}
+.menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:42px;height:42px;background:var(--black);color:var(--white);display:grid;place-items:center;font-weight:900;font-size:20px;letter-spacing:-1px}
+.logo-text{font-weight:900;font-size:22px;letter-spacing:-.5px;line-height:1}
+.logo-text small{display:block;font-size:11px;font-weight:500;color:var(--grey-600);letter-spacing:0;margin-top:3px}
+.search{flex:1;display:flex;max-width:640px;border:2px solid var(--black);border-radius:999px;overflow:hidden;height:46px}
+.search input{flex:1;border:none;padding:0 20px;font:inherit;font-size:15px;outline:none;min-width:0}
+.search button{width:56px;background:var(--black);color:var(--white);display:grid;place-items:center}
+.hdr-links{display:flex;align-items:center;gap:4px;margin-left:auto}
+.hdr-link{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;position:relative}
+.hdr-link:hover{background:var(--grey-100)}
+.hdr-link svg{width:24px;height:24px}
+.cart-count{position:absolute;top:0;right:4px;background:var(--black);color:var(--white);font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+.cur-toggle{display:flex;border:1px solid var(--grey-300);border-radius:999px;overflow:hidden;font-size:12px;font-weight:700;margin-right:6px}
+.cur-toggle button{padding:6px 10px}
+.cur-toggle button.on{background:var(--black);color:var(--white)}
+
+/* ── Mega nav ── */
+.nav{background:var(--black);color:var(--white);position:relative}
+.nav-list{display:flex;list-style:none;height:50px}
+.nav-item{position:static}
+.nav-item>a{display:flex;align-items:center;height:100%;padding:0 16px;font-weight:700;font-size:14px;white-space:nowrap}
+.nav-item>a:hover,.nav-item:focus-within>a{background:var(--grey-900)}
+.nav-item.sale>a{background:var(--white);color:var(--black);margin-left:auto}
+.nav-list .push{margin-left:auto}
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--white);color:var(--ink);border-bottom:1px solid var(--grey-300);box-shadow:0 18px 30px -18px rgba(0,0,0,.35);display:none}
+.nav-item:hover .mega,.nav-item:focus-within .mega{display:block}
+.mega-inner{display:grid;grid-template-columns:repeat(4,1fr) 1.3fr;gap:32px;padding:28px 20px 36px}
+.mega h4{font-size:15px;font-weight:800;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--black)}
+.mega ul{list-style:none}
+.mega li a{display:block;padding:5px 0;font-size:14px;color:var(--grey-900)}
+.mega li a:hover{text-decoration:underline}
+.mega-feature{background:var(--black);color:var(--white);padding:24px;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px}
+.mega-feature b{font-size:22px;font-weight:900;line-height:1.15;margin-bottom:12px}
+.mega-feature span{font-size:13px;text-decoration:underline}
+
+/* ── Collect strip ── */
+.collect{background:var(--grey-100);font-size:13px}
+.collect .wrap{display:flex;align-items:center;gap:10px;height:42px}
+.collect strong{font-weight:700}
+.collect a{margin-left:auto;text-decoration:underline;font-weight:600}
+
+/* ── Hero carousel ── */
+.hero{position:relative;overflow:hidden;background:var(--black)}
+.hero-track{display:flex;transition:transform .6s cubic-bezier(.7,0,.3,1)}
+.slide{min-width:100%;height:440px;display:grid;grid-template-columns:1fr 1fr;align-items:center}
+.slide-text{padding:0 0 0 max(20px,calc((100vw - var(--wrap))/2 + 20px))}
+.slide h2{font-size:clamp(34px,4.6vw,64px);font-weight:900;line-height:1.02;letter-spacing:-1.5px;margin-bottom:16px}
+.slide p{font-size:17px;max-width:440px;margin-bottom:28px;opacity:.85}
+.slide-art{height:100%;display:grid;place-items:center}
+.slide-art svg{width:min(520px,90%);height:auto}
+.s-dark{background:var(--black);color:var(--white)}
+.s-grey{background:var(--grey-100);color:var(--black)}
+.s-mid{background:#3A3A3A;color:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 28px;border-radius:999px;font-weight:700;font-size:15px;transition:background .2s,color .2s}
+.btn-white{background:var(--white);color:var(--black)}
+.btn-white:hover{background:var(--grey-300)}
+.btn-black{background:var(--black);color:var(--white)}
+.btn-black:hover{background:var(--grey-900)}
+.btn-line{border:2px solid currentColor}
+.hero-dots{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.hero-dots button{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4);border:1px solid rgba(0,0,0,.2)}
+.hero-dots button.on{background:var(--white);width:28px;border-radius:5px}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:var(--white);color:var(--black);display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.hero-arrow.prev{left:16px}.hero-arrow.next{right:16px}
+
+/* ── Sections ── */
+.section{padding:56px 0 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.sec-head h2{font-size:clamp(24px,2.6vw,32px);font-weight:900;letter-spacing:-.6px;line-height:1.1}
+.sec-head a{font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
+
+/* Categories */
+.cats{display:grid;grid-template-columns:repeat(9,1fr);gap:16px}
+.cat{text-align:center}
+.cat-circle{aspect-ratio:1;border-radius:50%;background:var(--grey-100);display:grid;place-items:center;margin-bottom:10px;transition:background .2s}
+.cat:hover .cat-circle{background:var(--grey-300)}
+.cat-circle svg{width:56%;height:auto}
+.cat span{font-weight:700;font-size:14px;line-height:1.25;display:block}
+
+/* Promo tiles */
+.promo-sm{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile{position:relative;aspect-ratio:4/3;padding:22px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.tile b{font-size:22px;font-weight:900;line-height:1.1;letter-spacing:-.4px;position:relative;z-index:1}
+.tile span{font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:3px;position:relative;z-index:1}
+.tile .big{font-size:44px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.tile svg.bg{position:absolute;right:-10%;bottom:-12%;width:70%;opacity:.18}
+.t-black{background:var(--black);color:var(--white)}
+.t-grey{background:var(--grey-100)}
+.t-line{border:2px solid var(--black)}
+.t-mid{background:#3A3A3A;color:var(--white)}
+.promo-lg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.promo-lg .tile{aspect-ratio:16/8;padding:32px}
+.promo-lg .tile b{font-size:clamp(24px,2.8vw,36px)}
+
+/* Product rail */
+.rail-wrap{position:relative}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 64px)/5);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.rail::-webkit-scrollbar{display:none}
+.rail-btn{position:absolute;top:34%;width:42px;height:42px;border-radius:50%;background:var(--white);border:1px solid var(--grey-300);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:2}
+.rail-btn.prev{left:-14px}.rail-btn.next{right:-14px}
+.card{scroll-snap-align:start;display:flex;flex-direction:column;position:relative}
+.card-img{aspect-ratio:1;background:var(--grey-100);display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
+.card-img img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;transition:transform .3s}
+.card:hover .card-img img{transform:scale(1.04)}
+.card-img svg{width:70%;color:var(--grey-600)}
+.badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;z-index:1}
+.badge{font-size:12px;font-weight:800;padding:4px 8px;line-height:1.2}
+.b-off{background:var(--black);color:var(--white)}
+.b-low{background:var(--white);color:var(--black);border:1px solid var(--black)}
+.b-new{background:var(--grey-300);color:var(--black)}
+.b-out{background:var(--grey-600);color:var(--white)}
+.card-brand{font-size:13px;color:var(--grey-600);font-weight:600}
+.card-name{font-weight:700;font-size:15px;line-height:1.3;margin:2px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px}
+.card-name:hover{text-decoration:underline}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price .now{font-size:18px;font-weight:900}
+.price .was{font-size:13px;color:var(--grey-600);text-decoration:line-through}
+.card.on-sale .price .now{background:var(--black);color:var(--white);padding:0 6px}
+.sizes{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.sizes span{font-size:11px;font-weight:700;border:1px solid var(--grey-300);padding:3px 7px}
+.add-btn{margin-top:12px;height:40px;border:2px solid var(--black);border-radius:999px;font-weight:700;font-size:14px;transition:background .2s,color .2s}
+.add-btn:hover{background:var(--black);color:var(--white)}
+.add-btn:disabled{border-color:var(--grey-300);color:var(--grey-600);cursor:not-allowed;background:none}
+.skeleton .card-img{animation:pulse 1.2s infinite}
+.skeleton .card-name,.skeleton .price{background:var(--grey-100);color:transparent;min-height:16px}
+@keyframes pulse{50%{opacity:.5}}
+
+/* Brands */
+.brands{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--grey-300);border-left:1px solid var(--grey-300)}
+.brands a{height:96px;display:grid;place-items:center;border-right:1px solid var(--grey-300);border-bottom:1px solid var(--grey-300);font-weight:900;font-size:20px;letter-spacing:-.5px;color:var(--grey-600);transition:color .2s,background .2s}
+.brands a:hover{color:var(--black);background:var(--grey-100)}
+
+/* Workshop band */
+.workshop{background:var(--black);color:var(--white);margin-top:56px}
+.workshop .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;padding-top:56px;padding-bottom:56px;align-items:center}
+.workshop h2{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.05;margin-bottom:14px}
+.workshop p{opacity:.8;max-width:480px;margin-bottom:24px}
+.pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grey-900);border:1px solid var(--grey-900)}
+.pkg{background:var(--black);padding:22px 18px}
+.pkg b{display:block;font-size:17px;font-weight:800;margin-bottom:4px}
+.pkg .p{font-size:22px;font-weight:900;margin:8px 0}
+.pkg small{display:block;font-size:12px;opacity:.65;line-height:1.45}
+
+/* USP */
+.usp{border-top:1px solid var(--grey-300);border-bottom:1px solid var(--grey-300);margin-top:56px}
+.usp .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.usp a{display:flex;gap:14px;align-items:center;padding:26px 16px}
+.usp a+a{border-left:1px solid var(--grey-300)}
+.usp svg{width:34px;height:34px;flex-shrink:0}
+.usp b{display:block;font-size:15px;font-weight:800}
+.usp small{color:var(--grey-600);font-size:13px}
+
+/* SEO / FAQ */
+.about-shop{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.about-shop p{color:var(--grey-900);margin-bottom:12px;max-width:62ch}
+.faq details{border-bottom:1px solid var(--grey-300)}
+.faq summary{font-weight:700;padding:16px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::after{content:'+';font-size:22px;line-height:1}
+.faq details[open] summary::after{content:'–'}
+.faq details p{padding-bottom:16px;color:var(--grey-900)}
+
+/* Newsletter */
+.news{background:var(--grey-100);margin-top:56px}
+.news .wrap{display:flex;align-items:center;justify-content:space-between;gap:32px;padding-top:36px;padding-bottom:36px;flex-wrap:wrap}
+.news h3{font-size:24px;font-weight:900;letter-spacing:-.4px}
+.news small{color:var(--grey-600)}
+.news form{display:flex;flex:1;max-width:520px;min-width:260px}
+.news input{flex:1;height:50px;border:2px solid var(--black);border-right:none;padding:0 18px;font:inherit;min-width:0}
+.news button{height:50px;padding:0 26px;background:var(--black);color:var(--white);font-weight:700}
+
+/* Footer */
+.footer{background:var(--black);color:#BDBDBD;font-size:14px}
+.foot-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:32px;padding:56px 0 40px}
+.footer h4{color:var(--white);font-size:15px;font-weight:800;margin-bottom:14px}
+.footer ul{list-style:none}
+.footer li{margin-bottom:9px}
+.footer a:hover{color:var(--white);text-decoration:underline}
+.foot-brand p{margin:14px 0;max-width:300px;line-height:1.6}
+.foot-brand .logo-mark{background:var(--white);color:var(--black)}
+.foot-brand .logo-text{color:var(--white)}
+.social{display:flex;gap:10px}
+.social a{width:38px;height:38px;border:1px solid #444;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--white)}
+.foot-bottom{border-top:1px solid #333;padding:22px 0;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px}
+.pay{display:flex;gap:8px;flex-wrap:wrap}
+.pay span{border:1px solid #444;padding:4px 10px;font-weight:700;font-size:12px;color:var(--white)}
+
+/* Drawer (mobile) */
+.drawer{position:fixed;inset:0;z-index:100;display:none}
+.drawer.open{display:block}
+.drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.drawer-panel{position:absolute;top:0;left:0;bottom:0;width:min(360px,88vw);background:var(--white);overflow-y:auto;padding-bottom:40px}
+.drawer-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--black);color:var(--white);font-weight:800}
+.drawer details{border-bottom:1px solid var(--grey-300)}
+.drawer summary,.drawer .d-link{display:flex;justify-content:space-between;padding:16px 20px;font-weight:700;list-style:none;cursor:pointer}
+.drawer summary::after{content:'+'}
+.drawer details[open] summary::after{content:'–'}
+.drawer details ul{list-style:none;padding:0 20px 12px 32px}
+.drawer details li a{display:block;padding:7px 0;color:var(--grey-900)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,120px);background:var(--black);color:var(--white);padding:14px 22px;font-weight:600;z-index:200;transition:transform .3s,visibility .3s;display:flex;gap:14px;align-items:center;visibility:hidden}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.toast a{text-decoration:underline}
+
+/* ── Responsive ── */
+@media (max-width:1100px){
+  .rail{grid-auto-columns:calc((100% - 48px)/4)}
+  .cats{grid-template-columns:repeat(9,120px);overflow-x:auto;scrollbar-width:none}
+  .mega-inner{grid-template-columns:repeat(3,1fr)}
+  .mega-feature{display:none}
+  .foot-grid{grid-template-columns:repeat(3,1fr)}
+  .foot-brand{grid-column:1/-1}
+}
+@media (max-width:860px){
+  .nav,.hdr-link.hide-m,.cur-toggle{display:none}
+  .menu-btn{display:flex}
+  .header-row{flex-wrap:wrap;height:auto;padding:10px 0;gap:10px 14px}
+  .search{order:5;max-width:none;flex-basis:100%;height:42px}
+  .logo-text small{display:none}
+  .logo-text{font-size:17px}
+  .logo-mark{width:36px;height:36px;font-size:17px}
+  .hdr-link{padding:4px 6px;font-size:11px}
+  .header-row{flex-wrap:wrap}
+  .hdr-links{flex-shrink:0}
+  .cats{grid-template-columns:repeat(9,96px)}
+  .slide{grid-template-columns:1fr;height:auto;padding:40px 0 56px}
+  .slide-text{padding:0 20px}
+  .slide-art{display:none}
+  .hero-arrow{display:none}
+  .rail{grid-auto-columns:calc((100% - 16px)/2.2)}
+  .rail-btn{display:none}
+  .promo-sm{grid-template-columns:1fr 1fr}
+  .promo-lg{grid-template-columns:1fr}
+  .brands{grid-template-columns:repeat(3,1fr)}
+  .workshop .wrap{grid-template-columns:1fr}
+  .pkgs{grid-template-columns:1fr}
+  .usp .wrap{grid-template-columns:1fr 1fr}
+  .usp a+a{border-left:none}
+  .about-shop{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .collect a{display:none}
+}
+
+
+/* ── Page hero (ແບບດຽວກັບ hero ໜ້າໂຮມ) ── */
+.phero{background:var(--black);color:var(--white);overflow:hidden}
+.phero.g{background:var(--grey-100);color:var(--black)}
+.phero-in{display:grid;grid-template-columns:1.4fr 1fr;align-items:center;gap:24px;min-height:240px;padding-top:36px;padding-bottom:36px}
+.phero .crumbs-h{font-size:13px;opacity:.75;margin-bottom:14px}
+.phero .crumbs-h a{text-decoration:underline;text-underline-offset:3px}
+.phero h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;line-height:1.02;letter-spacing:-1.5px}
+.phero p{font-size:17px;opacity:.85;margin-top:14px;max-width:520px}
+.phero-art{justify-self:end;width:min(360px,100%);height:auto;opacity:.95}
+.phero .btn{margin-top:22px}
+@media (max-width:860px){.phero-in{grid-template-columns:1fr;min-height:0;padding-top:28px;padding-bottom:28px}.phero-art{display:none}}
+main.wrap{padding-top:8px}
+
 .page-title{font-size:clamp(28px,3.4vw,42px);font-weight:800;letter-spacing:-.01em;padding:32px 0 20px}
 .cart{display:grid;grid-template-columns:1fr 380px;gap:40px;padding-bottom:64px;align-items:start}
 .line{display:grid;grid-template-columns:120px 1fr auto;gap:18px;padding:20px 0;border-bottom:1px solid var(--grey-300)}
@@ -44,8 +325,112 @@
 </style>
 </head>
 <body>
+
+
+<!-- SVG sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-bike" viewBox="0 0 120 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="48" r="19"/><circle cx="96" cy="48" r="19"/><path d="M24 48 46 18h34L96 48M46 18l18 30h-40M64 48 80 18M40 10h14M78 12h10"/></g></symbol>
+    <symbol id="i-mtb" viewBox="0 0 120 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="48" r="20"/><circle cx="96" cy="48" r="20"/><path d="M24 48 50 20l14 28H24M50 20h28l18 28M64 48 78 20M46 12h12M74 14l6-4"/><path d="M8 48h0M80 30l8 4" /></g></symbol>
+    <symbol id="i-kid" viewBox="0 0 120 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="30" cy="52" r="14"/><circle cx="90" cy="52" r="14"/><path d="M30 52 48 28h26l16 24M48 28l12 24H30M74 28l4-10h8M44 20h10"/></g></symbol>
+    <symbol id="i-ebike" viewBox="0 0 120 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="48" r="19"/><circle cx="96" cy="48" r="19"/><path d="M24 48 46 18h34L96 48M46 18l18 30h-40M80 18l4-8"/><rect x="50" y="24" width="20" height="10" rx="2"/><path d="M58 4l-4 8h6l-4 8"/></g></symbol>
+    <symbol id="i-helmet" viewBox="0 0 80 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 44C8 22 24 10 42 10s30 12 30 30v6H14z"/><path d="M28 14l-6 14M44 10v16M58 14l6 14M14 46l-4 8h22"/></g></symbol>
+    <symbol id="i-light" viewBox="0 0 80 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="24" width="34" height="22" rx="6"/><path d="M44 28l12-8v30l-12-8M62 22l10-6M64 35h12M62 48l10 6"/></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 80 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 34V22a18 18 0 0 1 36 0v12"/><rect x="14" y="34" width="52" height="30" rx="4"/><path d="M40 44v10"/></g></symbol>
+    <symbol id="i-gear" viewBox="0 0 80 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="35" r="14"/><circle cx="40" cy="35" r="5"/><path d="M40 9v8M40 53v8M14 35h8M58 35h8M22 17l6 6M52 47l6 6M58 17l-6 6M28 47l-6 6"/></g></symbol>
+    <symbol id="i-wrench" viewBox="0 0 80 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 10a14 14 0 0 0-14 18L12 52l6 6 24-24a14 14 0 0 0 18-14l-8 6-8-2-2-8z"/></g></symbol>
+    <symbol id="i-used" viewBox="0 0 80 70"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 30a26 26 0 0 1 48-8M66 40a26 26 0 0 1-48 8"/><path d="M62 10v12H50M18 60V48h12"/></g></symbol>
+  </defs>
+</svg>
+
+<div class="announce">ສັ່ງອອນລາຍ ຮັບທີ່ຮ້ານໄດ້ທຸກມື້ · <a href="store.html">ເບິ່ງທີ່ຕັ້ງຮ້ານ</a></div>
+
+<header class="header">
+  <div class="wrap header-row">
+    <button class="menu-btn" aria-label="ເປີດເມນູ" onclick="toggleDrawer(true)">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <a href="index.html" class="logo" aria-label="Sevenday Bike ໜ້າຫຼັກ">
+      <span class="logo-mark">7</span>
+      <span class="logo-text">Sevenday Bike<small>ວຽງຈັນ, ລາວ</small></span>
+    </a>
+    <form class="search" role="search" onsubmit="doSearch(event)">
+      <input id="q" type="search" placeholder="ຄົ້ນຫາ ຈັກຍານ, ອາໄຫຼ່, ຍີ່ຫໍ້..." aria-label="ຄົ້ນຫາສິນຄ້າ">
+      <button aria-label="ຄົ້ນຫາ"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="9" cy="9" r="7"/><path d="m14 14 5 5"/></svg></button>
+    </form>
+    <div class="hdr-links">
+      <div class="cur-toggle" role="group" aria-label="ສະກຸນເງິນ">
+        <button data-cur="LAK" class="on">₭ LAK</button><button data-cur="THB">฿ THB</button>
+      </div>
+      <a class="hdr-link hide-m" href="service.html"><svg fill="none" stroke="currentColor" stroke-width="1.8"><use href="#i-wrench" /></svg>Workshop</a>
+      <a class="hdr-link hide-m" href="store.html"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>ຮ້ານ</a>
+      <a class="hdr-link" href="login.html" id="accLink"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg><span id="accLabel">ບັນຊີ</span></a>
+      <a class="hdr-link" href="cart.html"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h11L21 8H7"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>ກະຕ່າ<span class="cart-count" id="cartCount">0</span></a>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" aria-label="ໝວດສິນຄ້າ">
+  <ul class="wrap nav-list">
+    <li class="nav-item"><a href="catalogue.html?cat=bikes">ຈັກຍານ</a>
+      <div class="mega"><div class="wrap mega-inner">
+        <div><h4>ພູເຂົາ (MTB)</h4><ul><li><a href="catalogue.html?cat=mtb">ທັງໝົດ</a></li><li><a href="catalogue.html?cat=hardtail">Hardtail</a></li><li><a href="catalogue.html?cat=full-sus">Full Suspension</a></li><li><a href="catalogue.html?cat=trail">Trail</a></li></ul></div>
+        <div><h4>ຖະໜົນ & Gravel</h4><ul><li><a href="catalogue.html?cat=road">Road ທັງໝົດ</a></li><li><a href="catalogue.html?cat=gravel">Gravel</a></li><li><a href="catalogue.html?cat=flatbar">Flat Bar</a></li><li><a href="catalogue.html?cat=fixie">Fixie</a></li></ul></div>
+        <div><h4>ໃຊ້ໃນເມືອງ</h4><ul><li><a href="catalogue.html?cat=city">City & Hybrid</a></li><li><a href="catalogue.html?cat=folding">ພັບໄດ້</a></li><li><a href="catalogue.html?cat=ebike">ຈັກຍານໄຟຟ້າ</a></li></ul></div>
+        <div><h4>ເດັກນ້ອຍ</h4><ul><li><a href="catalogue.html?cat=kids">ທັງໝົດ</a></li><li><a href="catalogue.html?cat=kids-12">12–16 ນິ້ວ (2–6 ປີ)</a></li><li><a href="catalogue.html?cat=kids-20">20 ນິ້ວ (5–9 ປີ)</a></li><li><a href="catalogue.html?cat=kids-24">24 ນິ້ວ (8–11 ປີ)</a></li><li><a href="catalogue.html?cat=balance">Balance Bike</a></li></ul></div>
+        <a class="mega-feature" href="service.html"><b>ຊື້ຈັກຍານ ໄດ້ປັບຕັ້ງໃຫ້ພໍດີກັບຕົວ ຟຣີ</b><span>ຈອງ Bike Fit</span></a>
+      </div></div>
+    </li>
+    <li class="nav-item"><a href="catalogue.html?cat=parts">ອາໄຫຼ່</a>
+      <div class="mega"><div class="wrap mega-inner">
+        <div><h4>ລະບົບຂັບ</h4><ul><li><a href="catalogue.html?cat=chain">ໂສ້</a></li><li><a href="catalogue.html?cat=cassette">ເຟືອງຫຼັງ</a></li><li><a href="catalogue.html?cat=derailleur">ຕີນຜີ</a></li><li><a href="catalogue.html?cat=crank">ຂາຈານ</a></li></ul></div>
+        <div><h4>ລໍ້ & ຢາງ</h4><ul><li><a href="catalogue.html?cat=tyre">ຢາງນອກ</a></li><li><a href="catalogue.html?cat=tube">ຢາງໃນ</a></li><li><a href="catalogue.html?cat=wheel">ລໍ້ຄົບຊຸດ</a></li></ul></div>
+        <div><h4>ເບຣກ & ຄວບຄຸມ</h4><ul><li><a href="catalogue.html?cat=brake">ເບຣກ & ຜ້າເບຣກ</a></li><li><a href="catalogue.html?cat=shifter">ມືເກຍ</a></li><li><a href="catalogue.html?cat=handlebar">ແຮນ & ຄໍແຮນ</a></li><li><a href="catalogue.html?cat=grip">ປອກແຮນ</a></li></ul></div>
+        <div><h4>ອື່ນໆ</h4><ul><li><a href="catalogue.html?cat=saddle">ເບາະ</a></li><li><a href="catalogue.html?cat=pedal">ບັນໄດ</a></li><li><a href="catalogue.html?cat=seatpost">ຫຼັກອານ</a></li></ul></div>
+        <a class="mega-feature" href="service.html"><b>ບໍ່ແນ່ໃຈວ່າອາໄຫຼ່ໃສ່ໄດ້ບໍ? ສົ່ງຮູບມາຖາມຊ່າງ</b><span>ຕິດຕໍ່ Workshop</span></a>
+      </div></div>
+    </li>
+    <li class="nav-item"><a href="catalogue.html?cat=accessories">ອຸປະກອນ</a>
+      <div class="mega"><div class="wrap mega-inner">
+        <div><h4>ຄວາມປອດໄພ</h4><ul><li><a href="catalogue.html?cat=lights">ໄຟ</a></li><li><a href="catalogue.html?cat=locks">ກະແຈລັອກ</a></li><li><a href="catalogue.html?cat=bells">ກະດິ່ງ</a></li></ul></div>
+        <div><h4>ການເດີນທາງ</h4><ul><li><a href="catalogue.html?cat=bottles">ກະຕິກນ້ຳ & ຂາຈັບ</a></li><li><a href="catalogue.html?cat=bags">ກະເປົາ</a></li><li><a href="catalogue.html?cat=phone">ຂາຈັບໂທລະສັບ</a></li><li><a href="catalogue.html?cat=computer">ໄມລ໌ & GPS</a></li></ul></div>
+        <div><h4>ບຳລຸງຮັກສາ</h4><ul><li><a href="catalogue.html?cat=pumps">ສູບລົມ</a></li><li><a href="catalogue.html?cat=tools">ເຄື່ອງມື</a></li><li><a href="catalogue.html?cat=lube">ນ້ຳມັນ & ນ້ຳຢາລ້າງ</a></li></ul></div>
+        <div><h4>ຈອດ & ເກັບ</h4><ul><li><a href="catalogue.html?cat=stands">ຂາຕັ້ງ</a></li><li><a href="catalogue.html?cat=racks">ແຮັກ & ຕິດລົດ</a></li></ul></div>
+        <a class="mega-feature" href="film.html"><b>ຟິມຫຸ້ມສີຈັກຍານ ເລືອກສີໄດ້ເອງ</b><span>ລອງອອກແບບ</span></a>
+      </div></div>
+    </li>
+    <li class="nav-item"><a href="catalogue.html?cat=gear">ເຄື່ອງນຸ່ງ</a>
+      <div class="mega"><div class="wrap mega-inner">
+        <div><h4>ໝວກກັນກະທົບ</h4><ul><li><a href="catalogue.html?cat=helmet-road">Road</a></li><li><a href="catalogue.html?cat=helmet-mtb">MTB</a></li><li><a href="catalogue.html?cat=helmet-kids">ເດັກນ້ອຍ</a></li></ul></div>
+        <div><h4>ເສື້ອ & ໂສ້ງ</h4><ul><li><a href="catalogue.html?cat=jersey">ເສື້ອປັ່ນ</a></li><li><a href="catalogue.html?cat=shorts">ໂສ້ງປັ່ນ</a></li><li><a href="catalogue.html?cat=jacket">ເສື້ອກັນລົມ</a></li></ul></div>
+        <div><h4>ອຸປະກອນສວມ</h4><ul><li><a href="catalogue.html?cat=gloves">ຖົງມື</a></li><li><a href="catalogue.html?cat=shoes">ເກີບ & Cleat</a></li><li><a href="catalogue.html?cat=eyewear">ແວ່ນຕາ</a></li></ul></div>
+        <div><h4>ໂພຊະນາການ</h4><ul><li><a href="catalogue.html?cat=gel">ເຈວພະລັງງານ</a></li><li><a href="catalogue.html?cat=hydration">ເກືອແຮ່</a></li></ul></div>
+      </div></div>
+    </li>
+    <li class="nav-item"><a href="service.html">Workshop</a>
+      <div class="mega"><div class="wrap mega-inner">
+        <div><h4>ແພັກເກດ Service</h4><ul><li><a href="service.html#basic">Basic</a></li><li><a href="service.html#standard">Standard</a></li><li><a href="service.html#ultimate">Ultimate</a></li></ul></div>
+        <div><h4>ບໍລິການອື່ນ</h4><ul><li><a href="service.html">ສ້ອມແປງທົ່ວໄປ</a></li><li><a href="film.html">ຟິມຫຸ້ມສີ</a></li><li><a href="service.html">Bike Fit</a></li></ul></div>
+        <div><h4>ການຈອງ</h4><ul><li><a href="service.html#book">ຈອງຄິວອອນລາຍ</a></li><li><a href="account.html">ເບິ່ງປະຫວັດສ້ອມ</a></li></ul></div>
+      </div></div>
+    </li>
+    <li class="nav-item"><a href="catalogue.html?cat=used">ມືສອງ</a></li>
+    <li class="nav-item sale push"><a href="catalogue.html?sale=1">Sale</a></li>
+  </ul>
+</nav>
+
+<div class="collect">
+  <div class="wrap">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11H3z"/><path d="M9 20v-6h6v6"/></svg>
+    <span>ຮັບສິນຄ້າທີ່: <strong>Sevenday Bike ວຽງຈັນ</strong> · ເປີດທຸກມື້ 09:00–18:00</span>
+    <a href="store.html">ເບິ່ງແຜນທີ່</a>
+  </div>
+</div>
+
+
+<section class="phero g"><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / ກະຕ່າ</nav><h1>ກະຕ່າສິນຄ້າ <span id="n" style="font-size:.45em;font-weight:600;opacity:.6"></span></h1><p>ກວດລາຍການ ແລ້ວດຳເນີນການສັ່ງຊື້ — ຮັບທີ່ຮ້ານຟຣີ</p></div><svg class="phero-art" viewBox="0 0 120 70" aria-hidden="true" style="color:#000"><use href="#i-bike"/></svg></div></section>
 <main class="wrap">
-  <h1 class="page-title">ກະຕ່າສິນຄ້າ <span id="n" style="color:var(--grey-600);font-weight:600;font-size:.6em"></span></h1>
+  
   <div id="root"></div>
   <section class="section" id="recoSec" hidden>
     <div class="sec-head"><h2>ຊື້ຄູ່ກັນເລື້ອຍ</h2><a href="catalogue.html?cat=accessories">ເບິ່ງອຸປະກອນທັງໝົດ</a></div>
@@ -54,7 +439,155 @@
   <div style="height:56px"></div>
 </main>
 
-<script src="layout.js"></script>
+
+<section class="usp">
+  <div class="wrap">
+    <a href="store.html"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11H3z"/><path d="M9 20v-6h6v6"/></svg><div><b>ສັ່ງອອນລາຍ ຮັບທີ່ຮ້ານ</b><small>ເຊັກສະຕັອກຈິງກ່ອນສັ່ງ</small></div></a>
+    <a href="service.html"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><div><b>ປະກອບ & ປັບຕັ້ງຟຣີ</b><small>ທຸກຄັນທີ່ຊື້ຈາກຮ້ານ</small></div></a>
+    <a href="checkout.html"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><div><b>ຮັບ LAK · THB · USD</b><small>ໂອນ ຫຼື ຈ່າຍທີ່ຮ້ານ</small></div></a>
+    <a href="login.html"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z"/></svg><div><b>ສະສົມແຕ້ມ</b><small>ທຸກການຊື້ ແລະ ສ້ອມ</small></div></a>
+  </div>
+</section>
+
+
+<section class="news">
+  <div class="wrap">
+    <div><h3>ຮັບຂ່າວໂປຣໂມຊັນກ່ອນໃຜ</h3><small>ສິນຄ້າເຂົ້າໃໝ່ ແລະ ສ່ວນຫຼຸດ ສົ່ງເຂົ້າອີເມວເດືອນລະ 1–2 ຄັ້ງ</small></div>
+    <form onsubmit="subscribe(event)"><input type="email" required placeholder="ອີເມວຂອງທ່ານ" aria-label="ອີເມວ"><button>ລົງທະບຽນ</button></form>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="index.html" class="logo"><span class="logo-mark">7</span><span class="logo-text">Sevenday Bike</span></a>
+        <p>ຮ້ານຈັກຍານ ແລະ Workshop ທີ່ນະຄອນຫຼວງວຽງຈັນ. ເປີດທຸກມື້ 09:00–18:00.</p>
+        <div class="social"><a href="#" aria-label="Facebook">f</a><a href="#" aria-label="TikTok">tt</a><a href="#" aria-label="WhatsApp">wa</a></div>
+      </div>
+      <div><h4>ສິນຄ້າ</h4><ul><li><a href="catalogue.html?cat=bikes">ຈັກຍານ</a></li><li><a href="catalogue.html?cat=parts">ອາໄຫຼ່</a></li><li><a href="catalogue.html?cat=accessories">ອຸປະກອນ</a></li><li><a href="catalogue.html?cat=used">ມືສອງ</a></li><li><a href="catalogue.html?sale=1">Sale</a></li></ul></div>
+      <div><h4>Workshop</h4><ul><li><a href="service.html">ແພັກເກດ Service</a></li><li><a href="service.html#book">ຈອງຄິວ</a></li><li><a href="film.html">ຟິມຫຸ້ມສີ</a></li></ul></div>
+      <div><h4>ບັນຊີ</h4><ul><li><a href="login.html">ເຂົ້າສູ່ລະບົບ</a></li><li><a href="account.html">ປະຫວັດການສັ່ງຊື້</a></li><li><a href="account.html">ແຕ້ມສະສົມ</a></li><li><a href="cart.html">ກະຕ່າ</a></li></ul></div>
+      <div><h4>ກ່ຽວກັບຮ້ານ</h4><ul><li><a href="about.html">ກ່ຽວກັບເຮົາ</a></li><li><a href="store.html">ທີ່ຕັ້ງຮ້ານ</a></li><li><a href="contact.html">ຕິດຕໍ່</a></li></ul></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Sevenday Bike, ວຽງຈັນ</span>
+      <div class="pay"><span>BCEL One</span><span>LAK</span><span>THB</span><span>USD</span><span>ເງິນສົດ</span></div>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile drawer -->
+<div class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-bg" onclick="toggleDrawer(false)"></div>
+  <div class="drawer-panel" role="dialog" aria-label="ເມນູ">
+    <div class="drawer-top">ເມນູ<button aria-label="ປິດ" onclick="toggleDrawer(false)">✕</button></div>
+    <details><summary>ຈັກຍານ</summary><ul><li><a href="catalogue.html?cat=mtb">ພູເຂົາ</a></li><li><a href="catalogue.html?cat=road">ຖະໜົນ</a></li><li><a href="catalogue.html?cat=city">City & Hybrid</a></li><li><a href="catalogue.html?cat=kids">ເດັກນ້ອຍ</a></li><li><a href="catalogue.html?cat=ebike">ໄຟຟ້າ</a></li></ul></details>
+    <details><summary>ອາໄຫຼ່</summary><ul><li><a href="catalogue.html?cat=tyre">ຢາງ</a></li><li><a href="catalogue.html?cat=brake">ເບຣກ</a></li><li><a href="catalogue.html?cat=chain">ໂສ້ & ເຟືອງ</a></li><li><a href="catalogue.html?cat=parts">ທັງໝົດ</a></li></ul></details>
+    <details><summary>ອຸປະກອນ</summary><ul><li><a href="catalogue.html?cat=lights">ໄຟ</a></li><li><a href="catalogue.html?cat=locks">ກະແຈລັອກ</a></li><li><a href="catalogue.html?cat=pumps">ສູບລົມ</a></li><li><a href="catalogue.html?cat=accessories">ທັງໝົດ</a></li></ul></details>
+    <details><summary>ເຄື່ອງນຸ່ງ</summary><ul><li><a href="catalogue.html?cat=helmet">ໝວກກັນກະທົບ</a></li><li><a href="catalogue.html?cat=gloves">ຖົງມື</a></li><li><a href="catalogue.html?cat=jersey">ເສື້ອປັ່ນ</a></li></ul></details>
+    <a class="d-link" href="service.html">Workshop</a>
+    <a class="d-link" href="catalogue.html?cat=used">ມືສອງ</a>
+    <a class="d-link" href="catalogue.html?sale=1">Sale</a>
+    <a class="d-link" href="store.html">ທີ່ຕັ້ງຮ້ານ</a>
+    <a class="d-link" href="login.html">ບັນຊີ</a>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* Sevenday Bike — shared layout + helpers (header, nav, footer, cart, currency) */
+
+const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'open';
+
+/* ── ຂໍ້ມູນຮ້ານ: ແກ້ໄຂບ່ອນນີ້ບ່ອນດຽວ ທຸກໜ້າຈະປ່ຽນຕາມ ── */
+const SHOP = {
+  name: 'Sevenday Bike',
+  phone: '+856 20 XXXX XXXX',        // ← ໃສ່ເບີໂທຈິງ
+  whatsapp: '85620XXXXXXXX',          // ← ເບີ WhatsApp (ຕົວເລກລ້ວນ)
+  email: 'Lock.xayasing2021@gmail.com',
+  address: 'ບ້ານ ..., ເມືອງ ..., ນະຄອນຫຼວງວຽງຈັນ',  // ← ໃສ່ທີ່ຢູ່ຈິງ
+  mapUrl: 'https://maps.google.com/?q=Sevenday+Bike+Vientiane', // ← ລິ້ງ Google Maps ຂອງຮ້ານ
+  hours: 'ເປີດທຸກມື້ 09:00–18:00',
+  bank: 'BCEL One · ຊື່ບັນຊີ ... · ເລກບັນຊີ ...' // ← ຂໍ້ມູນໂອນເງິນ
+};
+
+/* POST ໄປ Apps Script: ໃຊ້ text/plain ເພື່ອບໍ່ໃຫ້ຕິດ CORS preflight */
+async function apiPost(action, data){
+  const r = await fetch(`${API_URL}?action=${action}&secret=${API_SECRET}`, { method:'POST', body: JSON.stringify({ action, secret: API_SECRET, ...data }) });
+  const j = await r.json();
+  if (j.ok === false) throw new Error(j.error || 'API error');
+  return j.data !== undefined ? j.data : j;
+}
+function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:'+SHOP.phone.replace(/\s/g,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length) el.textContent=SHOP[k]; }); }
+const THB_TO_LAK = 698;
+let currency = 'LAK';
+try{ currency = localStorage.getItem('sevenday_cur') || 'LAK'; }catch(_){}
+
+function getCart(){ try{ return JSON.parse(localStorage.getItem('sevenday_cart')) || []; }catch(_){ return []; } }
+function setCart(c){ try{ localStorage.setItem('sevenday_cart', JSON.stringify(c)); }catch(_){} updateCartCount(); }
+function updateCartCount(){ const el=document.getElementById('cartCount'); if(el) el.textContent=getCart().reduce((s,i)=>s+(i.qty||1),0); }
+function fmt(thb){ if(thb==null||isNaN(thb)) return ''; return currency==='THB' ? '฿'+Math.round(thb).toLocaleString() : '₭'+Math.round(thb*THB_TO_LAK).toLocaleString(); }
+let _toastT;
+function toast(html){ const t=document.getElementById('toast'); if(!t) return; t.innerHTML=html; t.classList.add('show'); clearTimeout(_toastT); _toastT=setTimeout(()=>t.classList.remove('show'),3000); }
+function doSearch(e){ e.preventDefault(); const q=document.getElementById('q').value.trim(); if(q) location.href='catalogue.html?q='+encodeURIComponent(q); }
+function toggleDrawer(open){ const d=document.getElementById('drawer'); d.classList.toggle('open',open); d.setAttribute('aria-hidden',!open); document.body.style.overflow=open?'hidden':''; }
+function iconFor(cat){
+  const c=(cat||'').toLowerCase();
+  if(/mtb|mountain|ພູ|ภูเขา/.test(c)) return '#i-mtb';
+  if(/kid|ເດັກ|เด็ก/.test(c)) return '#i-kid';
+  if(/helmet|ໝວກ|หมวก/.test(c)) return '#i-helmet';
+  if(/light|ໄຟ|ไฟ/.test(c)) return '#i-light';
+  if(/lock|ລັອກ|ล็อค/.test(c)) return '#i-lock';
+  if(/ຈັກ|จักร|bike/.test(c)) return '#i-bike';
+  return '#i-gear';
+}
+function mapP(p){
+  const name=String(p.name||'');
+  return { sku:String(p.sku||''), name, brand:name.split(' ')[0], category:p.category||p.type||'',
+    type:p.type||'', price:Number(p.price||p.price_thb||0), was:Number(p.was_price||0)||null,
+    stock:Number(p.stock||0), unit:p.unit||'', image:p.image||p.imageUrl||p.image_url||'', sizes:p.sizes||[] };
+}
+function isService(p){ const t=(p.category+' '+p.type).toLowerCase(); return /service|ບໍລິການ|บริการ|ຄ່າ|ค่า/.test(t); }
+function apiList(json){ const l=json.products||json.data?.products||json.data?.data||json.data||[]; return Array.isArray(l)?l:[]; }
+function card(p){
+  const out=p.stock<=0, low=!out&&p.stock<=2;
+  const off=p.was&&p.was>p.price?Math.round((1-p.price/p.was)*100):0;
+  const badges=[off?`<span class="badge b-off">-${off}%</span>`:'',low?`<span class="badge b-low">ເຫຼືອ ${p.stock}</span>`:'',out?`<span class="badge b-out">ໝົດ</span>`:''].join('');
+  const img=p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy">`:`<svg viewBox="0 0 120 70" aria-hidden="true"><use href="${iconFor(p.category+' '+p.name)}"/></svg>`;
+  const href=`product.html?sku=${encodeURIComponent(p.sku)}`;
+  const sizes=(p.sizes||[]).length?`<div class="sizes">${p.sizes.map(s=>`<span>${s}</span>`).join('')}</div>`:'';
+  return `<article class="card ${off?'on-sale':''}"><a class="card-img" href="${href}"><div class="badges">${badges}</div>${img}</a>
+    <span class="card-brand">${p.brand||''}</span><a class="card-name" href="${href}">${p.name}</a>
+    <div class="price"><span class="now">${fmt(p.price)}</span>${off?`<span class="was">${fmt(p.was)}</span>`:''}</div>${sizes}
+    <button class="add-btn" ${out?'disabled':''} onclick="quickAdd('${encodeURIComponent(p.sku)}')">${out?'ສິນຄ້າໝົດ':'ໃສ່ກະຕ່າ'}</button></article>`;
+}
+window._catalog = [];
+function addItem(p, qty){
+  const cart=getCart(); const row=cart.find(i=>i.sku===p.sku);
+  if(row) row.qty+=qty||1; else cart.push({sku:p.sku,name:p.name,price:p.price,qty:qty||1,image:p.image||'',category:p.category||''});
+  setCart(cart); toast(`ເພີ່ມ ${p.name} ໃສ່ກະຕ່າແລ້ວ <a href="cart.html">ເບິ່ງກະຕ່າ</a>`);
+}
+function quickAdd(enc){ const sku=decodeURIComponent(enc); const p=window._catalog.find(x=>x.sku===sku); if(p) addItem(p,1); }
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('[data-cur]').forEach(b=>{
+    b.classList.toggle('on',b.dataset.cur===currency);
+    b.onclick=()=>{ currency=b.dataset.cur; try{localStorage.setItem('sevenday_cur',currency);}catch(_){}
+      document.querySelectorAll('[data-cur]').forEach(x=>x.classList.toggle('on',x===b));
+      document.dispatchEvent(new Event('currencychange')); };
+  });
+  try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ document.getElementById('accLink').href='account.html'; document.getElementById('accLabel').textContent=(u.name||'ບັນຊີ').split(' ')[0]; } }catch(_){}
+  const q=new URLSearchParams(location.search).get('q'); if(q&&document.getElementById('q')) document.getElementById('q').value=q;
+  updateCartCount(); fillShop();
+});
+
+function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທະບຽນແລ້ວ — ຈະສົ່ງໂປຣໂມຊັນໃຫ້ທາງອີເມວ'); }
+
+</script>
 <script>
 const COUPONS = { SEVENDAY10:0.10 };  // ຕົວຢ່າງ — ແກ້ໄຂໄດ້ຕາມໂປຣໂມຊັນຈິງ
 let coupon=null, stockMap={};
