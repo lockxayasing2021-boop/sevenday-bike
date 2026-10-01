@@ -1,1087 +1,148 @@
 <!DOCTYPE html>
-<html lang="lo" data-theme="light">
+<html lang="lo">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Film / Color Customization — Sevenday Bike</title>
-<meta name="description" content="ປ່ຽນສີ ຈັກຍານ ດ້ວຍ Vinyl Film ຄຸນນະພາບ — Sevenday Bike ວຽງຈັນ · 80+ ສີ">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ອອກແບບຟິມຫຸ້ມສີ — Sevenday Bike</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sevenday.css">
 <style>
-:root{
-  --red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;
-  --ink:#111;--ink-2:#444;--ink-3:#888;
-  --white:#FFF;--base:#F5F5F5;--border:#E0E0E0;
-  --lime:#5C8A00;--lime-bg:#EFF5E0;
-  --dark:#0E0E14;--dark-2:#16161F;--dark-3:#1E1E2A;
-  --font-ui:'Inter',-apple-system,sans-serif;
-  --font-d:'Barlow Condensed','Inter',sans-serif;
-  --max-w:1280px;--r:6px;--r-lg:10px;--r-xl:16px;
-  --shadow-h:0 8px 32px rgba(0,0,0,.2);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-ui);background:var(--dark);color:#fff;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;font-family:inherit;border:none;background:none}
-.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+.crumbs{font-size:13px;color:var(--grey-600);padding:18px 0 6px}
+.crumbs a:hover{text-decoration:underline}
+.page-title{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.05}
+.page-sub{color:var(--grey-600);margin:8px 0 0;max-width:62ch}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:14px}
+.field input,.field select,.field textarea{height:48px;border:1px solid var(--grey-300);padding:0 14px;font:inherit;background:#fff;border-radius:0}
+.field textarea{height:96px;padding:12px 14px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#000;box-shadow:0 0 0 1px #000}
+.field .err{font-size:13px;font-weight:600;display:none}
+.field.invalid input,.field.invalid select{border-color:#000;border-width:2px}
+.field.invalid .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.choice{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--grey-300);padding:16px;cursor:pointer}
+.choice:has(input:checked){border:2px solid #000;padding:15px}
+.choice input{width:20px;height:20px;accent-color:#000;margin-top:2px}
+.choice b{display:block}.choice small{color:var(--grey-600)}
+.alert{background:var(--grey-100);border-left:4px solid #000;padding:14px 16px;font-size:14px}
+@media (max-width:860px){.row2{grid-template-columns:1fr}}
 
-/* HEADER */
-.site-header{background:rgba(14,14,20,.92);border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:500;backdrop-filter:blur(12px)}
-.header-top{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;max-width:var(--max-w);margin:0 auto}
-.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo-mark{width:38px;height:38px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
-.logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.logo-name{font-size:17px;font-weight:800;letter-spacing:-.4px;color:#fff}
-.logo-sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase}
-.hdr-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto}
-.hdr-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:var(--r);color:rgba(255,255,255,.6);font-size:10px;font-weight:600;text-transform:uppercase;transition:all .12s;position:relative;white-space:nowrap}
-.hdr-btn:hover{background:rgba(255,255,255,.07);color:#fff}
-.hdr-btn svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.hdr-badge{position:absolute;top:4px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.nav-bar{background:rgba(212,43,43,.9);backdrop-filter:blur(8px)}
-.nav-bar-inner{max-width:var(--max-w);margin:0 auto;padding:0 20px;display:flex;height:44px;align-items:stretch}
-.nav-link{display:flex;align-items:center;height:44px;padding:0 13px;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);white-space:nowrap;transition:background .12s}
-.nav-link:hover,.nav-link.active{background:rgba(0,0,0,.15);color:#fff}
-.nav-ws{margin-left:auto;display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.15);white-space:nowrap}
-.nav-ws:hover{background:rgba(0,0,0,.35)}
-@media(max-width:768px){.logo-sub{display:none}.hdr-btn span{display:none}.nav-bar{display:none}}
+.fm{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;padding:24px 0 64px;align-items:start}
+.stage{background:var(--grey-100);position:sticky;top:100px}
+.stage svg{width:100%;height:auto;display:block}
+.stage .cap{display:flex;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--grey-300);font-size:14px;background:#fff}
+.stage .cap b{font-weight:800}
+.ctl h2{font-size:18px;font-weight:900;margin:24px 0 10px}
+.ctl h2:first-child{margin-top:0}
+.parts{display:flex;gap:8px;flex-wrap:wrap}
+.parts button{border:1px solid var(--grey-300);padding:10px 14px;font-weight:700;font-size:14px;display:flex;gap:8px;align-items:center}
+.parts button.on{border:2px solid #000;padding:9px 13px}
+.parts i{width:16px;height:16px;border:1px solid rgba(0,0,0,.2);display:inline-block}
+.sw{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.sw button{aspect-ratio:1;border:1px solid rgba(0,0,0,.15)}
+.sw button.on{outline:3px solid #000;outline-offset:2px}
+.cname{font-size:14px;margin-top:8px;color:var(--grey-600)}
+.fin{display:flex;gap:8px;flex-wrap:wrap}
+.fin label{border:1px solid var(--grey-300);padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
+.fin label:has(input:checked){background:#000;color:#fff;border-color:#000}
+.fin input{position:absolute;opacity:0}
+.pkg{display:flex;flex-direction:column;gap:8px}
+.pkg label{display:flex;justify-content:space-between;gap:12px;border:1px solid var(--grey-300);padding:14px;cursor:pointer}
+.pkg label:has(input:checked){border:2px solid #000;padding:13px}
+.pkg input{accent-color:#000;margin-right:10px}
+.pkg small{display:block;color:var(--grey-600);font-weight:500}
+.pkg b{white-space:nowrap}
+.req{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.req .btn{border-radius:0;height:54px}
+.done{background:var(--grey-100);padding:28px;text-align:center}
+@media (max-width:860px){.fm{grid-template-columns:1fr}.stage{position:static}.sw{grid-template-columns:repeat(8,1fr)}}
 
-/* ══ HERO ══ */
-.film-hero{
-  background:var(--dark);
-  padding:60px 0 0;
-  position:relative;overflow:hidden;
-}
-.film-hero::before{
-  content:'';position:absolute;left:-200px;top:-200px;
-  width:600px;height:600px;border-radius:50%;
-  background:radial-gradient(circle,rgba(212,43,43,.12) 0%,transparent 70%);
-}
-.film-hero::after{
-  content:'';position:absolute;right:-100px;bottom:-100px;
-  width:400px;height:400px;border-radius:50%;
-  background:radial-gradient(circle,rgba(168,100,255,.08) 0%,transparent 70%);
-}
-.film-hero-inner{
-  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
-  position:relative;z-index:1;padding-bottom:0;
-}
-@media(max-width:860px){.film-hero-inner{grid-template-columns:1fr;gap:32px}}
-
-.film-hero-text{}
-.film-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.film-eyebrow::before{content:'';width:24px;height:2px;background:var(--red)}
-.film-title{font-family:var(--font-d);font-size:clamp(40px,7vw,80px);font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.02em;margin-bottom:16px;color:#fff}
-.film-title em{font-style:normal;-webkit-text-stroke:1.5px var(--red);color:transparent}
-.film-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.75;max-width:420px;margin-bottom:28px}
-.film-hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
-.film-tag{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,.75)}
-
-/* Configurator preview */
-.configurator{
-  background:var(--dark-2);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-xl);
-  overflow:hidden;
-  position:relative;
-}
-.config-preview{
-  height:320px;display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;transition:background .5s;
-}
-@media(max-width:480px){.config-preview{height:240px}}
-.config-preview-bg{
-  position:absolute;inset:0;
-  transition:all .5s;
-}
-.config-bike-svg{
-  position:relative;z-index:2;width:85%;max-width:440px;
-  filter:drop-shadow(0 8px 24px rgba(0,0,0,.4));
-  transition:filter .5s;
-}
-.config-color-label{
-  position:absolute;top:16px;left:16px;z-index:3;
-  background:rgba(0,0,0,.6);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:20px;padding:6px 14px;
-  font-size:12px;font-weight:700;color:#fff;
-  display:flex;align-items:center;gap:8px;
-}
-.config-color-dot{width:10px;height:10px;border-radius:50%;transition:background .3s}
-.config-finish-badge{
-  position:absolute;top:16px;right:16px;z-index:3;
-  background:rgba(0,0,0,.6);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:20px;padding:5px 12px;
-  font-size:11px;font-weight:600;color:rgba(255,255,255,.8);
-}
-
-/* Swatch panel */
-.config-panel{padding:16px 20px;border-top:1px solid rgba(255,255,255,.07)}
-.panel-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.panel-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.panel-value{font-size:13px;font-weight:600;color:#fff}
-.color-family-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.color-family-tabs::-webkit-scrollbar{display:none}
-.cf-tab{
-  flex-shrink:0;padding:5px 12px;border-radius:20px;
-  font-size:11px;font-weight:700;cursor:pointer;
-  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);
-  transition:all .14s;background:none;
-}
-.cf-tab:hover{color:#fff;border-color:rgba(255,255,255,.3)}
-.cf-tab.active{background:var(--red);border-color:var(--red);color:#fff}
-.swatches-grid{display:flex;gap:8px;flex-wrap:wrap}
-.sw{
-  width:32px;height:32px;border-radius:50%;cursor:pointer;
-  border:2px solid transparent;
-  transition:transform .15s,border-color .15s;
-  position:relative;flex-shrink:0;
-}
-.sw:hover{transform:scale(1.15)}
-.sw.active{border-color:#fff;transform:scale(1.2)}
-.sw.active::after{
-  content:'✓';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#fff;
-  text-shadow:0 1px 3px rgba(0,0,0,.6);
-}
-.finish-tabs{display:flex;gap:6px;margin-top:14px}
-.finish-tab{
-  flex:1;padding:7px;border-radius:var(--r);
-  font-size:11px;font-weight:700;text-align:center;cursor:pointer;
-  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);
-  transition:all .14s;background:none;
-}
-.finish-tab:hover{color:#fff;border-color:rgba(255,255,255,.3)}
-.finish-tab.active{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff}
-
-/* ══ SECTION ══ */
-.section{padding:60px 0}
-.section.light{background:#fff;color:var(--ink)}
-.section.light .sec-eyebrow{color:var(--red)}
-.section.light .sec-title{color:var(--ink)}
-.section.mid{background:var(--dark-3);color:#fff}
-.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
-.sec-title{font-family:var(--font-d);font-size:clamp(26px,4vw,44px);font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:0}
-.sec-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.75;max-width:520px;margin-top:10px}
-.section.light .sec-sub{color:var(--ink-3)}
-
-/* ══ COLOR CATALOGUE ══ */
-.cat-section{padding:60px 0;background:var(--dark-2)}
-.cat-section .sec-eyebrow{color:rgba(255,255,255,.35)}
-.cat-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:24px}
-@media(max-width:900px){.cat-grid{grid-template-columns:repeat(7,1fr)}}
-@media(max-width:560px){.cat-grid{grid-template-columns:repeat(5,1fr)}}
-.cat-swatch{
-  aspect-ratio:1;border-radius:var(--r-lg);cursor:pointer;
-  position:relative;overflow:hidden;
-  border:2px solid transparent;
-  transition:transform .15s,border-color .15s;
-}
-.cat-swatch:hover{transform:scale(1.08);z-index:1}
-.cat-swatch.selected{border-color:#fff;transform:scale(1.1);z-index:2}
-.cat-swatch-tip{
-  position:absolute;bottom:0;left:0;right:0;
-  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-  padding:4px 5px;font-size:9px;font-weight:600;color:#fff;
-  text-align:center;line-height:1.2;
-  transform:translateY(100%);transition:transform .15s;
-}
-.cat-swatch:hover .cat-swatch-tip{transform:none}
-
-/* Color families */
-.family-section{margin-top:32px}
-.family-label{
-  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.3);margin-bottom:12px;
-  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.07);
-}
-
-/* ══ HOW IT WORKS ══ */
-.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:40px}
-@media(max-width:768px){.how-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:420px){.how-grid{grid-template-columns:1fr}}
-.how-card{
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  border-radius:var(--r-xl);padding:24px;
-  transition:all .2s;
-}
-.how-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);transform:translateY(-3px)}
-.how-num{
-  font-family:var(--font-d);font-size:48px;font-weight:900;
-  color:rgba(255,255,255,.07);line-height:1;margin-bottom:14px;
-}
-.how-icon{font-size:28px;margin-bottom:12px}
-.how-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px}
-.how-text{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7}
-
-/* ══ PRICING ══ */
-.price-section{padding:60px 0;background:var(--dark-3)}
-.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
-@media(max-width:760px){.price-grid{grid-template-columns:1fr}}
-.price-card{
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-xl);padding:28px;transition:all .2s;
-}
-.price-card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
-.price-card.featured{border-color:var(--red);background:rgba(212,43,43,.05)}
-.price-card-badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
-.price-card-name{font-family:var(--font-d);font-size:22px;font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:6px}
-.price-card-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:18px}
-.price-card-price{font-size:26px;font-weight:800;color:#fff;margin-bottom:4px}
-.price-card-note{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:20px}
-.price-card-includes{list-style:none;margin-bottom:20px}
-.price-card-includes li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:rgba(255,255,255,.6);margin-bottom:8px}
-.price-card-includes li::before{content:'✓';color:var(--lime);font-weight:700;flex-shrink:0;margin-top:1px}
-
-/* ══ REQUEST FORM ══ */
-.request-section{padding:60px 0;background:var(--dark)}
-.request-inner{display:grid;grid-template-columns:1fr 480px;gap:48px;align-items:start}
-@media(max-width:960px){.request-inner{grid-template-columns:1fr}}
-
-.request-info{}
-.request-info .sec-title{margin-bottom:14px}
-.request-info p{font-size:14px;color:rgba(255,255,255,.55);line-height:1.8;margin-bottom:24px;max-width:400px}
-.request-channel{
-  display:flex;align-items:center;gap:14px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-lg);padding:14px 16px;margin-bottom:10px;
-  cursor:pointer;transition:all .14s;
-}
-.request-channel:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
-.rc-icon{width:40px;height:40px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(255,255,255,.06)}
-.rc-info{flex:1}
-.rc-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
-.rc-desc{font-size:12px;color:rgba(255,255,255,.4)}
-.rc-arrow{color:rgba(255,255,255,.25);font-size:18px}
-
-/* Form */
-.form-box{
-  background:var(--dark-2);border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-xl);overflow:hidden;
-}
-.form-box-head{
-  padding:20px 24px;background:var(--red);
-}
-.form-box-head h3{font-family:var(--font-d);font-size:22px;font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:3px}
-.form-box-head p{font-size:12px;color:rgba(255,255,255,.75)}
-
-/* Step indicator */
-.step-bar{display:flex;gap:8px;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2)}
-.step-dot{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;
-  border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.3);
-  transition:all .2s;flex-shrink:0;
-}
-.step-dot.active{background:var(--red);border-color:var(--red);color:#fff}
-.step-dot.done{background:var(--lime);border-color:var(--lime);color:#fff}
-.step-line{flex:1;height:1px;background:rgba(255,255,255,.08);align-self:center;margin:0 4px}
-.step-line.done{background:var(--lime)}
-
-.form-body{padding:22px 24px}
-.form-step{display:none}
-.form-step.active{display:block}
-
-/* Form fields */
-.f-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;display:block}
-.f-input,.f-select,.f-textarea{
-  width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
-  border-radius:var(--r);padding:0 12px;height:42px;
-  font-size:13px;font-family:var(--font-ui);color:#fff;
-  outline:none;transition:border-color .14s;margin-bottom:14px;
-}
-.f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--red)}
-.f-input::placeholder,.f-textarea::placeholder{color:rgba(255,255,255,.25)}
-.f-select option{background:var(--dark-2);color:#fff}
-.f-textarea{height:90px;padding:10px 12px;resize:vertical;margin-bottom:14px}
-.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:400px){.f-row{grid-template-columns:1fr}}
-
-/* Color picker in form */
-.f-color-pick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.f-sw{
-  width:28px;height:28px;border-radius:50%;cursor:pointer;
-  border:2px solid transparent;transition:transform .14s,border-color .14s;
-}
-.f-sw:hover{transform:scale(1.2)}
-.f-sw.active{border-color:#fff;transform:scale(1.18)}
-.f-color-selected{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:var(--r);padding:8px 12px;margin-bottom:14px;font-size:13px;color:rgba(255,255,255,.7);
-}
-.f-color-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
-
-/* Summary box */
-.summary-box{
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-lg);padding:16px;margin-bottom:16px;
-}
-.sum-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
-.sum-row:last-child{margin-bottom:0}
-.sum-row span:first-child{color:rgba(255,255,255,.45)}
-.sum-row span:last-child{font-weight:600;color:#fff}
-
-/* Buttons */
-.btn-next{
-  width:100%;height:44px;background:var(--red);color:#fff;
-  font-size:14px;font-weight:700;border-radius:var(--r-lg);border:none;
-  cursor:pointer;transition:background .14s;margin-top:4px;
-}
-.btn-next:hover{background:var(--red-h)}
-.btn-back{
-  width:100%;height:40px;background:none;color:rgba(255,255,255,.5);
-  font-size:13px;font-weight:600;border-radius:var(--r-lg);
-  border:1px solid rgba(255,255,255,.1);cursor:pointer;margin-top:8px;
-  transition:all .14s;
-}
-.btn-back:hover{color:#fff;border-color:rgba(255,255,255,.3)}
-
-/* Success */
-.form-success{text-align:center;padding:32px 0;display:none}
-.success-icon{font-size:56px;margin-bottom:16px}
-.success-title{font-family:var(--font-d);font-size:28px;font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:8px}
-.success-ref{background:rgba(255,255,255,.06);border-radius:var(--r-lg);padding:12px 20px;margin:16px auto;display:inline-block}
-.success-ref span{display:block;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-.success-ref strong{font-size:20px;font-weight:800;color:var(--red)}
-
-/* ══ GALLERY ══ */
-.gallery-section{padding:60px 0;background:var(--dark-3)}
-.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:28px}
-@media(max-width:760px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
-.gallery-item{
-  aspect-ratio:1;border-radius:var(--r-lg);
-  display:flex;align-items:center;justify-content:center;
-  font-size:48px;position:relative;overflow:hidden;
-  cursor:pointer;transition:transform .18s;
-  border:1px solid rgba(255,255,255,.06);
-}
-.gallery-item:hover{transform:scale(1.03);z-index:1}
-.gallery-label{
-  position:absolute;bottom:0;left:0;right:0;
-  background:linear-gradient(transparent,rgba(0,0,0,.8));
-  padding:20px 12px 10px;
-  font-size:11px;font-weight:600;color:#fff;
-  transform:translateY(100%);transition:transform .18s;
-}
-.gallery-item:hover .gallery-label{transform:none}
-
-/* ══ FAQ ══ */
-.faq-section{padding:60px 0;background:var(--dark-2)}
-.faq-list{margin-top:28px;max-width:760px}
-.faq-item{border-bottom:1px solid rgba(255,255,255,.07)}
-.faq-q{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 0;font-size:14px;font-weight:600;color:#fff;
-  cursor:pointer;gap:16px;transition:color .12s;
-}
-.faq-q:hover{color:var(--red)}
-.faq-q svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;flex-shrink:0;transition:transform .2s;color:rgba(255,255,255,.3)}
-.faq-item.open .faq-q svg{transform:rotate(180deg);color:var(--red)}
-.faq-a{font-size:13px;color:rgba(255,255,255,.5);line-height:1.75;padding-bottom:16px;display:none}
-.faq-item.open .faq-a{display:block}
-
-/* CTA */
-.cta-section{padding:80px 0;background:var(--dark);text-align:center;position:relative;overflow:hidden}
-.cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;border-radius:50%;background:radial-gradient(ellipse,rgba(212,43,43,.08) 0%,transparent 70%);pointer-events:none}
-.cta-title{font-family:var(--font-d);font-size:clamp(36px,6vw,72px);font-weight:900;text-transform:uppercase;color:#fff;line-height:.95;margin-bottom:16px}
-.cta-title em{font-style:normal;color:var(--red)}
-.cta-sub{font-size:15px;color:rgba(255,255,255,.5);margin-bottom:36px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7}
-.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;font-size:15px;font-weight:700;border-radius:var(--r-lg);cursor:pointer;border:none;transition:all .14s;font-family:var(--font-ui)}
-.btn-cta-red{background:var(--red);color:#fff}
-.btn-cta-red:hover{background:var(--red-h)}
-.btn-cta-outline{background:none;color:#fff;border:2px solid rgba(255,255,255,.25)}
-.btn-cta-outline:hover{border-color:#fff;background:rgba(255,255,255,.06)}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.3)}
-.toast.show{opacity:1}
 </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-top">
-    <a href="/" class="logo">
-      <div class="logo-mark"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg></div>
-      <div><div class="logo-name">Sevenday Bike</div><div class="logo-sub">Vientiane</div></div>
-    </a>
-    <div class="hdr-actions">
-      <a href="/account.html" class="hdr-btn"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>ບັນຊີ</span></a>
-      <a href="/cart.html" class="hdr-btn"><div style="position:relative;display:inline-flex"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="hdr-badge">2</span></div><span>ກະຕ່າ</span></a>
+<main class="wrap">
+  <nav class="crumbs"><a href="index.html">ໜ້າຫຼັກ</a> / <a href="service.html">Workshop</a> / ຟິມຫຸ້ມສີ</nav>
+  <h1 class="page-title">ອອກແບບສີຈັກຍານຂອງທ່ານ</h1>
+  <p class="page-sub">ເລືອກສ່ວນ ແລ້ວເລືອກສີ ເບິ່ງຕົວຢ່າງທັນທີ. ສົ່ງແບບໃຫ້ຮ້ານ ເພື່ອຂໍລາຄາ.</p>
+  <div class="fm">
+    <div class="stage">
+      <svg viewBox="0 0 600 380" aria-label="ຕົວຢ່າງສີຈັກຍານ">
+        <defs><linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+        <g id="wheels" fill="none" stroke-width="14"><circle cx="140" cy="260" r="92"/><circle cx="460" cy="260" r="92"/></g>
+        <g stroke="#9a9a9a" stroke-width="2" fill="none"><circle cx="140" cy="260" r="78"/><circle cx="460" cy="260" r="78"/>
+          <path d="M140 182v156M62 260h156M85 205l110 110M85 315l110-110M460 182v156M382 260h156M405 205l110 110M405 315l110-110"/></g>
+        <circle cx="140" cy="260" r="10" fill="#333"/><circle cx="460" cy="260" r="10" fill="#333"/>
+        <g id="frame" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="16">
+          <path d="M140 260 270 260 230 120"/><path d="M230 120 410 132 270 260"/><path d="M140 260 230 120"/>
+        </g>
+        <path id="fork" d="M410 132 425 180 460 260" fill="none" stroke-width="13" stroke-linecap="round"/>
+        <path id="frameGloss" d="M232 116 408 128" stroke="url(#gloss)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M402 108 432 92h34" stroke="#222" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path d="M410 132 402 108" stroke="#222" stroke-width="10" stroke-linecap="round"/>
+        <path d="M230 120 222 86" stroke="#222" stroke-width="9" stroke-linecap="round"/>
+        <path d="M196 80h56" stroke="#222" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="270" cy="260" r="22" fill="none" stroke="#333" stroke-width="5"/>
+      </svg>
+      <div class="cap"><span id="capTxt"></span><b id="capFin"></b></div>
+    </div>
+    <div class="ctl">
+      <h2>1. ເລືອກສ່ວນທີ່ຈະປ່ຽນສີ</h2>
+      <div class="parts" id="parts"></div>
+      <h2>2. ເລືອກສີ</h2>
+      <div class="sw" id="sw"></div><div class="cname" id="cname"></div>
+      <h2>3. ພື້ນຜິວ</h2>
+      <div class="fin" id="fin"></div>
+      <h2>4. ແພັກເກດ</h2>
+      <div class="pkg">
+        <label><span><input type="radio" name="pkg" value="Accent Wrap">Accent Wrap<small>ບາງສ່ວນ ເຊັ່ນ ທໍ່ເທິງ ຫຼື ໂຊັກ</small></span><b>ຈາກ ₭300,000</b></label>
+        <label><span><input type="radio" name="pkg" value="Full Frame Wrap" checked>Full Frame Wrap<small>ທັງເຟຣມ + ໂຊັກ</small></span><b>ຈາກ ₭800,000</b></label>
+        <label><span><input type="radio" name="pkg" value="Premium Wrap">Premium<small>ທັງຄັນ ລວມຂອບລໍ້ ຟິມພິເສດ</small></span><b>ຈາກ ₭1,500,000</b></label>
+      </div>
+      <h2>5. ສົ່ງແບບໃຫ້ຮ້ານ</h2>
+      <div id="reqBox"><form class="req" onsubmit="send(event)" novalidate>
+        <div class="row2"><div class="field"><label for="fName">ຊື່</label><input id="fName" required><span class="err">ໃສ່ຊື່</span></div>
+          <div class="field"><label for="fPhone">ເບີໂທ / WhatsApp</label><input id="fPhone" type="tel" required><span class="err">ໃສ່ເບີໂທ</span></div></div>
+        <div class="field"><label for="fBike">ຈັກຍານຂອງທ່ານ</label><input id="fBike" placeholder="ຍີ່ຫໍ້ ແລະ ລຸ້ນ"></div>
+        <div class="alert" id="fMsg" hidden></div>
+        <button class="btn btn-black" id="fBtn">ສົ່ງແບບ ແລະ ຂໍລາຄາ</button>
+      </form></div>
     </div>
   </div>
-</header>
-<nav class="nav-bar">
-  <div class="nav-bar-inner">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/catalogue.html" class="nav-link">Bikes</a>
-    <a href="/service.html" class="nav-link">Service</a>
-    <a href="/film.html" class="nav-link active">🎨 Film Wrap</a>
-    <a href="/store.html" class="nav-link">Store</a>
-    <a href="#request" class="nav-ws">🎨 ຂໍ Quotation</a>
-  </div>
-</nav>
+</main>
 
-<!-- ══ HERO ══ -->
-<section class="film-hero">
-  <div class="wrap">
-    <div class="film-hero-inner">
-      <div class="film-hero-text">
-        <div class="film-eyebrow">Sevenday Custom · ວຽງຈັນ, ລາວ</div>
-        <h1 class="film-title">
-          Film<br>
-          <em>Wrap</em><br>
-          Your<br>
-          Bike
-        </h1>
-        <p class="film-sub">ສ້າງ ເອກລັກ ຈັກຍານ ຂອງ ທ່ານ ດ້ວຍ Vinyl Film ຄຸນນະພາບ — ມາກກວ່າ 80 ສີ, ງ່າຍຕໍ່ ການ ຖອດ, ປ້ອງກັນ scratch ແລະ UV</p>
-        <div class="film-hero-tags">
-          <span class="film-tag">✓ 80+ ສີ</span>
-          <span class="film-tag">✓ Removable</span>
-          <span class="film-tag">✓ UV Protection</span>
-          <span class="film-tag">✓ ຮ້ານ Sevenday</span>
-          <span class="film-tag">✓ 1–2 ມື້</span>
-        </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <a href="#request" class="btn-cta btn-cta-red" onclick="scrollToRequest()">🎨 ຂໍ Quotation</a>
-          <a href="#colors" class="btn-cta btn-cta-outline" onclick="scrollToColors()">ເບິ່ງ 80+ ສີ</a>
-        </div>
-      </div>
-
-      <!-- LIVE CONFIGURATOR -->
-      <div class="configurator" id="configurator">
-        <div class="config-preview" id="configPreview">
-          <div class="config-preview-bg" id="configBg"></div>
-          <div class="config-color-label">
-            <div class="config-color-dot" id="configDot"></div>
-            <span id="configColorName">Sevenday Red</span>
-          </div>
-          <div class="config-finish-badge" id="configFinish">Gloss</div>
-          <!-- Bike SVG -->
-          <svg class="config-bike-svg" id="configBike" viewBox="0 0 500 340" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Frame fills (colored parts) -->
-            <path id="frameMain" d="M120 230L220 70L310 160L380 230" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
-            <path id="frameChain" d="M220 70L380 230" stroke-width="10" stroke-linecap="round"/>
-            <path id="frameSeat" d="M120 230L290 162L310 162" stroke-width="10" stroke-linecap="round"/>
-            <path id="frameFork" d="M310 162L320 100L292 86L338 86" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-            <path id="frameSeatpost" d="M220 70L228 32" stroke-width="9" stroke-linecap="round"/>
-            <line id="frameSaddle" x1="210" y1="30" x2="248" y2="30" stroke-width="11" stroke-linecap="round"/>
-            <!-- Wheels (white/grey always) -->
-            <circle cx="120" cy="230" r="105" stroke="rgba(255,255,255,0.2)" stroke-width="12" fill="none"/>
-            <circle cx="380" cy="230" r="105" stroke="rgba(255,255,255,0.2)" stroke-width="12" fill="none"/>
-            <circle cx="120" cy="230" r="16" fill="rgba(255,255,255,0.25)"/>
-            <circle cx="380" cy="230" r="16" fill="rgba(255,255,255,0.25)"/>
-            <!-- Spokes -->
-            <line x1="120" y1="125" x2="120" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="35" y1="178" x2="120" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="205" y1="178" x2="120" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="63" y1="148" x2="120" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="177" y1="148" x2="120" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="380" y1="125" x2="380" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="295" y1="178" x2="380" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <line x1="465" y1="178" x2="380" y2="230" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <!-- BB -->
-            <circle cx="275" cy="168" r="14" stroke="rgba(255,255,255,0.2)" stroke-width="6" fill="none"/>
-            <line x1="262" y1="168" x2="250" y2="186" stroke="rgba(255,255,255,0.2)" stroke-width="6" stroke-linecap="round"/>
-            <line x1="288" y1="168" x2="300" y2="150" stroke="rgba(255,255,255,0.2)" stroke-width="6" stroke-linecap="round"/>
-          </svg>
-        </div>
-
-        <div class="config-panel">
-          <!-- Color family tabs -->
-          <div class="color-family-tabs" id="familyTabs">
-            <button class="cf-tab active" onclick="setFamily(this,'solid')">Solid</button>
-            <button class="cf-tab" onclick="setFamily(this,'metallic')">Metallic</button>
-            <button class="cf-tab" onclick="setFamily(this,'matte')">Matte</button>
-            <button class="cf-tab" onclick="setFamily(this,'chrome')">Chrome</button>
-            <button class="cf-tab" onclick="setFamily(this,'special')">Special</button>
-          </div>
-          <!-- Swatches -->
-          <div class="swatches-grid" id="configSwatches"></div>
-          <!-- Finish -->
-          <div class="finish-tabs">
-            <button class="finish-tab active" onclick="setFinish(this,'Gloss')">✨ Gloss</button>
-            <button class="finish-tab" onclick="setFinish(this,'Matte')">⬛ Matte</button>
-            <button class="finish-tab" onclick="setFinish(this,'Satin')">🔵 Satin</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ FULL COLOR CATALOGUE ══ -->
-<section class="cat-section" id="colors">
-  <div class="wrap">
-    <div class="sec-eyebrow">80+ ສີ Available</div>
-    <h2 class="sec-title" style="color:#fff">ທຸກ ສີ ທີ່ ມີ</h2>
-    <div id="fullColorCat"></div>
-  </div>
-</section>
-
-<!-- ══ HOW IT WORKS ══ -->
-<section class="section mid">
-  <div class="wrap">
-    <div class="sec-eyebrow">ຂັ້ນຕອນ</div>
-    <h2 class="sec-title" style="color:#fff">ວິທີ ການ</h2>
-    <div class="how-grid">
-      <div class="how-card">
-        <div class="how-num">01</div>
-        <div class="how-icon">🎨</div>
-        <div class="how-title">ເລືອກ ສີ</div>
-        <div class="how-text">Browse 80+ ສີ ຈາກ Catalogue ຫຼື ສ່ົງ Reference ສີ ທີ່ ຕ້ອງການ ໃຫ້ Sevenday</div>
-      </div>
-      <div class="how-card">
-        <div class="how-num">02</div>
-        <div class="how-icon">💬</div>
-        <div class="how-title">ຂໍ Quotation</div>
-        <div class="how-text">ສ່ົງ Request ຜ່ານ Form ຫຼື LINE/WhatsApp — Sevenday ຈະ Quote ພາຍໃນ 24 ຊ.ມ.</div>
-      </div>
-      <div class="how-card">
-        <div class="how-num">03</div>
-        <div class="how-icon">🚲</div>
-        <div class="how-title">ນຳ Bike ມາ</div>
-        <div class="how-text">ນຳ ຈັກຍານ ມາທີ່ Sevenday ຕາມ ນັດ — ຊ່າງ ຈະ ດໍາ ເນີນ ໃຫ້</div>
-      </div>
-      <div class="how-card">
-        <div class="how-num">04</div>
-        <div class="how-icon">✅</div>
-        <div class="how-title">ຮັບ Bike ໃໝ່</div>
-        <div class="how-text">ຮັບ ຈັກຍານ ພາຍໃນ 1–2 ມື້ — ໃໝ່ ເອກລັກ 100% ໂດຍ ຊ່າງ Sevenday</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ PRICING ══ -->
-<section class="price-section">
-  <div class="wrap">
-    <div class="sec-eyebrow">ລາຄາ</div>
-    <h2 class="sec-title" style="color:#fff">Film Wrap Packages</h2>
-    <div class="price-grid">
-      <div class="price-card">
-        <div class="price-card-badge">PARTIAL</div>
-        <div class="price-card-name">Accent Wrap</div>
-        <div class="price-card-desc">ເລືອກ ສ່ວນ ສຳ ຄັນ ຂອງ frame — top tube, down tube, ຫຼື fork</div>
-        <div class="price-card-price">ຈາກ ₭ 300,000</div>
-        <div class="price-card-note">≈ 550 THB · ≈ $14 USD · ຂຶ້ນກັບ coverage</div>
-        <ul class="price-card-includes">
-          <li>ເລືອກ ສ່ວນ ຕາມ ຕ້ອງການ</li>
-          <li>Film ຄຸນນະພາບ ສູງ</li>
-          <li>ຕິດ ໂດຍ ຊ່າງ Sevenday</li>
-          <li>ຮັບ Bike ພາຍໃນ 1 ມື້</li>
-        </ul>
-        <a href="#request" class="btn-cta btn-cta-outline" style="display:block;text-align:center;margin-top:4px" onclick="scrollToRequest()">ຂໍ Quotation</a>
-      </div>
-      <div class="price-card featured">
-        <div class="price-card-badge" style="color:#FFC72C">⭐ ນິຍົມ ສຸດ</div>
-        <div class="price-card-name">Full Frame Wrap</div>
-        <div class="price-card-desc">Wrap ທຸກ ໜ່ວຍ ຂອງ frame — ປ່ຽນ ສີ ທັງ ຄັນ</div>
-        <div class="price-card-price">ຈາກ ₭ 800,000</div>
-        <div class="price-card-note">≈ 1,450 THB · ≈ $38 USD · ຂຶ້ນກັບ ຂະໜາດ</div>
-        <ul class="price-card-includes">
-          <li>Wrap ທຸກ ພາກ ຂອງ frame</li>
-          <li>80+ ສີ ໃຫ້ ເລືອກ</li>
-          <li>Gloss / Matte / Satin</li>
-          <li>UV ແລະ Scratch ປ້ອງກັນ</li>
-          <li>ຮັບ Bike ພາຍໃນ 1–2 ມື້</li>
-          <li>Warranty งาน 30 ມື້</li>
-        </ul>
-        <a href="#request" class="btn-cta btn-cta-red" style="display:block;text-align:center;margin-top:4px" onclick="scrollToRequest()">ຂໍ Quotation ດຽວ ນີ້</a>
-      </div>
-      <div class="price-card">
-        <div class="price-card-badge">PREMIUM</div>
-        <div class="price-card-name">Full Bike Wrap</div>
-        <div class="price-card-desc">Frame + Fork + Accessories — ຄົບ ທຸກ ຢ່າງ ປ່ຽນ ໃໝ່</div>
-        <div class="price-card-price">ຈາກ ₭ 1,500,000</div>
-        <div class="price-card-note">≈ 2,700 THB · ≈ $71 USD · custom quote</div>
-        <ul class="price-card-includes">
-          <li>Frame + Fork wrap</li>
-          <li>Accessories covers</li>
-          <li>Custom design option</li>
-          <li>Priority ງານ ໄວ ສຸດ</li>
-          <li>Free consultation</li>
-        </ul>
-        <a href="#request" class="btn-cta btn-cta-outline" style="display:block;text-align:center;margin-top:4px" onclick="scrollToRequest()">ຂໍ Quotation</a>
-      </div>
-    </div>
-    <div style="margin-top:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--r-lg);padding:14px 18px;font-size:13px;color:rgba(255,255,255,.45);text-align:center">
-      ⚠ ລາຄາ ຂ້າງ ເທິງ ເປັນ ລາຄາ ເລີ່ມ ຕົ້ນ — ລາຄາ ຈິງ ຂຶ້ນ ກັບ ຂະ ໜາດ Frame, ສີ Film, ແລະ ຊ່ວງ coverage · Sevenday ຈະ Quote ໃຫ້ ໂດຍ ກົງ ກ່ອນ ດຳ ເນີນ
-    </div>
-  </div>
-</section>
-
-<!-- ══ GALLERY ══ -->
-<section class="gallery-section">
-  <div class="wrap">
-    <div class="sec-eyebrow">ຜົນ ງານ</div>
-    <h2 class="sec-title" style="color:#fff">Work Gallery</h2>
-    <div class="gallery-grid">
-      <div class="gallery-item" style="background:linear-gradient(135deg,#8B0000,#D42B2B)">
-        <span>🚲</span>
-        <div class="gallery-label">Trek Marlin 5 · Race Red Gloss</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#001A40,#1A6FBF)">
-        <span>🚴</span>
-        <div class="gallery-label">Giant Contend · Navy Blue Satin</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#1A2800,#5C8A00)">
-        <span>🚵</span>
-        <div class="gallery-label">Specialized Rockhopper · Forest Matte</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#1A1A1A,#444)">
-        <span>🏔️</span>
-        <div class="gallery-label">Merida Big Nine · Stealth Black</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#3A1400,#FF6B00)">
-        <span>🚲</span>
-        <div class="gallery-label">Polygon Siskiu · Flame Orange</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#1A0030,#8B4FBF)">
-        <span>🚴</span>
-        <div class="gallery-label">Trek FX 3 · Deep Purple Gloss</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#2A1800,#FFC72C)">
-        <span>🚵</span>
-        <div class="gallery-label">Giant Talon · Gold Chrome</div>
-      </div>
-      <div class="gallery-item" style="background:linear-gradient(135deg,#001A1A,#00897B)">
-        <span>🏔️</span>
-        <div class="gallery-label">Custom MTB · Teal Metallic</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ REQUEST FORM ══ -->
-<section class="request-section" id="request">
-  <div class="wrap">
-    <div class="request-inner">
-      <div class="request-info">
-        <div class="sec-eyebrow">ຂໍ Quotation</div>
-        <h2 class="sec-title" style="color:#fff;margin-bottom:16px">ເລີ່ມ Customize<br>ດຽວ ນີ້</h2>
-        <p>ຕື່ມ Form ດ້ານ ຂວາ ຫຼື ຕິດ ຕໍ່ Sevenday ໂດຍ ກົງ — ຈະ ໄດ້ Quotation ພາຍໃນ 24 ຊ.ມ.</p>
-        <div class="request-channel" onclick="showToast('📱 WhatsApp Sevenday')">
-          <div class="rc-icon">📱</div>
-          <div class="rc-info"><div class="rc-name">WhatsApp</div><div class="rc-desc">ສ່ົງ ຮູບ Bike + ສີ ທີ່ ຕ້ອງການ</div></div>
-          <div class="rc-arrow">→</div>
-        </div>
-        <div class="request-channel" onclick="showToast('💬 LINE @SevendayBike')">
-          <div class="rc-icon">💬</div>
-          <div class="rc-info"><div class="rc-name">LINE</div><div class="rc-desc">@SevendayBike · ຕອບ ໄວ ທຸກ ວັນ</div></div>
-          <div class="rc-arrow">→</div>
-        </div>
-        <div class="request-channel" onclick="showToast('📍 ມາ ທີ່ ຮ້ານ Sevenday')">
-          <div class="rc-icon">📍</div>
-          <div class="rc-info"><div class="rc-name">Walk-in ທີ່ ຮ້ານ</div><div class="rc-desc">ນຳ Bike ມາ ໃຫ້ ຊ່າງ ປະ ເມີນ ໂດຍ ກົງ</div></div>
-          <div class="rc-arrow">→</div>
-        </div>
-      </div>
-
-      <!-- MULTI-STEP FORM -->
-      <div class="form-box">
-        <div class="form-box-head">
-          <h3>Film Wrap Request</h3>
-          <p>ຕື່ມ ຂໍ້ ມູນ — Sevenday ຈະ Quote ໃຫ້ ພາຍໃນ 24 ຊ.ມ.</p>
-        </div>
-
-        <!-- Steps indicator -->
-        <div class="step-bar">
-          <div class="step-dot active" id="sd0">1</div>
-          <div class="step-line" id="sl0"></div>
-          <div class="step-dot" id="sd1">2</div>
-          <div class="step-line" id="sl1"></div>
-          <div class="step-dot" id="sd2">3</div>
-          <div class="step-line" id="sl2"></div>
-          <div class="step-dot" id="sd3">4</div>
-        </div>
-
-        <div class="form-body">
-
-          <!-- Step 1: Bike info -->
-          <div class="form-step active" id="fs0">
-            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px">Step 1 — ຂໍ້ ມູນ ຈັກ ຍານ</div>
-            <label class="f-label">Brand ຈັກ ຍານ <span style="color:var(--red)">*</span></label>
-            <select class="f-select" id="fBrand">
-              <option value="">ເລືອກ Brand...</option>
-              <option>Trek</option><option>Giant</option><option>Specialized</option>
-              <option>Merida</option><option>Polygon</option><option>Scott</option><option>Other</option>
-            </select>
-            <label class="f-label">Model / ຊື່ ຈັກ ຍານ <span style="color:var(--red)">*</span></label>
-            <input class="f-input" id="fModel" type="text" placeholder="ເຊັ່ນ: Marlin 5 Gen 3, Talon 3...">
-            <div class="f-row">
-              <div>
-                <label class="f-label">ຂະ ໜາດ Frame</label>
-                <select class="f-select">
-                  <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option>
-                </select>
-              </div>
-              <div>
-                <label class="f-label">ປີ / Year</label>
-                <select class="f-select" id="fYear">
-                  <option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>ກ່ອນ 2021</option>
-                </select>
-              </div>
-            </div>
-            <label class="f-label">Package ທີ່ ສົນ ໃຈ</label>
-            <select class="f-select" id="fPackage">
-              <option>Full Frame Wrap (ແນະ ນຳ)</option>
-              <option>Accent Wrap (ສ່ວນ ໜຶ່ງ)</option>
-              <option>Full Bike Wrap (Premium)</option>
-              <option>ຍັງ ບໍ່ ແນ່ ໃຈ — ຂໍ ຄຳ ແນະ ນຳ</option>
-            </select>
-            <button class="btn-next" onclick="nextStep(1)">ຕໍ່ ໄປ — ເລືອກ ສີ →</button>
-          </div>
-
-          <!-- Step 2: Color -->
-          <div class="form-step" id="fs1">
-            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px">Step 2 — ເລືອກ ສີ Film</div>
-            <label class="f-label">ສີ ຕ້ອງ ການ <span style="color:var(--red)">*</span></label>
-            <div class="f-color-selected" id="fColorSelected">
-              <div class="f-color-dot" id="fColorDot" style="background:var(--red)"></div>
-              <span id="fColorName">Sevenday Red</span>
-            </div>
-            <div class="f-color-pick" id="fColorPick"></div>
-            <div class="f-row" style="margin-top:4px">
-              <div>
-                <label class="f-label">Finish</label>
-                <select class="f-select" id="fFinish">
-                  <option>Gloss (ມັນ)</option><option>Matte (ດ້ານ)</option><option>Satin (ກ້ອງ)</option>
-                </select>
-              </div>
-              <div>
-                <label class="f-label">Custom Color</label>
-                <input class="f-input" id="fCustomColor" type="text" placeholder="ຖ້າ ມີ ສີ ສະ ເພາະ">
-              </div>
-            </div>
-            <div style="margin-bottom:14px">
-              <label class="f-label">ຮູບ Reference (ຖ້າ ມີ)</label>
-              <div style="border:1.5px dashed rgba(255,255,255,.15);border-radius:var(--r-lg);padding:16px;text-align:center;cursor:pointer;font-size:13px;color:rgba(255,255,255,.3)" onclick="showToast('📎 ອັບ ໂຫຼດ ຮູບ — ສ່ົງ ຜ່ານ LINE/WhatsApp ໄດ້ ເລີຍ')">
-                📎 ສ່ົງ ຮູບ Reference ຜ່ານ LINE/WhatsApp
-              </div>
-            </div>
-            <button class="btn-next" onclick="nextStep(2)">ຕໍ່ ໄປ — ຂໍ້ ມູນ ຕິດ ຕໍ່ →</button>
-            <button class="btn-back" onclick="nextStep(0)">← ກັບ</button>
-          </div>
-
-          <!-- Step 3: Contact -->
-          <div class="form-step" id="fs2">
-            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px">Step 3 — ຂໍ້ ມູນ ຕິດ ຕໍ່</div>
-            <div class="f-row">
-              <div>
-                <label class="f-label">ຊື່ <span style="color:var(--red)">*</span></label>
-                <input class="f-input" id="fName" type="text" placeholder="ຊື່ ຂອງ ທ່ານ">
-              </div>
-              <div>
-                <label class="f-label">ເບີ ໂທ <span style="color:var(--red)">*</span></label>
-                <input class="f-input" id="fPhone" type="tel" placeholder="020 xxxx xxxx">
-              </div>
-            </div>
-            <label class="f-label">LINE / WhatsApp</label>
-            <input class="f-input" id="fLine" type="text" placeholder="@LineID ຫຼື WhatsApp number">
-            <label class="f-label">ໝາຍ ເຫດ / Notes</label>
-            <textarea class="f-textarea" id="fNote" placeholder="ຄຳ ຂໍ ພິ ເສດ, ວັນ ນັດ ທີ່ ສະ ດວກ, ຫຼື ອື່ນ ໆ..."></textarea>
-            <button class="btn-next" onclick="nextStep(3)">ກວດ ສອບ Order →</button>
-            <button class="btn-back" onclick="nextStep(1)">← ກັບ</button>
-          </div>
-
-          <!-- Step 4: Confirm -->
-          <div class="form-step" id="fs3">
-            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px">Step 4 — ຢືນ ຢັນ Request</div>
-            <div class="summary-box" id="filmSummary"></div>
-            <div style="background:rgba(92,138,0,.12);border:1px solid rgba(92,138,0,.25);border-radius:var(--r);padding:12px 14px;font-size:12px;color:rgba(255,255,255,.6);margin-bottom:14px;line-height:1.65">
-              ✓ Sevenday ຈະ <strong style="color:#fff">ຕິດ ຕໍ່ ກັບ ທ່ານ ພາຍໃນ 24 ຊ.ມ.</strong> ເພື່ອ ຢືນ ຢັນ ລາຄາ ແລະ ນັດ ໝາຍ<br>
-              ✓ ທ່ານ ຈະ Approve ກ່ອນ ທຸກ ຄັ້ງ — ບໍ່ ມີ surprise charges
-            </div>
-            <button class="btn-next" onclick="submitFilm()" style="background:var(--lime)">🎨 ສ່ົງ Request</button>
-            <button class="btn-back" onclick="nextStep(2)">← ກັບ ແກ້ ໄຂ</button>
-          </div>
-
-          <!-- Success -->
-          <div class="form-success" id="filmSuccess">
-            <div class="success-icon">🎨</div>
-            <div class="success-title">ສ່ົງ ສຳ ເລັດ!</div>
-            <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:16px">Sevenday ໄດ້ ຮັບ Request ຂ້ອຍ ແລ້ວ<br>ຈະ ຕິດ ຕໍ່ ພາຍໃນ 24 ຊ.ມ. ເພື່ອ Quote ລາຄາ</p>
-            <div class="success-ref">
-              <span>Film Request ID</span>
-              <strong id="filmRef">FLM-2024-XXXX</strong>
-            </div>
-            <button onclick="resetFilmForm()" style="display:block;width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--r-lg);font-size:14px;font-weight:700;cursor:pointer;margin-top:12px">ຂໍ Quotation ຄັ້ງ ໃໝ່</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ FAQ ══ -->
-<section class="faq-section">
-  <div class="wrap">
-    <div class="sec-eyebrow">FAQ</div>
-    <h2 class="sec-title" style="color:#fff">ຄຳ ຖາມ ທີ່ ພົບ ເລື້ອຍ</h2>
-    <div class="faq-list" id="faqList"></div>
-  </div>
-</section>
-
-<!-- ══ CTA ══ -->
-<section class="cta-section">
-  <div class="wrap">
-    <h2 class="cta-title">ປ່ຽນ ສີ<br><em>Bike ທ່ານ</em></h2>
-    <p class="cta-sub">ຈາກ ສີ ທຳ ມະ ດາ ສູ່ ເອກ ລັກ ທີ່ ໂດດ ເດັ່ນ — ໂດຍ ຊ່າງ Sevenday ວຽງ ຈັນ</p>
-    <div class="cta-btns">
-      <button class="btn-cta btn-cta-red" onclick="scrollToRequest()">🎨 ຂໍ Quotation ດຽວ ນີ້</button>
-      <a href="/catalogue.html" class="btn-cta btn-cta-outline">ດູ Bikes →</a>
-    </div>
-  </div>
-</section>
-
-<div class="toast" id="toast"></div>
-
+<script src="layout.js"></script>
 <script>
-/* ══════════════════════════════════════
-   COLOR DATA
-══════════════════════════════════════ */
-const COLOR_FAMILIES = {
-  solid: [
-    {name:'Sevenday Red',hex:'#D42B2B'},{name:'Racing Red',hex:'#B00020'},
-    {name:'Coral',hex:'#FF6B6B'},{name:'Flame Orange',hex:'#FF6B00'},
-    {name:'Golden Yellow',hex:'#FFC72C'},{name:'Lime Green',hex:'#7CB518'},
-    {name:'Forest Green',hex:'#2D6A4F'},{name:'Teal',hex:'#00897B'},
-    {name:'Sky Blue',hex:'#0077B6'},{name:'Navy Blue',hex:'#023E8A'},
-    {name:'Royal Blue',hex:'#1A6FBF'},{name:'Purple',hex:'#7B2FBE'},
-    {name:'Magenta',hex:'#C2185B'},{name:'Hot Pink',hex:'#FF1493'},
-    {name:'White',hex:'#FFFFFF'},{name:'Pearl White',hex:'#F5F0E8'},
-    {name:'Silver',hex:'#C0C0C0'},{name:'Stealth Black',hex:'#111111'},
-    {name:'Graphite',hex:'#444444'},{name:'Charcoal',hex:'#2D2D2D'},
-  ],
-  metallic: [
-    {name:'Gold Chrome',hex:'#FFD700'},{name:'Rose Gold',hex:'#B76E79'},
-    {name:'Copper',hex:'#B87333'},{name:'Bronze',hex:'#CD7F32'},
-    {name:'Titanium',hex:'#878681'},{name:'Gunmetal',hex:'#2A3439'},
-    {name:'Silver Chrome',hex:'#A8A9AD'},{name:'Ice Blue',hex:'#B0E0E6'},
-    {name:'Midnight Blue',hex:'#191970'},{name:'Champagne',hex:'#FAD6A5'},
-  ],
-  matte: [
-    {name:'Matte Black',hex:'#1A1A1A'},{name:'Matte White',hex:'#E8E8E8'},
-    {name:'Matte Red',hex:'#8B0000'},{name:'Matte Blue',hex:'#1B3A6B'},
-    {name:'Matte Green',hex:'#1A4A1A'},{name:'Matte Orange',hex:'#7A2E00'},
-    {name:'Matte Grey',hex:'#555555'},{name:'Matte Purple',hex:'#3D1A6E'},
-    {name:'Matte Teal',hex:'#004D40'},{name:'Matte Yellow',hex:'#5C4A00'},
-  ],
-  chrome: [
-    {name:'Mirror Chrome',hex:'#C0C0C0'},{name:'Gold Chrome',hex:'#FFD700'},
-    {name:'Blue Chrome',hex:'#4169E1'},{name:'Red Chrome',hex:'#DC143C'},
-    {name:'Green Chrome',hex:'#228B22'},{name:'Purple Chrome',hex:'#6A0DAD'},
-    {name:'Black Chrome',hex:'#0D0D0D'},{name:'Rose Chrome',hex:'#FF007F'},
-  ],
-  special: [
-    {name:'Candy Apple Red',hex:'#CC0000'},{name:'Flip Flop Purple/Blue',hex:'#6B3FA0'},
-    {name:'Galaxy Black',hex:'#0A0A1A'},{name:'Chameleon Green/Gold',hex:'#7B8B00'},
-    {name:'Carbon Fiber Look',hex:'#1A1A2E'},{name:'Camo Green',hex:'#4A5240'},
-    {name:'Brushed Aluminium',hex:'#8A8A8A'},{name:'Deep Space Blue',hex:'#050A30'},
-  ],
-};
 
-let currentFamily = 'solid';
-let selectedColor = {name:'Sevenday Red', hex:'#D42B2B'};
-let currentFinish = 'Gloss';
-let formStep = 0;
-let formData = {};
-
-/* ══ CONFIGURATOR ══ */
-function buildSwatches(family) {
-  const colors = COLOR_FAMILIES[family] || COLOR_FAMILIES.solid;
-  document.getElementById('configSwatches').innerHTML = colors.map(c=>`
-    <div class="sw${c.hex===selectedColor.hex?' active':''}" 
-      style="background:${c.hex}" 
-      title="${c.name}"
-      onclick="selectColor('${c.name}','${c.hex}')">
-    </div>`).join('');
+const COLORS=[{"n": "Sevenday Red", "h": "#D42B2B"}, {"n": "Racing Red", "h": "#B00020"}, {"n": "Coral", "h": "#FF6B6B"}, {"n": "Flame Orange", "h": "#FF6B00"}, {"n": "Golden Yellow", "h": "#FFC72C"}, {"n": "Lime Green", "h": "#7CB518"}, {"n": "Forest Green", "h": "#2D6A4F"}, {"n": "Teal", "h": "#00897B"}, {"n": "Sky Blue", "h": "#0077B6"}, {"n": "Navy Blue", "h": "#023E8A"}, {"n": "Royal Blue", "h": "#1A6FBF"}, {"n": "Purple", "h": "#7B2FBE"}, {"n": "Magenta", "h": "#C2185B"}, {"n": "Hot Pink", "h": "#FF1493"}, {"n": "White", "h": "#FFFFFF"}, {"n": "Pearl White", "h": "#F5F0E8"}, {"n": "Silver", "h": "#C0C0C0"}, {"n": "Stealth Black", "h": "#111111"}, {"n": "Graphite", "h": "#444444"}, {"n": "Charcoal", "h": "#2D2D2D"}, {"n": "Gold Chrome", "h": "#FFD700"}, {"n": "Rose Gold", "h": "#B76E79"}, {"n": "Copper", "h": "#B87333"}, {"n": "Bronze", "h": "#CD7F32"}, {"n": "Titanium", "h": "#878681"}, {"n": "Gunmetal", "h": "#2A3439"}, {"n": "Silver Chrome", "h": "#A8A9AD"}, {"n": "Ice Blue", "h": "#B0E0E6"}, {"n": "Midnight Blue", "h": "#191970"}, {"n": "Champagne", "h": "#FAD6A5"}, {"n": "Matte Black", "h": "#1A1A1A"}, {"n": "Matte White", "h": "#E8E8E8"}, {"n": "Matte Red", "h": "#8B0000"}, {"n": "Matte Blue", "h": "#1B3A6B"}, {"n": "Matte Green", "h": "#1A4A1A"}, {"n": "Matte Orange", "h": "#7A2E00"}, {"n": "Matte Grey", "h": "#555555"}, {"n": "Matte Purple", "h": "#3D1A6E"}, {"n": "Matte Teal", "h": "#004D40"}, {"n": "Matte Yellow", "h": "#5C4A00"}, {"n": "Mirror Chrome", "h": "#C0C0C0"}, {"n": "Blue Chrome", "h": "#4169E1"}, {"n": "Red Chrome", "h": "#DC143C"}, {"n": "Green Chrome", "h": "#228B22"}, {"n": "Purple Chrome", "h": "#6A0DAD"}, {"n": "Black Chrome", "h": "#0D0D0D"}, {"n": "Rose Chrome", "h": "#FF007F"}, {"n": "Candy Apple Red", "h": "#CC0000"}, {"n": "Flip Flop Purple/Blue", "h": "#6B3FA0"}, {"n": "Galaxy Black", "h": "#0A0A1A"}, {"n": "Chameleon Green/Gold", "h": "#7B8B00"}, {"n": "Carbon Fiber Look", "h": "#1A1A2E"}, {"n": "Camo Green", "h": "#4A5240"}, {"n": "Brushed Aluminium", "h": "#8A8A8A"}, {"n": "Deep Space Blue", "h": "#050A30"}];
+const FIN=['Gloss','Matte','Satin','Metallic','Chrome'];
+const PARTS=[{k:'frame',n:'ເຟຣມ'},{k:'fork',n:'ໂຊັກ'},{k:'wheels',n:'ຂອບລໍ້'}];
+const $=id=>document.getElementById(id);
+let part='frame', fin='Gloss', pick={frame:COLORS[0],fork:COLORS[0],wheels:COLORS.find(c=>/Black/.test(c.n))||COLORS[0]};
+function paint(){
+  $('frame').setAttribute('stroke',pick.frame.h); $('fork').setAttribute('stroke',pick.fork.h); $('wheels').setAttribute('stroke',pick.wheels.h);
+  $('frameGloss').style.display = fin==='Matte'?'none':''; $('frameGloss').style.opacity = fin==='Chrome'?1:fin==='Satin'?.4:.8;
+  $('parts').innerHTML=PARTS.map(p=>`<button class="${p.k===part?'on':''}" onclick="part='${p.k}';paint()"><i style="background:${pick[p.k].h}"></i>${p.n}</button>`).join('');
+  $('sw').innerHTML=COLORS.map((c,i)=>`<button class="${pick[part].n===c.n?'on':''}" style="background:${c.h}" title="${c.n}" aria-label="${c.n}" onclick="pick[part]=COLORS[${i}];paint()"></button>`).join('');
+  $('cname').textContent=`${PARTS.find(p=>p.k===part).n}: ${pick[part].n}`;
+  $('fin').innerHTML=FIN.map(f=>`<label><input type="radio" name="fin" ${f===fin?'checked':''} onchange="fin='${f}';paint()">${f}</label>`).join('');
+  $('capTxt').textContent=`ເຟຣມ ${pick.frame.n} · ໂຊັກ ${pick.fork.n} · ລໍ້ ${pick.wheels.n}`; $('capFin').textContent=fin;
+}
+paint();
+try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ $('fName').value=u.name||''; $('fPhone').value=u.phone||''; } }catch(_){}
+function err(id,b){ $(id).closest('.field').classList.toggle('invalid',b); return b; }
+async function send(e){
+  e.preventDefault();
+  if([err('fName',!$('fName').value.trim()),err('fPhone',$('fPhone').value.replace(/\D/g,'').length<8)].some(Boolean)) return;
+  const b=$('fBtn'); b.disabled=true; b.textContent='ກຳລັງສົ່ງ...';
+  const pkg=document.querySelector('[name=pkg]:checked').value;
+  try{
+    const d=await apiPost('filmRequest',{customer:{name:$('fName').value.trim(),phone:$('fPhone').value.trim()},package:pkg,
+      color_name:`ເຟຣມ ${pick.frame.n} ${pick.frame.h} / ໂຊັກ ${pick.fork.n} / ລໍ້ ${pick.wheels.n}`,finish:fin,
+      bike:{model:$('fBike').value.trim()||'ບໍ່ລະບຸ'},notes:'ສົ່ງຈາກໜ້າອອກແບບຟິມ'});
+    $('reqBox').innerHTML=`<div class="done"><b style="font-size:22px;font-weight:900">ສົ່ງແບບແລ້ວ</b><p>ເລກທີ່ ${d.job_id||'—'} — ຮ້ານຈະຕິດຕໍ່ແຈ້ງລາຄາພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`;
+  }catch(ex){ $('fMsg').hidden=false; $('fMsg').textContent='ສົ່ງບໍ່ສຳເລັດ: '+ex.message; b.disabled=false; b.textContent='ສົ່ງແບບ ແລະ ຂໍລາຄາ'; }
 }
 
-function selectColor(name, hex) {
-  selectedColor = {name, hex};
-  // Update configurator
-  document.getElementById('configColorName').textContent = name;
-  document.getElementById('configDot').style.background = hex;
-  updateBikeColor(hex);
-  buildSwatches(currentFamily);
-  // Update form color picker
-  document.getElementById('fColorName').textContent = name;
-  document.getElementById('fColorDot').style.background = hex;
-  buildFormSwatches();
-}
-
-function updateBikeColor(hex) {
-  const frameParts = ['frameMain','frameChain','frameSeat','frameFork','frameSeatpost','frameSaddle'];
-  frameParts.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.setAttribute('stroke', hex);
-  });
-  // Glow effect on preview bg
-  document.getElementById('configBg').style.background =
-    `radial-gradient(ellipse at 60% 50%, ${hex}22 0%, transparent 65%)`;
-  // Drop shadow color
-  document.getElementById('configBike').style.filter =
-    `drop-shadow(0 4px 20px ${hex}66)`;
-}
-
-function setFamily(btn, family) {
-  document.querySelectorAll('.cf-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  currentFamily = family;
-  buildSwatches(family);
-}
-
-function setFinish(btn, finish) {
-  document.querySelectorAll('.finish-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  currentFinish = finish;
-  document.getElementById('configFinish').textContent = finish;
-}
-
-/* ══ FULL COLOR CATALOGUE ══ */
-function buildFullCat() {
-  const el = document.getElementById('fullColorCat');
-  el.innerHTML = Object.entries(COLOR_FAMILIES).map(([family, colors])=>`
-    <div class="family-section">
-      <div class="family-label">${family.toUpperCase()} (${colors.length} ສີ)</div>
-      <div class="cat-grid">
-        ${colors.map(c=>`
-          <div class="cat-swatch" style="background:${c.hex}" 
-            onclick="selectColor('${c.name}','${c.hex}');scrollToConfigurator()"
-            title="${c.name}">
-            <div class="cat-swatch-tip">${c.name}</div>
-          </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-
-/* ══ FORM COLOR PICKER ══ */
-function buildFormSwatches() {
-  const colors = [...COLOR_FAMILIES.solid, ...COLOR_FAMILIES.metallic, ...COLOR_FAMILIES.matte].slice(0,24);
-  document.getElementById('fColorPick').innerHTML = colors.map(c=>`
-    <div class="f-sw${c.hex===selectedColor.hex?' active':''}" 
-      style="background:${c.hex}" 
-      title="${c.name}"
-      onclick="selectFormColor('${c.name}','${c.hex}')">
-    </div>`).join('');
-}
-
-function selectFormColor(name, hex) {
-  selectedColor = {name, hex};
-  document.getElementById('fColorName').textContent = name;
-  document.getElementById('fColorDot').style.background = hex;
-  updateBikeColor(hex);
-  document.getElementById('configColorName').textContent = name;
-  document.getElementById('configDot').style.background = hex;
-  buildFormSwatches();
-  buildSwatches(currentFamily);
-}
-
-/* ══ MULTI-STEP FORM ══ */
-function nextStep(to) {
-  // Validate
-  if (to === 1 && formStep === 0) {
-    const brand = document.getElementById('fBrand').value;
-    const model = document.getElementById('fModel').value.trim();
-    if (!brand || !model) { showToast('⚠ ກະ ລຸ ນາ ໃສ່ ຂໍ້ ມູນ Bike'); return; }
-    formData.brand = brand;
-    formData.model = model;
-    formData.package = document.getElementById('fPackage').value;
-  }
-  if (to === 3 && formStep === 2) {
-    const name = document.getElementById('fName').value.trim();
-    const phone = document.getElementById('fPhone').value.trim();
-    if (!name || !phone) { showToast('⚠ ກະ ລຸ ນາ ໃສ່ ຊື່ ແລະ ເບີ ໂທ'); return; }
-    formData.name = name;
-    formData.phone = phone;
-    formData.line = document.getElementById('fLine').value.trim();
-    formData.note = document.getElementById('fNote').value.trim();
-    buildSummary();
-  }
-
-  // Update dots
-  for (let i=0;i<4;i++) {
-    const dot = document.getElementById('sd'+i);
-    const line = document.getElementById('sl'+i);
-    if (i < to) { dot.classList.add('done'); dot.classList.remove('active'); dot.textContent='✓'; }
-    else if (i === to) { dot.classList.add('active'); dot.classList.remove('done'); dot.textContent=i+1; }
-    else { dot.classList.remove('done','active'); dot.textContent=i+1; }
-    if (line) line.classList.toggle('done', i < to);
-  }
-
-  document.querySelectorAll('.form-step').forEach((s,i)=>s.classList.toggle('active',i===to));
-  formStep = to;
-}
-
-function buildSummary() {
-  document.getElementById('filmSummary').innerHTML = `
-    <div class="sum-row"><span>ຈັກ ຍານ</span><span>${formData.brand} ${formData.model}</span></div>
-    <div class="sum-row"><span>Package</span><span>${formData.package}</span></div>
-    <div class="sum-row"><span>ສີ Film</span><span style="display:flex;align-items:center;gap:8px"><span style="width:12px;height:12px;border-radius:50%;background:${selectedColor.hex};display:inline-block"></span>${selectedColor.name}</span></div>
-    <div class="sum-row"><span>Finish</span><span>${document.getElementById('fFinish').value}</span></div>
-    <div class="sum-row"><span>ຕິດ ຕໍ່</span><span>${formData.name} · ${formData.phone}</span></div>
-    ${formData.note?`<div class="sum-row"><span>Notes</span><span style="font-size:12px">${formData.note}</span></div>`:''}`;
-}
-
-function submitFilm() {
-  const ref = 'FLM-2024-' + Math.floor(Math.random()*9000+1000);
-  document.getElementById('filmRef').textContent = ref;
-  document.querySelectorAll('.form-step').forEach(s=>s.classList.remove('active'));
-  document.getElementById('filmSuccess').style.display='block';
-}
-
-function resetFilmForm() {
-  formStep=0; formData={};
-  document.getElementById('filmSuccess').style.display='none';
-  ['fBrand','fModel','fName','fPhone','fLine','fNote'].forEach(id=>{const el=document.getElementById(id);if(el){if(el.tagName==='SELECT')el.selectedIndex=0;else el.value=''}});
-  nextStep(0);
-}
-
-/* ══ FAQ ══ */
-const FAQS = [
-  {q:'Film ສາມາດ ຖອດ ອອກ ໄດ້ ໄຈ?', a:'ໄດ້ ເລີຍ — Vinyl Film ຄຸນ ນະ ພາບ ສູງ ຖືກ ອອກ ແບບ ໃຫ້ ສາ ມາດ ຖອດ ໄດ້ ໂດຍ ບໍ່ ທຳ ລາຍ paint ດ້ານ ລຸ່ມ. ຊ່າງ Sevenday ສາ ມາດ ຖອດ ໃຫ້ ໄດ້ ທຸກ ເວ ລາ.'},
-  {q:'Film ປ້ອງ ກັນ Scratch ໄດ້ ດີ ແຄ່ ໃດ?', a:'Film ຂອງ Sevenday ເປັນ Grade ສູງ ຊ່ວຍ ປ້ອງ ກັນ scratch, chip ແລະ UV fading ໄດ້ ດີ ເກີນ ກວ່າ ທຳ ມະ ດາ. ເໝາະ ສຳ ລັບ Bike ທີ່ ໃຊ້ ງານ ທຸກ ມື້.'},
-  {q:'ໃຊ້ ເວ ລາ ດົນ ປານ ໃດ?', a:'Full Frame Wrap ສ່ວນ ໃຫຍ່ 1–2 ວັນ ທຳ ການ. ລູກ ຄ້າ ຈອດ Bike ໄວ້ ກັບ Sevenday ຫຼື ຮັບ ຄືນ ຕາມ ນັດ ໝາຍ.'},
-  {q:'ລາ ຄາ ຂຶ້ນ ກັບ ຫຍັງ?', a:'ລາ ຄາ ຂຶ້ນ ກັບ ຂະ ໜາດ Frame, ຊ່ວງ ທີ່ ຕ້ອງ Wrap, ຊະ ນິດ Film (Standard/Chrome/Special), ແລະ ຄວາມ ຍຸ່ງ ຍາກ ຂອງ ງານ. Sevenday ຈະ Quote ໃຫ້ ໂດຍ ກົງ ກ່ອນ ດຳ ເນີນ.'},
-  {q:'ສາ ມາດ ເລືອກ ສີ Custom ທີ່ ບໍ່ ຢູ່ ໃນ Catalogue ໄດ້ ໄຈ?', a:'ໄດ້ — ໃຫ້ ສ່ົງ ຮູບ ສີ Reference ຫຼື Colour Code (RAL/Pantone) ໃຫ້ Sevenday. ທີມ ຈະ ຫາ Film ທີ່ ໃກ້ ທີ່ ສຸດ ໃຫ້.'},
-  {q:'Film ຢູ່ ໄດ້ ດົນ ປານ ໃດ?', a:'Film ຄຸນ ນະ ພາບ ສູງ ຢູ່ ໄດ້ 3–5 ປີ ຂຶ້ນ ກັບ ການ ດູ ແລ ລັກ ສາ ແລະ ສະ ພາບ ອາ ກາດ. ລ້າງ ໄດ້ ທຳ ມະ ດາ ດ້ວຍ ນ້ຳ ເຢັນ ແລະ ສ້ຽນ ອ່ອນ.'},
-];
-
-document.getElementById('faqList').innerHTML = FAQS.map((f,i)=>`
-  <div class="faq-item" id="fq${i}">
-    <div class="faq-q" onclick="toggleFaq(${i})">${f.q}<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-    <div class="faq-a">${f.a}</div>
-  </div>`).join('');
-
-function toggleFaq(i) { document.getElementById('fq'+i).classList.toggle('open'); }
-
-/* ══ SCROLL HELPERS ══ */
-function scrollToRequest() { document.getElementById('request').scrollIntoView({behavior:'smooth',block:'start'}); }
-function scrollToColors() { document.getElementById('colors').scrollIntoView({behavior:'smooth',block:'start'}); }
-function scrollToConfigurator() { document.getElementById('configurator').scrollIntoView({behavior:'smooth',block:'center'}); }
-
-/* ══ TOAST ══ */
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2500);
-}
-
-/* ══ INIT ══ */
-buildSwatches('solid');
-buildFullCat();
-buildFormSwatches();
-updateBikeColor(selectedColor.hex);
-selectColor(selectedColor.name, selectedColor.hex);
 </script>
 </body>
 </html>
