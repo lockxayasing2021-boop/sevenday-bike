@@ -9,15 +9,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;
+  --red:#000000;--red-h:#B52222;--red-lite:#FFF0F0;
   --ink:#111;--ink-2:#444;--ink-3:#888;
   --white:#FFF;--base:#F4F5F7;--border:#E0E0E0;--border-2:#CCC;
-  --lime:#5C8A00;--lime-bg:#EFF5E0;
+  --lime:#2B2B2B;--lime-bg:#EFF5E0;
   --blue:#1A6FBF;--blue-bg:#EBF3FF;
   --orange:#E67E00;--orange-bg:#FFF3E0;
   --purple:#6B3FA0;--purple-bg:#F3EBFF;
   --sidebar:#1E2130;--sidebar-2:#252A3D;--sidebar-hover:#2D3348;
-  --sidebar-active:#D42B2B;
+  --sidebar-active:#000000;
   --font-ui:'Inter',-apple-system,sans-serif;
   --font-d:'Barlow Condensed','Inter',sans-serif;
   --r:6px;--r-lg:10px;
@@ -76,7 +76,7 @@ input,select,textarea{font-family:inherit}
   white-space:nowrap;overflow:hidden;
 }
 .nav-item:hover{background:var(--sidebar-hover);color:#fff}
-.nav-item.active{background:rgba(212,43,43,.15);color:#fff;border-left-color:var(--red)}
+.nav-item.active{background:rgba(0,0,0,.15);color:#fff;border-left-color:var(--red)}
 .nav-item svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .nav-item .badge{
   margin-left:auto;background:var(--red);color:#fff;
@@ -291,7 +291,7 @@ input,select,textarea{font-family:inherit}
 .notif-item{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:flex-start;cursor:pointer;transition:background .12s}
 .notif-item:last-child{border-bottom:none}
 .notif-item:hover{background:var(--base)}
-.notif-item.unread{background:rgba(212,43,43,.02)}
+.notif-item.unread{background:rgba(0,0,0,.02)}
 .notif-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
 .notif-dot.read{background:transparent}
 .notif-icon{width:34px;height:34px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
@@ -338,6 +338,26 @@ input,select,textarea{font-family:inherit}
   .mob-overlay.on{display:block}
 }
 @media(max-width:480px){.content-area{padding:12px}}
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="sevenday-mono">
+/* ທີມ ດຳ-ເທົາ-ຂາວ ໃຫ້ກົງກັບໜ້າເວັບ */
+:root{
+  --red:#000;--red-h:#2B2B2B;--red-lite:#F3F3F3;
+  --ink:#000;--ink-2:#2B2B2B;--ink-3:#6E6E6E;
+  --white:#FFF;--base:#F3F3F3;--border:#D4D4D4;--border-2:#BDBDBD;
+  --lime:#000;--lime-bg:#E6E6E6;
+  --blue:#2B2B2B;--blue-bg:#EDEDED;
+  --orange:#4A4A4A;--orange-bg:#F0F0F0;
+  --purple:#3A3A3A;--purple-bg:#EAEAEA;
+  --sidebar:#000;--sidebar-2:#141414;--sidebar-hover:#2B2B2B;--sidebar-active:#FFF;
+  --font-ui:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  --font-d:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  --r:0px;--r-lg:0px;
+  --shadow:none;--shadow-h:0 0 0 1px #000;
+}
+.sb-item.active,.nav-item.active,[class*="sidebar"] .active{color:#000!important;background:#fff!important}
 </style>
 </head>
 <body>
@@ -1056,7 +1076,7 @@ function renderDashboard() {
       <span class="badge ${b.statusClass}" style="font-size:9px">${b.statusLabel}</span>
     </div>`).join('');
   // Chart
-  buildChart('salesChart', SALES_WEEKLY, DAYS_SHORT, '#D42B2B');
+  buildChart('salesChart', SALES_WEEKLY, DAYS_SHORT, '#000000');
 }
 
 function buildChart(id, data, labels, color) {
@@ -1215,7 +1235,7 @@ function renderCMS() {
 }
 
 function renderReports() {
-  buildChart('reportChart', SALES_MONTHLY.slice(0,9), MONTHS_SHORT.slice(0,9), '#5C8A00');
+  buildChart('reportChart', SALES_MONTHLY.slice(0,9), MONTHS_SHORT.slice(0,9), '#2B2B2B');
   document.getElementById('topProductsTbl').innerHTML = [
     {rank:1,name:'Trek Marlin 5 Gen 3',qty:28,total:249200000},
     {rank:2,name:'Giant Contend AR 2',qty:15,total:217500000},
