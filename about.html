@@ -1,280 +1,80 @@
 <!DOCTYPE html>
-<html lang="lo" data-theme="light">
+<html lang="lo">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ກ່ຽວກັບ Sevenday Bike — ວຽງຈັນ, ລາວ</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚴</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ກ່ຽວກັບເຮົາ — Sevenday Bike</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sevenday.css">
 <style>
-:root{--red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;--ink:#111;--ink-2:#444;--ink-3:#888;--white:#FFF;--base:#F5F5F5;--border:#E0E0E0;--lime:#5C8A00;--lime-bg:#EFF5E0;--dark:#1A1A2A;--font-ui:'Inter',-apple-system,sans-serif;--font-d:'Barlow Condensed','Inter',sans-serif;--max-w:1280px;--r:6px;--r-lg:10px;--shadow-h:0 4px 20px rgba(0,0,0,.12)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-ui);background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;font-family:inherit;border:none;background:none}
-.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+.crumbs{font-size:13px;color:var(--grey-600);padding:18px 0 6px}
+.crumbs a:hover{text-decoration:underline}
+.page-title{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.05}
+.page-sub{color:var(--grey-600);margin:8px 0 0;max-width:62ch}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:14px}
+.field input,.field select,.field textarea{height:48px;border:1px solid var(--grey-300);padding:0 14px;font:inherit;background:#fff;border-radius:0}
+.field textarea{height:96px;padding:12px 14px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#000;box-shadow:0 0 0 1px #000}
+.field .err{font-size:13px;font-weight:600;display:none}
+.field.invalid input,.field.invalid select{border-color:#000;border-width:2px}
+.field.invalid .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.choice{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--grey-300);padding:16px;cursor:pointer}
+.choice:has(input:checked){border:2px solid #000;padding:15px}
+.choice input{width:20px;height:20px;accent-color:#000;margin-top:2px}
+.choice b{display:block}.choice small{color:var(--grey-600)}
+.alert{background:var(--grey-100);border-left:4px solid #000;padding:14px 16px;font-size:14px}
+@media (max-width:860px){.row2{grid-template-columns:1fr}}
 
-/* HEADER */
-.announce{background:var(--ink);color:#fff;font-size:12px;font-weight:500;text-align:center;padding:7px 20px}
-.site-header{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
-.header-top{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;max-width:var(--max-w);margin:0 auto}
-.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo-mark{width:38px;height:38px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
-.logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.logo-name{font-size:17px;font-weight:800;letter-spacing:-.4px}
-.logo-sub{font-size:10px;font-weight:500;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
-.hdr-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto}
-.hdr-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-size:10px;font-weight:600;text-transform:uppercase;transition:background .12s,color .12s;position:relative;white-space:nowrap}
-.hdr-btn:hover{background:var(--base);color:var(--red)}
-.hdr-btn svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.hdr-badge{position:absolute;top:4px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.nav-bar{background:var(--red)}
-.nav-bar-inner{max-width:var(--max-w);margin:0 auto;padding:0 20px;display:flex;height:44px;align-items:stretch}
-.nav-link{display:flex;align-items:center;height:44px;padding:0 13px;font-size:13px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;transition:background .12s}
-.nav-link:hover,.nav-link.active{background:rgba(0,0,0,.15);color:#fff}
-.nav-link.sale{color:#FFC72C}
-.nav-ws{margin-left:auto;display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.15);white-space:nowrap}
-.nav-ws:hover{background:rgba(0,0,0,.35)}
-@media(max-width:768px){.logo-sub{display:none}.hdr-btn span{display:none}.nav-bar{display:none}}
+.ab-hero{background:#000;color:#fff}
+.ab-hero .wrap{padding:72px 20px}
+.ab-hero h1{font-size:clamp(40px,6vw,84px);font-weight:900;letter-spacing:-2px;line-height:.95;max-width:12ch}
+.ab-hero p{opacity:.8;max-width:56ch;margin-top:20px;font-size:17px}
+.story{display:grid;grid-template-columns:1fr 1.4fr;gap:56px;padding:56px 0}
+.story h2{font-size:32px;font-weight:900;letter-spacing:-.6px;line-height:1.1}
+.story p{margin-bottom:14px;max-width:64ch;color:var(--grey-900)}
+.seven{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:20px}
+.seven span{aspect-ratio:1;background:#000;color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+.vals{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid #000}
+.vals div{padding:24px 20px 28px 0}
+.vals b{display:block;font-size:20px;font-weight:900;margin-bottom:8px}
+.vals p{color:var(--grey-900);font-size:14px}
+.cta{background:var(--grey-100);margin-top:56px}
+.cta .wrap{padding:44px 20px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.cta h2{font-size:28px;font-weight:900}
+@media (max-width:860px){.story{grid-template-columns:1fr;gap:20px}.vals{grid-template-columns:1fr 1fr}}
 
-/* ABOUT HERO */
-.about-hero{background:var(--dark);min-height:480px;display:flex;align-items:center;position:relative;overflow:hidden}
-.about-hero::before{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:rgba(212,43,43,.05)}
-.about-hero::after{content:'';position:absolute;left:40%;bottom:-60px;width:300px;height:300px;border-radius:50%;background:rgba(92,138,0,.04)}
-.about-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:60px 0}
-@media(max-width:768px){.about-hero-inner{grid-template-columns:1fr;gap:32px}}
-.ah-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
-.ah-title{font-family:var(--font-d);font-size:clamp(36px,6vw,64px);font-weight:900;text-transform:uppercase;color:#fff;line-height:.95;letter-spacing:-.01em;margin-bottom:18px}
-.ah-title em{font-style:normal;color:var(--red)}
-.ah-body{font-size:15px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:28px}
-.ah-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.ah-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);padding:16px}
-.ah-stat-num{font-family:var(--font-d);font-size:36px;font-weight:900;color:#fff;line-height:1;margin-bottom:4px}
-.ah-stat-num em{font-style:normal;color:var(--red)}
-.ah-stat-label{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
-.ah-visual{display:flex;align-items:center;justify-content:center}
-.ah-bike-wrap{width:100%;max-width:360px;aspect-ratio:1;background:rgba(255,255,255,.03);border-radius:50%;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:120px;opacity:.6}
-
-/* STORY */
-.story-section{padding:64px 0;background:var(--white)}
-.story-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-@media(max-width:768px){.story-inner{grid-template-columns:1fr}}
-.story-visual{aspect-ratio:4/3;background:var(--base);border-radius:var(--r-lg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;overflow:hidden}
-.story-year-badge{position:absolute;top:16px;left:16px;background:var(--red);color:#fff;font-family:var(--font-d);font-size:18px;font-weight:900;padding:6px 14px;border-radius:var(--r)}
-.story-content{}
-.story-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
-.story-title{font-family:var(--font-d);font-size:clamp(28px,4vw,42px);font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:20px}
-.story-text{font-size:14px;color:var(--ink-2);line-height:1.85;margin-bottom:14px}
-
-/* VALUES */
-.values-section{padding:64px 0;background:var(--base)}
-.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px}
-@media(max-width:760px){.values-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.values-grid{grid-template-columns:1fr}}
-.value-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;transition:all .2s}
-.value-card:hover{border-color:var(--red);box-shadow:var(--shadow-h);transform:translateY(-2px)}
-.value-icon{width:48px;height:48px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;transition:transform .2s}
-.value-card:hover .value-icon{transform:scale(1.1)}
-.value-title{font-family:var(--font-d);font-size:20px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
-.value-text{font-size:13px;color:var(--ink-3);line-height:1.7}
-
-/* TIMELINE */
-.timeline-section{padding:64px 0;background:var(--white)}
-.tl-items{position:relative;margin-top:40px;padding-left:32px}
-.tl-items::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
-.tl-item{position:relative;margin-bottom:36px}
-.tl-item:last-child{margin-bottom:0}
-.tl-dot{position:absolute;left:-27px;top:4px;width:20px;height:20px;border-radius:50%;background:var(--white);border:3px solid var(--border);transition:all .2s}
-.tl-item:hover .tl-dot{border-color:var(--red);background:var(--red)}
-.tl-year{font-family:var(--font-d);font-size:22px;font-weight:900;color:var(--red);margin-bottom:4px}
-.tl-title{font-size:15px;font-weight:700;margin-bottom:5px}
-.tl-text{font-size:13px;color:var(--ink-3);line-height:1.65;max-width:580px}
-
-/* BRANDS */
-.brands-section{padding:48px 0;background:var(--base);border-top:1px solid var(--border)}
-.brands-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:24px}
-@media(max-width:760px){.brands-grid{grid-template-columns:repeat(3,1fr)}}
-.brand-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px 10px;text-align:center;cursor:pointer;transition:all .14s}
-.brand-item:hover{border-color:var(--red);transform:translateY(-1px)}
-.brand-item-logo{font-size:28px;margin-bottom:6px}
-.brand-item-name{font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.04em}
-
-/* CTA */
-.cta-section{padding:64px 0;background:var(--dark);text-align:center}
-.cta-title{font-family:var(--font-d);font-size:clamp(32px,5vw,52px);font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:12px}
-.cta-title em{font-style:normal;color:var(--red)}
-.cta-sub{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:32px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7}
-.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-weight:700;border-radius:var(--r);cursor:pointer;border:none;transition:all .14s}
-.btn-primary{background:var(--red);color:#fff;padding:13px 28px;font-size:15px}
-.btn-primary:hover{background:var(--red-h)}
-.btn-outline-white{background:none;color:#fff;border:2px solid rgba(255,255,255,.4);padding:11px 26px;font-size:15px}
-.btn-outline-white:hover{border-color:#fff;background:rgba(255,255,255,.08)}
-
-.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
-.sec-title{font-family:var(--font-d);font-size:clamp(24px,4vw,36px);font-weight:900;text-transform:uppercase;color:var(--ink);line-height:1}
 </style>
 </head>
 <body>
-<div class="announce">ຮ້ານຈັກຍານ ຄຸນນະພາບ ວຽງຈັນ · ເປີດ 7 ມື້ · LAK · THB · USD</div>
-<header class="site-header">
-  <div class="header-top">
-    <a href="/" class="logo">
-      <div class="logo-mark"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg></div>
-      <div><div class="logo-name">Sevenday Bike</div><div class="logo-sub">Vientiane</div></div>
-    </a>
-    <div class="hdr-actions">
-      <a href="/account.html" class="hdr-btn"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>ບັນຊີ</span></a>
-      <a href="/cart.html" class="hdr-btn"><div style="position:relative;display:inline-flex"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="hdr-badge">2</span></div><span>ກະຕ່າ</span></a>
-    </div>
-  </div>
-</header>
-<nav class="nav-bar">
-  <div class="nav-bar-inner">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/catalogue.html" class="nav-link">Bikes</a>
-    <a href="/service.html" class="nav-link">Service</a>
-    <a href="/store.html" class="nav-link">Store</a>
-    <a href="/about.html" class="nav-link active">About</a>
-    <a href="/contact.html" class="nav-link">Contact</a>
-    <a href="/bikes/sale" class="nav-link sale">🔥 Sale</a>
-    <a href="/service.html#booking" class="nav-ws">📅 ຈອງ</a>
-  </div>
-</nav>
 
-<!-- HERO -->
-<section class="about-hero">
-  <div class="wrap" style="width:100%">
-    <div class="about-hero-inner">
-      <div>
-        <div class="ah-eyebrow">ກ່ຽວກັບ Sevenday Bike</div>
-        <h1 class="ah-title">ເຮົາ<br>ຮັກ<br><em>ຈັກຍານ</em></h1>
-        <p class="ah-body">ຈາກ passion ສ່ວນຕົວ ສູ່ ຮ້ານຈັກຍານ ຄຸນນະພາບ ໃນວຽງຈັນ — Sevenday Bike ສ້າງ community ຂອງ ນັກຂີ່ ຈັກຍານ ໃນ ລາວ ດ້ວຍ ສິນຄ້າ ແລະ ບໍລິການ ທີ່ດີທີ່ສຸດ</p>
-        <div class="ah-stats">
-          <div class="ah-stat"><div class="ah-stat-num">10<em>+</em></div><div class="ah-stat-label">ປີ ໃນ ວຽງຈັນ</div></div>
-          <div class="ah-stat"><div class="ah-stat-num">200<em>+</em></div><div class="ah-stat-label">Bikes ໃນສະຕ໋ອກ</div></div>
-          <div class="ah-stat"><div class="ah-stat-num">500<em>+</em></div><div class="ah-stat-label">ລູກຄ້າ / ປີ</div></div>
-          <div class="ah-stat"><div class="ah-stat-num">50<em>+</em></div><div class="ah-stat-label">Brands</div></div>
-        </div>
-      </div>
-      <div class="ah-visual">
-        <div class="ah-bike-wrap">🚴</div>
-      </div>
-    </div>
+<main>
+<section class="ab-hero"><div class="wrap"><h1>ປັ່ນໄດ້ທຸກ 7 ມື້</h1>
+<p>Sevenday Bike ເປັນຮ້ານຈັກຍານ ແລະ Workshop ທີ່ນະຄອນຫຼວງວຽງຈັນ — ສຳລັບທຸກຄົນ ຕັ້ງແຕ່ເດັກນ້ອຍທີ່ຫາກໍ່ຫັດປັ່ນ ຈົນຮອດນັກແຂ່ງ.</p></div></section>
+<section class="wrap story">
+  <div><h2>ເປັນຫຍັງຊື່ Sevenday</h2>
+    <div class="seven"><span>ຈ</span><span>ອ</span><span>ພ</span><span>ພຫ</span><span>ສ</span><span>ສ</span><span>ອາ</span></div></div>
+  <div>
+    <p>ຊື່ "Sevenday" ມາຈາກຄວາມເຊື່ອວ່າ ຈັກຍານບໍ່ແມ່ນຂອງສຳລັບວັນພັກເທົ່ານັ້ນ — ປັ່ນໄປເຮັດວຽກ ປັ່ນອອກກຳລັງ ປັ່ນທ່ຽວ ໄດ້ທຸກມື້ຂອງອາທິດ. ຮ້ານເຮົາຈຶ່ງເປີດທັງ 7 ມື້ ເພື່ອໃຫ້ທ່ານມາໄດ້ທຸກເວລາທີ່ສະດວກ.</p>
+    <p>ເຮົາເລີ່ມຈາກຄວາມມັກຈັກຍານ ແລະ ເຫັນວ່ານັກປັ່ນໃນວຽງຈັນຍັງມີທາງເລືອກໜ້ອຍ ທັງສິນຄ້າຄຸນນະພາບ ແລະ ຊ່າງທີ່ໄວ້ໃຈໄດ້. ມື້ນີ້ Sevenday ຂາຍທັງຈັກຍານໃໝ່ ມືສອງ ອາໄຫຼ່ ອຸປະກອນ ແລະ ມີ Workshop ຮັບສ້ອມທຸກຍີ່ຫໍ້.</p>
+    <p>ສິນຄ້າໃນເວັບໄຊນີ້ເຊື່ອມກັບສະຕັອກຈິງຂອງຮ້ານ — ເຫັນວ່າມີ ກໍ່ແມ່ນມີຢູ່ຮ້ານແທ້.</p>
   </div>
 </section>
-
-<!-- STORY -->
-<section class="story-section">
-  <div class="wrap">
-    <div class="story-inner">
-      <div class="story-visual">
-        🏪
-        <div class="story-year-badge">Since 2014</div>
-      </div>
-      <div class="story-content">
-        <div class="story-eyebrow">ເລື່ອງຂອງພວກເຮົາ</div>
-        <h2 class="story-title">ເລີ່ມຈາກ<br>ຄວາມຮັກ</h2>
-        <p class="story-text">Sevenday Bike ເລີ່ມຕົ້ນ ໃນປີ 2014 ຈາກ ຄວາມຮັກ ຈັກຍານ ຂອງ ຜູ້ກໍ່ຕັ້ງ — ໃນຕອນນັ້ນ ຕະຫຼາດ ຈັກຍານ ໃນ ວຽງຈັນ ຍັງ ມີໜ້ອຍ ທາງເລືອກ ທີ່ ຄຸນນະພາບ ສຳລັບ ນັກຂີ່ ທີ່ ຈິງຈັງ</p>
-        <p class="story-text">ໃນ 10 ປີ ທີ່ຜ່ານມາ Sevenday ໄດ້ ພັດທະນາ ຈາກ ຮ້ານ ນ້ອຍ ຈົນ ກາຍ ເປັນ ຈຸດໝາຍ ຂອງ ນັກຂີ່ ຈັກຍານ ທຸກລະດັບ ໃນ ລາວ — ທັງ ຜູ້ເລີ່ມຕົ້ນ, Commuter, ຈົນ ຮອດ นัก Race ລະດັບ ສູງ</p>
-        <p class="story-text">ຊື່ "Sevenday" ມາຈາກ ຄວາມໝາຍ ທີ່ ທ່ານ ສາມາດ ຂີ່ ຈັກຍານ ໄດ້ ທຸກ 7 ມື້ ໃນ ອາທິດ ແລະ ເຮົາ ກໍ ເປີດ ຮ້ານ 7 ມື້ ເພື່ອ ຕ້ອນຮັບ ທ່ານ ທຸກ ວັນ</p>
-      </div>
-    </div>
+<section class="wrap">
+  <div class="vals">
+    <div><b>ບອກລາຄາກ່ອນ</b><p>ຊ່າງແຈ້ງ ແລະ ຂໍອະນຸຍາດກ່ອນປ່ຽນອາໄຫຼ່ທຸກຄັ້ງ ບໍ່ມີຄ່າໃຊ້ຈ່າຍແອບແຝງ.</p></div>
+    <div><b>ຂາຍສິ່ງທີ່ເໝາະ</b><p>ແນະນຳຈັກຍານຕາມການໃຊ້ງານ ແລະ ງົບປະມານ ບໍ່ແມ່ນຄັນທີ່ແພງທີ່ສຸດ.</p></div>
+    <div><b>ດູແລຫຼັງຂາຍ</b><p>ປະກອບ ແລະ ປັບຕັ້ງໃຫ້ຟຣີ ກ່ອນສົ່ງມອບທຸກຄັນ.</p></div>
+    <div><b>ສັງຄົມນັກປັ່ນ</b><p>ນັດປັ່ນ ແລະ ກິດຈະກຳ ສຳລັບນັກປັ່ນທຸກລະດັບ.</p></div>
   </div>
 </section>
+<section class="cta"><div class="wrap"><h2>ແວະມາລອງປັ່ນທີ່ຮ້ານ</h2><div><a class="btn btn-black" href="store.html">ເບິ່ງທີ່ຕັ້ງຮ້ານ</a> <a class="btn btn-line" href="contact.html" style="margin-left:6px">ຕິດຕໍ່ເຮົາ</a></div></div></section>
+<div style="height:56px"></div>
+</main>
 
-<!-- VALUES -->
-<section class="values-section">
-  <div class="wrap">
-    <div style="text-align:center;margin-bottom:0">
-      <div class="sec-eyebrow" style="justify-content:center;display:flex">ຄຸນຄ່າ</div>
-      <h2 class="sec-title" style="text-align:center">ສິ່ງທີ່ເຮົາເຊື່ອ</h2>
-    </div>
-    <div class="values-grid">
-      <div class="value-card">
-        <div class="value-icon" style="background:#FFF0F0">🎯</div>
-        <div class="value-title">ຄຸນນະພາບ</div>
-        <div class="value-text">ສິນຄ້າ ທຸກ ລາຍການ ໄດ້ ຮັບ ການ ຄັດ ເລືອກ ດ້ວຍ ຄວາມ ລະ ອຽດ ຖີ່ ຖ້ວນ — ທ່ານ ຈ່າຍ ຄ່ານ ທີ່ ຄຸ້ມ</div>
-      </div>
-      <div class="value-card">
-        <div class="value-icon" style="background:#EFF5E0">🤝</div>
-        <div class="value-title">ຊື່ສັດ</div>
-        <div class="value-text">ບໍ່ ມີ ລາຄາ ຊ້ອນ, ບໍ່ ມີ Parts ທີ່ ບໍ່ ຈຳ ເປັນ — ຊ່າງ ເຮົາ ແຈ້ງ ກ່ອນ ທຸກ ຄັ້ງ ກ່ອນ ດຳ ເນີນ ງານ</div>
-      </div>
-      <div class="value-card">
-        <div class="value-icon" style="background:#EBF3FF">🚀</div>
-        <div class="value-title">ຊ່ຽວຊານ</div>
-        <div class="value-text">ທີມ ຊ່າງ ຂອງ ເຮົາ ຜ່ານ ການ ຝຶກ ອົບ ຮົມ ຈາກ Shimano ແລະ ມີ ປະ ສົບ ການ ສູງ ສຸດ ໃນ ລາວ</div>
-      </div>
-      <div class="value-card">
-        <div class="value-icon" style="background:#FFF5EB">❤️</div>
-        <div class="value-title">Community</div>
-        <div class="value-text">ເຮົາ ບໍ່ ໄດ້ ຂາຍ ພຽງ ຈັກ ຍານ — ເຮົາ ສ້າງ Community ຂອງ ນັກ ຂີ່ ໃນ ລາວ ດ້ວຍ Rides ແລະ Events</div>
-      </div>
-      <div class="value-card">
-        <div class="value-icon" style="background:#F3EBF3">🌿</div>
-        <div class="value-title">ສິ່ງ ແວດ ລ້ອມ</div>
-        <div class="value-text">ຈັກ ຍານ ຄື ການ ເດີນ ທາງ ທີ່ ດີ ສຳ ລັບ ສິ່ງ ແວດ ລ້ອມ — ເຮົາ ສົ່ງ ເສີມ ການ ໃຊ້ ຈັກ ຍານ ໃນ ວຽງ ຈັນ</div>
-      </div>
-      <div class="value-card">
-        <div class="value-icon" style="background:#FFF0F0">📈</div>
-        <div class="value-title">ພັດທະນາ</div>
-        <div class="value-text">ເຮົາ ຮຽນ ຮູ້ ແລະ ພັດທະນາ ຢູ່ ສະ ເໝີ — ສິນຄ້າ ໃໝ່, ບໍລິການ ໃໝ່, ທີມ ທີ່ ດີ ຂຶ້ນ ທຸກ ປີ</div>
-      </div>
-    </div>
-  </div>
-</section>
+<script src="layout.js"></script>
+<script>
 
-<!-- TIMELINE -->
-<section class="timeline-section">
-  <div class="wrap">
-    <div class="sec-eyebrow">ປະຫວັດ</div>
-    <h2 class="sec-title">Sevenday ຜ່ານ ປີ</h2>
-    <div class="tl-items">
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2014</div><div class="tl-title">ເລີ່ມຕົ້ນ Sevenday Bike</div><div class="tl-text">ເປີດ ຮ້ານ ນ້ອຍ ໃນ ວຽງ ຈັນ ດ້ວຍ Bikes 20 ຄັນ ແລະ ທີມ 2 ຄົນ — ຈຸດ ເລີ່ມ ຕົ້ນ ຂອງ ການ ເດີນ ທາງ</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2016</div><div class="tl-title">ຂະຫຍາຍ Workshop</div><div class="tl-text">ເພີ່ມ Workshop ພາຍ ໃນ ຮ້ານ ຊ່ຽວ ຊານ ດ້ານ Service ແລະ Repair — ຈາກ ຂາຍ ຢ່າງ ດຽວ ສູ່ ບໍ ລິ ການ ຄົບ</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2018</div><div class="tl-title">Trek ແລະ Giant Official Dealer</div><div class="tl-text">ໄດ້ ຮັບ ການ ຮັບ ຮອງ ເປັນ Official Dealer ຂອງ Trek ແລະ Giant — ເປີດ ໂລກ ໃໝ່ ດ້ານ Brands ລະ ດັບ ສາ ກົນ</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2020</div><div class="tl-title">Film / Color Customization</div><div class="tl-text">ເລີ່ມ ບໍ ລິ ການ Film Wrap ສ້າງ ເອ ກ ລັກ ຈັກ ຍານ — ກາຍ ເປັນ ຜູ້ ໃຫ້ ບໍ ລິ ການ ທີ່ ໜ້ານ ໃຈ ທີ່ ສຸດ ໃນ ລາວ</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2022</div><div class="tl-title">ລະ ບົບ ດິ ຈິ ຕ ອ ລ</div><div class="tl-text">ເພີ່ມ POS System, ລະ ບົບ ຕິດ ຕາມ Inventory ແລະ ເລີ່ມ Online Presence ທີ່ ເຂັ້ມ ຂຶ້ນ</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2024</div><div class="tl-title">Sevenday ເວັບ ໄຊ ໃໝ່</div><div class="tl-text">ເປີດ ໂຕ Platform ອອ ນ ໄລ ນ໌ ຄົບ ວົງ ຈອນ — ສັ່ງ ຊື້, ຈອງ Service, ຕິດ ຕາມ Order ໄດ້ ທຸກ ທີ່</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- BRANDS -->
-<section class="brands-section">
-  <div class="wrap">
-    <div class="sec-eyebrow">ຍີ່ຫໍ້</div>
-    <h2 class="sec-title">Brands ທີ່ ເຮົາ ຈຳ ໜ່າຍ</h2>
-    <div class="brands-grid" style="margin-top:24px">
-      <div class="brand-item"><div class="brand-item-logo">🚴</div><div class="brand-item-name">Trek</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🚵</div><div class="brand-item-name">Giant</div></div>
-      <div class="brand-item"><div class="brand-item-logo">⚡</div><div class="brand-item-name">Specialized</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🏔️</div><div class="brand-item-name">Merida</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🔺</div><div class="brand-item-name">Polygon</div></div>
-      <div class="brand-item"><div class="brand-item-logo">⚙️</div><div class="brand-item-name">Shimano</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🔧</div><div class="brand-item-name">SRAM</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🌀</div><div class="brand-item-name">Fox</div></div>
-      <div class="brand-item"><div class="brand-item-logo">💨</div><div class="brand-item-name">RockShox</div></div>
-      <div class="brand-item"><div class="brand-item-logo">⛑️</div><div class="brand-item-name">Giro</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🛡️</div><div class="brand-item-name">POC</div></div>
-      <div class="brand-item"><div class="brand-item-logo">🔵</div><div class="brand-item-name">Maxxis</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="wrap">
-    <h2 class="cta-title">ມາ ຫາ ເຮົາ<br><em>ທີ່ Sevenday</em></h2>
-    <p class="cta-sub">ບໍ່ ວ່າ ທ່ານ ຈະ ຊ້ອ ຈັກ ຍານ ໃໝ່, ຊ່ອ ມ ຈັກ ຍານ, ຫຼື ຢາກ ພຽງ test ride — ທີມ Sevenday ຍິນ ດີ ຕ້ອນ ຮັບ ທ່ານ ທຸກ ມື້</p>
-    <div class="cta-btns">
-      <a href="/catalogue.html" class="btn btn-primary">ເລືອກ Bike</a>
-      <a href="/service.html#booking" class="btn btn-outline-white">ຈອງ Workshop</a>
-      <a href="/contact.html" class="btn btn-outline-white">ຕິດ ຕໍ່ ເຮົາ</a>
-    </div>
-  </div>
-</section>
+</script>
 </body>
 </html>
