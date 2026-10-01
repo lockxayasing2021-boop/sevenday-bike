@@ -1,926 +1,175 @@
 <!DOCTYPE html>
-<html lang="lo" data-theme="light">
+<html lang="lo">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ຈັກຍານທັງໝົດ / All Bikes — Sevenday Bike</title>
-<meta name="description" content="ເລືອກຊົມ ຈັກຍານ ທຸກປະເພດ ທີ່ Sevenday Bike ວຽງຈັນ — Road, Mountain, City, Kids, Used">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚴</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ສິນຄ້າທັງໝົດ — Sevenday Bike</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sevenday.css">
 <style>
-/* ── SHARED DESIGN TOKENS ── */
-:root{
-  --red:#D42B2B;--red-h:#B52222;--red-lite:#FFF0F0;
-  --ink:#111;--ink-2:#444;--ink-3:#888;
-  --white:#FFF;--base:#F5F5F5;--card:#FFF;
-  --border:#E0E0E0;--border-2:#CCC;
-  --lime:#5C8A00;--lime-bg:#EFF5E0;
-  --font-ui:'Inter',-apple-system,sans-serif;
-  --font-d:'Barlow Condensed','Inter',sans-serif;
-  --max-w:1280px;--r:6px;--r-lg:10px;
-  --shadow:0 1px 4px rgba(0,0,0,.1);
-  --shadow-h:0 4px 16px rgba(0,0,0,.14);
+.crumbs{font-size:13px;color:var(--grey-600);padding:18px 0 6px}
+.crumbs a:hover{text-decoration:underline}
+.page-title{font-size:clamp(28px,3.4vw,42px);font-weight:900;letter-spacing:-1px;line-height:1.05}
+.page-sub{color:var(--grey-600);margin:6px 0 20px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:16px;border-bottom:1px solid var(--grey-300)}
+.chips button{border:1px solid var(--grey-300);border-radius:999px;padding:8px 16px;font-weight:700;font-size:13px;white-space:nowrap}
+.chips button.on{background:var(--black);color:var(--white);border-color:var(--black)}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:32px;padding:24px 0 64px}
+.filters{position:sticky;top:96px;align-self:start;max-height:calc(100vh - 110px);overflow-y:auto}
+.f-group{border-bottom:1px solid var(--grey-300)}
+.f-group summary{font-weight:800;padding:14px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between}
+.f-group summary::after{content:'+'}.f-group[open] summary::after{content:'–'}
+.f-body{padding-bottom:14px;display:flex;flex-direction:column;gap:8px}
+.f-body label{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer}
+.f-body input[type=checkbox]{width:18px;height:18px;accent-color:#000}
+.f-body .count{margin-left:auto;color:var(--grey-600);font-size:12px}
+.range{display:flex;gap:8px}
+.range input{width:100%;height:40px;border:1px solid var(--grey-300);padding:0 10px;font:inherit}
+.f-clear{margin-top:16px;font-weight:700;text-decoration:underline;font-size:14px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.toolbar .n{font-weight:700}
+.toolbar select{height:42px;border:1px solid var(--black);padding:0 12px;font:inherit;font-weight:600;background:#fff}
+.filter-btn{display:none;height:42px;padding:0 18px;border:1px solid var(--black);font-weight:700}
+.active-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.active-tags button{background:var(--grey-100);padding:6px 12px;font-size:13px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px 18px}
+.empty{text-align:center;padding:64px 20px;border:1px dashed var(--grey-300)}
+.empty b{display:block;font-size:20px;margin-bottom:8px}
+.more{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:40px}
+.more small{color:var(--grey-600)}
+.bar{width:220px;height:3px;background:var(--grey-300)}.bar i{display:block;height:100%;background:#000}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .filters{position:fixed;inset:0;z-index:120;background:#fff;padding:0 20px 90px;max-height:none;display:none;top:0}
+  .filters.open{display:block}
+  .f-head{display:flex!important}
+  .filter-btn{display:block}
+  .grid{grid-template-columns:repeat(2,1fr);gap:22px 12px}
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;font-family:inherit;border:none;background:none}
-.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-
-/* ── HEADER (shared) ── */
-.announce{background:var(--ink);color:#fff;font-size:12px;font-weight:500;text-align:center;padding:7px 20px}
-.site-header{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
-.header-top{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;max-width:var(--max-w);margin:0 auto}
-.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo-mark{width:38px;height:38px;background:var(--red);border-radius:var(--r);display:flex;align-items:center;justify-content:center}
-.logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.logo-name{font-size:17px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
-.logo-sub{font-size:10px;font-weight:500;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
-.header-search{flex:1;max-width:500px;position:relative}
-.header-search input{width:100%;height:42px;border:2px solid var(--border);border-radius:21px;padding:0 46px 0 16px;font-size:14px;font-family:var(--font-ui);background:var(--base);outline:none;transition:border-color .15s}
-.header-search input:focus{border-color:var(--red);background:var(--white)}
-.header-search input::placeholder{color:var(--ink-3)}
-.search-btn{position:absolute;right:4px;top:4px;width:34px;height:34px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
-.search-btn:hover{background:var(--red-h)}
-.search-btn svg{width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none}
-.hdr-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.hdr-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-size:10px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;transition:background .12s,color .12s;position:relative;white-space:nowrap}
-.hdr-btn:hover{background:var(--base);color:var(--red)}
-.hdr-btn svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.hdr-badge{position:absolute;top:4px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.nav-bar{background:var(--red);border-top:1px solid rgba(0,0,0,.1)}
-.nav-bar-inner{max-width:var(--max-w);margin:0 auto;padding:0 20px;display:flex;height:44px;align-items:stretch}
-.nav-link{display:flex;align-items:center;gap:5px;height:44px;padding:0 13px;font-size:13px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;transition:background .12s}
-.nav-link:hover{background:rgba(0,0,0,.1);color:#fff}
-.nav-link.active{background:rgba(0,0,0,.2);color:#fff}
-.nav-link.sale{color:#FFC72C}
-.nav-ws{margin-left:auto;display:flex;align-items:center;padding:0 16px;gap:6px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.15);transition:background .12s;white-space:nowrap}
-.nav-ws:hover{background:rgba(0,0,0,.35)}
-@media(max-width:768px){.header-search{display:none}.logo-sub{display:none}.hdr-btn span{display:none}.nav-bar{display:none}}
-
-/* ── BREADCRUMB ── */
-.breadcrumb{padding:14px 0;border-bottom:1px solid var(--border);background:var(--white)}
-.breadcrumb-inner{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3)}
-.breadcrumb-inner a{color:var(--ink-3);transition:color .12s}
-.breadcrumb-inner a:hover{color:var(--red)}
-.breadcrumb-sep{color:var(--border-2)}
-
-/* ── PAGE LAYOUT ── */
-.catalogue-page{padding:24px 0 48px}
-.catalogue-inner{display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start}
-@media(max-width:960px){.catalogue-inner{grid-template-columns:1fr}}
-
-/* ── SIDEBAR / FILTERS ── */
-.filter-sidebar{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;position:sticky;top:120px}
-.filter-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
-.filter-header h3{font-size:14px;font-weight:700}
-.filter-clear{font-size:12px;font-weight:600;color:var(--red);background:none;border:none;cursor:pointer;padding:0;transition:color .12s}
-.filter-clear:hover{color:var(--red-h)}
-.filter-section{border-bottom:1px solid var(--border)}
-.filter-section:last-child{border-bottom:none}
-.filter-toggle{
-  width:100%;display:flex;align-items:center;justify-content:space-between;
-  padding:13px 16px;font-size:13px;font-weight:600;color:var(--ink);
-  background:none;border:none;cursor:pointer;text-align:left;
-  transition:background .12s;
-}
-.filter-toggle:hover{background:var(--base)}
-.filter-toggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;transition:transform .2s}
-.filter-toggle.open svg{transform:rotate(180deg)}
-.filter-body{padding:4px 16px 12px;display:none}
-.filter-body.open{display:block}
-.filter-check{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;font-size:13px;color:var(--ink-2);transition:color .12s}
-.filter-check:hover{color:var(--red)}
-.filter-check input[type=checkbox]{
-  width:15px;height:15px;accent-color:var(--red);
-  border:1.5px solid var(--border-2);border-radius:3px;cursor:pointer;flex-shrink:0;
-}
-.filter-check-count{margin-left:auto;font-size:11px;color:var(--ink-3);background:var(--base);padding:1px 6px;border-radius:10px}
-
-/* Price range */
-.price-range{padding:8px 0 4px}
-.price-inputs{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.price-inputs input{
-  flex:1;height:34px;border:1.5px solid var(--border);border-radius:var(--r);
-  padding:0 10px;font-size:12px;font-family:var(--font-ui);color:var(--ink);outline:none;
-}
-.price-inputs input:focus{border-color:var(--red)}
-.price-inputs span{font-size:12px;color:var(--ink-3);flex-shrink:0}
-.range-slider{width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;accent-color:var(--red);cursor:pointer}
-
-/* Active filters */
-.active-filters{display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 12px}
-.active-filter-tag{
-  display:inline-flex;align-items:center;gap:4px;
-  background:var(--red-lite);color:var(--red);
-  font-size:11px;font-weight:600;
-  padding:3px 8px;border-radius:20px;
-  border:1px solid rgba(212,43,43,.2);
-}
-.active-filter-tag button{background:none;border:none;cursor:pointer;color:var(--red);font-size:14px;line-height:1;padding:0;margin-left:2px;display:flex;align-items:center}
-
-/* Mobile filter button */
-.mob-filter-btn{
-  display:none;
-  align-items:center;gap:8px;
-  padding:10px 16px;background:var(--white);border:1.5px solid var(--border);
-  border-radius:var(--r);font-size:13px;font-weight:600;color:var(--ink);
-  transition:border-color .12s;
-}
-.mob-filter-btn:hover{border-color:var(--red);color:var(--red)}
-.mob-filter-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
-@media(max-width:960px){
-  .filter-sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:min(300px,90vw);z-index:700;overflow-y:auto;border-radius:0}
-  .filter-sidebar.mob-open{display:block}
-  .mob-filter-btn{display:flex}
-}
-
-/* ── MAIN CONTENT ── */
-.catalogue-main{}
-
-/* Toolbar */
-.toolbar{
-  display:flex;align-items:center;gap:12px;
-  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:12px 16px;margin-bottom:16px;flex-wrap:wrap;
-}
-.toolbar-left{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap}
-.result-count{font-size:13px;color:var(--ink-3);white-space:nowrap}
-.result-count strong{color:var(--ink);font-weight:700}
-
-/* Category pills (subcategory filter) */
-.cat-pills{display:flex;gap:6px;flex-wrap:wrap}
-.cat-pill{
-  padding:5px 12px;border-radius:20px;
-  font-size:12px;font-weight:600;
-  border:1.5px solid var(--border);background:var(--base);color:var(--ink-2);
-  cursor:pointer;transition:all .14s;white-space:nowrap;
-}
-.cat-pill:hover{border-color:var(--red);color:var(--red)}
-.cat-pill.active{background:var(--red);color:#fff;border-color:var(--red)}
-
-.toolbar-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.sort-select{
-  height:34px;border:1.5px solid var(--border);border-radius:var(--r);
-  padding:0 10px;font-size:13px;font-family:var(--font-ui);color:var(--ink);
-  background:var(--white);outline:none;cursor:pointer;
-  transition:border-color .12s;
-}
-.sort-select:focus{border-color:var(--red)}
-.view-toggle{display:flex;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden}
-.view-btn{
-  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
-  color:var(--ink-3);background:var(--white);
-  border:none;cursor:pointer;transition:all .12s;
-}
-.view-btn:hover{background:var(--base);color:var(--ink)}
-.view-btn.active{background:var(--red);color:#fff}
-.view-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-
-/* ── PRODUCT GRID ── */
-.prod-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-.prod-grid.list-view{grid-template-columns:1fr}
-@media(max-width:1100px){.prod-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.prod-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
-
-/* Grid card */
-.prod-card{
-  background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-lg);
-  overflow:hidden;cursor:pointer;transition:box-shadow .18s,transform .18s,border-color .18s;
-  display:flex;flex-direction:column;position:relative;
-}
-.prod-card:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:var(--border-2)}
-.prod-img{aspect-ratio:4/3;background:#F8F8F8;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
-.prod-img-icon{font-size:52px;opacity:.35}
-.prod-badge{position:absolute;top:8px;left:8px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
-.badge-new{background:var(--lime);color:#fff}
-.badge-sale{background:var(--red);color:#fff}
-.badge-used{background:var(--ink);color:#fff}
-.badge-hot{background:#FF6B00;color:#fff}
-.prod-wish{position:absolute;top:8px;right:8px;width:30px;height:30px;background:rgba(255,255,255,.88);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .14s;border:1px solid var(--border)}
-.prod-card:hover .prod-wish,.prod-wish.saved{opacity:1}
-.prod-wish svg{width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:2}
-.prod-wish.saved svg{stroke:var(--red);fill:var(--red)}
-.prod-wish:hover svg{stroke:var(--red)}
-.prod-body{padding:12px;flex:1;display:flex;flex-direction:column}
-.prod-brand{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
-.prod-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:8px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.prod-cond{font-size:11px;font-weight:700;color:var(--lime);margin-bottom:6px}
-.prod-prices{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-bottom:3px}
-.price-now{font-size:16px;font-weight:800;color:var(--ink)}
-.price-was{font-size:11px;color:var(--ink-3);text-decoration:line-through}
-.price-save{font-size:10px;font-weight:700;color:var(--red);background:var(--red-lite);padding:2px 6px;border-radius:20px}
-.prod-sub{font-size:11px;color:var(--ink-3);margin-bottom:8px}
-.prod-stock{font-size:11px;font-weight:600;margin-bottom:8px}
-.in-stock{color:var(--lime)}.low-stock{color:#FF6B00}.no-stock{color:var(--ink-3)}
-.prod-add{width:100%;padding:8px;background:var(--ink);color:#fff;font-size:12px;font-weight:700;border-radius:var(--r);border:2px solid var(--ink);transition:all .14s;opacity:0;transform:translateY(3px);transition:opacity .14s,transform .14s,background .14s}
-.prod-card:hover .prod-add{opacity:1;transform:none}
-.prod-add:hover{background:var(--red);border-color:var(--red)}
-
-/* List card */
-.prod-grid.list-view .prod-card{flex-direction:row;height:140px}
-.prod-grid.list-view .prod-img{aspect-ratio:unset;width:160px;flex-shrink:0;border-bottom:none;border-right:1px solid var(--border)}
-.prod-grid.list-view .prod-body{flex-direction:row;align-items:center;gap:16px;padding:14px 16px}
-.prod-grid.list-view .prod-name{font-size:14px;-webkit-line-clamp:1;margin-bottom:4px}
-.prod-grid.list-view .prod-body-left{flex:1}
-.prod-grid.list-view .prod-body-right{flex-shrink:0;text-align:right}
-.prod-grid.list-view .prod-add{opacity:1;transform:none;width:auto;padding:8px 16px}
-@media(max-width:640px){.prod-grid.list-view .prod-card{height:auto;flex-direction:column}.prod-grid.list-view .prod-img{width:100%;border-right:none;border-bottom:1px solid var(--border);aspect-ratio:4/3}.prod-grid.list-view .prod-body{flex-direction:column;align-items:flex-start}}
-
-/* ── PAGINATION ── */
-.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:28px}
-.page-btn{
-  width:36px;height:36px;border-radius:var(--r);
-  font-size:13px;font-weight:600;color:var(--ink-2);
-  border:1.5px solid var(--border);background:var(--white);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .14s;
-}
-.page-btn:hover{border-color:var(--red);color:var(--red)}
-.page-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
-.page-btn.disabled{opacity:.4;cursor:not-allowed}
-.page-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-
-/* ── NO RESULTS ── */
-.no-results{text-align:center;padding:60px 20px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg)}
-.no-results-icon{font-size:48px;margin-bottom:14px}
-.no-results h3{font-size:18px;font-weight:700;margin-bottom:6px}
-.no-results p{font-size:14px;color:var(--ink-3);margin-bottom:20px}
-
-/* ── COMPARE BAR ── */
-.compare-bar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--ink);color:#fff;
-  padding:14px 20px;
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  transform:translateY(100%);transition:transform .22s;
-  z-index:400;
-}
-.compare-bar.show{transform:none}
-.compare-items{display:flex;gap:8px}
-.compare-slot{
-  width:60px;height:60px;background:rgba(255,255,255,.08);
-  border:1px dashed rgba(255,255,255,.25);border-radius:var(--r);
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  position:relative;
-}
-.compare-slot .rm{
-  position:absolute;top:-6px;right:-6px;width:18px;height:18px;
-  background:var(--red);border-radius:50%;font-size:12px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-}
-.compare-text{font-size:13px;color:rgba(255,255,255,.7)}
-.compare-text strong{display:block;font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
-
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-weight:700;border-radius:var(--r);cursor:pointer;border:none;transition:all .14s;white-space:nowrap}
-.btn-primary{background:var(--red);color:#fff;padding:10px 20px;font-size:14px}
-.btn-primary:hover{background:var(--red-h)}
-.btn-outline{background:none;color:var(--ink);border:1.5px solid var(--ink);padding:8px 18px;font-size:13px}
-.btn-outline:hover{background:var(--ink);color:#fff}
-.btn-sm{padding:7px 14px;font-size:12px}
-
-/* ── MOBILE OVERLAY ── */
-.mob-overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;opacity:0;pointer-events:none;transition:opacity .22s}
-.mob-overlay-bg.on{opacity:1;pointer-events:all}
-
-/* ── SKELETON LOADING ── */
-.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r)}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.f-head{display:none;justify-content:space-between;align-items:center;padding:16px 0;font-weight:800;font-size:18px;border-bottom:2px solid #000}
+.f-apply{position:fixed;left:0;right:0;bottom:0;padding:12px 20px;background:#fff;border-top:1px solid var(--grey-300);display:none}
+.filters.open .f-apply{display:block}
 </style>
 </head>
 <body>
+<main class="wrap">
+  <nav class="crumbs" aria-label="breadcrumb"><a href="index.html">ໜ້າຫຼັກ</a> / <span id="crumbCat">ສິນຄ້າທັງໝົດ</span></nav>
+  <h1 class="page-title" id="title">ສິນຄ້າທັງໝົດ</h1>
+  <p class="page-sub">ສະຕັອກອັບເດດຕາມຮ້ານຈິງ</p>
+  <div class="chips" id="chips"></div>
 
-<!-- ANNOUNCE -->
-<div class="announce">ຄລິກ &amp; ຮັບທີ່ຮ້ານ · LAK · THB · USD · ເປີດ 7 ມື້</div>
+  <div class="layout">
+    <aside class="filters" id="filters" aria-label="ຕົວກອງ">
+      <div class="f-head">ຕົວກອງ<button onclick="openFilters(false)" aria-label="ປິດ">✕</button></div>
+      <details class="f-group" open><summary>ໝວດໝູ່</summary><div class="f-body" id="fCat"></div></details>
+      <details class="f-group" open><summary>ຍີ່ຫໍ້</summary><div class="f-body" id="fBrand"></div></details>
+      <details class="f-group" open><summary>ລາຄາ (<span class="curLbl">₭</span>)</summary><div class="f-body">
+        <div class="range"><input id="pMin" type="number" inputmode="numeric" placeholder="ຕໍ່າສຸດ"><input id="pMax" type="number" inputmode="numeric" placeholder="ສູງສຸດ"></div></div></details>
+      <details class="f-group" open><summary>ສະຖານະສິນຄ້າ</summary><div class="f-body">
+        <label><input type="checkbox" id="fInStock"> ມີສິນຄ້າພ້ອມຂາຍ</label>
+        <label><input type="checkbox" id="fSale"> ລາຄາພິເສດ</label></div></details>
+      <button class="f-clear" onclick="clearFilters()">ລ້າງຕົວກອງທັງໝົດ</button>
+      <div class="f-apply"><button class="btn btn-black" style="width:100%" onclick="openFilters(false)">ເບິ່ງ <span id="applyN">0</span> ລາຍການ</button></div>
+    </aside>
 
-<!-- HEADER -->
-<header class="site-header">
-  <div class="header-top">
-    <a href="/" class="logo">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg>
+    <section>
+      <div class="toolbar">
+        <button class="filter-btn" onclick="openFilters(true)">ຕົວກອງ</button>
+        <span class="n" id="count">ກຳລັງໂຫຼດ...</span>
+        <label>ຮຽງຕາມ <select id="sort">
+          <option value="rel">ແນະນຳ</option><option value="low">ລາຄາ ຕໍ່າ → ສູງ</option>
+          <option value="high">ລາຄາ ສູງ → ຕໍ່າ</option><option value="name">ຊື່ A–Z</option><option value="stock">ສະຕັອກຫຼາຍສຸດ</option>
+        </select></label>
       </div>
-      <div>
-        <div class="logo-name">Sevenday Bike</div>
-        <div class="logo-sub">Vientiane · ວຽງຈັນ</div>
-      </div>
-    </a>
-    <div class="header-search">
-      <input type="search" placeholder="ຄົ້ນຫາ ຈັກຍານ, ຍີ່ຫໍ້, Model...">
-      <button class="search-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-    </div>
-    <div class="hdr-actions">
-      <a href="/account" class="hdr-btn"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>ບັນຊີ</span></a>
-      <button class="hdr-btn" id="cartBtn"><div style="position:relative;display:inline-flex"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="hdr-badge" id="cartCount">0</span></div><span>ກະຕ່າ</span></button>
-    </div>
+      <div class="active-tags" id="tags"></div>
+      <div class="grid" id="grid"></div>
+      <div class="more" id="more"></div>
+    </section>
   </div>
-</header>
+</main>
 
-<!-- NAV -->
-<nav class="nav-bar">
-  <div class="nav-bar-inner">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/bikes" class="nav-link active">Bikes</a>
-    <a href="/parts" class="nav-link">Parts</a>
-    <a href="/accessories" class="nav-link">Accessories</a>
-    <a href="/service" class="nav-link">Service</a>
-    <a href="/bikes/used" class="nav-link">Used</a>
-    <a href="/bikes/sale" class="nav-link sale">🔥 Sale</a>
-    <a href="/service/book" class="nav-ws">📅 ຈອງ Workshop</a>
-  </div>
-</nav>
-
-<!-- MOBILE OVERLAY (filter) -->
-<div class="mob-overlay-bg" id="mobOverlay"></div>
-
-<!-- BREADCRUMB -->
-<div class="breadcrumb">
-  <div class="wrap">
-    <div class="breadcrumb-inner">
-      <a href="/">Home</a>
-      <span class="breadcrumb-sep">›</span>
-      <span id="bcCategory">ຈັກຍານທັງໝົດ</span>
-    </div>
-  </div>
-</div>
-
-<!-- CATALOGUE -->
-<div class="catalogue-page">
-  <div class="wrap">
-    <div class="catalogue-inner">
-
-      <!-- FILTER SIDEBAR -->
-      <aside class="filter-sidebar" id="filterSidebar" role="complementary" aria-label="Filters">
-        <div class="filter-header">
-          <h3>ຕົວກອງ / Filter</h3>
-          <button class="filter-clear" id="clearAll" onclick="clearFilters()">ລ້າງທັງໝົດ</button>
-        </div>
-
-        <!-- Active filter tags -->
-        <div class="active-filters" id="activeTags"></div>
-
-        <!-- Category -->
-        <div class="filter-section">
-          <button class="filter-toggle open" onclick="toggleSection(this)">
-            ປະເພດ / Category
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body open" id="sec-category">
-            <label class="filter-check"><input type="checkbox" name="cat" value="road" onchange="applyFilter()"> Road Bikes <span class="filter-check-count">12</span></label>
-            <label class="filter-check"><input type="checkbox" name="cat" value="mountain" onchange="applyFilter()"> Mountain Bikes <span class="filter-check-count">18</span></label>
-            <label class="filter-check"><input type="checkbox" name="cat" value="city" onchange="applyFilter()"> City / Hybrid <span class="filter-check-count">8</span></label>
-            <label class="filter-check"><input type="checkbox" name="cat" value="kids" onchange="applyFilter()"> Kids · ເດັກ <span class="filter-check-count">10</span></label>
-            <label class="filter-check"><input type="checkbox" name="cat" value="bmx" onchange="applyFilter()"> BMX <span class="filter-check-count">5</span></label>
-            <label class="filter-check"><input type="checkbox" name="cat" value="folding" onchange="applyFilter()"> Folding · ພັບ <span class="filter-check-count">4</span></label>
-          </div>
-        </div>
-
-        <!-- Brand -->
-        <div class="filter-section">
-          <button class="filter-toggle open" onclick="toggleSection(this)">
-            ຍີ່ຫໍ້ / Brand
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body open" id="sec-brand">
-            <label class="filter-check"><input type="checkbox" name="brand" value="trek" onchange="applyFilter()"> Trek <span class="filter-check-count">14</span></label>
-            <label class="filter-check"><input type="checkbox" name="brand" value="giant" onchange="applyFilter()"> Giant <span class="filter-check-count">11</span></label>
-            <label class="filter-check"><input type="checkbox" name="brand" value="specialized" onchange="applyFilter()"> Specialized <span class="filter-check-count">9</span></label>
-            <label class="filter-check"><input type="checkbox" name="brand" value="merida" onchange="applyFilter()"> Merida <span class="filter-check-count">8</span></label>
-            <label class="filter-check"><input type="checkbox" name="brand" value="polygon" onchange="applyFilter()"> Polygon <span class="filter-check-count">7</span></label>
-            <label class="filter-check"><input type="checkbox" name="brand" value="giant" onchange="applyFilter()"> Scott <span class="filter-check-count">5</span></label>
-          </div>
-        </div>
-
-        <!-- Price -->
-        <div class="filter-section">
-          <button class="filter-toggle open" onclick="toggleSection(this)">
-            ລາຄາ / Price (₭ LAK)
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body open">
-            <div class="price-range">
-              <div class="price-inputs">
-                <input type="number" id="priceMin" placeholder="0" value="0" min="0" max="50000000" step="500000" onchange="applyFilter()">
-                <span>–</span>
-                <input type="number" id="priceMax" placeholder="50,000,000" value="50000000" min="0" max="50000000" step="500000" onchange="applyFilter()">
-              </div>
-              <input type="range" class="range-slider" id="priceRange" min="0" max="50000000" step="500000" value="50000000" oninput="document.getElementById('priceMax').value=this.value;applyFilter()">
-              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px">
-                <span>₭ 0</span><span>₭ 50M</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Frame Size -->
-        <div class="filter-section">
-          <button class="filter-toggle" onclick="toggleSection(this)">
-            ຂະໜາດ / Frame Size
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body" id="sec-size">
-            <label class="filter-check"><input type="checkbox" name="size" value="xs" onchange="applyFilter()"> XS (< 155cm)</label>
-            <label class="filter-check"><input type="checkbox" name="size" value="s" onchange="applyFilter()"> S (155–165cm)</label>
-            <label class="filter-check"><input type="checkbox" name="size" value="m" onchange="applyFilter()"> M (165–175cm)</label>
-            <label class="filter-check"><input type="checkbox" name="size" value="l" onchange="applyFilter()"> L (175–185cm)</label>
-            <label class="filter-check"><input type="checkbox" name="size" value="xl" onchange="applyFilter()"> XL (> 185cm)</label>
-          </div>
-        </div>
-
-        <!-- Wheel Size -->
-        <div class="filter-section">
-          <button class="filter-toggle" onclick="toggleSection(this)">
-            ຂະໜາດລໍ້ / Wheel
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body" id="sec-wheel">
-            <label class="filter-check"><input type="checkbox" name="wheel" value="26" onchange="applyFilter()"> 26"</label>
-            <label class="filter-check"><input type="checkbox" name="wheel" value="27.5" onchange="applyFilter()"> 27.5" (650b)</label>
-            <label class="filter-check"><input type="checkbox" name="wheel" value="29" onchange="applyFilter()"> 29"</label>
-            <label class="filter-check"><input type="checkbox" name="wheel" value="700c" onchange="applyFilter()"> 700c (Road)</label>
-            <label class="filter-check"><input type="checkbox" name="wheel" value="24" onchange="applyFilter()"> 24" (Kids)</label>
-            <label class="filter-check"><input type="checkbox" name="wheel" value="20" onchange="applyFilter()"> 20" (Kids/BMX)</label>
-          </div>
-        </div>
-
-        <!-- Condition (Used) -->
-        <div class="filter-section">
-          <button class="filter-toggle" onclick="toggleSection(this)">
-            ສະພາບ / Condition
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body">
-            <label class="filter-check"><input type="checkbox" name="cond" value="new" onchange="applyFilter()"> ໃໝ່ / New</label>
-            <label class="filter-check"><input type="checkbox" name="cond" value="used" onchange="applyFilter()"> ມືສອງ / Used</label>
-          </div>
-        </div>
-
-        <!-- Availability -->
-        <div class="filter-section">
-          <button class="filter-toggle" onclick="toggleSection(this)">
-            ສະຕ໋ອກ / Availability
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="filter-body">
-            <label class="filter-check"><input type="checkbox" name="avail" value="instock" onchange="applyFilter()"> ✓ ມີໃນສະຕ໋ອກ</label>
-            <label class="filter-check"><input type="checkbox" name="avail" value="sale" onchange="applyFilter()"> 🔥 ລາຄາ Sale</label>
-          </div>
-        </div>
-
-      </aside>
-
-      <!-- MAIN -->
-      <div class="catalogue-main">
-
-        <!-- Toolbar -->
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <!-- Mobile filter btn -->
-            <button class="mob-filter-btn" onclick="openMobFilter()">
-              <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-              ຕົວກອງ
-            </button>
-            <div class="result-count">ສະແດງ <strong id="countShown">0</strong> / <strong id="countTotal">0</strong> ລາຍການ</div>
-          </div>
-          <div class="toolbar-right">
-            <select class="sort-select" id="sortSelect" onchange="applyFilter()">
-              <option value="default">ຮຽງ: ແນະນຳ</option>
-              <option value="price-asc">ລາຄາ: ຕ່ຳ → ສູງ</option>
-              <option value="price-desc">ລາຄາ: ສູງ → ຕ່ຳ</option>
-              <option value="name-asc">ຊື່: A → Z</option>
-              <option value="newest">ໃໝ່ສຸດ</option>
-              <option value="discount">ສ່ວນຫຼຸດ ຫຼາຍສຸດ</option>
-            </select>
-            <div class="view-toggle">
-              <button class="view-btn active" id="gridBtn" onclick="setView('grid')" aria-label="Grid view">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-              </button>
-              <button class="view-btn" id="listBtn" onclick="setView('list')" aria-label="List view">
-                <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Category pills -->
-        <div style="margin-bottom:16px">
-          <div class="cat-pills" id="catPills">
-            <button class="cat-pill active" data-cat="all" onclick="setCat(this,'all')">ທັງໝົດ</button>
-            <button class="cat-pill" data-cat="road" onclick="setCat(this,'road')">Road</button>
-            <button class="cat-pill" data-cat="mountain" onclick="setCat(this,'mountain')">Mountain</button>
-            <button class="cat-pill" data-cat="city" onclick="setCat(this,'city')">City / Hybrid</button>
-            <button class="cat-pill" data-cat="kids" onclick="setCat(this,'kids')">Kids</button>
-            <button class="cat-pill" data-cat="bmx" onclick="setCat(this,'bmx')">BMX</button>
-            <button class="cat-pill" data-cat="used" onclick="setCat(this,'used')">ມືສອງ</button>
-            <button class="cat-pill" data-cat="sale" onclick="setCat(this,'sale')">🔥 Sale</button>
-          </div>
-        </div>
-
-        <!-- Product Grid -->
-        <div class="prod-grid" id="prodGrid" role="list"></div>
-
-        <!-- No Results -->
-        <div class="no-results" id="noResults" style="display:none">
-          <div class="no-results-icon">🔍</div>
-          <h3>ບໍ່ພົບສິນຄ້າ</h3>
-          <p>ລອງປ່ຽນ Filter ຫຼື ຄົ້ນຫາໃໝ່ຄ<br>Try adjusting your filters or search</p>
-          <button class="btn btn-primary" onclick="clearFilters()">ລ້າງ Filter ທັງໝົດ</button>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination" id="pagination"></div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
+<script src="layout.js"></script>
 <script>
-/* ════════════════════════════════════════
-   POS V2 API CONFIG
-════════════════════════════════════════ */
-const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
-const API_SECRET = 'open';
+const PAGE = 24;
+const params = new URLSearchParams(location.search);
+const state = { cats:new Set(), brands:new Set(), min:null, max:null, inStock:false, sale:params.get('sale')==='1', q:params.get('q')||'', sort:'rel', shown:PAGE };
+let ALL = [];
 
-function mapCategory(cat) {
-  if (!cat) return 'other';
-  const c = cat.toLowerCase();
-  if (c.includes('mountain') || c.includes('mtb')) return 'mountain';
-  if (c.includes('road')) return 'road';
-  if (c.includes('city') || c.includes('hybrid')) return 'city';
-  if (c.includes('kids') || c.includes('children')) return 'kids';
-  if (c.includes('used') || c.includes('second')) return 'used';
-  if (c.includes('bmx')) return 'bmx';
-  return 'other';
-}
-function mapStock(qty) {
-  if (qty <= 0) return 'out';
-  if (qty <= 2) return 'low';
-  return 'in';
-}
-function catIcon(cat) {
-  return {mountain:'🚵',road:'🚴',city:'🚲',kids:'🧒',bmx:'🛹',used:'🔄',other:'🚲'}[cat] || '🚲';
-}
-function mapProduct(p) {
-  const cat   = mapCategory(p.category || p.type || '');
-  const stock = mapStock(p.stock);
-  const isUsed = cat === 'used';
-  return {
-    id        : p.sku,
-    brand     : (p.name || '').split(' ')[0] || 'Sevenday',
-    name      : p.name || '',
-    cat       : cat,
-    price     : p.price_lak || Math.round((p.price_thb || 0) * 698),
-    price_thb : p.price_thb || 0,
-    price_usd : p.price_usd || 0,
-    icon      : catIcon(cat),
-    badge     : isUsed ? 'used' : null,
-    badgeClass: isUsed ? 'badge-used' : null,
-    stock     : stock,
-    sizes     : [],
-    cond      : isUsed ? 'used' : 'new',
-    sku       : p.sku,
-  };
-}
+// แผนที่ ?cat= จากเมนู → คำค้นในหมวดหมู่ POS
+const CAT_HINT = { bikes:'ຈັກ|จักร|bike', mtb:'mtb|mountain|ພູ|ภูเขา', road:'road|ຖະໜົນ|ถนน', kids:'kid|ເດັກ|เด็ก', ebike:'ไฟฟ้า|ໄຟຟ້າ|e-bike|ebike',
+  parts:'ອາໄຫຼ່|อะไหล่|part', accessories:'ອຸປະກອນ|อุปกรณ์|acc', helmet:'helmet|ໝວກ|หมวก', lights:'light|ໄຟ|ไฟ', locks:'lock|ລັອກ|ล็อค',
+  used:'used|ມືສອງ|มือสอง', tyre:'ຢາງ|ยาง|tyre|tire', brake:'ເບຣກ|เบรก|brake', chain:'ໂສ້|โซ่|chain', gear:'ເສື້ອ|เสื้อ|glove|ຖົງມື|ถุงมือ' };
+const catParam = params.get('cat');
 
-let ALL_PRODUCTS = [];
-
-async function loadProductsFromAPI() {
-  const grid    = document.getElementById('prodGrid');
-  const counter = document.getElementById('countTotal');
-  if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888">⏳ ກຳລັງໂຫຼດ ສິນຄ້າ ຈາກ POS V2...</div>';
-
-  try {
-    const url = API_URL + '?action=getProducts&secret=' + API_SECRET + '&limit=200';
-    const res  = await fetch(url);
-    const json = await res.json();
-    if (!json.ok) throw new Error(json.error || 'API error');
-
-    ALL_PRODUCTS       = (json.data.data || []).map(mapProduct);
-    state.products     = [...ALL_PRODUCTS];
-    state.filtered     = [...ALL_PRODUCTS];
-    if (counter) counter.textContent = json.data.meta ? json.data.meta.total : ALL_PRODUCTS.length;
-    applyFilter();
-
-  } catch(err) {
-    console.warn('API failed, using fallback:', err.message);
-    ALL_PRODUCTS   = FALLBACK_PRODUCTS;
-    state.products = [...ALL_PRODUCTS];
-    state.filtered = [...ALL_PRODUCTS];
-    if (grid) {
-      const note = document.createElement('div');
-      note.style.cssText = 'background:#FFF3E0;border:1px solid #FBBF24;border-radius:8px;padding:10px 14px;font-size:12px;color:#7A4A00;margin-bottom:12px;text-align:center;grid-column:1/-1';
-      note.textContent = '⚠ ກຳລັງໃຊ້ ຂໍ້ມູນ Offline — ກວດ connection ແລ້ວ refresh';
-      grid.parentNode.insertBefore(note, grid);
-    }
-    applyFilter();
+async function load(){
+  document.getElementById('grid').innerHTML = Array.from({length:8},()=>`<article class="card skeleton"><div class="card-img"></div><span class="card-name">.</span><div class="price">.</div></article>`).join('');
+  try{
+    const r = await fetch(`${API_URL}?action=getProducts&secret=${API_SECRET}&limit=1000`);
+    ALL = apiList(await r.json()).map(mapP).filter(p=>p.sku && !isService(p));
+  }catch(e){ console.warn(e); }
+  if(!ALL.length){ document.getElementById('grid').innerHTML=''; document.getElementById('count').textContent='ໂຫຼດສິນຄ້າບໍ່ໄດ້'; 
+    document.getElementById('more').innerHTML='<div class="empty"><b>ເຊື່ອມຕໍ່ລະບົບສະຕັອກບໍ່ໄດ້</b>ກວດອິນເຕີເນັດ ແລ້ວ <a href="" style="text-decoration:underline">ໂຫຼດໜ້າໃໝ່</a></div>'; return; }
+  window._catalog = ALL;
+  if(catParam && CAT_HINT[catParam]){
+    const re=new RegExp(CAT_HINT[catParam],'i');
+    [...new Set(ALL.map(p=>p.category))].filter(c=>re.test(c)).forEach(c=>state.cats.add(c));
+    const lbl = document.querySelector(`.nav a[href*="cat=${catParam}"]`)?.textContent || catParam;
+    document.getElementById('title').textContent = lbl; document.getElementById('crumbCat').textContent = lbl;
   }
+  if(state.q){ document.getElementById('title').textContent = `ຜົນຄົ້ນຫາ "${state.q}"`; document.getElementById('crumbCat').textContent='ຄົ້ນຫາ'; }
+  if(state.sale){ document.getElementById('fSale').checked=true; document.getElementById('title').textContent='Sale'; }
+  buildFacets(); render();
 }
 
-const FALLBACK_PRODUCTS = [
-  {id:'b01',brand:'Trek',name:'Marlin 5 Gen 3 MTB 2024',cat:'mountain',price:8900000,price_thb:12750,icon:'🚵',badge:null,stock:'in',sizes:['S','M','L'],cond:'new'},
-  {id:'b02',brand:'Giant',name:'Talon 3 Mountain Bike 2024',cat:'mountain',price:7800000,price_thb:11175,icon:'🏔️',badge:null,stock:'in',sizes:['S','M','L'],cond:'new'},
-  {id:'b03',brand:'Giant',name:'Contend AR 2 Road 2024',cat:'road',price:14500000,price_thb:20770,icon:'🚴',badge:null,stock:'in',sizes:['S','M','L'],cond:'new'},
-];
-
-/* ════════════════════════════════════════
-   STATE
-════════════════════════════════════════ */
-let state = {
-  cat: 'all',
-  view: 'grid',
-  sort: 'default',
-  page: 1,
-  perPage: 12,
-  products: [...ALL_PRODUCTS],
-  filtered: [...ALL_PRODUCTS],
-};
-const cart = [];
-const saved = new Set();
-
-/* ════════════════════════════════════════
-   FILTER + SORT
-════════════════════════════════════════ */
-function applyFilter() {
-  let data = [...ALL_PRODUCTS];
-
-  // Category pill
-  if (state.cat !== 'all') {
-    if (state.cat === 'sale') data = data.filter(p => p.badge === 'sale');
-    else data = data.filter(p => p.cat === state.cat);
-  }
-
-  // Checkbox filters
-  const cats   = checked('cat');
-  const brands = checked('brand');
-  const sizes  = checked('size');
-  const wheels = checked('wheel');
-  const conds  = checked('cond');
-  const avails = checked('avail');
-
-  if (cats.length)   data = data.filter(p => cats.includes(p.cat));
-  if (brands.length) data = data.filter(p => brands.includes(p.brand.toLowerCase()));
-  if (sizes.length)  data = data.filter(p => p.sizes && p.sizes.some(s => sizes.includes(s.toLowerCase())));
-  if (wheels.length) data = data.filter(p => wheels.includes(p.wheel));
-  if (conds.length)  data = data.filter(p => conds.includes(p.cond));
-  if (avails.includes('instock')) data = data.filter(p => p.stock === 'in' || p.stock === 'low');
-  if (avails.includes('sale'))    data = data.filter(p => p.badge === 'sale');
-
-  // Price
-  const minP = +document.getElementById('priceMin').value || 0;
-  const maxP = +document.getElementById('priceMax').value || 50000000;
-  data = data.filter(p => p.price >= minP && p.price <= maxP);
-
-  // Sort
-  const s = document.getElementById('sortSelect').value;
-  if (s === 'price-asc')  data.sort((a,b) => a.price - b.price);
-  if (s === 'price-desc') data.sort((a,b) => b.price - a.price);
-  if (s === 'name-asc')   data.sort((a,b) => a.name.localeCompare(b.name));
-  if (s === 'newest')     data.sort((a,b) => (b.badge==='new'?1:0)-(a.badge==='new'?1:0));
-  if (s === 'discount')   data.sort((a,b) => {
-    const da = a.was ? (1-a.price/a.was) : 0;
-    const db = b.was ? (1-b.price/b.was) : 0;
-    return db - da;
-  });
-
-  state.filtered = data;
-  state.page = 1;
-  renderGrid();
-  renderActiveTags();
+function countBy(key){ const m={}; ALL.forEach(p=>{ const k=p[key]||'ອື່ນໆ'; m[k]=(m[k]||0)+1; }); return Object.entries(m).sort((a,b)=>b[1]-a[1]); }
+function buildFacets(){
+  const cats=countBy('category'), brands=countBy('brand').slice(0,15);
+  document.getElementById('fCat').innerHTML = cats.map(([c,n])=>`<label><input type="checkbox" data-f="cats" value="${c}" ${state.cats.has(c)?'checked':''}> ${c}<span class="count">${n}</span></label>`).join('');
+  document.getElementById('fBrand').innerHTML = brands.map(([b,n])=>`<label><input type="checkbox" data-f="brands" value="${b}"> ${b}<span class="count">${n}</span></label>`).join('');
+  document.getElementById('chips').innerHTML = `<button class="${state.cats.size?'':'on'}" data-chip="">ທັງໝົດ</button>` + cats.slice(0,8).map(([c])=>`<button data-chip="${c}" class="${state.cats.size===1&&state.cats.has(c)?'on':''}">${c}</button>`).join('');
+  document.querySelectorAll('[data-f]').forEach(i=>i.onchange=()=>{ state[i.dataset.f][i.checked?'add':'delete'](i.value); state.shown=PAGE; render(); });
+  document.querySelectorAll('[data-chip]').forEach(b=>b.onclick=()=>{ state.cats.clear(); if(b.dataset.chip) state.cats.add(b.dataset.chip); syncChecks(); state.shown=PAGE; render(); });
 }
+function syncChecks(){ document.querySelectorAll('[data-f]').forEach(i=>i.checked=state[i.dataset.f].has(i.value)); document.querySelectorAll('[data-chip]').forEach(b=>b.classList.toggle('on', b.dataset.chip? (state.cats.size===1&&state.cats.has(b.dataset.chip)) : !state.cats.size)); }
+function toTHB(v){ if(v===''||v==null) return null; return currency==='THB'? +v : +v/THB_TO_LAK; }
 
-function checked(name) {
-  return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i => i.value);
+function filtered(){
+  const q=state.q.toLowerCase();
+  let list = ALL.filter(p =>
+    (!state.cats.size || state.cats.has(p.category)) &&
+    (!state.brands.size || state.brands.has(p.brand)) &&
+    (state.min==null || p.price>=state.min) && (state.max==null || p.price<=state.max) &&
+    (!state.inStock || p.stock>0) && (!state.sale || (p.was && p.was>p.price)) &&
+    (!q || (p.name+' '+p.sku+' '+p.category).toLowerCase().includes(q)));
+  const s={low:(a,b)=>a.price-b.price, high:(a,b)=>b.price-a.price, name:(a,b)=>a.name.localeCompare(b.name), stock:(a,b)=>b.stock-a.stock,
+    rel:(a,b)=>(b.stock>0)-(a.stock>0) || (!!b.image)-(!!a.image)}[state.sort];
+  return list.sort(s);
 }
-
-function clearFilters() {
-  document.querySelectorAll('.filter-sidebar input[type=checkbox]').forEach(c => c.checked = false);
-  document.getElementById('priceMin').value = 0;
-  document.getElementById('priceMax').value = 50000000;
-  document.getElementById('priceRange').value = 50000000;
-  document.getElementById('sortSelect').value = 'default';
-  state.cat = 'all';
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('.cat-pill[data-cat="all"]').classList.add('active');
-  applyFilter();
+function render(){
+  const list=filtered(), shown=list.slice(0,state.shown);
+  document.getElementById('count').textContent = `${list.length} ລາຍການ`;
+  document.getElementById('applyN').textContent = list.length;
+  document.querySelectorAll('.curLbl').forEach(e=>e.textContent=currency==='THB'?'฿':'₭');
+  document.getElementById('grid').innerHTML = shown.length ? shown.map(card).join('')
+    : `<div class="empty" style="grid-column:1/-1"><b>ບໍ່ພົບສິນຄ້າທີ່ກົງກັບຕົວກອງ</b>ລອງລຶບບາງຕົວກອງອອກ ຫຼື <button style="text-decoration:underline;font-weight:700" onclick="clearFilters()">ລ້າງຕົວກອງທັງໝົດ</button></div>`;
+  const pct = list.length? Math.round(shown.length/list.length*100):0;
+  document.getElementById('more').innerHTML = list.length>shown.length
+    ? `<small>ສະແດງ ${shown.length} ຈາກ ${list.length} ລາຍການ</small><div class="bar"><i style="width:${pct}%"></i></div><button class="btn btn-black" onclick="state.shown+=${PAGE};render()">ໂຫຼດເພີ່ມ</button>` : '';
+  const tags=[...state.cats].map(c=>['cats',c]).concat([...state.brands].map(b=>['brands',b]));
+  if(state.q) tags.push(['q',state.q]);
+  document.getElementById('tags').innerHTML = tags.map(([k,v])=>`<button onclick="removeTag('${k}','${v.replace(/'/g,"\\'")}')">${v} ✕</button>`).join('');
 }
+function removeTag(k,v){ if(k==='q'){ state.q=''; document.getElementById('q').value=''; } else state[k].delete(v); syncChecks(); render(); }
+function clearFilters(){ state.cats.clear(); state.brands.clear(); state.min=state.max=null; state.inStock=state.sale=false; state.q='';
+  ['pMin','pMax'].forEach(i=>document.getElementById(i).value=''); ['fInStock','fSale'].forEach(i=>document.getElementById(i).checked=false); syncChecks(); render(); }
+function openFilters(o){ document.getElementById('filters').classList.toggle('open',o); document.body.style.overflow=o?'hidden':''; }
 
-/* ════════════════════════════════════════
-   RENDER
-════════════════════════════════════════ */
-function renderGrid() {
-  const grid = document.getElementById('prodGrid');
-  const noRes = document.getElementById('noResults');
-  const start = (state.page - 1) * state.perPage;
-  const page  = state.filtered.slice(start, start + state.perPage);
-
-  document.getElementById('countShown').textContent = state.filtered.length;
-  document.getElementById('countTotal').textContent = ALL_PRODUCTS.length || '...';
-
-  if (!state.filtered.length) {
-    grid.innerHTML = '';
-    noRes.style.display = '';
-    document.getElementById('pagination').innerHTML = '';
-    return;
-  }
-  noRes.style.display = 'none';
-
-  grid.className = 'prod-grid' + (state.view === 'list' ? ' list-view' : '');
-  grid.innerHTML = page.map(p => prodCard(p)).join('');
-  renderPagination();
-}
-
-function LAK(n) { return '₭ ' + n.toLocaleString(); }
-
-function prodCard(p) {
-  const disc = p.was ? Math.round((1-p.price/p.was)*100) : 0;
-  const isWished = saved.has(p.id);
-  const isList = state.view === 'list';
-
-  if (isList) {
-    return `
-<article class="prod-card" role="listitem" tabindex="0" onclick="window.location='/product/${p.id}'" onkeydown="if(event.key==='Enter')window.location='/product/${p.id}'" aria-label="${p.brand} ${p.name}">
-  <div class="prod-img">
-    <div class="prod-img-icon" aria-hidden="true">${p.icon}</div>
-    ${p.badge?`<span class="prod-badge ${p.badgeClass}">${p.badge}</span>`:''}
-  </div>
-  <div class="prod-body" style="flex-direction:row;align-items:center;gap:16px">
-    <div style="flex:1">
-      <div class="prod-brand">${p.brand}</div>
-      <div class="prod-name" style="-webkit-line-clamp:1">${p.name}</div>
-      ${p.condition?`<div class="prod-cond">✓ ${p.condition}${p.note?' · '+p.note:''}</div>`:''}
-      <div class="prod-stock ${p.stock==='in'?'in-stock':p.stock==='low'?'low-stock':'no-stock'}">${p.stock==='in'?'✓ In Stock':p.stock==='low'?'⚠ ເຫຼືອໜ້ອຍ':'✗ ໝົດ'}</div>
-    </div>
-    <div style="flex-shrink:0;text-align:right">
-      <div class="prod-prices">
-        <span class="price-now">${LAK(p.price)}</span>
-        ${p.was?`<span class="price-was">${LAK(p.was)}</span>`:''}
-        ${disc?`<span class="price-save">-${disc}%</span>`:''}
-      </div>
-      <div class="prod-sub">${(p.price/20000).toFixed(0)} THB · ${(p.price/21000).toFixed(0)} USD</div>
-      <button class="prod-add" style="opacity:1;transform:none" onclick="event.stopPropagation();addCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price})">+ ໃສ່ກະຕ່າ</button>
-    </div>
-  </div>
-</article>`;
-  }
-
-  return `
-<article class="prod-card" role="listitem" tabindex="0" onclick="window.location='/product/${p.id}'" onkeydown="if(event.key==='Enter')window.location='/product/${p.id}'" aria-label="${p.brand} ${p.name}">
-  <div class="prod-img">
-    <div class="prod-img-icon" aria-hidden="true">${p.icon}</div>
-    ${p.badge?`<span class="prod-badge ${p.badgeClass}">${p.badge}</span>`:''}
-    <button class="prod-wish ${isWished?'saved':''}" id="w${p.id}" aria-label="Save ${p.name}" onclick="event.stopPropagation();toggleWish('${p.id}')">
-      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-    </button>
-  </div>
-  <div class="prod-body">
-    <div class="prod-brand">${p.brand}</div>
-    <h3 class="prod-name">${p.name}</h3>
-    ${p.condition?`<div class="prod-cond">✓ ${p.condition}${p.note?' · '+p.note:''}</div>`:''}
-    <div class="prod-prices">
-      <span class="price-now">${LAK(p.price)}</span>
-      ${p.was?`<span class="price-was">${LAK(p.was)}</span>`:''}
-      ${disc?`<span class="price-save">-${disc}%</span>`:''}
-    </div>
-    <div class="prod-sub">${(p.price/20000).toFixed(0)} THB · ${(p.price/21000).toFixed(0)} USD</div>
-    <div class="prod-stock ${p.stock==='in'?'in-stock':p.stock==='low'?'low-stock':'no-stock'}">${p.stock==='in'?'✓ In Stock':p.stock==='low'?'⚠ ເຫຼືອໜ້ອຍ':'✗ ໝົດ'}</div>
-    <button class="prod-add" onclick="event.stopPropagation();addCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price})">+ ໃສ່ກະຕ່າ</button>
-  </div>
-</article>`;
-}
-
-/* ── Pagination ── */
-function renderPagination() {
-  const total = Math.ceil(state.filtered.length / state.perPage);
-  if (total <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
-  const cur = state.page;
-  let html = '';
-  html += `<button class="page-btn${cur===1?' disabled':''}" onclick="goPage(${cur-1})" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>`;
-  for (let i=1;i<=total;i++) {
-    if (i===1||i===total||Math.abs(i-cur)<=1) {
-      html += `<button class="page-btn${i===cur?' active':''}" onclick="goPage(${i})" aria-label="Page ${i}">${i}</button>`;
-    } else if (Math.abs(i-cur)===2) {
-      html += `<span style="color:var(--ink-3);padding:0 4px">…</span>`;
-    }
-  }
-  html += `<button class="page-btn${cur===total?' disabled':''}" onclick="goPage(${cur+1})" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>`;
-  document.getElementById('pagination').innerHTML = html;
-}
-
-function goPage(n) {
-  const total = Math.ceil(state.filtered.length / state.perPage);
-  if (n<1||n>total) return;
-  state.page = n;
-  renderGrid();
-  document.querySelector('.catalogue-main').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-/* ── Active tags ── */
-function renderActiveTags() {
-  const tags = [];
-  document.querySelectorAll('.filter-sidebar input:checked').forEach(c => {
-    tags.push({label: c.parentElement.textContent.trim().split('\n')[0].trim(), name:c.name, value:c.value});
-  });
-  const el = document.getElementById('activeTags');
-  if (!tags.length) { el.innerHTML=''; return; }
-  el.innerHTML = tags.map(t=>`
-    <span class="active-filter-tag">${t.label}
-      <button onclick="removeFilter('${t.name}','${t.value}')" aria-label="Remove ${t.label}">×</button>
-    </span>`).join('');
-}
-
-function removeFilter(name, value) {
-  const el = document.querySelector(`input[name="${name}"][value="${value}"]`);
-  if (el) { el.checked=false; applyFilter(); }
-}
-
-/* ════════════════════════════════════════
-   UI CONTROLS
-════════════════════════════════════════ */
-function toggleSection(btn) {
-  btn.classList.toggle('open');
-  const body = btn.nextElementSibling;
-  body.classList.toggle('open');
-}
-
-function setCat(btn, cat) {
-  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  state.cat = cat;
-  applyFilter();
-  // Update breadcrumb
-  const labels = {all:'ຈັກຍານທັງໝົດ',road:'Road Bikes',mountain:'Mountain Bikes',city:'City / Hybrid',kids:'Kids Bikes',bmx:'BMX',used:'ມືສອງ',sale:'Sale'};
-  document.getElementById('bcCategory').textContent = labels[cat]||cat;
-}
-
-function setView(v) {
-  state.view = v;
-  document.getElementById('gridBtn').classList.toggle('active', v==='grid');
-  document.getElementById('listBtn').classList.toggle('active', v==='list');
-  renderGrid();
-}
-
-function openMobFilter() {
-  document.getElementById('filterSidebar').classList.add('mob-open');
-  document.getElementById('mobOverlay').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-function closeMobFilter() {
-  document.getElementById('filterSidebar').classList.remove('mob-open');
-  document.getElementById('mobOverlay').classList.remove('on');
-  document.body.style.overflow='';
-}
-document.getElementById('mobOverlay').addEventListener('click', closeMobFilter);
-
-/* ════════════════════════════════════════
-   CART
-════════════════════════════════════════ */
-function addCart(id, name, price) {
-  const ex = cart.find(i=>i.id===id);
-  ex ? ex.qty++ : cart.push({id,name,price,qty:1});
-  const count = cart.reduce((s,i)=>s+i.qty,0);
-  document.getElementById('cartCount').textContent = count;
-  // Simple toast
-  showToast(`✓ ເພີ່ມໃສ່ກະຕ່າ: ${name.substring(0,40)}`);
-}
-
-function toggleWish(id) {
-  const btn = document.getElementById('w'+id);
-  if (!btn) return;
-  if (saved.has(id)) { saved.delete(id); btn.classList.remove('saved'); }
-  else { saved.add(id); btn.classList.add('saved'); showToast('♥ ບັນທຶກໃນ Wishlist ແລ້ວ'); }
-}
-
-/* Toast notification */
-function showToast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;z-index:1000;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.opacity='1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(()=>t.style.opacity='0', 2500);
-}
-
-/* ════════════════════════════════════════
-   INIT — โหลดข้อมูลจาก POS V2
-════════════════════════════════════════ */
-let state = window.state || state;
-state.products = [];
-state.filtered = [];
-loadProductsFromAPI();
+document.getElementById('sort').onchange=e=>{ state.sort=e.target.value; render(); };
+document.getElementById('fInStock').onchange=e=>{ state.inStock=e.target.checked; render(); };
+document.getElementById('fSale').onchange=e=>{ state.sale=e.target.checked; render(); };
+['pMin','pMax'].forEach(id=>document.getElementById(id).oninput=()=>{ state.min=toTHB(document.getElementById('pMin').value); state.max=toTHB(document.getElementById('pMax').value); render(); });
+document.addEventListener('currencychange', render);
+load();
 </script>
 </body>
 </html>
