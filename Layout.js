@@ -8,6 +8,27 @@
 
 const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'open';
+
+/* ── ຂໍ້ມູນຮ້ານ: ແກ້ໄຂບ່ອນນີ້ບ່ອນດຽວ ທຸກໜ້າຈະປ່ຽນຕາມ ── */
+const SHOP = {
+  name: 'Sevenday Bike',
+  phone: '+856 20 XXXX XXXX',        // ← ໃສ່ເບີໂທຈິງ
+  whatsapp: '85620XXXXXXXX',          // ← ເບີ WhatsApp (ຕົວເລກລ້ວນ)
+  email: 'Lock.xayasing2021@gmail.com',
+  address: 'ບ້ານ ..., ເມືອງ ..., ນະຄອນຫຼວງວຽງຈັນ',  // ← ໃສ່ທີ່ຢູ່ຈິງ
+  mapUrl: 'https://maps.google.com/?q=Sevenday+Bike+Vientiane', // ← ລິ້ງ Google Maps ຂອງຮ້ານ
+  hours: 'ເປີດທຸກມື້ 09:00–18:00',
+  bank: 'BCEL One · ຊື່ບັນຊີ ... · ເລກບັນຊີ ...' // ← ຂໍ້ມູນໂອນເງິນ
+};
+
+/* POST ໄປ Apps Script: ໃຊ້ text/plain ເພື່ອບໍ່ໃຫ້ຕິດ CORS preflight */
+async function apiPost(action, data){
+  const r = await fetch(`${API_URL}?action=${action}&secret=${API_SECRET}`, { method:'POST', body: JSON.stringify({ action, secret: API_SECRET, ...data }) });
+  const j = await r.json();
+  if (j.ok === false) throw new Error(j.error || 'API error');
+  return j.data !== undefined ? j.data : j;
+}
+function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:'+SHOP.phone.replace(/\s/g,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length) el.textContent=SHOP[k]; }); }
 const THB_TO_LAK = 698;
 let currency = 'LAK';
 try{ currency = localStorage.getItem('sevenday_cur') || 'LAK'; }catch(_){}
@@ -67,5 +88,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ document.getElementById('accLink').href='account.html'; document.getElementById('accLabel').textContent=(u.name||'ບັນຊີ').split(' ')[0]; } }catch(_){}
   const q=new URLSearchParams(location.search).get('q'); if(q&&document.getElementById('q')) document.getElementById('q').value=q;
-  updateCartCount();
+  updateCartCount(); fillShop();
 });
