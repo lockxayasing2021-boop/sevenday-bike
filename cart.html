@@ -498,6 +498,20 @@ main.wrap{padding-top:8px}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+/* ── ຈຳຂໍ້ມູນສິນຄ້າໄວ້ໃນເບຣົາເຊີ 3 ນາທີ: ປ່ຽນໜ້າແລ້ວບໍ່ຕ້ອງລໍ API ໃໝ່ ── */
+(function(){
+  const _f = window.fetch.bind(window), TTL = 180000;
+  window.fetch = async function(url, opt){
+    const u = String(url);
+    if (!/action=getProducts/.test(u) || (opt && opt.method === 'POST')) return _f(url, opt);
+    const key = 'sd_api_' + u.replace(/^.*\?/, '');
+    try { const c = JSON.parse(sessionStorage.getItem(key) || 'null');
+      if (c && Date.now() - c.t < TTL) return new Response(c.body, { headers: { 'Content-Type': 'application/json' } }); } catch(_){}
+    const r = await _f(url, opt); const body = await r.clone().text();
+    try { if (r.ok && JSON.parse(body).ok === true) sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), body })); } catch(_){}
+    return r;
+  };
+})();
 /* Sevenday Bike — shared layout + helpers (header, nav, footer, cart, currency) */
 
 const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
