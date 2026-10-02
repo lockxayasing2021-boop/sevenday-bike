@@ -552,13 +552,14 @@ const API_SECRET = 'open';
 /* ── ຂໍ້ມູນຮ້ານ: ແກ້ໄຂບ່ອນນີ້ບ່ອນດຽວ ທຸກໜ້າຈະປ່ຽນຕາມ ── */
 const SHOP = {
   name: 'Sevenday Bike',
-  phone: '+856 20 XXXX XXXX',        // ← ໃສ່ເບີໂທຈິງ
-  whatsapp: '85620XXXXXXXX',          // ← ເບີ WhatsApp (ຕົວເລກລ້ວນ)
+  phone: '020 9884 4344',
+  whatsapp: '8562098844344',
   email: 'Lock.xayasing2021@gmail.com',
-  address: 'ບ້ານ ..., ເມືອງ ..., ນະຄອນຫຼວງວຽງຈັນ',  // ← ໃສ່ທີ່ຢູ່ຈິງ
-  mapUrl: 'https://maps.google.com/?q=Sevenday+Bike+Vientiane', // ← ລິ້ງ Google Maps ຂອງຮ້ານ
+  address: 'ບ້ານ ນາໄຊ, ເມືອງ ໄຊເສດຖາ, ນະຄອນຫຼວງວຽງຈັນ',
+  mapUrl: 'https://maps.app.goo.gl/NPF26zNDqQ4isNP28',
   hours: 'ເປີດທຸກມື້ 09:00–18:00',
-  bank: 'BCEL One · ຊື່ບັນຊີ ... · ເລກບັນຊີ ...' // ← ຂໍ້ມູນໂອນເງິນ
+  bank: 'BCEL One · KITTIPHAN XAYASING MR · 013120001235446001',
+  bankNo: '013120001235446001'
 };
 
 /* POST ໄປ Apps Script: ໃຊ້ text/plain ເພື່ອບໍ່ໃຫ້ຕິດ CORS preflight */
@@ -568,7 +569,7 @@ async function apiPost(action, data){
   if (j.ok === false) throw new Error(j.error || 'API error');
   return j.data !== undefined ? j.data : j;
 }
-function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:'+SHOP.phone.replace(/\s/g,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length) el.textContent=SHOP[k]; }); }
+function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:+856'+SHOP.phone.replace(/\s/g,'').replace(/^0/,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length) el.textContent=SHOP[k]; }); }
 const THB_TO_LAK = 698;
 let currency = 'LAK';
 try{ currency = localStorage.getItem('sevenday_cur') || 'LAK'; }catch(_){}
