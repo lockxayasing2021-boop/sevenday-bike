@@ -622,7 +622,7 @@ function render(){
   $('uPts').textContent=Number(data.points||0).toLocaleString();
   document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   const L=$('list');
-  if(tab==='orders') L.innerHTML = data.orders.length ? data.orders.slice().reverse().map(o=>`<div class="order"><div><b>${o.bill_id}</b><div class="meta">${d8(o.date)} · ${o.payment||''}</div></div><div class="amt">${fmt(o.total)}</div><div class="items">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(', ')}</div></div>`).join('')
+  if(tab==='orders') L.innerHTML = data.orders.length ? data.orders.slice().reverse().map(o=>`<div class="order"><div><b>${o.bill_id}</b>${o.status?`<span class="st ${o.status==='ສຳເລັດ'?'done':''}">${o.status}</span>`:''}<div class="meta">${d8(o.date)} · ${o.payment||''}</div></div><div class="amt">${fmt(o.total)}</div><div class="items">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(', ')}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີການສັ່ງຊື້</b><p>ຄຳສັ່ງຊື້ຈາກເວັບ ແລະ ທີ່ຮ້ານ ຈະສະແດງຢູ່ບ່ອນນີ້</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>`;
   if(tab==='repairs') L.innerHTML = data.repairs.length ? data.repairs.slice().reverse().map(r=>`<div class="order"><div><b>${r.bike||'ຈັກຍານ'}</b><span class="st ${/ສຳເລັດ|สำเร็จ|รับรถ|done|complete/i.test(r.status)?'done':''}">${r.status||'-'}</span><div class="meta">${r.job_id} · ${d8(r.date)}</div></div><div class="amt">${r.total?fmt(r.total):''}</div><div class="items">${r.symptoms||''}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີປະຫວັດການສ້ອມ</b><p>ຈອງຄິວອອນລາຍ ແລ້ວຕິດຕາມສະຖານະໄດ້ບ່ອນນີ້</p><a class="btn btn-black" href="service.html#book">ຈອງຄິວ Workshop</a></div>`;

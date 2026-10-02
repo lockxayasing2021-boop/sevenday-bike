@@ -1,1353 +1,217 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="light">
+<html lang="lo">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Admin — Sevenday Bike</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
-<style>
-:root {
-  --red:#000000;--red-h:#B52222;--red-lite:#FFF0F0;
-  --ink:#111;--ink-2:#444;--ink-3:#888;
-  --white:#FFF;--base:#F4F5F7;--border:#E0E0E0;--border-2:#CCC;
-  --lime:#2B2B2B;--lime-bg:#EFF5E0;
-  --blue:#1A6FBF;--blue-bg:#EBF3FF;
-  --orange:#E67E00;--orange-bg:#FFF3E0;
-  --purple:#6B3FA0;--purple-bg:#F3EBFF;
-  --sidebar:#1E2130;--sidebar-2:#252A3D;--sidebar-hover:#2D3348;
-  --sidebar-active:#000000;
-  --font-ui:'Inter',-apple-system,sans-serif;
-  --font-d:'Barlow Condensed','Inter',sans-serif;
-  --r:6px;--r-lg:10px;
-  --shadow:0 1px 4px rgba(0,0,0,.08);
-  --shadow-h:0 4px 20px rgba(0,0,0,.12);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-ui);background:var(--base);color:var(--ink);-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;font-family:inherit;border:none;background:none}
-input,select,textarea{font-family:inherit}
-
-/* ══════════════════════════════════════
-   LAYOUT
-══════════════════════════════════════ */
-.admin-layout{display:flex;height:100vh;overflow:hidden}
-
-/* ── SIDEBAR ── */
-.sidebar{
-  width:220px;flex-shrink:0;background:var(--sidebar);
-  display:flex;flex-direction:column;overflow-y:auto;
-  transition:width .2s;z-index:100;
-}
-.sidebar.collapsed{width:56px}
-.sidebar::-webkit-scrollbar{width:4px}
-.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
-
-.sidebar-logo{
-  display:flex;align-items:center;gap:10px;
-  padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.06);
-  flex-shrink:0;
-}
-.sidebar-logo-mark{
-  width:32px;height:32px;background:var(--red);border-radius:var(--r);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.sidebar-logo-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.sidebar-logo-text{overflow:hidden}
-.sidebar-logo-text .name{font-size:14px;font-weight:800;color:#fff;white-space:nowrap}
-.sidebar-logo-text .sub{font-size:10px;color:rgba(255,255,255,.4);white-space:nowrap}
-.sidebar.collapsed .sidebar-logo-text{display:none}
-
-.sidebar-section-label{
-  padding:12px 14px 4px;
-  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;
-}
-.sidebar.collapsed .sidebar-section-label{opacity:0}
-
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;
-  font-size:13px;font-weight:500;color:rgba(255,255,255,.65);
-  cursor:pointer;transition:all .14s;position:relative;
-  border-left:3px solid transparent;
-  white-space:nowrap;overflow:hidden;
-}
-.nav-item:hover{background:var(--sidebar-hover);color:#fff}
-.nav-item.active{background:rgba(0,0,0,.15);color:#fff;border-left-color:var(--red)}
-.nav-item svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.nav-item .badge{
-  margin-left:auto;background:var(--red);color:#fff;
-  font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;
-}
-.sidebar.collapsed .nav-item span,.sidebar.collapsed .nav-item .badge{display:none}
-.sidebar.collapsed .nav-item{padding:10px;justify-content:center}
-.sidebar.collapsed .nav-item svg{margin:0}
-
-.sidebar-footer{
-  margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.06);
-  flex-shrink:0;
-}
-.sidebar-user{display:flex;align-items:center;gap:10px}
-.su-avatar{width:32px;height:32px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.su-info{overflow:hidden}
-.su-name{font-size:12px;font-weight:600;color:#fff;white-space:nowrap}
-.su-role{font-size:10px;color:rgba(255,255,255,.4);white-space:nowrap}
-.sidebar.collapsed .su-info{display:none}
-
-/* ── MAIN ── */
-.admin-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-
-/* Top bar */
-.topbar{
-  background:var(--white);border-bottom:1px solid var(--border);
-  height:56px;display:flex;align-items:center;gap:12px;
-  padding:0 20px;flex-shrink:0;
-}
-.topbar-toggle{
-  width:32px;height:32px;border-radius:var(--r);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--ink-3);transition:background .12s;flex-shrink:0;
-}
-.topbar-toggle:hover{background:var(--base);color:var(--ink)}
-.topbar-toggle svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-.topbar-title{font-size:16px;font-weight:700;color:var(--ink)}
-.topbar-breadcrumb{font-size:12px;color:var(--ink-3);margin-left:4px}
-.topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
-.topbar-search{
-  height:34px;border:1.5px solid var(--border);border-radius:20px;
-  padding:0 14px 0 34px;font-size:13px;outline:none;
-  background:var(--base);width:200px;transition:all .15s;
-}
-.topbar-search:focus{border-color:var(--red);background:var(--white);width:240px}
-.topbar-search-wrap{position:relative;flex-shrink:0}
-.topbar-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:2}
-.topbar-icon-btn{
-  width:34px;height:34px;border-radius:var(--r);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--ink-3);background:var(--base);border:1px solid var(--border);
-  position:relative;transition:all .12s;
-}
-.topbar-icon-btn:hover{border-color:var(--red);color:var(--red)}
-.topbar-icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-.topbar-notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--white)}
-@media(max-width:640px){.topbar-search-wrap{display:none}}
-
-/* Content area */
-.content-area{flex:1;overflow-y:auto;padding:20px}
-.content-area::-webkit-scrollbar{width:6px}
-.content-area::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
-
-/* Page */
-.page{display:none}
-.page.active{display:block}
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
-.page-title{font-family:var(--font-d);font-size:28px;font-weight:900;text-transform:uppercase;color:var(--ink)}
-
-/* ══════════════════════════════════════
-   COMPONENTS
-══════════════════════════════════════ */
-
-/* Stat cards */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:480px){.stats-row{grid-template-columns:1fr 1fr}}
-
-.stat-card{
-  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:16px;display:flex;align-items:flex-start;gap:14px;
-  transition:box-shadow .14s;cursor:pointer;
-}
-.stat-card:hover{box-shadow:var(--shadow-h)}
-.stat-icon{
-  width:44px;height:44px;border-radius:var(--r-lg);
-  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
-}
-.stat-body{min-width:0}
-.stat-num{font-family:var(--font-d);font-size:28px;font-weight:900;line-height:1;color:var(--ink)}
-.stat-label{font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
-.stat-change{font-size:11px;font-weight:600;margin-top:4px}
-.stat-up{color:var(--lime)}.stat-down{color:var(--red)}.stat-same{color:var(--ink-3)}
-
-/* Cards */
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);background:var(--base)}
-.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
-.card-title span{font-size:16px}
-.card-body{padding:0}
-.card-body.padded{padding:16px}
-
-/* Grid 2 col */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
-
-/* Table */
-.data-table{width:100%;border-collapse:collapse;font-size:13px}
-.data-table th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;background:var(--base)}
-.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-.data-table tr:last-child td{border-bottom:none}
-.data-table tr:hover td{background:#FAFAFA}
-.data-table .actions{display:flex;gap:6px}
-.tbl-btn{
-  padding:5px 10px;border-radius:var(--r);font-size:11px;font-weight:700;
-  cursor:pointer;border:1px solid var(--border);background:var(--white);
-  color:var(--ink-2);transition:all .12s;white-space:nowrap;
-}
-.tbl-btn:hover{border-color:var(--red);color:var(--red)}
-.tbl-btn.danger:hover{border-color:var(--red);background:var(--red-lite);color:var(--red)}
-.tbl-btn.primary{background:var(--red);color:#fff;border-color:var(--red)}
-.tbl-btn.primary:hover{background:var(--red-h)}
-
-/* Status badges */
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
-.badge-green{background:var(--lime-bg);color:var(--lime)}
-.badge-red{background:var(--red-lite);color:var(--red)}
-.badge-blue{background:var(--blue-bg);color:var(--blue)}
-.badge-orange{background:var(--orange-bg);color:var(--orange)}
-.badge-grey{background:var(--base);color:var(--ink-3)}
-.badge-purple{background:var(--purple-bg);color:var(--purple)}
-
-/* Product image cell */
-.prod-cell{display:flex;align-items:center;gap:10px}
-.prod-thumb{width:40px;height:40px;background:var(--base);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--border)}
-.prod-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
-.prod-sku{font-size:11px;color:var(--ink-3)}
-
-/* Stock indicator */
-.stock-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;width:60px;flex-shrink:0}
-.stock-fill{height:100%;border-radius:2px}
-.stock-high .stock-fill{background:var(--lime)}
-.stock-med .stock-fill{background:var(--orange)}
-.stock-low .stock-fill{background:var(--red)}
-
-/* Form */
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.form-row.three{grid-template-columns:1fr 1fr 1fr}
-@media(max-width:600px){.form-row,.form-row.three{grid-template-columns:1fr}}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group.full{grid-column:1/-1}
-.form-label{font-size:11px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em}
-.form-input,.form-select,.form-textarea{
-  height:38px;border:1.5px solid var(--border);border-radius:var(--r);
-  padding:0 10px;font-size:13px;color:var(--ink);background:var(--white);
-  outline:none;transition:border-color .14s;width:100%;
-}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--red)}
-.form-input::placeholder,.form-textarea::placeholder{color:var(--ink-3)}
-.form-textarea{height:80px;padding:8px 10px;resize:vertical}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-weight:700;border-radius:var(--r);cursor:pointer;border:none;transition:all .14s;white-space:nowrap}
-.btn-red{background:var(--red);color:#fff;padding:8px 16px;font-size:13px}
-.btn-red:hover{background:var(--red-h)}
-.btn-outline{background:none;color:var(--ink-2);border:1.5px solid var(--border);padding:7px 14px;font-size:13px}
-.btn-outline:hover{border-color:var(--ink);color:var(--ink)}
-.btn-ghost{background:none;color:var(--ink-3);padding:7px 12px;font-size:13px}
-.btn-ghost:hover{background:var(--base);color:var(--ink)}
-.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-
-/* Tabs */
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px;overflow-x:auto}
-.tab{padding:9px 16px;font-size:13px;font-weight:600;color:var(--ink-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .14s,border-color .14s}
-.tab:hover{color:var(--ink)}
-.tab.active{color:var(--red);border-bottom-color:var(--red)}
-
-/* Toolbar */
-.toolbar{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--base);border-bottom:1px solid var(--border);flex-wrap:wrap}
-.toolbar-search{
-  height:34px;border:1.5px solid var(--border);border-radius:20px;
-  padding:0 12px;font-size:13px;outline:none;background:var(--white);
-  min-width:200px;transition:border-color .14s;
-}
-.toolbar-search:focus{border-color:var(--red)}
-.toolbar-search::placeholder{color:var(--ink-3)}
-.filter-select{
-  height:34px;border:1.5px solid var(--border);border-radius:var(--r);
-  padding:0 10px;font-size:12px;background:var(--white);outline:none;cursor:pointer;
-}
-.filter-select:focus{border-color:var(--red)}
-
-/* Chart placeholder */
-.chart-placeholder{
-  height:200px;background:var(--base);border-radius:var(--r);
-  display:flex;align-items:flex-end;gap:6px;padding:16px;
-}
-.chart-bar{flex:1;border-radius:4px 4px 0 0;min-height:8px;transition:opacity .14s;cursor:pointer;position:relative}
-.chart-bar:hover{opacity:.8}
-.chart-bar::after{
-  content:attr(data-val);
-  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
-  font-size:10px;font-weight:700;color:var(--ink-2);white-space:nowrap;
-}
-.chart-label{
-  position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
-  font-size:9px;color:var(--ink-3);white-space:nowrap;
-}
-.chart-wrap{position:relative;padding-bottom:20px;padding-top:24px;flex:1}
-
-/* Notification item */
-.notif-item{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:flex-start;cursor:pointer;transition:background .12s}
-.notif-item:last-child{border-bottom:none}
-.notif-item:hover{background:var(--base)}
-.notif-item.unread{background:rgba(0,0,0,.02)}
-.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
-.notif-dot.read{background:transparent}
-.notif-icon{width:34px;height:34px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.notif-content{flex:1;min-width:0}
-.notif-title{font-size:13px;font-weight:600;margin-bottom:2px}
-.notif-text{font-size:12px;color:var(--ink-3);line-height:1.4}
-.notif-time{font-size:11px;color:var(--ink-3);margin-top:3px}
-
-/* ── QUICK ACTIONS ── */
-.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-@media(max-width:640px){.quick-actions{grid-template-columns:repeat(2,1fr)}}
-.qa-btn{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  padding:14px 8px;background:var(--white);border:1.5px solid var(--border);
-  border-radius:var(--r-lg);cursor:pointer;transition:all .14s;text-align:center;
-}
-.qa-btn:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:var(--shadow-h)}
-.qa-icon{width:40px;height:40px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:20px}
-.qa-label{font-size:12px;font-weight:600;color:var(--ink-2)}
-
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal-box{background:var(--white);border-radius:var(--r-lg);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .2s}
-.modal-overlay.open .modal-box{transform:none}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
-.modal-head h3{font-size:15px;font-weight:700}
-.modal-close{color:var(--ink-3);font-size:22px;line-height:1;padding:2px 6px;border-radius:var(--r);transition:background .12s}
-.modal-close:hover{background:var(--base)}
-.modal-body{padding:20px}
-.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--r-lg);font-size:13px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;box-shadow:var(--shadow-h);transform:translateY(8px)}
-.toast.show{opacity:1;transform:none}
-.toast.success{background:var(--lime)}
-.toast.warning{background:var(--orange)}
-
-/* Responsive */
-@media(max-width:768px){
-  .sidebar{position:fixed;height:100vh;z-index:200;transform:translateX(-100%);transition:transform .2s}
-  .sidebar.mob-open{transform:none}
-  .mob-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;display:none}
-  .mob-overlay.on{display:block}
-}
-@media(max-width:480px){.content-area{padding:12px}}
-</style>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ກ່ອງອໍເດີອອນລາຍ — Sevenday Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style id="sevenday-mono">
-/* ທີມ ດຳ-ເທົາ-ຂາວ ໃຫ້ກົງກັບໜ້າເວັບ */
-:root{
-  --red:#000;--red-h:#2B2B2B;--red-lite:#F3F3F3;
-  --ink:#000;--ink-2:#2B2B2B;--ink-3:#6E6E6E;
-  --white:#FFF;--base:#F3F3F3;--border:#D4D4D4;--border-2:#BDBDBD;
-  --lime:#000;--lime-bg:#E6E6E6;
-  --blue:#2B2B2B;--blue-bg:#EDEDED;
-  --orange:#4A4A4A;--orange-bg:#F0F0F0;
-  --purple:#3A3A3A;--purple-bg:#EAEAEA;
-  --sidebar:#000;--sidebar-2:#141414;--sidebar-hover:#2B2B2B;--sidebar-active:#FFF;
-  --font-ui:'Archivo','Noto Sans Lao',system-ui,sans-serif;
-  --font-d:'Archivo','Noto Sans Lao',system-ui,sans-serif;
-  --r:0px;--r-lg:0px;
-  --shadow:none;--shadow-h:0 0 0 1px #000;
+<style>
+:root{--black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;--g1:#F3F3F3;--white:#fff;--font:'Archivo','Noto Sans Lao',system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid #000;outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;font-weight:700;font-size:14px;border:2px solid #000;background:#fff;text-decoration:none;white-space:nowrap}
+.btn.dark{background:#000;color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:#000}
+.login form{background:#fff;padding:36px;width:min(400px,100%)}
+.login .mark{width:46px;height:46px;background:#000;color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px;margin-bottom:18px}
+.login h1{font-size:26px;font-weight:900;letter-spacing:-.5px}
+.login p{color:var(--g6);margin:4px 0 22px}
+.login input{width:100%;height:50px;border:1px solid var(--g3);padding:0 14px;font:inherit;font-size:16px;margin-bottom:12px}
+.login input:focus{outline:none;border-color:#000;box-shadow:0 0 0 1px #000}
+.login .btn{width:100%;height:50px}
+.msg{background:var(--g1);border-left:4px solid #000;padding:10px 12px;font-size:14px;margin-bottom:12px}
+/* app */
+.top{background:#000;color:#fff;position:sticky;top:0;z-index:20}
+.top .in{max-width:1320px;margin:0 auto;padding:0 20px;height:62px;display:flex;align-items:center;gap:14px}
+.top .mark{width:36px;height:36px;background:#fff;color:#000;display:grid;place-items:center;font-weight:900}
+.top b{font-size:17px;font-weight:800}
+.top small{opacity:.6;font-size:12px;display:block;font-weight:500}
+.top .sp{flex:1}
+.top .btn{height:36px;background:transparent;color:#fff;border-color:#555}
+.wrap{max-width:1320px;margin:0 auto;padding:22px 20px 60px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:#fff;padding:18px;border:1px solid var(--g3);text-align:left;cursor:pointer}
+.stat.hot{background:#000;color:#fff;border-color:#000}
+.stat b{display:block;font-size:30px;font-weight:900;line-height:1.1}
+.stat span{font-size:13px;opacity:.75}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tabs{display:flex;background:#fff;border:1px solid var(--g3)}
+.tabs button{padding:10px 16px;font-weight:700;font-size:14px;border-right:1px solid var(--g3)}
+.tabs button:last-child{border-right:none}
+.tabs button.on{background:#000;color:#fff}
+.tabs i{font-style:normal;font-size:12px;margin-left:6px;opacity:.7}
+.bar select,.bar input{height:42px;border:1px solid var(--g3);padding:0 12px;font:inherit;background:#fff}
+.bar input{flex:1;min-width:180px}
+.layout{display:grid;grid-template-columns:1fr 440px;gap:16px;align-items:start}
+.list{background:#fff;border:1px solid var(--g3)}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--g1);cursor:pointer;text-align:left;width:100%}
+.row:hover{background:var(--g1)}
+.row.sel{background:var(--g1);box-shadow:inset 4px 0 0 #000}
+.row .ty{width:38px;height:38px;display:grid;place-items:center;background:var(--g1);font-size:18px}
+.row b{font-weight:800}
+.row .sub{font-size:13px;color:var(--g6);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46ch}
+.row .r{text-align:right}
+.row .amt{font-weight:800;display:block}
+.st{display:inline-block;font-size:12px;font-weight:800;padding:3px 8px;border:1px solid #000;white-space:nowrap}
+.st.new{background:#000;color:#fff}
+.st.done{background:var(--g3);border-color:var(--g3)}
+.st.cancel{color:var(--g6);border-color:var(--g3);text-decoration:line-through}
+.empty{padding:48px;text-align:center;color:var(--g6)}
+.detail{background:#fff;border:1px solid var(--g3);position:sticky;top:78px;max-height:calc(100vh - 96px);overflow:auto}
+.detail .hd{padding:18px 20px;border-bottom:1px solid var(--g3)}
+.detail .hd small{color:var(--g6)}
+.detail h2{font-size:22px;font-weight:900;letter-spacing:-.3px}
+.sec{padding:16px 20px;border-bottom:1px solid var(--g1)}
+.sec h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6);margin-bottom:8px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:14px}
+.kv dt{color:var(--g6)}
+.items{white-space:pre-line;font-size:14px;background:var(--g1);padding:12px}
+.total{display:flex;justify-content:space-between;font-weight:900;font-size:20px;margin-top:10px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.flow{display:flex;flex-direction:column;gap:6px}
+.flow button{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--g3);font-weight:700;text-align:left}
+.flow button.cur{background:#000;color:#fff;border-color:#000}
+.flow button.past{color:var(--g6)}
+.flow button.cancel{margin-top:6px;color:var(--g6)}
+textarea{width:100%;min-height:70px;border:1px solid var(--g3);padding:10px;font:inherit;resize:vertical}
+.pick{padding:56px 24px;text-align:center;color:var(--g6)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);background:#000;color:#fff;padding:12px 20px;font-weight:600;transition:transform .25s;z-index:50;visibility:hidden}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.back{display:none}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  .detail{position:fixed;inset:0;max-height:none;z-index:30;display:none}
+  .detail.open{display:block}
+  .back{display:inline-flex;margin-bottom:10px}
+  .stats{grid-template-columns:1fr 1fr}
+  .row .sub{max-width:24ch}
 }
-.sb-item.active,.nav-item.active,[class*="sidebar"] .active{color:#000!important;background:#fff!important}
 </style>
 </head>
 <body>
-
-<div class="mob-overlay" id="mobOverlay" onclick="closeMobSidebar()"></div>
-
-<div class="admin-layout">
-
-<!-- ══════════════════════════════════════
-     SIDEBAR
-══════════════════════════════════════ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-mark">
-      <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg>
-    </div>
-    <div class="sidebar-logo-text">
-      <div class="name">Sevenday</div>
-      <div class="sub">Admin Panel</div>
-    </div>
-  </div>
-
-  <div class="sidebar-section-label">หลัก / Main</div>
-  <div class="nav-item active" onclick="goPage('dashboard',this)">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-    <span>Dashboard</span>
-  </div>
-  <div class="nav-item" onclick="goPage('orders',this)">
-    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-    <span>Orders</span>
-    <span class="badge">3</span>
-  </div>
-  <div class="nav-item" onclick="goPage('products',this)">
-    <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5L10 7l4 4.5L18.5 17.5"/><path d="M10 7l6 0"/></svg>
-    <span>Products</span>
-  </div>
-  <div class="nav-item" onclick="goPage('inventory',this)">
-    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="4" height="18"/><rect x="10" y="3" width="4" height="18"/><rect x="18" y="3" width="4" height="18"/></svg>
-    <span>Inventory</span>
-  </div>
-  <div class="nav-item" onclick="goPage('customers',this)">
-    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-    <span>Customers</span>
-  </div>
-
-  <div class="sidebar-section-label">บริการ / Service</div>
-  <div class="nav-item" onclick="goPage('bookings',this)">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    <span>Service Bookings</span>
-    <span class="badge">5</span>
-  </div>
-  <div class="nav-item" onclick="goPage('service_jobs',this)">
-    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-    <span>Service Jobs</span>
-  </div>
-
-  <div class="sidebar-section-label">จัดการ / Manage</div>
-  <div class="nav-item" onclick="goPage('promotions',this)">
-    <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-    <span>Promotions</span>
-  </div>
-  <div class="nav-item" onclick="goPage('content',this)">
-    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    <span>Content / CMS</span>
-  </div>
-  <div class="nav-item" onclick="goPage('reports',this)">
-    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    <span>Reports</span>
-  </div>
-  <div class="nav-item" onclick="goPage('settings',this)">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-3M6 12H3M12 21v-3M12 6V3"/></svg>
-    <span>Settings</span>
-  </div>
-
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="su-avatar">A</div>
-      <div class="su-info">
-        <div class="su-name">Admin</div>
-        <div class="su-role">Sevenday Staff</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<!-- ══════════════════════════════════════
-     MAIN
-══════════════════════════════════════ -->
-<div class="admin-main">
-
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <button class="topbar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-    <div>
-      <div class="topbar-title" id="topbarTitle">Dashboard</div>
-    </div>
-    <div class="topbar-right">
-      <div class="topbar-search-wrap">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="topbar-search" type="search" placeholder="ค้นหา...">
-      </div>
-      <button class="topbar-icon-btn" onclick="showToast('🔔 ไม่มีการแจ้งเตือนใหม่')">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="topbar-notif-dot"></span>
-      </button>
-      <button class="topbar-icon-btn" onclick="showToast('👤 Profile Admin')">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
-      <a href="/" class="btn btn-outline" style="font-size:12px;padding:6px 12px">← หน้าเว็บ</a>
-    </div>
-  </div>
-
-  <!-- CONTENT AREA -->
-  <div class="content-area">
-
-    <!-- ══ DASHBOARD ══ -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <h1 class="page-title">Dashboard</h1>
-        <div style="display:flex;gap:8px">
-          <select class="filter-select" onchange="showToast('📅 ดูข้อมูล: '+this.value)">
-            <option>วันนี้</option><option>7 วันล่าสุด</option><option>30 วันล่าสุด</option><option>เดือนนี้</option>
-          </select>
-          <button class="btn btn-red" onclick="showToast('📊 Export Report')">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export
-          </button>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-card" onclick="goPage('orders',document.querySelector('[onclick*=orders]'))">
-          <div class="stat-icon" style="background:#FFF0F0">📦</div>
-          <div class="stat-body">
-            <div class="stat-num">24</div>
-            <div class="stat-label">Orders วันนี้</div>
-            <div class="stat-change stat-up">↑ 18% vs เมื่อวาน</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#EFF5E0">💰</div>
-          <div class="stat-body">
-            <div class="stat-num">₭ 42M</div>
-            <div class="stat-label">ยอดขายวันนี้</div>
-            <div class="stat-change stat-up">↑ 12% vs เมื่อวาน</div>
-          </div>
-        </div>
-        <div class="stat-card" onclick="goPage('bookings',document.querySelector('[onclick*=bookings]'))">
-          <div class="stat-icon" style="background:#EBF3FF">🔧</div>
-          <div class="stat-body">
-            <div class="stat-num">5</div>
-            <div class="stat-label">Bookings ใหม่</div>
-            <div class="stat-change stat-same">= เท่าเดิม</div>
-          </div>
-        </div>
-        <div class="stat-card" onclick="goPage('customers',document.querySelector('[onclick*=customers]'))">
-          <div class="stat-icon" style="background:#F3EBFF">👥</div>
-          <div class="stat-body">
-            <div class="stat-num">3</div>
-            <div class="stat-label">ลูกค้าใหม่</div>
-            <div class="stat-change stat-up">↑ 2 vs เมื่อวาน</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="quick-actions">
-        <div class="qa-btn" onclick="openModal('addProduct')">
-          <div class="qa-icon" style="background:var(--red-lite)">➕</div>
-          <div class="qa-label">เพิ่มสินค้า</div>
-        </div>
-        <div class="qa-btn" onclick="goPage('bookings',document.querySelector('[onclick*=bookings]'))">
-          <div class="qa-icon" style="background:var(--blue-bg)">📅</div>
-          <div class="qa-label">จัดการ Bookings</div>
-        </div>
-        <div class="qa-btn" onclick="goPage('inventory',document.querySelector('[onclick*=inventory]'))">
-          <div class="qa-icon" style="background:var(--orange-bg)">📦</div>
-          <div class="qa-label">เช็ค Stock</div>
-        </div>
-        <div class="qa-btn" onclick="openModal('addPromo')">
-          <div class="qa-icon" style="background:var(--purple-bg)">🎁</div>
-          <div class="qa-label">สร้างโปร</div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <!-- Sales Chart -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><span>📈</span> ยอดขาย 7 วัน (₭ ล้าน)</div>
-          </div>
-          <div class="card-body padded">
-            <div class="chart-placeholder" id="salesChart"></div>
-          </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><span>📦</span> Orders ล่าสุด</div>
-            <button class="tbl-btn" onclick="goPage('orders',document.querySelector('[onclick*=orders]'))">ดูทั้งหมด →</button>
-          </div>
-          <div class="card-body">
-            <table class="data-table" style="font-size:12px">
-              <thead><tr><th>Order</th><th>ลูกค้า</th><th>ยอด</th><th>สถานะ</th></tr></thead>
-              <tbody id="dashOrdersTbl"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <!-- Low stock -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><span>⚠️</span> Stock ใกล้หมด</div>
-            <button class="tbl-btn" onclick="goPage('inventory',document.querySelector('[onclick*=inventory]'))">จัดการ →</button>
-          </div>
-          <div class="card-body">
-            <table class="data-table" style="font-size:12px">
-              <thead><tr><th>สินค้า</th><th>Stock</th><th></th></tr></thead>
-              <tbody id="lowStockTbl"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Upcoming bookings -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><span>📅</span> Bookings วันนี้</div>
-            <button class="tbl-btn" onclick="goPage('bookings',document.querySelector('[onclick*=bookings]'))">ทั้งหมด →</button>
-          </div>
-          <div class="card-body" id="todayBookingsList"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ ORDERS ══ -->
-    <div class="page" id="page-orders">
-      <div class="page-header">
-        <h1 class="page-title">Orders</h1>
-        <button class="btn btn-red" onclick="showToast('📊 Export Orders')">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export
-        </button>
-      </div>
-      <div class="card">
-        <div class="tabs" style="padding:0 14px">
-          <div class="tab active" onclick="filterTab(this,'all')">ทั้งหมด (24)</div>
-          <div class="tab" onclick="filterTab(this,'pending')">รอดำเนินการ (3)</div>
-          <div class="tab" onclick="filterTab(this,'ready')">พร้อมรับ (8)</div>
-          <div class="tab" onclick="filterTab(this,'completed')">สำเร็จ (12)</div>
-          <div class="tab" onclick="filterTab(this,'cancelled')">ยกเลิก (1)</div>
-        </div>
-        <div class="toolbar">
-          <input class="toolbar-search" type="search" placeholder="ค้นหา Order ID, ชื่อลูกค้า..." oninput="filterTable(this.value,'ordersTable')">
-          <select class="filter-select"><option>ทุกช่องทาง</option><option>Click & Collect</option><option>จัดส่ง</option></select>
-          <select class="filter-select"><option>ทุกวัน</option><option>วันนี้</option><option>7 วัน</option></select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table" id="ordersTable">
-            <thead><tr><th><input type="checkbox" onchange="toggleAll(this,'ordersTable')"></th><th>Order ID</th><th>ลูกค้า</th><th>สินค้า</th><th>ยอด</th><th>ช่องทาง</th><th>วันที่</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
-            <tbody id="ordersTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ PRODUCTS ══ -->
-    <div class="page" id="page-products">
-      <div class="page-header">
-        <h1 class="page-title">Products</h1>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-outline" onclick="showToast('📥 Import CSV')">Import</button>
-          <button class="btn btn-red" onclick="openModal('addProduct')">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            เพิ่มสินค้า
-          </button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="tabs" style="padding:0 14px">
-          <div class="tab active" onclick="filterTab(this,'all')">ทั้งหมด</div>
-          <div class="tab" onclick="filterTab(this,'bikes')">Bikes</div>
-          <div class="tab" onclick="filterTab(this,'parts')">Parts</div>
-          <div class="tab" onclick="filterTab(this,'accessories')">Accessories</div>
-          <div class="tab" onclick="filterTab(this,'used')">Used</div>
-        </div>
-        <div class="toolbar">
-          <input class="toolbar-search" type="search" placeholder="ค้นหา ชื่อ, SKU, Barcode..." oninput="filterTable(this.value,'productsTable')">
-          <select class="filter-select"><option>ทุก Brand</option><option>Trek</option><option>Giant</option><option>Specialized</option><option>Merida</option></select>
-          <select class="filter-select"><option>ทุกสถานะ</option><option>Active</option><option>Draft</option><option>Out of Stock</option></select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table" id="productsTable">
-            <thead><tr><th><input type="checkbox"></th><th>สินค้า</th><th>SKU</th><th>ราคา (LAK)</th><th>Stock</th><th>Category</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
-            <tbody id="productsTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ INVENTORY ══ -->
-    <div class="page" id="page-inventory">
-      <div class="page-header">
-        <h1 class="page-title">Inventory</h1>
-        <button class="btn btn-red" onclick="openModal('adjustStock')">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          ปรับ Stock
-        </button>
-      </div>
-      <!-- Summary -->
-      <div class="stats-row" style="margin-bottom:16px">
-        <div class="stat-card"><div class="stat-icon" style="background:#EFF5E0">✅</div><div class="stat-body"><div class="stat-num">186</div><div class="stat-label">In Stock</div></div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:var(--orange-bg)">⚠️</div><div class="stat-body"><div class="stat-num">14</div><div class="stat-label">Low Stock</div></div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:var(--red-lite)">❌</div><div class="stat-body"><div class="stat-num">6</div><div class="stat-label">Out of Stock</div></div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:var(--blue-bg)">📦</div><div class="stat-body"><div class="stat-num">206</div><div class="stat-label">Total SKUs</div></div></div>
-      </div>
-      <div class="card">
-        <div class="toolbar">
-          <input class="toolbar-search" type="search" placeholder="ค้นหา SKU, ชื่อสินค้า...">
-          <select class="filter-select"><option>ทุกสถานะ</option><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
-          <select class="filter-select"><option>ทุก Category</option><option>Bikes</option><option>Parts</option><option>Accessories</option></select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead><tr><th>SKU</th><th>สินค้า</th><th>Category</th><th>Stock</th><th>Threshold</th><th>Location</th><th>อัพเดตล่าสุด</th><th>จัดการ</th></tr></thead>
-            <tbody id="inventoryTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ CUSTOMERS ══ -->
-    <div class="page" id="page-customers">
-      <div class="page-header">
-        <h1 class="page-title">Customers</h1>
-        <button class="btn btn-red" onclick="showToast('📊 Export Customers')">Export</button>
-      </div>
-      <div class="card">
-        <div class="toolbar">
-          <input class="toolbar-search" type="search" placeholder="ค้นหาชื่อ, เบอร์, email...">
-          <select class="filter-select"><option>ทุก Segment</option><option>VIP</option><option>Member</option><option>Guest</option></select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead><tr><th>ลูกค้า</th><th>ติดต่อ</th><th>Orders</th><th>ยอดรวม</th><th>ล่าสุด</th><th>Segment</th><th>จัดการ</th></tr></thead>
-            <tbody id="customersTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ BOOKINGS ══ -->
-    <div class="page" id="page-bookings">
-      <div class="page-header">
-        <h1 class="page-title">Service Bookings</h1>
-        <button class="btn btn-red" onclick="openModal('addBooking')">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Walk-in Booking
-        </button>
-      </div>
-      <!-- Calendar view strips -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-body padded">
-          <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--ink-2)">📅 Slots วันนี้ — <span id="todayDateLabel"></span></div>
-          <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px" id="slotStrip"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="tabs" style="padding:0 14px">
-          <div class="tab active" onclick="filterTab(this,'all')">ทั้งหมด</div>
-          <div class="tab" onclick="filterTab(this,'pending')">รอ Confirm (2)</div>
-          <div class="tab" onclick="filterTab(this,'confirmed')">Confirmed (5)</div>
-          <div class="tab" onclick="filterTab(this,'done')">เสร็จแล้ว</div>
-        </div>
-        <div class="toolbar">
-          <input class="toolbar-search" type="search" placeholder="ค้นหาชื่อ, เบอร์, Booking ID...">
-          <select class="filter-select"><option>ทุก Service</option><option>Basic</option><option>Standard</option><option>Ultimate</option><option>Repair</option></select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead><tr><th>Booking ID</th><th>ลูกค้า</th><th>Service</th><th>Bike</th><th>วัน/เวลา</th><th>ช่าง</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
-            <tbody id="bookingsTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ SERVICE JOBS ══ -->
-    <div class="page" id="page-service_jobs">
-      <div class="page-header">
-        <h1 class="page-title">Service Jobs</h1>
-      </div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>🔵</span> In Progress (3)</div></div>
-          <div class="card-body" id="jobsInProgress"></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>✅</span> เสร็จวันนี้ (2)</div></div>
-          <div class="card-body" id="jobsDone"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ PROMOTIONS ══ -->
-    <div class="page" id="page-promotions">
-      <div class="page-header">
-        <h1 class="page-title">Promotions</h1>
-        <button class="btn btn-red" onclick="openModal('addPromo')">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          สร้างโปร
-        </button>
-      </div>
-      <div class="card">
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead><tr><th>ชื่อโปร</th><th>Code</th><th>ประเภท</th><th>ส่วนลด</th><th>ใช้แล้ว</th><th>หมดอายุ</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
-            <tbody id="promoTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ CONTENT ══ -->
-    <div class="page" id="page-content">
-      <div class="page-header"><h1 class="page-title">Content / CMS</h1></div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>🏠</span> Homepage Sections</div></div>
-          <div class="card-body padded">
-            <div style="display:flex;flex-direction:column;gap:10px" id="cmsHomepage"></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>📢</span> ประกาศ / Announcement</div><button class="tbl-btn primary" onclick="showToast('✓ บันทึกประกาศ')">บันทึก</button></div>
-          <div class="card-body padded">
-            <div class="form-group" style="margin-bottom:12px">
-              <label class="form-label">ข้อความประกาศ (LO)</label>
-              <input class="form-input" value="ຄລິກ &amp; ຮັບທີ່ຮ້ານ · LAK · THB · USD · ເປີດ 7 ມື້">
-            </div>
-            <div class="form-group" style="margin-bottom:12px">
-              <label class="form-label">ข้อความประกาศ (EN)</label>
-              <input class="form-input" value="Click &amp; Collect · LAK · THB · USD · Open 7 days">
-            </div>
-            <div class="form-group">
-              <label class="form-label">สี Background</label>
-              <select class="form-select"><option>Dark (ดำ)</option><option>Red</option><option>Green</option></select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ REPORTS ══ -->
-    <div class="page" id="page-reports">
-      <div class="page-header"><h1 class="page-title">Reports</h1>
-        <div style="display:flex;gap:8px">
-          <select class="filter-select"><option>เดือนนี้</option><option>เดือนที่แล้ว</option><option>Q3 2024</option></select>
-          <button class="btn btn-red" onclick="showToast('📊 Export PDF')">Export PDF</button>
-        </div>
-      </div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-icon" style="background:#EFF5E0">💰</div><div class="stat-body"><div class="stat-num">₭ 1.2B</div><div class="stat-label">ยอดขายเดือนนี้</div><div class="stat-change stat-up">↑ 22% vs เดือนที่แล้ว</div></div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:var(--red-lite)">📦</div><div class="stat-body"><div class="stat-num">487</div><div class="stat-label">Orders รวม</div><div class="stat-change stat-up">↑ 15%</div></div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:var(--blue-bg)">🔧</div><div class="stat-body"><div class="stat-num">142</div><div class="stat-label">Service Jobs</div><div class="stat-change stat-up">↑ 8%</div></div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:var(--purple-bg)">👥</div><div class="stat-body"><div class="stat-num">68</div><div class="stat-label">ลูกค้าใหม่</div><div class="stat-change stat-same">= เท่าเดิม</div></div></div>
-      </div>
-      <div class="grid-2">
-        <div class="card"><div class="card-head"><div class="card-title"><span>📈</span> ยอดขายรายเดือน (₭ ล้าน)</div></div><div class="card-body padded"><div class="chart-placeholder" id="reportChart"></div></div></div>
-        <div class="card"><div class="card-head"><div class="card-title"><span>🚲</span> สินค้าขายดี</div></div>
-          <div class="card-body">
-            <table class="data-table"><thead><tr><th>#</th><th>สินค้า</th><th>จำนวน</th><th>ยอด</th></tr></thead>
-            <tbody id="topProductsTbl"></tbody></table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ SETTINGS ══ -->
-    <div class="page" id="page-settings">
-      <div class="page-header"><h1 class="page-title">Settings</h1></div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>🏪</span> ข้อมูลร้าน</div><button class="tbl-btn primary" onclick="showToast('✓ บันทึกแล้ว')">บันทึก</button></div>
-          <div class="card-body padded">
-            <div class="form-row"><div class="form-group"><label class="form-label">ชื่อร้าน</label><input class="form-input" value="Sevenday Bike"></div><div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="020 9884 4344"></div></div>
-            <div class="form-row"><div class="form-group"><label class="form-label">Email</label><input class="form-input" value="hello@sevendaybike.la"></div><div class="form-group"><label class="form-label">Website</label><input class="form-input" value="www.sevendaybike.la"></div></div>
-            <div class="form-group full" style="margin-top:4px"><label class="form-label">ที่อยู่</label><textarea class="form-textarea">ວຽງຈັນ, ສ.ປ.ປ. ລາວ</textarea></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>💱</span> สกุลเงิน & ภาษา</div><button class="tbl-btn primary" onclick="showToast('✓ บันทึกแล้ว')">บันทึก</button></div>
-          <div class="card-body padded">
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">สกุลเงินหลัก</label><select class="form-select"><option>LAK (₭ กีบ)</option><option>THB (฿ บาท)</option><option>USD ($ ดอลลาร์)</option></select></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">อัตราแลกเปลี่ยน LAK → THB</label><input class="form-input" value="1 THB = 555 LAK"></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">อัตราแลกเปลี่ยน LAK → USD</label><input class="form-input" value="1 USD = 21,000 LAK"></div>
-            <div class="form-group"><label class="form-label">ภาษาเริ่มต้น</label><select class="form-select"><option>ลาว (LO)</option><option>English (EN)</option></select></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>🔗</span> API Integration (POS)</div></div>
-          <div class="card-body padded">
-            <div style="font-size:12px;color:var(--ink-3);margin-bottom:14px;line-height:1.65">เชื่อมต่อกับ Sevenday POS และ Inventory System ผ่าน REST API</div>
-            <div class="form-group" style="margin-bottom:10px"><label class="form-label">POS API Endpoint</label><input class="form-input" value="https://pos.sevendaybike.la/api/v1" placeholder="https://..."></div>
-            <div class="form-group" style="margin-bottom:10px"><label class="form-label">API Key</label><input class="form-input" type="password" value="sk_live_xxxxxxxxxxxx"></div>
-            <div style="display:flex;gap:8px;margin-top:4px">
-              <button class="btn btn-outline" onclick="showToast('🔌 กำลังทดสอบ API...')">ทดสอบ Connection</button>
-              <button class="btn btn-red" onclick="showToast('✓ บันทึก API Settings')">บันทึก</button>
-            </div>
-            <div style="margin-top:14px;padding:10px 12px;background:var(--lime-bg);border-radius:var(--r);font-size:12px;color:var(--lime);display:flex;align-items:center;gap:8px">
-              <span>✓</span> พร้อม Sync กับ Sevenday POS
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><span>👤</span> Staff Accounts</div><button class="tbl-btn primary" onclick="showToast('+ เพิ่ม Staff')">+ เพิ่ม</button></div>
-          <div class="card-body">
-            <table class="data-table" style="font-size:12px">
-              <thead><tr><th>ชื่อ</th><th>Role</th><th>สถานะ</th><th></th></tr></thead>
-              <tbody>
-                <tr><td>Admin (ผู้ดูแล)</td><td><span class="badge badge-red">Super Admin</span></td><td><span class="badge badge-green">Active</span></td><td><button class="tbl-btn" onclick="showToast('✏ แก้ไข Admin')">แก้ไข</button></td></tr>
-                <tr><td>ບຸນມີ ສ.</td><td><span class="badge badge-blue">Mechanic</span></td><td><span class="badge badge-green">Active</span></td><td><button class="tbl-btn" onclick="showToast('✏ แก้ไข')">แก้ไข</button></td></tr>
-                <tr><td>ມາລີ ພ.</td><td><span class="badge badge-orange">Manager</span></td><td><span class="badge badge-green">Active</span></td><td><button class="tbl-btn" onclick="showToast('✏ แก้ไข')">แก้ไข</button></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content-area -->
-</div><!-- /admin-main -->
-</div><!-- /admin-layout -->
-
-<!-- ══════════════════════════════════════
-     MODALS
-══════════════════════════════════════ -->
-
-<!-- Add Product -->
-<div class="modal-overlay" id="modal-addProduct">
-  <div class="modal-box">
-    <div class="modal-head"><h3>➕ เพิ่มสินค้าใหม่</h3><button class="modal-close" onclick="closeModal('addProduct')">×</button></div>
-    <div class="modal-body">
-      <div class="form-row"><div class="form-group"><label class="form-label">Brand <span style="color:var(--red)">*</span></label><select class="form-select"><option>Trek</option><option>Giant</option><option>Specialized</option><option>Merida</option><option>Polygon</option></select></div><div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Bikes</option><option>Parts</option><option>Accessories</option><option>Helmets</option><option>Clothing</option></select></div></div>
-      <div class="form-row"><div class="form-group full"><label class="form-label">ชื่อสินค้า (LO) <span style="color:var(--red)">*</span></label><input class="form-input" placeholder="ຊື່ສິນຄ້າ ພາສາລາວ"></div></div>
-      <div class="form-row"><div class="form-group full"><label class="form-label">ชื่อสินค้า (EN)</label><input class="form-input" placeholder="Product name in English"></div></div>
-      <div class="form-row three">
-        <div class="form-group"><label class="form-label">ราคา LAK <span style="color:var(--red)">*</span></label><input class="form-input" type="number" placeholder="0"></div>
-        <div class="form-group"><label class="form-label">SKU</label><input class="form-input" placeholder="AUTO"></div>
-        <div class="form-group"><label class="form-label">Stock เริ่มต้น</label><input class="form-input" type="number" placeholder="0"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">สถานะ</label><select class="form-select"><option>Active</option><option>Draft</option></select></div>
-        <div class="form-group"><label class="form-label">ประเภท</label><select class="form-select"><option>สินค้าใหม่</option><option>มือสอง</option></select></div>
-      </div>
-      <div class="form-group" style="margin-top:4px"><label class="form-label">รายละเอียด</label><textarea class="form-textarea" placeholder="รายละเอียดสินค้า..."></textarea></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('addProduct')">ยกเลิก</button>
-      <button class="btn btn-red" onclick="saveProduct()">✓ บันทึกสินค้า</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Promo -->
-<div class="modal-overlay" id="modal-addPromo">
-  <div class="modal-box">
-    <div class="modal-head"><h3>🎁 สร้าง Promotion</h3><button class="modal-close" onclick="closeModal('addPromo')">×</button></div>
-    <div class="modal-body">
-      <div class="form-row"><div class="form-group"><label class="form-label">ชื่อโปร <span style="color:var(--red)">*</span></label><input class="form-input" placeholder="ชื่อ Promotion"></div><div class="form-group"><label class="form-label">Coupon Code</label><input class="form-input" placeholder="SEVENDAY10" style="text-transform:uppercase"></div></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">ประเภทส่วนลด</label><select class="form-select"><option>% Percentage</option><option>Fixed Amount (LAK)</option><option>Free Service</option></select></div>
-        <div class="form-group"><label class="form-label">ส่วนลด</label><input class="form-input" type="number" placeholder="10"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">วันเริ่ม</label><input class="form-input" type="date"></div>
-        <div class="form-group"><label class="form-label">วันหมดอายุ</label><input class="form-input" type="date"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">ใช้ได้สูงสุด (ครั้ง)</label><input class="form-input" type="number" placeholder="ไม่จำกัด"></div>
-        <div class="form-group"><label class="form-label">ยอดขั้นต่ำ (LAK)</label><input class="form-input" type="number" placeholder="0"></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('addPromo')">ยกเลิก</button>
-      <button class="btn btn-red" onclick="savePromo()">✓ บันทึก Promotion</button>
-    </div>
-  </div>
-</div>
-
-<!-- Adjust Stock -->
-<div class="modal-overlay" id="modal-adjustStock">
-  <div class="modal-box">
-    <div class="modal-head"><h3>📦 ปรับ Stock</h3><button class="modal-close" onclick="closeModal('adjustStock')">×</button></div>
-    <div class="modal-body">
-      <div class="form-group" style="margin-bottom:12px"><label class="form-label">สินค้า</label><select class="form-select"><option>Trek Marlin 5 Gen 3 — M</option><option>Giant Talon 3</option><option>Giro Fixture MIPS Helmet</option></select></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">ประเภทการปรับ</label><select class="form-select"><option>รับสินค้าเข้า (+)</option><option>ตัดสินค้าออก (-)</option><option>ตั้งค่าใหม่ (=)</option></select></div>
-        <div class="form-group"><label class="form-label">จำนวน</label><input class="form-input" type="number" placeholder="0"></div>
-      </div>
-      <div class="form-group"><label class="form-label">หมายเหตุ</label><textarea class="form-textarea" placeholder="เหตุผลการปรับ Stock..."></textarea></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('adjustStock')">ยกเลิก</button>
-      <button class="btn btn-red" onclick="showToast('✓ ปรับ Stock แล้ว');closeModal('adjustStock')">✓ ปรับ Stock</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
+<div id="app"></div>
+<div class="toast" id="toast" role="status"></div>
 <script>
-/* ══════════════════════════════════════
-   DATA
-══════════════════════════════════════ */
-const LAK = n => '₭ ' + n.toLocaleString();
+const API_URL='https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec', API_SECRET='open', THB_TO_LAK=698;
+const SHOP_NAME='Sevenday Bike';
+const FLOW={
+  order:['ໃໝ່','ຢືນຢັນແລ້ວ','ຊຳລະແລ້ວ','ພ້ອມຮັບ','ສຳເລັດ'],
+  booking:['ໃໝ່','ຢືນຢັນແລ້ວ','ກຳລັງສ້ອມ','ສຳເລັດ'],
+  film:['ໃໝ່','ສົ່ງລາຄາແລ້ວ','ຢືນຢັນແລ້ວ','ກຳລັງຕິດຟິມ','ສຳເລັດ']
+};
+const TYPE={order:['🛒','ຄຳສັ່ງຊື້'],booking:['🔧','ຈອງ Workshop'],film:['🎨','Film']};
+const $=id=>document.getElementById(id);
+let token=sessionStorage.getItem('sd_admin')||'', items=[], tab='all', stFilter='open', q='', sel=null, lastNew=-1;
 
-const ORDERS_DATA = [
-  {id:'SD-2024-1042',cust:'ສົມຈິດ ພ.',items:'Trek Marlin 5 + Shimano Brake',total:10750000,method:'Click & Collect',date:'15 ກ.ຍ.',status:'ready',statusClass:'badge-green',statusLabel:'✓ ພ້ອມ'},
-  {id:'SD-2024-1041',cust:'Phongsavanh K.',items:'Giant Contend AR 2',total:14500000,method:'Click & Collect',date:'15 ກ.ຍ.',status:'pending',statusClass:'badge-orange',statusLabel:'⏳ ກຳລັງກຽມ'},
-  {id:'SD-2024-1040',cust:'ມາລີ ວ.',items:'Giro Helmet + Light',total:1630000,method:'Click & Collect',date:'14 ກ.ຍ.',status:'completed',statusClass:'badge-grey',statusLabel:'✓ ສຳເລັດ'},
-  {id:'SD-2024-1039',cust:'ສີ ທ.',items:'Shimano Deore Group',total:8500000,method:'จัดส่ง',date:'14 ກ.ຍ.',status:'pending',statusClass:'badge-orange',statusLabel:'⏳ รอชำระ'},
-  {id:'SD-2024-1038',cust:'Nam P.',items:'Trek FX 3 Disc',total:12900000,method:'Click & Collect',date:'13 ກ.ຍ.',status:'ready',statusClass:'badge-green',statusLabel:'✓ ພ້ອມ'},
-];
-
-const PRODUCTS_DATA = [
-  {icon:'🚵',name:'Trek Marlin 5 Gen 3 MTB 2024',sku:'TRK-MAR5-G3',price:8900000,stock:4,total:10,cat:'Bikes',status:'active'},
-  {icon:'🚴',name:'Giant Contend AR 2 Road Bike',sku:'GNT-CON-AR2',price:14500000,stock:2,total:5,cat:'Bikes',status:'active'},
-  {icon:'🏔️',name:'Specialized Rockhopper Sport 29',sku:'SPZ-RHS-29',price:15800000,stock:0,total:3,cat:'Bikes',status:'active'},
-  {icon:'⛑️',name:'Giro Fixture MIPS Helmet 2024',sku:'GIR-FIX-M',price:1150000,stock:8,total:15,cat:'Accessories',status:'active'},
-  {icon:'⚙️',name:'Shimano Deore M6100 Brake',sku:'SHI-DER-M61',price:1850000,stock:12,total:20,cat:'Parts',status:'active'},
-  {icon:'🔒',name:'Kryptonite Mini U-Lock',sku:'KRY-MIN-6',price:950000,stock:1,total:10,cat:'Accessories',status:'active'},
-];
-
-const INVENTORY_DATA = [
-  {sku:'TRK-MAR5-G3',name:'Trek Marlin 5 Gen 3 MTB',cat:'Bikes',stock:4,thresh:3,location:'A-01',updated:'15 ก.ย.'},
-  {sku:'GNT-CON-AR2',name:'Giant Contend AR 2',cat:'Bikes',stock:2,thresh:3,location:'A-02',updated:'14 ก.ย.'},
-  {sku:'SPZ-RHS-29',name:'Specialized Rockhopper 29',cat:'Bikes',stock:0,thresh:2,location:'A-03',updated:'13 ก.ย.'},
-  {sku:'GIR-FIX-M',name:'Giro Fixture MIPS Helmet',cat:'Accessories',stock:8,thresh:5,location:'C-01',updated:'15 ก.ย.'},
-  {sku:'SHI-DER-M61',name:'Shimano Deore Brake Set',cat:'Parts',stock:12,thresh:5,location:'B-03',updated:'12 ก.ย.'},
-  {sku:'KRY-MIN-6',name:'Kryptonite Mini U-Lock',cat:'Accessories',stock:1,thresh:5,location:'C-05',updated:'10 ก.ย.'},
-];
-
-const CUSTOMERS_DATA = [
-  {name:'ສົມຈິດ ພ.',contact:'020 5555 1234',orders:5,total:22900000,last:'15 ก.ย.',seg:'VIP'},
-  {name:'Phongsavanh K.',contact:'020 6666 2345',orders:3,total:18500000,last:'14 ก.ย.',seg:'Member'},
-  {name:'ມາລີ ວ.',contact:'020 7777 3456',orders:2,total:3260000,last:'13 ก.ย.',seg:'Member'},
-  {name:'Nam P.',contact:'020 8888 4567',orders:1,total:12900000,last:'13 ก.ย.',seg:'Guest'},
-];
-
-const BOOKINGS_DATA = [
-  {id:'SVC-2024-088',cust:'ສົມຈິດ ພ.',service:'Standard Service',bike:'Trek Marlin 5',slot:'18 ก.ย. 09:00',tech:'ບຸນມີ',status:'confirmed',statusClass:'badge-blue',statusLabel:'✓ Confirmed'},
-  {id:'SVC-2024-087',cust:'Phong K.',service:'Basic Service',bike:'Giant Talon 3',slot:'18 ก.ย. 10:00',tech:'ສີ ວ.',status:'pending',statusClass:'badge-orange',statusLabel:'⏳ รอ Confirm'},
-  {id:'SVC-2024-086',cust:'ມາລີ ວ.',service:'Ultimate Service',bike:'Specialized Allez',slot:'19 ก.ย. 09:00',tech:'ບຸນມີ',status:'confirmed',statusClass:'badge-blue',statusLabel:'✓ Confirmed'},
-  {id:'SVC-2024-085',cust:'Nam P.',service:'Repair',bike:'Trek FX 3',slot:'19 ก.ย. 14:00',tech:'ສີ ວ.',status:'pending',statusClass:'badge-orange',statusLabel:'⏳ รอ Confirm'},
-];
-
-const PROMOS_DATA = [
-  {name:'Welcome 5% Off',code:'WELCOME5',type:'%',discount:'5%',used:12,exp:'31 ต.ค.',status:'active'},
-  {name:'Sevenday 10',code:'SEVENDAY10',type:'%',discount:'10%',used:45,exp:'31 ธ.ค.',status:'active'},
-  {name:'Bike 15',code:'BIKE15',type:'%',discount:'15%',used:8,exp:'30 ก.ย.',status:'expired'},
-];
-
-const SALES_WEEKLY = [18,32,24,41,28,35,42];
-const SALES_MONTHLY = [120,145,98,180,165,140,190,155,200,175,140,220];
-const DAYS_SHORT = ['จ','อ','พ','พฤ','ศ','ส','อา'];
-const MONTHS_SHORT = ['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย','ก.ค','ส.ค','ก.ย','ต.ค','พ.ย','ธ.ค'];
-
-/* ══════════════════════════════════════
-   RENDER
-══════════════════════════════════════ */
-function init() {
-  renderDashboard();
-  renderOrdersTable();
-  renderProductsTable();
-  renderInventoryTable();
-  renderCustomersTable();
-  renderBookingsTable();
-  renderServiceJobs();
-  renderPromosTable();
-  renderCMS();
-  renderReports();
-  buildSlotStrip();
-  document.getElementById('todayDateLabel').textContent = new Date().toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long'});
+async function post(action,data){
+  const r=await fetch(`${API_URL}?action=${action}&secret=${API_SECRET}`,{method:'POST',body:JSON.stringify({action,secret:API_SECRET,token,...data})});
+  const j=await r.json(); if(j.ok===false) throw new Error(j.error||'API error'); return j.data;
 }
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600); }
+const money=t=>'₭'+Math.round(t*THB_TO_LAK).toLocaleString()+'  ·  ฿'+Math.round(t).toLocaleString();
+const when=d=>{ const x=new Date(d); return isNaN(x)?'':x.toLocaleString('lo-LA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+const ago=d=>{ const m=Math.round((Date.now()-new Date(d))/60000); return m<1?'ຫາກໍ່':m<60?m+' ນາທີກ່ອນ':m<1440?Math.round(m/60)+' ຊມ. ກ່ອນ':Math.round(m/1440)+' ມື້ກ່ອນ'; };
+const stCls=s=>s==='ໃໝ່'?'new':s==='ສຳເລັດ'?'done':s==='ຍົກເລີກ'?'cancel':'';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const wa=(phone,text)=>{ let p=String(phone).replace(/\D/g,''); if(p.startsWith('0')) p='856'+p.slice(1); else if(!p.startsWith('856')) p='856'+p; return `https://wa.me/${p}?text=${encodeURIComponent(text)}`; };
 
-function renderDashboard() {
-  // Recent orders
-  document.getElementById('dashOrdersTbl').innerHTML = ORDERS_DATA.slice(0,4).map(o=>`
-    <tr><td><strong style="color:var(--red);font-size:12px">${o.id}</strong></td><td style="font-size:12px">${o.cust}</td><td style="font-size:12px;white-space:nowrap">${LAK(o.total)}</td><td><span class="badge ${o.statusClass}" style="font-size:9px">${o.statusLabel}</span></td></tr>`).join('');
-  // Low stock
-  document.getElementById('lowStockTbl').innerHTML = INVENTORY_DATA.filter(i=>i.stock<=i.thresh).map(i=>`
-    <tr>
-      <td style="font-size:12px"><div style="font-weight:600">${i.name.substring(0,28)}</div><div style="color:var(--ink-3);font-size:10px">${i.sku}</div></td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="stock-bar ${i.stock===0?'stock-low':i.stock<=i.thresh?'stock-med':'stock-high'}"><div class="stock-fill" style="width:${i.stock===0?0:Math.min(100,i.stock/i.thresh*100)}%"></div></div>
-          <span style="font-size:12px;font-weight:700;color:${i.stock===0?'var(--red)':'var(--orange)'}">${i.stock}</span>
-        </div>
-      </td>
-      <td><button class="tbl-btn" onclick="openModal('adjustStock')">ปรับ</button></td>
-    </tr>`).join('');
-  // Today bookings
-  document.getElementById('todayBookingsList').innerHTML = BOOKINGS_DATA.slice(0,3).map(b=>`
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border)">
-      <div style="width:48px;height:48px;background:var(--base);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink-3);flex-shrink:0;text-align:center;line-height:1.2">${b.slot.split(' ')[1]}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600">${b.cust}</div>
-        <div style="font-size:11px;color:var(--ink-3)">${b.service} · ${b.bike}</div>
-      </div>
-      <span class="badge ${b.statusClass}" style="font-size:9px">${b.statusLabel}</span>
-    </div>`).join('');
-  // Chart
-  buildChart('salesChart', SALES_WEEKLY, DAYS_SHORT, '#000000');
+/* ── Login ── */
+function showLogin(err){
+  $('app').innerHTML=`<div class="login"><form id="lf"><div class="mark">7</div><h1>ກ່ອງອໍເດີອອນລາຍ</h1><p>ສຳລັບພະນັກງານ Sevenday ເທົ່ານັ້ນ</p>
+    ${err?`<div class="msg">${esc(err)}</div>`:''}<input type="password" id="pw" placeholder="ລະຫັດຜ່ານແອັດມິນ" autocomplete="current-password" required autofocus>
+    <button class="btn dark" id="lb">ເຂົ້າສູ່ລະບົບ</button></form></div>`;
+  $('lf').onsubmit=async e=>{ e.preventDefault(); $('lb').disabled=true; $('lb').textContent='ກຳລັງກວດສອບ...';
+    try{ const d=await post('adminLogin',{password:$('pw').value}); if(!d.ok) throw new Error(d.error); token=d.token; sessionStorage.setItem('sd_admin',token); boot(); }
+    catch(x){ showLogin(x.message); } };
 }
+function logout(){ sessionStorage.removeItem('sd_admin'); token=''; showLogin(); }
 
-function buildChart(id, data, labels, color) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const max = Math.max(...data);
-  el.innerHTML = data.map((v,i)=>`
-    <div class="chart-wrap">
-      <div class="chart-bar" style="height:${(v/max*100)}%;background:${color};opacity:${0.5+v/max*0.5}" data-val="${v}M">
-        <div class="chart-label">${labels[i]}</div>
-      </div>
-    </div>`).join('');
+/* ── App ── */
+function shell(){
+  $('app').innerHTML=`<header class="top"><div class="in"><div class="mark">7</div><div><b>ກ່ອງອໍເດີອອນລາຍ</b><small id="upd">ກຳລັງໂຫຼດ...</small></div><div class="sp"></div>
+    <button class="btn" onclick="load(true)">↻ ໂຫຼດໃໝ່</button><a class="btn" href="index.html" target="_blank">ເບິ່ງເວັບ</a><button class="btn" onclick="logout()">ອອກ</button></div></header>
+    <main class="wrap"><div class="stats" id="stats"></div>
+    <div class="bar"><div class="tabs" id="tabs"></div>
+      <select id="stf" aria-label="ສະຖານະ"><option value="open">ຍັງບໍ່ປິດງານ</option><option value="all">ທຸກສະຖານະ</option><option value="ໃໝ່">ໃໝ່</option><option value="done">ສຳເລັດ</option><option value="ຍົກເລີກ">ຍົກເລີກ</option></select>
+      <input id="qs" type="search" placeholder="ຄົ້ນຫາ ຊື່ / ເບີໂທ / ເລກທີ່"></div>
+    <div class="layout"><div class="list" id="list"></div><aside class="detail" id="detail"><div class="pick">ເລືອກລາຍການທາງຊ້າຍ ເພື່ອເບິ່ງລາຍລະອຽດ</div></aside></div></main>`;
+  $('stf').value=stFilter; $('stf').onchange=e=>{stFilter=e.target.value;renderList();};
+  $('qs').oninput=e=>{q=e.target.value.toLowerCase();renderList();};
 }
-
-function renderOrdersTable() {
-  document.getElementById('ordersTbody').innerHTML = ORDERS_DATA.map(o=>`
-    <tr>
-      <td><input type="checkbox"></td>
-      <td><strong style="color:var(--red)">${o.id}</strong></td>
-      <td>${o.cust}</td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${o.items}</td>
-      <td style="white-space:nowrap;font-weight:700">${LAK(o.total)}</td>
-      <td style="font-size:12px">${o.method}</td>
-      <td style="font-size:12px;color:var(--ink-3)">${o.date}</td>
-      <td><span class="badge ${o.statusClass}">${o.statusLabel}</span></td>
-      <td><div class="actions"><button class="tbl-btn" onclick="showToast('📋 Order ${o.id}')">ดู</button><button class="tbl-btn primary" onclick="showToast('✓ อัพเดตสถานะ')">Update</button></div></td>
-    </tr>`).join('');
+async function load(manual){
+  try{ const d=await post('adminList',{days:120}); items=d.items||[]; }
+  catch(x){ if(/ADMIN_AUTH/.test(x.message)) return logout(); toast('ໂຫຼດບໍ່ສຳເລັດ: '+x.message); return; }
+  const n=items.filter(i=>i.status==='ໃໝ່').length;
+  if(lastNew>=0 && n>lastNew){ toast(`ມີລາຍການໃໝ່ ${n-lastNew} ລາຍການ`); try{ new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YQAAAAA=').play(); }catch(_){} }
+  lastNew=n; document.title=(n?`(${n}) `:'')+'ກ່ອງອໍເດີອອນລາຍ — Sevenday';
+  $('upd').textContent='ອັບເດດ '+new Date().toLocaleTimeString('lo-LA',{hour:'2-digit',minute:'2-digit'})+' · ໂຫຼດອັດຕະໂນມັດທຸກ 1 ນາທີ';
+  renderStats(); renderList(); if(sel) renderDetail(items.find(i=>i.id===sel)); if(manual) toast('ອັບເດດແລ້ວ');
 }
-
-function renderProductsTable() {
-  document.getElementById('productsTbody').innerHTML = PRODUCTS_DATA.map(p=>{
-    const pct = p.total>0?p.stock/p.total*100:0;
-    const cls = p.stock===0?'stock-low':pct<40?'stock-med':'stock-high';
-    return `<tr>
-      <td><input type="checkbox"></td>
-      <td><div class="prod-cell"><div class="prod-thumb">${p.icon}</div><div><div class="prod-name">${p.name}</div><div class="prod-sku">${p.sku}</div></div></div></td>
-      <td style="font-size:12px;color:var(--ink-3)">${p.sku}</td>
-      <td style="font-weight:700;white-space:nowrap">${LAK(p.price)}</td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="stock-bar ${cls}"><div class="stock-fill" style="width:${pct}%"></div></div><span style="font-size:12px;font-weight:700">${p.stock}</span></div></td>
-      <td><span class="badge badge-grey">${p.cat}</span></td>
-      <td><span class="badge ${p.status==='active'?'badge-green':'badge-grey'}">${p.status}</span></td>
-      <td><div class="actions"><button class="tbl-btn" onclick="showToast('✏ แก้ไข ${p.name.substring(0,20)}')">แก้ไข</button><button class="tbl-btn danger" onclick="showToast('🗑 ลบสินค้า')">ลบ</button></div></td>
-    </tr>`;}).join('');
+function renderStats(){
+  const c=f=>items.filter(f).length;
+  const S=[['ລາຍການໃໝ່',c(i=>i.status==='ໃໝ່'),'ໃໝ່','all'],['ລໍຖ້າໂອນເງິນ',c(i=>i.type==='order'&&i.status==='ຢືນຢັນແລ້ວ'&&/BCEL|ໂອນ/.test(i.payment)),'open','order'],
+    ['ພ້ອມໃຫ້ລູກຄ້າຮັບ',c(i=>i.status==='ພ້ອມຮັບ'),'open','order'],['ຈອງ Workshop ຄ້າງ',c(i=>i.type!=='order'&&!['ສຳເລັດ','ຍົກເລີກ'].includes(i.status)),'open','booking']];
+  $('stats').innerHTML=S.map(([l,n,sf,t],k)=>`<button class="stat ${k===0&&n?'hot':''}" onclick="stFilter='${sf}';tab='${t}';$('stf').value='${sf}';renderList()"><b>${n}</b><span>${l}</span></button>`).join('');
 }
-
-function renderInventoryTable() {
-  document.getElementById('inventoryTbody').innerHTML = INVENTORY_DATA.map(i=>{
-    const cls = i.stock===0?'stock-low':i.stock<=i.thresh?'stock-med':'stock-high';
-    const badge = i.stock===0?'badge-red':i.stock<=i.thresh?'badge-orange':'badge-green';
-    const bl = i.stock===0?'❌ Out':'⚠ Low';
-    return `<tr>
-      <td style="font-size:11px;color:var(--ink-3)">${i.sku}</td>
-      <td><div style="font-size:13px;font-weight:600">${i.name}</div></td>
-      <td><span class="badge badge-grey">${i.cat}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="stock-bar ${cls}"><div class="stock-fill" style="width:${i.stock===0?0:Math.min(100,i.stock/(i.thresh*2)*100)}%"></div></div><span style="font-size:13px;font-weight:700">${i.stock}</span>${i.stock<=i.thresh?`<span class="badge ${badge}" style="font-size:9px">${i.stock===0?'Out':'Low'}</span>`:''}</div></td>
-      <td style="font-size:12px;color:var(--ink-3)">${i.thresh}</td>
-      <td style="font-size:12px;color:var(--ink-3)">${i.location}</td>
-      <td style="font-size:11px;color:var(--ink-3)">${i.updated}</td>
-      <td><button class="tbl-btn primary" onclick="openModal('adjustStock')">ปรับ Stock</button></td>
-    </tr>`;}).join('');
+function renderList(){
+  const T=[['all','ທັງໝົດ'],['order','ຄຳສັ່ງຊື້'],['booking','Workshop'],['film','Film']];
+  const open=i=>!['ສຳເລັດ','ຍົກເລີກ'].includes(i.status);
+  $('tabs').innerHTML=T.map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="tab='${k}';renderList()">${l}<i>${items.filter(i=>(k==='all'||i.type===k)&&open(i)).length}</i></button>`).join('');
+  const L=items.filter(i=>(tab==='all'||i.type===tab)
+    &&(stFilter==='all'||(stFilter==='open'?open(i):stFilter==='done'?i.status==='ສຳເລັດ':i.status===stFilter))
+    &&(!q||(i.id+' '+i.name+' '+i.phone).toLowerCase().includes(q)));
+  $('list').innerHTML=L.length?L.map(i=>`<button class="row ${sel===i.id?'sel':''}" onclick="openItem('${i.id}')">
+      <span class="ty">${TYPE[i.type]?.[0]||'•'}</span>
+      <span><b>${esc(i.name)||'-'}</b> <span class="st ${stCls(i.status)}">${esc(i.status)}</span><span class="sub">${esc(i.id)} · ${esc(i.details.split('\n').join(', '))}</span></span>
+      <span class="r">${i.total?`<span class="amt">₭${Math.round(i.total*THB_TO_LAK).toLocaleString()}</span>`:''}<small style="color:var(--g6)">${ago(i.date)}</small></span></button>`).join('')
+    :`<div class="empty">${items.length?'ບໍ່ມີລາຍການທີ່ກົງກັບຕົວກອງ':'ຍັງບໍ່ມີລາຍການຈາກເວັບ — ຄຳສັ່ງຊື້ ແລະ ການຈອງໃໝ່ຈະຂຶ້ນບ່ອນນີ້'}</div>`;
 }
-
-function renderCustomersTable() {
-  document.getElementById('customersTbody').innerHTML = CUSTOMERS_DATA.map(c=>{
-    const segClass = c.seg==='VIP'?'badge-purple':c.seg==='Member'?'badge-blue':'badge-grey';
-    return `<tr>
-      <td><div style="font-size:13px;font-weight:600">${c.name}</div></td>
-      <td style="font-size:12px;color:var(--ink-3)">${c.contact}</td>
-      <td style="font-size:13px;font-weight:700;text-align:center">${c.orders}</td>
-      <td style="font-weight:700;white-space:nowrap">${LAK(c.total)}</td>
-      <td style="font-size:12px;color:var(--ink-3)">${c.last}</td>
-      <td><span class="badge ${segClass}">${c.seg}</span></td>
-      <td><button class="tbl-btn" onclick="showToast('👤 ดูข้อมูล ${c.name}')">ดู</button></td>
-    </tr>`;}).join('');
-}
-
-function renderBookingsTable() {
-  document.getElementById('bookingsTbody').innerHTML = BOOKINGS_DATA.map(b=>`
-    <tr>
-      <td><strong style="color:var(--red);font-size:12px">${b.id}</strong></td>
-      <td style="font-weight:600">${b.cust}</td>
-      <td><span class="badge badge-blue" style="font-size:10px">${b.service}</span></td>
-      <td style="font-size:12px;color:var(--ink-3)">${b.bike}</td>
-      <td style="font-size:12px;white-space:nowrap">${b.slot}</td>
-      <td style="font-size:12px">${b.tech}</td>
-      <td><span class="badge ${b.statusClass}">${b.statusLabel}</span></td>
-      <td><div class="actions">
-        ${b.status==='pending'?`<button class="tbl-btn primary" onclick="showToast('✓ Confirm ${b.id}')">Confirm</button>`:''}
-        <button class="tbl-btn" onclick="showToast('📋 ${b.id}')">ดู</button>
-      </div></td>
-    </tr>`).join('');
-}
-
-function renderServiceJobs() {
-  const inProg = [
-    {bike:'Trek Marlin 5',cust:'ສົມຈິດ',svc:'Standard Service',tech:'ບຸນມີ',start:'09:00',est:'11:00'},
-    {bike:'Giant Talon 3',cust:'Phong',svc:'Basic Service',tech:'ສີ',start:'10:00',est:'11:00'},
-    {bike:'Specialized Allez',cust:'ມາລີ',svc:'Ultimate Service',tech:'ບຸນມີ',start:'08:00',est:'18:00'},
-  ];
-  const done = [
-    {bike:'Trek FX 3',cust:'Nam',svc:'Repair',tech:'ສີ',done:'10:30'},
-    {bike:'Giant Escape',cust:'ສີ ທ.',svc:'Basic Service',tech:'ບຸນມີ',done:'09:45'},
-  ];
-  document.getElementById('jobsInProgress').innerHTML = inProg.map(j=>`
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)">
-      <div style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;animation:pulse 1.5s infinite"></div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600">${j.bike} <span style="color:var(--ink-3);font-weight:400">· ${j.cust}</span></div>
-        <div style="font-size:11px;color:var(--ink-3)">${j.svc} · ช่าง: ${j.tech} · เริ่ม ${j.start} → ประมาณ ${j.est}</div>
-      </div>
-      <button class="tbl-btn primary" onclick="showToast('✓ Mark เสร็จแล้ว')">เสร็จ</button>
-    </div>`).join('');
-  document.getElementById('jobsDone').innerHTML = done.map(j=>`
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)">
-      <div style="width:8px;height:8px;border-radius:50%;background:var(--lime);flex-shrink:0"></div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600">${j.bike} <span style="color:var(--ink-3);font-weight:400">· ${j.cust}</span></div>
-        <div style="font-size:11px;color:var(--ink-3)">${j.svc} · เสร็จ ${j.done} · ช่าง: ${j.tech}</div>
-      </div>
-      <span class="badge badge-green" style="font-size:9px">✓ เสร็จ</span>
-    </div>`).join('');
-}
-
-function renderPromosTable() {
-  document.getElementById('promoTbody').innerHTML = PROMOS_DATA.map(p=>`
-    <tr>
-      <td style="font-weight:700">${p.name}</td>
-      <td><code style="background:var(--base);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:700">${p.code}</code></td>
-      <td style="font-size:12px">${p.type}</td>
-      <td style="font-weight:700;color:var(--red)">${p.discount}</td>
-      <td style="text-align:center">${p.used}</td>
-      <td style="font-size:12px;color:var(--ink-3)">${p.exp}</td>
-      <td><span class="badge ${p.status==='active'?'badge-green':'badge-grey'}">${p.status}</span></td>
-      <td><div class="actions"><button class="tbl-btn" onclick="showToast('✏ แก้ไข ${p.code}')">แก้ไข</button><button class="tbl-btn danger" onclick="showToast('🗑 ลบ ${p.code}')">ลบ</button></div></td>
-    </tr>`).join('');
-}
-
-function renderCMS() {
-  const sections = [
-    {name:'Hero Slider','status':'active',slides:3},
-    {name:'Category Grid','status':'active',items:12},
-    {name:'Featured Products','status':'active',items:4},
-    {name:'Sale Section','status':'active',items:4},
-    {name:'Service Section','status':'active',items:6},
-    {name:'Film Customization','status':'active'},
-  ];
-  document.getElementById('cmsHomepage').innerHTML = sections.map(s=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:14px">⠿</span>
-      <div style="flex:1;font-size:13px;font-weight:600">${s.name}</div>
-      ${s.slides?`<span style="font-size:11px;color:var(--ink-3)">${s.slides} slides</span>`:''}
-      ${s.items?`<span style="font-size:11px;color:var(--ink-3)">${s.items} items</span>`:''}
-      <span class="badge badge-green" style="font-size:9px">${s.status}</span>
-      <button class="tbl-btn" onclick="showToast('✏ แก้ไข ${s.name}')">แก้ไข</button>
-    </div>`).join('');
-}
-
-function renderReports() {
-  buildChart('reportChart', SALES_MONTHLY.slice(0,9), MONTHS_SHORT.slice(0,9), '#2B2B2B');
-  document.getElementById('topProductsTbl').innerHTML = [
-    {rank:1,name:'Trek Marlin 5 Gen 3',qty:28,total:249200000},
-    {rank:2,name:'Giant Contend AR 2',qty:15,total:217500000},
-    {rank:3,name:'Shimano Deore Brake',qty:42,total:77700000},
-    {rank:4,name:'Giro Fixture MIPS',qty:38,total:43700000},
-    {rank:5,name:'Specialized Rockhopper',qty:8,total:126400000},
-  ].map(p=>`<tr><td style="text-align:center;font-weight:700;color:var(--ink-3)">${p.rank}</td><td style="font-size:12px">${p.name}</td><td style="text-align:center;font-weight:700">${p.qty}</td><td style="font-weight:700;font-size:12px;white-space:nowrap">${LAK(p.total)}</td></tr>`).join('');
-}
-
-function buildSlotStrip() {
-  const slots = ['09:00','09:30','10:00','10:30','11:00','13:00','13:30','14:00','14:30','15:00'];
-  const booked = ['09:00','10:00','13:00'];
-  document.getElementById('slotStrip').innerHTML = slots.map(s=>{
-    const isBooked = booked.includes(s);
-    return `<div style="flex-shrink:0;padding:8px 12px;border-radius:var(--r);border:1.5px solid ${isBooked?'var(--red)':'var(--border)'};background:${isBooked?'var(--red-lite)':'var(--white)'};text-align:center;cursor:pointer;min-width:68px;font-size:12px;font-weight:700;color:${isBooked?'var(--red)':'var(--ink-2)'}" onclick="showToast('${isBooked?'📅 '+s+' — มี Booking':'+ เพิ่ม Booking '+s}')">${s}<div style="font-size:10px;font-weight:500;color:${isBooked?'var(--red)':'var(--lime)'};margin-top:2px">${isBooked?'Booked':'Free'}</div></div>`;
-  }).join('');
-}
-
-/* ══════════════════════════════════════
-   UI CONTROLS
-══════════════════════════════════════ */
-let sidebarCollapsed = false;
-
-function toggleSidebar() {
-  const sb = document.getElementById('sidebar');
-  if (window.innerWidth <= 768) {
-    sb.classList.toggle('mob-open');
-    document.getElementById('mobOverlay').classList.toggle('on');
+function openItem(id){ sel=id; renderList(); renderDetail(items.find(i=>i.id===id)); $('detail').classList.add('open'); }
+function msgFor(i,st){
+  const n=i.name||'ລູກຄ້າ', id=i.id, amt='₭'+Math.round(i.total*THB_TO_LAK).toLocaleString();
+  if(i.type==='order'){
+    if(st==='ຢືນຢັນແລ້ວ') return /BCEL|ໂອນ/.test(i.payment)
+      ? `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນຄຳສັ່ງຊື້ ${id} ແລ້ວ\nຍອດທີ່ຕ້ອງໂອນ: ${amt}\nBCEL One: KITTIPHAN XAYASING MR\nເລກບັນຊີ: 013120001235446001\nໂອນແລ້ວສົ່ງສະລິບມາທາງນີ້ໄດ້ເລີຍ`
+      : `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນຄຳສັ່ງຊື້ ${id} ແລ້ວ ຍອດ ${amt} ຈ່າຍຕອນມາຮັບທີ່ຮ້ານ`;
+    if(st==='ຊຳລະແລ້ວ') return `ໄດ້ຮັບເງິນ ${amt} ສຳລັບຄຳສັ່ງຊື້ ${id} ແລ້ວ ຂອບໃຈຫຼາຍໆ 🙏 ຈະແຈ້ງເມື່ອສິນຄ້າພ້ອມຮັບ`;
+    if(st==='ພ້ອມຮັບ') return `ສະບາຍດີ ${n} ສິນຄ້າຄຳສັ່ງຊື້ ${id} ພ້ອມຮັບແລ້ວ ✅ ມາຮັບໄດ້ທີ່ຮ້ານ ${SHOP_NAME} (ເປີດ 09:00–18:00)`;
   } else {
-    sidebarCollapsed = !sidebarCollapsed;
-    sb.classList.toggle('collapsed', sidebarCollapsed);
+    if(st==='ຢືນຢັນແລ້ວ') return `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນການຈອງ ${id} ແລ້ວ ເອົາລົດມາຕາມວັນນັດໄດ້ເລີຍ`;
+    if(st==='ສົ່ງລາຄາແລ້ວ') return `ສະບາຍດີ ${n} 🙏 ລາຄາຟິມຫຸ້ມສີສຳລັບ ${id} ແມ່ນ ₭____ ສົນໃຈນັດວັນໄດ້ເລີຍ`;
+    if(st==='ສຳເລັດ') return `ສະບາຍດີ ${n} ຈັກຍານຂອງທ່ານ (${id}) ສຳເລັດແລ້ວ ✅ ມາຮັບໄດ້ທີ່ຮ້ານ ${SHOP_NAME}`;
   }
+  return `ສະບາຍດີ ${n} ຈາກ ${SHOP_NAME} ກ່ຽວກັບ ${id}`;
 }
-function closeMobSidebar() {
-  document.getElementById('sidebar').classList.remove('mob-open');
-  document.getElementById('mobOverlay').classList.remove('on');
+function renderDetail(i){
+  const D=$('detail'); if(!i){ D.innerHTML='<div class="pick">ເລືອກລາຍການທາງຊ້າຍ</div>'; return; }
+  const flow=FLOW[i.type]||FLOW.booking, idx=flow.indexOf(i.status), next=flow[idx+1];
+  D.innerHTML=`<div class="hd"><button class="btn back" onclick="$('detail').classList.remove('open')">← ກັບຄືນ</button>
+      <small>${TYPE[i.type]?.[1]||''} · ${when(i.date)}</small><h2>${esc(i.id)}</h2><span class="st ${stCls(i.status)}">${esc(i.status)}</span></div>
+    <div class="sec"><h3>ລູກຄ້າ</h3><dl class="kv"><dt>ຊື່</dt><dd>${esc(i.name)}</dd><dt>ເບີໂທ</dt><dd>${esc(i.phone)}</dd>${i.email?`<dt>ອີເມວ</dt><dd>${esc(i.email)}</dd>`:''}</dl>
+      <div class="acts" style="margin-top:12px"><a class="btn dark" target="_blank" rel="noopener" href="${wa(i.phone,msgFor(i,next||i.status))}">WhatsApp${next?' (ຂໍ້ຄວາມ "'+next+'")':''}</a><a class="btn" href="tel:${esc(i.phone)}">ໂທ</a></div></div>
+    <div class="sec"><h3>${i.type==='order'?'ລາຍການສິນຄ້າ':'ລາຍລະອຽດ'}</h3><div class="items">${esc(i.details)}</div>
+      ${i.total?`<div class="total"><span>ລວມ</span><span>₭${Math.round(i.total*THB_TO_LAK).toLocaleString()}</span></div><small style="color:var(--g6)">฿${Math.round(i.total).toLocaleString()}</small>`:''}
+      <dl class="kv" style="margin-top:12px">${i.payment?`<dt>ການຊຳລະ</dt><dd>${esc(i.payment)}</dd>`:''}${i.delivery?`<dt>ການຮັບ</dt><dd>${esc(i.delivery)}</dd>`:''}${i.notes?`<dt>ໝາຍເຫດ</dt><dd>${esc(i.notes)}</dd>`:''}</dl></div>
+    <div class="sec"><h3>ອັບເດດສະຖານະ</h3><div class="flow">${flow.map((s,k)=>`<button class="${k===idx?'cur':k<idx?'past':''}" ${i.status==='ຍົກເລີກ'?'disabled':''} onclick="setStatus('${i.id}','${s}')"><span>${k<idx?'✓ ':''}${s}</span>${k===idx+1?'<span>ຂັ້ນຕໍ່ໄປ →</span>':''}</button>`).join('')}
+      ${i.status!=='ຍົກເລີກ'?`<button class="cancel" onclick="setStatus('${i.id}','ຍົກເລີກ')">ຍົກເລີກ${i.type==='order'?' (ລຶບບິນອອກຈາກ Sales ແລະ ຫັກແຕ້ມຄືນ)':''}</button>`:'<p style="color:var(--g6);font-size:14px">ລາຍການນີ້ຖືກຍົກເລີກແລ້ວ</p>'}</div></div>
+    <div class="sec"><h3>ໝາຍເຫດພາຍໃນ (ລູກຄ້າບໍ່ເຫັນ)</h3><textarea id="an">${esc(i.admin_note)}</textarea><button class="btn" style="margin-top:8px" onclick="saveNote('${i.id}')">ບັນທຶກໝາຍເຫດ</button></div>`;
 }
+async function setStatus(id,st){
+  const i=items.find(x=>x.id===id); if(!i||i.status===st) return;
+  if(st==='ຍົກເລີກ' && !confirm(i.type==='order'?`ຍົກເລີກ ${id}?\n\nບິນນີ້ຈະຖືກລຶບອອກຈາກ Sales ແລະ ຫັກແຕ້ມລູກຄ້າຄືນ — ຍ້ອນກັບບໍ່ໄດ້`:`ຍົກເລີກ ${id}?`)) return;
+  const old=i.status; i.status=st; renderStats(); renderList(); renderDetail(i);
+  try{ await post('adminUpdate',{id,status:st}); toast(`${id} → ${st}`); }
+  catch(x){ i.status=old; renderStats(); renderList(); renderDetail(i); if(/ADMIN_AUTH/.test(x.message)) return logout(); toast('ບັນທຶກບໍ່ສຳເລັດ: '+x.message); }
+}
+async function saveNote(id){ const v=$('an').value; try{ await post('adminUpdate',{id,admin_note:v}); items.find(x=>x.id===id).admin_note=v; toast('ບັນທຶກແລ້ວ'); }catch(x){ toast('ບັນທຶກບໍ່ສຳເລັດ: '+x.message); } }
 
-function goPage(id, el) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if (el) el.classList.add('active');
-  const titles = {dashboard:'Dashboard',orders:'Orders',products:'Products',inventory:'Inventory',customers:'Customers',bookings:'Service Bookings',service_jobs:'Service Jobs',promotions:'Promotions',content:'Content / CMS',reports:'Reports',settings:'Settings'};
-  document.getElementById('topbarTitle').textContent = titles[id] || id;
-  if (window.innerWidth <= 768) closeMobSidebar();
-}
-
-function filterTab(btn, filter) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  showToast('🔍 Filter: ' + btn.textContent.trim());
-}
-
-function filterTable(val, tableId) {
-  const tbl = document.getElementById(tableId);
-  if (!tbl) return;
-  const rows = tbl.querySelectorAll('tbody tr');
-  const q = val.toLowerCase();
-  rows.forEach(r => r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none');
-}
-
-function toggleAll(cb, tableId) {
-  const tbl = document.getElementById(tableId);
-  if (!tbl) return;
-  tbl.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=cb.checked);
-}
-
-/* ══════════════════════════════════════
-   MODALS
-══════════════════════════════════════ */
-function openModal(id) {
-  document.getElementById('modal-'+id).classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeModal(id) {
-  document.getElementById('modal-'+id).classList.remove('open');
-  document.body.style.overflow='';
-}
-function saveProduct() {
-  showToast('✓ บันทึกสินค้าแล้ว','success');
-  closeModal('addProduct');
-}
-function savePromo() {
-  showToast('✓ สร้าง Promotion แล้ว','success');
-  closeModal('addPromo');
-}
-
-/* ══════════════════════════════════════
-   TOAST
-══════════════════════════════════════ */
-function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type?' '+type:'');
-  clearTimeout(t._t);
-  t._t = setTimeout(()=>t.className='toast',2500);
-}
-
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
-    document.body.style.overflow='';
-  }
-});
-
-// Click outside modal
-document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click', function(e){ if(e.target===this){ this.classList.remove('open'); document.body.style.overflow=''; } });
-});
-
-init();
+function boot(){ shell(); load(); clearInterval(window._iv); window._iv=setInterval(()=>{ if(!document.hidden) load(); },60000); }
+token ? boot() : showLogin();
 </script>
 </body>
 </html>
