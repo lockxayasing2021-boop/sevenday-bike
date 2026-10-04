@@ -97,7 +97,7 @@ textarea{width:100%;min-height:70px;border:1px solid var(--g3);padding:10px;font
 <div id="app"></div>
 <div class="toast" id="toast" role="status"></div>
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec', API_SECRET='open', THB_TO_LAK=698;
+const API_URL='https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec', API_SECRET='SDdMc3wNjJEevs60n2oMQeGnuI', THB_TO_LAK=698;
 const SHOP_NAME='Sevenday Bike';
 const FLOW={
   order:['ໃໝ່','ຢືນຢັນແລ້ວ','ຊຳລະແລ້ວ','ພ້ອມຮັບ','ສຳເລັດ'],
@@ -183,7 +183,7 @@ function msgFor(i,st){
   } else {
     if(st==='ຢືນຢັນແລ້ວ') return `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນການຈອງ ${id} ແລ້ວ ເອົາລົດມາຕາມວັນນັດໄດ້ເລີຍ`;
     if(st==='ສົ່ງລາຄາແລ້ວ') return `ສະບາຍດີ ${n} 🙏 ລາຄາຟິມຫຸ້ມສີສຳລັບ ${id} ແມ່ນ ₭____ ສົນໃຈນັດວັນໄດ້ເລີຍ`;
-    if(st==='ສຳເລັດ') return `ສະບາຍດີ ${n} ຈັກຍານຂອງທ່ານ (${id}) ສຳເລັດແລ້ວ ✅ ມາຮັບໄດ້ທີ່ຮ້ານ ${SHOP_NAME}`;
+    if(st==='ສຳເລັດ') return `ສະບາຍດີ ${n} ລົດຖີບຂອງທ່ານ (${id}) ສຳເລັດແລ້ວ ✅ ມາຮັບໄດ້ທີ່ຮ້ານ ${SHOP_NAME}`;
   }
   return `ສະບາຍດີ ${n} ຈາກ ${SHOP_NAME} ກ່ຽວກັບ ${id}`;
 }
