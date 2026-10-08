@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>ການສະໝັກຂອງຂ້ອຍ</title>
+<link rel="stylesheet" href="Sevenday.css">
+<style>
+:root {
+  --accent: #FF3B00;
+  --radius: 12px;
+}
+
+.myreg-wrap {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem 4rem;
+}
+
+/* Login gate */
+#login-gate {
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+#login-gate h2 { margin: 0 0 .5rem; font-size: 1.25rem; color: var(--grey-900); }
+#login-gate p  { color: var(--grey-600); font-size: .9rem; margin: 0 0 1.5rem; }
+.login-form { display: flex; flex-direction: column; gap: .85rem; text-align: left; }
+.login-form label { font-size: .8rem; color: var(--grey-600); letter-spacing: .04em; text-transform: uppercase; display: block; margin-bottom: .25rem; }
+.login-form input {
+  width: 100%; box-sizing: border-box;
+  border: 1.5px solid var(--grey-300); border-radius: 8px;
+  padding: .65rem .85rem; font-size: .95rem;
+  background: var(--white); color: var(--grey-900);
+  transition: border-color .15s;
+}
+.login-form input:focus { outline: none; border-color: var(--accent); }
+.btn-accent {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: .75rem 1.5rem;
+  font-size: .95rem; font-weight: 700; cursor: pointer; width: 100%;
+}
+.btn-accent:disabled { opacity: .6; cursor: not-allowed; }
+.login-error { color: #991B1B; font-size: .85rem; display: none; }
+
+/* Header bar */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: .75rem; margin-bottom: 1.5rem;
+}
+.page-header h1 { margin: 0; font-size: 1.5rem; color: var(--grey-900); }
+.user-chip {
+  display: flex; align-items: center; gap: .5rem;
+  background: var(--grey-100); border-radius: 999px;
+  padding: .35rem .85rem .35rem .5rem; font-size: .85rem; color: var(--grey-600);
+}
+.user-chip strong { color: var(--grey-900); }
+
+/* Filter tabs */
+.filter-tabs {
+  display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem;
+}
+.tab-btn {
+  border: 1.5px solid var(--grey-300); background: var(--white);
+  border-radius: 999px; padding: .4rem .95rem;
+  font-size: .85rem; cursor: pointer; color: var(--grey-600);
+  transition: all .15s;
+}
+.tab-btn.active {
+  border-color: var(--accent); background: var(--accent);
+  color: #fff; font-weight: 600;
+}
+
+/* Registration card */
+.reg-card {
+  background: var(--white);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: box-shadow .15s;
+}
+.reg-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+.reg-card-inner {
+  display: flex; align-items: stretch; gap: 0;
+}
+.reg-status-bar {
+  width: 4px; flex-shrink: 0;
+}
+.status-pending  { background: #F59E0B; }
+.status-approved { background: #10B981; }
+.status-rejected { background: #EF4444; }
+.status-checked  { background: #3B82F6; }
+
+.reg-body {
+  flex: 1; padding: 1.1rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+.reg-event-name {
+  flex: 1; min-width: 180px;
+}
+.reg-event-name h3 {
+  margin: 0 0 .2rem; font-size: 1rem; color: var(--grey-900);
+}
+.reg-event-name span { font-size: .82rem; color: var(--grey-600); }
+
+.reg-meta {
+  display: flex; flex-direction: column; gap: .2rem;
+  font-size: .82rem; color: var(--grey-600); min-width: 120px;
+}
+.reg-meta strong { color: var(--grey-900); font-size: .9rem; }
+
+.status-pill {
+  font-size: .75rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; padding: .3rem .75rem;
+  border-radius: 999px; flex-shrink: 0;
+}
+.status-pill.pending  { background:#FFF3CD; color:#856404; }
+.status-pill.approved { background:#D1FAE5; color:#065F46; }
+.status-pill.rejected { background:#FEE2E2; color:#991B1B; }
+.status-pill.checked  { background:#DBEAFE; color:#1E40AF; }
+
+.reg-action { padding: 0 1rem 0 0; flex-shrink: 0; }
+.btn-view {
+  background: transparent; color: var(--accent);
+  border: 1.5px solid var(--accent); border-radius: 8px;
+  padding: .45rem 1rem; font-size: .85rem; font-weight: 600;
+  cursor: pointer; text-decoration: none; display: inline-block;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 3rem 1rem;
+  color: var(--grey-600);
+}
+.empty-state svg { opacity: .3; margin-bottom: 1rem; }
+.empty-state p { margin: .25rem 0; }
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--grey-100) 25%, var(--grey-300) 50%, var(--grey-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.notice {
+  padding: 1rem 1.25rem; border-radius: var(--radius);
+  font-size: .9rem; margin-bottom: 1rem;
+}
+.notice.error { background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; }
+</style>
+
+<div class="myreg-wrap">
+  <div id="notice-area"></div>
+
+  <!-- Login gate (hidden if already logged in) -->
+  <div id="login-gate" hidden>
+    <h2>ເຂົ້າສູ່ລະບົບ</h2>
+    <p>ໃສ່ເບີໂທ ຫຼື ອີເມລ ເພື່ອເບິ່ງການສະໝັກຂອງທ່ານ</p>
+    <form class="login-form" id="lookup-form" onsubmit="return false">
+      <div>
+        <label>ເບີໂທ ຫຼື ອີເມລ</label>
+        <input type="text" id="lookup-input" placeholder="e.g. 020XXXXXXXX ຫຼື name@email.com" autocomplete="username">
+      </div>
+      <div id="lookup-error" class="login-error"></div>
+      <button type="submit" class="btn-accent" id="lookup-btn" onclick="doLookup()">ຄົ້ນຫາ</button>
+    </form>
+    <div style="margin-top:1.25rem;font-size:.82rem;color:var(--grey-600);">
+      ຍັງບໍ່ໄດ້ສະໝັກ? <a href="events.html" style="color:var(--accent);font-weight:600;">ເບິ່ງ Events</a>
+    </div>
+  </div>
+
+  <!-- Registrations list (hidden until loaded) -->
+  <div id="regs-view" hidden>
+    <div class="page-header">
+      <h1>ການສະໝັກຂອງຂ້ອຍ</h1>
+      <div id="user-chip" class="user-chip">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <strong id="user-name-chip">—</strong>
+      </div>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="tab-btn active" data-filter="all"  onclick="filterRegs('all',this)">ທັງໝົດ</button>
+      <button class="tab-btn" data-filter="pending"    onclick="filterRegs('pending',this)">ລໍຖ້າ</button>
+      <button class="tab-btn" data-filter="approved"   onclick="filterRegs('approved',this)">ອະນຸມັດ</button>
+      <button class="tab-btn" data-filter="checked-in" onclick="filterRegs('checked-in',this)">ເຂົ້າຮ່ວມ</button>
+      <button class="tab-btn" data-filter="rejected"   onclick="filterRegs('rejected',this)">ປະຕິເສດ</button>
+    </div>
+
+    <div id="skeletons">
+      ${[1,2,3].map(()=>`
+        <div class="reg-card" style="margin-bottom:1rem;">
+          <div class="reg-card-inner">
+            <div class="reg-status-bar skeleton" style="background:var(--grey-300);width:4px;"></div>
+            <div class="reg-body" style="gap:.75rem;">
+              <div style="flex:1"><div class="skeleton" style="height:1.1rem;width:220px;margin-bottom:.5rem;"></div><div class="skeleton" style="height:.85rem;width:140px;"></div></div>
+              <div class="skeleton" style="width:80px;height:1.8rem;border-radius:999px;"></div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <div id="regs-list"></div>
+  </div>
+</div>
+
+<script>
+const API_URL_EVT = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_SECRET  = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+
+let allRegs = [];
+
+async function hmacSign(body){
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(EVT_SECRET),
+    {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function evtGet(params){
+  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  const sig = await hmacSign(qs);
+  const res = await fetch(API_URL_EVT+'?'+qs+'&sig='+sig);
+  return JSON.parse(await res.text());
+}
+
+function fmtDate(d){
+  if(!d) return '-';
+  return new Date(d).toLocaleDateString('lo-LA',{year:'numeric',month:'long',day:'numeric'});
+}
+
+function statusCls(s){
+  return {pending:'pending', approved:'approved', rejected:'rejected', 'checked-in':'checked'}[s] || 'pending';
+}
+function statusLabel(s){
+  return {pending:'ລໍຖ້າ', approved:'ອະນຸມັດ', rejected:'ປະຕິເສດ', 'checked-in':'ເຂົ້າຮ່ວມ'}[s] || s;
+}
+
+function renderRegs(list){
+  const el = document.getElementById('regs-list');
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      <p>ບໍ່ມີການສະໝັກ</p>
+      <p><a href="events.html" style="color:var(--accent);">ເບິ່ງ Events ທີ່ກໍາລັງເປີດ →</a></p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = list.map(r => `
+    <div class="reg-card">
+      <div class="reg-card-inner">
+        <div class="reg-status-bar status-${statusCls(r.status)}"></div>
+        <div class="reg-body">
+          <div class="reg-event-name">
+            <h3>${r.eventName || r.event_name || 'Event'}</h3>
+            <span>${fmtDate(r.eventDate || r.event_date)} · ${r.location || ''}</span>
+          </div>
+          <div class="reg-meta">
+            <strong>${r.categoryName || r.category || '-'}</strong>
+            <span>${r.fee != null ? Number(r.fee).toLocaleString()+' ₭' : ''}</span>
+            <span>ສະໝັກ: ${fmtDate(r.registeredAt || r.created_at)}</span>
+          </div>
+          <span class="status-pill ${statusCls(r.status)}">${statusLabel(r.status)}</span>
+        </div>
+        <div class="reg-action">
+          <a href="events-registration.html?id=${r.registrationId||r.id}" class="btn-view">ເບິ່ງ</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRegs(f, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = f === 'all' ? allRegs : allRegs.filter(r=>r.status===f);
+  renderRegs(filtered);
+}
+
+function notice(msg, type='error'){
+  document.getElementById('notice-area').innerHTML =
+    `<div class="notice ${type}">${msg}</div>`;
+}
+
+async function loadRegistrations(identifier){
+  // identifier can be phone, email, or customerId
+  try{
+    const param = identifier.includes('@')
+      ? { action:'evt.getMyRegistrations', email: identifier }
+      : isNaN(identifier.replace(/[-+\s]/g,''))
+        ? { action:'evt.getMyRegistrations', email: identifier }
+        : { action:'evt.getMyRegistrations', phone: identifier };
+
+    const data = await evtGet(param);
+
+    document.getElementById('skeletons').hidden = true;
+
+    if(!data.success){
+      notice(data.message || 'ເກີດຂໍ້ຜິດພາດ');
+      return;
+    }
+
+    allRegs = data.registrations || data.data || [];
+    renderRegs(allRegs);
+
+  } catch(e){
+    document.getElementById('skeletons').hidden = true;
+    notice('ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+    console.error(e);
+  }
+}
+
+async function doLookup(){
+  const val = document.getElementById('lookup-input').value.trim();
+  const errEl = document.getElementById('lookup-error');
+  errEl.style.display = 'none';
+
+  if(!val){ errEl.textContent='ກະລຸນາໃສ່ເບີໂທ ຫຼື ອີເມລ'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('lookup-btn');
+  btn.disabled = true; btn.textContent = 'ກໍາລັງຄົ້ນຫາ...';
+
+  // Show regs view
+  document.getElementById('login-gate').hidden = true;
+  document.getElementById('regs-view').hidden = false;
+  document.getElementById('user-name-chip').textContent = val;
+  document.getElementById('skeletons').hidden = false;
+
+  await loadRegistrations(val);
+
+  btn.disabled = false; btn.textContent = 'ຄົ້ນຫາ';
+}
+
+async function init(){
+  // Check if user is already logged in via sd_user (from sevendaybike.com)
+  const sdUser = JSON.parse(sessionStorage.getItem('sd_user') || 'null');
+
+  if(sdUser){
+    // Already logged in — skip gate, load directly
+    const identifier = sdUser.email || sdUser.phone || sdUser.id || '';
+    const displayName = sdUser.name || sdUser.firstName || identifier;
+
+    document.getElementById('regs-view').hidden = false;
+    document.getElementById('login-gate').hidden = true;
+    document.getElementById('user-name-chip').textContent = displayName;
+
+    if(!identifier){
+      document.getElementById('skeletons').hidden = true;
+      notice('ບໍ່ພົບຂໍ້ມູນ User ກະລຸນາ Login ໃໝ່');
+      return;
+    }
+
+    await loadRegistrations(identifier);
+  } else {
+    // Not logged in — show login gate
+    document.getElementById('login-gate').hidden = false;
+    document.getElementById('regs-view').hidden = true;
+  }
+}
+
+init();
+</script>
+<script src="layout.js"></script>
+</html>

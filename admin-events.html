@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Sevenday Admin Events</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Layout: sticky top nav + full-width list + sticky right detail panel ── */
+:root {
+  --black:#000; --ink:#1C1C1C; --g9:#2B2B2B; --g6:#6E6E6E; --g3:#D4D4D4;
+  --g1:#F3F3F3; --white:#fff;
+  --accent:#FF3B00; /* Sevenday orange-red */
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  color-scheme: light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A;
+    --g1:#1E1E1E; --white:#111; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A;
+  --g1:#1E1E1E; --white:#111; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+input,select,textarea{font:inherit}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 16px;font-weight:700;font-size:13px;border:2px solid var(--black);background:var(--white);color:var(--ink);text-decoration:none;white-space:nowrap;cursor:pointer}
+.btn.primary{background:var(--black);color:var(--white)}
+.btn.danger{border-color:#c00;color:#c00}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{flex-shrink:0}
+
+/* ── Top nav ── */
+.top{background:var(--black);color:var(--white);position:sticky;top:env(safe-area-inset-top,0px);z-index:20;border-bottom:1px solid var(--g3)}
+.top .in{max-width:1400px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;gap:14px}
+.top .mark{width:34px;height:34px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px;flex-shrink:0}
+.top .title{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--white)}
+.top .sub{font-size:11px;opacity:.55;font-weight:500}
+.top .sp{flex:1}
+.top .nav-link{font-size:13px;font-weight:600;opacity:.6;padding:4px 10px;border-radius:0}
+.top .nav-link.on{opacity:1;background:rgba(255,255,255,.12)}
+.top .btn{height:34px;font-size:12px;border-color:rgba(255,255,255,.35);color:var(--white);background:transparent}
+.top .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── Wrap ── */
+.wrap{max-width:1400px;margin:0 auto;padding:20px 20px 60px}
+
+/* ── Stats bar ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat{background:var(--white);border:1px solid var(--g3);padding:16px 18px;cursor:pointer;transition:box-shadow .15s}
+.stat:hover{box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.stat.on{border-color:var(--black);box-shadow:inset 3px 0 0 var(--black)}
+.stat .num{font-size:28px;font-weight:900;line-height:1;letter-spacing:-1px;display:block}
+.stat .lbl{font-size:12px;font-weight:600;color:var(--g6);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+.stat .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input{flex:1;min-width:200px;height:40px;border:1px solid var(--g3);padding:0 12px;background:var(--white);color:var(--ink)}
+.toolbar input:focus{outline:none;border-color:var(--black)}
+.toolbar select{height:40px;border:1px solid var(--g3);padding:0 10px;background:var(--white);color:var(--ink)}
+
+/* ── Layout grid ── */
+.layout{display:grid;grid-template-columns:1fr 420px;gap:14px;align-items:start}
+
+/* ── Event list ── */
+.list{background:var(--white);border:1px solid var(--g3)}
+.list-hd{display:grid;grid-template-columns:1fr auto auto;align-items:center;padding:12px 16px;border-bottom:1px solid var(--g3);gap:10px}
+.list-hd h2{font-size:14px;font-weight:700}
+.ev-row{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--g1);cursor:pointer;text-align:left;width:100%;background:none;color:inherit}
+.ev-row:hover{background:var(--g1)}
+.ev-row.sel{background:var(--g1);box-shadow:inset 4px 0 0 var(--black)}
+.ev-thumb{width:56px;height:56px;background:var(--g1);border:1px solid var(--g3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+.ev-thumb img{width:100%;height:100%;object-fit:cover}
+.ev-name{font-weight:800;font-size:14px;line-height:1.3;margin-bottom:2px;text-align:left}
+.ev-meta{font-size:12px;color:var(--g6);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-right{text-align:right;min-width:90px}
+.empty{padding:56px;text-align:center;color:var(--g6)}
+.empty b{display:block;font-size:15px;font-weight:700;margin-bottom:4px;color:var(--ink)}
+
+/* ── Status badges ── */
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 7px;letter-spacing:.02em;white-space:nowrap}
+.badge.DRAFT{background:var(--g3);color:var(--g9);border:1px solid var(--g3)}
+.badge.PUBLISHED{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9}
+.badge.REGISTRATION_OPEN{background:#000;color:#fff;border:1px solid #000}
+.badge.REGISTRATION_CLOSED{background:#fff3e0;color:#e65100;border:1px solid #ffe0b2}
+.badge.EVENT_FINISHED{background:#ede7f6;color:#4527a0;border:1px solid #d1c4e9}
+.badge.CANCELLED{background:transparent;color:var(--g6);border:1px solid var(--g3);text-decoration:line-through}
+:root[data-theme="dark"] .badge.PUBLISHED,:root:not([data-theme="light"]) .badge.PUBLISHED{background:#1b3a1e;color:#81c784;border-color:#2e5731}
+:root[data-theme="dark"] .badge.REGISTRATION_OPEN,:root:not([data-theme="light"]) .badge.REGISTRATION_OPEN{background:#fff;color:#000;border-color:#fff}
+:root[data-theme="dark"] .badge.REGISTRATION_CLOSED,:root:not([data-theme="light"]) .badge.REGISTRATION_CLOSED{background:#3e2300;color:#ffb74d;border-color:#5e3300}
+:root[data-theme="dark"] .badge.EVENT_FINISHED,:root:not([data-theme="light"]) .badge.EVENT_FINISHED{background:#231852;color:#b39ddb;border-color:#3d2e8a}
+
+/* ── Detail panel ── */
+.detail{background:var(--white);border:1px solid var(--g3);position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px);max-height:calc(100vh - 90px);overflow:auto;display:flex;flex-direction:column}
+.detail .dhd{padding:16px 18px;border-bottom:1px solid var(--g3);position:sticky;top:0;background:var(--white);z-index:2}
+.detail .dhd h2{font-size:18px;font-weight:900;letter-spacing:-.3px;line-height:1.25;text-wrap:balance}
+.detail .dhd small{font-size:12px;color:var(--g6)}
+.sec{padding:14px 18px;border-bottom:1px solid var(--g1)}
+.sec h3{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6);margin-bottom:8px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:5px 8px;font-size:13px}
+.kv dt{color:var(--g6)}
+.kv dd{font-weight:600;word-break:break-word}
+.acts{padding:14px 18px;display:flex;gap:8px;flex-wrap:wrap}
+.pick{padding:56px 24px;text-align:center;color:var(--g6);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.pick svg{opacity:.3}
+
+/* Category table in detail */
+.cat-table{width:100%;border-collapse:collapse;font-size:13px}
+.cat-table th{text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--g6);padding:6px 10px 4px;border-bottom:1px solid var(--g3)}
+.cat-table td{padding:8px 10px;border-bottom:1px solid var(--g1);font-variant-numeric:tabular-nums}
+.cat-table tr:last-child td{border-bottom:none}
+
+/* Status flow */
+.flow{display:flex;flex-direction:column;gap:4px}
+.flow-btn{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--g3);font-weight:700;font-size:13px;cursor:pointer;background:var(--white);color:var(--ink)}
+.flow-btn.cur{background:var(--black);color:var(--white);border-color:var(--black)}
+.flow-btn.past{color:var(--g6);background:none}
+.flow-btn.cancel{margin-top:6px;color:#c00;border-color:rgba(200,0,0,.3)}
+.flow-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Loading skeleton */
+.skel{background:var(--g3);border-radius:0;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);background:var(--black);color:var(--white);padding:11px 20px;font-weight:600;font-size:13px;transition:transform .22s;z-index:99;visibility:hidden;max-width:90vw;text-align:center}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+
+/* Mobile */
+.back{display:none}
+@media(max-width:900px){
+  .stats{grid-template-columns:1fr 1fr}
+  .layout{grid-template-columns:1fr}
+  .detail{position:fixed;inset:0;max-height:none;z-index:30;overflow:auto;display:none}
+  .detail.open{display:flex}
+  .back{display:inline-flex;margin-bottom:12px}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr 1fr}
+  .ev-meta{display:none}
+}
+</style>
+
+<div class="top">
+  <div class="in">
+    <div class="mark">S</div>
+    <div>
+      <div class="title">Sevenday Admin</div>
+      <div class="sub">Events Management</div>
+    </div>
+    <div class="sp"></div>
+    <a href="admin.html" class="top nav-link">Orders</a>
+    <a href="admin-events.html" class="top nav-link on">Events</a>
+    <button class="btn primary" onclick="openCreate()">+ New Event</button>
+    <button class="btn" onclick="logout()" style="margin-left:4px">Logout</button>
+  </div>
+</div>
+
+<!-- Login overlay -->
+<div id="loginScreen" style="display:none;min-height:100vh;background:#000;place-items:center;padding:20px">
+  <form id="loginForm" style="background:#fff;padding:36px;width:min(400px,100%)">
+    <div style="width:40px;height:40px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px;margin-bottom:18px">S</div>
+    <h1 style="font-size:24px;font-weight:900;letter-spacing:-.4px">Admin Login</h1>
+    <p style="color:var(--g6);margin:4px 0 20px;font-size:14px">Sevenday Events</p>
+    <div id="loginMsg"></div>
+    <input id="loginPass" type="password" placeholder="Admin Password" style="width:100%;height:48px;border:1px solid var(--g3);padding:0 14px;font-size:16px;margin-bottom:12px;background:var(--white);color:var(--ink)">
+    <button type="submit" class="btn primary" style="width:100%;height:48px">Login</button>
+  </form>
+</div>
+
+<div id="mainApp" style="display:none">
+  <div class="wrap">
+    <!-- Stats -->
+    <div class="stats" id="stats">
+      <div class="stat" onclick="filterStatus('')" id="st-all">
+        <span class="num" id="cnt-all">—</span>
+        <div class="lbl">All Events</div>
+      </div>
+      <div class="stat" onclick="filterStatus('REGISTRATION_OPEN')" id="st-open">
+        <span class="num" id="cnt-open">—</span>
+        <div class="lbl"><span class="dot" style="background:var(--black)"></span>Open</div>
+      </div>
+      <div class="stat" onclick="filterStatus('PUBLISHED')" id="st-pub">
+        <span class="num" id="cnt-pub">—</span>
+        <div class="lbl"><span class="dot" style="background:#4caf50"></span>Published</div>
+      </div>
+      <div class="stat" onclick="filterStatus('DRAFT')" id="st-draft">
+        <span class="num" id="cnt-draft">—</span>
+        <div class="lbl"><span class="dot" style="background:var(--g3)"></span>Drafts</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <input id="searchBox" type="search" placeholder="Search events…" oninput="renderList()">
+      <select id="typeFilter" onchange="renderList()">
+        <option value="">All Types</option>
+        <option value="CYCLING">Cycling</option>
+        <option value="RUNNING">Running</option>
+        <option value="MTB">MTB</option>
+        <option value="TRIATHLON">Triathlon</option>
+        <option value="COMMUNITY">Community</option>
+      </select>
+      <button class="btn" onclick="loadEvents()">↻ Refresh</button>
+    </div>
+
+    <div class="layout">
+      <!-- Event list -->
+      <div>
+        <button class="btn back" onclick="closeDetail()">← Back</button>
+        <div class="list" id="evList">
+          <div class="list-hd">
+            <h2>Events <span id="listCount" style="font-weight:500;color:var(--g6)"></span></h2>
+          </div>
+          <div id="listBody">
+            <div class="empty">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail panel -->
+      <div class="detail" id="detailPanel">
+        <div class="pick" id="pickMsg">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <b style="font-size:14px;color:var(--ink)">Select an event</b>
+          <span style="font-size:13px">Click a row to see details</span>
+        </div>
+        <div id="detailContent" style="display:none;flex-direction:column;flex:1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+
+let token = sessionStorage.getItem('sd_admin') || '';
+let events = [];
+let selId = null;
+let statusFilter = '';
+
+// ── Auth ─────────────────────────────────────────────────────
+async function post(action, data) {
+  const r = await fetch(`${API_URL}?action=${action}&secret=${API_SECRET}`, {
+    method: 'POST',
+    body: JSON.stringify({ action, secret: API_SECRET, token, ...data })
+  });
+  const j = await r.json();
+  if (j.ok === false) throw new Error(j.error || 'API error');
+  return j.data !== undefined ? j.data : j;
+}
+
+async function get(params) {
+  const qs = new URLSearchParams({ secret: API_SECRET, ...params }).toString();
+  const r = await fetch(`${API_URL}?${qs}`);
+  const j = await r.json();
+  if (j.ok === false) throw new Error(j.error || 'API error');
+  return j.data !== undefined ? j.data : j;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function logout() {
+  sessionStorage.removeItem('sd_admin');
+  token = '';
+  showLogin();
+}
+
+function showLogin() {
+  document.getElementById('loginScreen').style.display = 'grid';
+  document.getElementById('mainApp').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  loadEvents();
+}
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMsg');
+  msg.innerHTML = '';
+  try {
+    const r = await post('adminLogin', { password: pw });
+    token = r.token;
+    sessionStorage.setItem('sd_admin', token);
+    showApp();
+  } catch (err) {
+    msg.innerHTML = `<div style="background:#fff0f0;border-left:3px solid #c00;padding:8px 12px;font-size:13px;margin-bottom:10px;color:#c00">${err.message}</div>`;
+  }
+});
+
+// ── Load events ───────────────────────────────────────────────
+async function loadEvents() {
+  document.getElementById('listBody').innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const r = await get({ action: 'evt.getEvents', admin: '1' });
+    events = r.events || [];
+    updateStats();
+    renderList();
+  } catch (err) {
+    document.getElementById('listBody').innerHTML = `<div class="empty"><b>Error</b><br>${err.message}</div>`;
+  }
+}
+
+function updateStats() {
+  const total = events.length;
+  const open = events.filter(e => e.status === 'REGISTRATION_OPEN').length;
+  const pub = events.filter(e => e.status === 'PUBLISHED').length;
+  const draft = events.filter(e => e.status === 'DRAFT').length;
+  document.getElementById('cnt-all').textContent = total;
+  document.getElementById('cnt-open').textContent = open;
+  document.getElementById('cnt-pub').textContent = pub;
+  document.getElementById('cnt-draft').textContent = draft;
+}
+
+function filterStatus(s) {
+  statusFilter = s;
+  // highlight stat card
+  ['st-all','st-open','st-pub','st-draft'].forEach(id => document.getElementById(id).classList.remove('on'));
+  if (s === '') document.getElementById('st-all').classList.add('on');
+  else if (s === 'REGISTRATION_OPEN') document.getElementById('st-open').classList.add('on');
+  else if (s === 'PUBLISHED') document.getElementById('st-pub').classList.add('on');
+  else if (s === 'DRAFT') document.getElementById('st-draft').classList.add('on');
+  renderList();
+}
+
+function renderList() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const tp = document.getElementById('typeFilter').value;
+  let filtered = events.filter(ev => {
+    if (statusFilter && ev.status !== statusFilter) return false;
+    if (tp && ev.event_type !== tp) return false;
+    if (q && !ev.event_name.toLowerCase().includes(q) && !ev.event_code.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('listCount').textContent = `(${filtered.length})`;
+  if (!filtered.length) {
+    document.getElementById('listBody').innerHTML = '<div class="empty"><b>No events found</b><br>Try a different filter</div>';
+    return;
+  }
+  document.getElementById('listBody').innerHTML = filtered.map(ev => `
+    <button class="ev-row${selId === ev.event_id ? ' sel' : ''}" onclick="selectEvent('${ev.event_id}')">
+      <div class="ev-thumb">${ev.cover_image ? `<img src="${ev.cover_image}" alt="">` : typeIcon(ev.event_type)}</div>
+      <div>
+        <div class="ev-name">${ev.event_name}</div>
+        <div class="ev-meta">${fmtDate(ev.event_date)} · ${ev.location || '—'} · <span class="badge ${ev.status}">${statusLabel(ev.status)}</span></div>
+      </div>
+      <div class="ev-right">
+        <span class="badge ${ev.status}" style="font-size:10px">${ev.event_type}</span>
+      </div>
+    </button>
+  `).join('');
+}
+
+function typeIcon(t) {
+  const icons = { CYCLING:'🚴', RUNNING:'🏃', MTB:'🚵', TRIATHLON:'🏊', COMMUNITY:'🎪' };
+  return icons[t] || '📅';
+}
+
+function statusLabel(s) {
+  const m = { DRAFT:'Draft', PUBLISHED:'Published', REGISTRATION_OPEN:'Open', REGISTRATION_CLOSED:'Closed', EVENT_FINISHED:'Finished', CANCELLED:'Cancelled' };
+  return m[s] || s;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function fmtNum(n) {
+  return Number(n || 0).toLocaleString();
+}
+
+// ── Select event → show detail ────────────────────────────────
+async function selectEvent(id) {
+  selId = id;
+  renderList();
+  document.getElementById('pickMsg').style.display = 'none';
+  const dc = document.getElementById('detailContent');
+  dc.style.display = 'flex';
+  dc.innerHTML = '<div class="empty">Loading…</div>';
+  document.getElementById('detailPanel').classList.add('open');
+  try {
+    const ev = await get({ action: 'evt.getEvent', event_id: id });
+    renderDetail(ev);
+  } catch (err) {
+    dc.innerHTML = `<div class="empty"><b>Error</b><br>${err.message}</div>`;
+  }
+}
+
+function renderDetail(ev) {
+  const dc = document.getElementById('detailContent');
+  const STATUS_FLOW = ['DRAFT','PUBLISHED','REGISTRATION_OPEN','REGISTRATION_CLOSED','EVENT_FINISHED'];
+  const curIdx = STATUS_FLOW.indexOf(ev.status);
+
+  const catsHtml = (ev.categories && ev.categories.length) ? `
+    <div class="sec">
+      <h3>Categories (${ev.categories.length})</h3>
+      <div style="overflow-x:auto">
+        <table class="cat-table">
+          <thead><tr><th>Name</th><th>Distance</th><th>Price</th><th>Registered</th><th>Capacity</th><th>Status</th></tr></thead>
+          <tbody>
+            ${ev.categories.map(c => `
+              <tr>
+                <td><b>${c.category_name}</b><br><span style="color:var(--g6);font-size:11px">${c.category_code}</span></td>
+                <td>${c.distance || '—'}</td>
+                <td>₭${fmtNum(c.price_lak)}</td>
+                <td style="font-weight:700">${c.registered_count}</td>
+                <td>${c.capacity || '∞'}</td>
+                <td><span class="badge ${c.status === 'ACTIVE' ? 'REGISTRATION_OPEN' : 'CANCELLED'}">${c.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ` : `<div class="sec"><div style="font-size:13px;color:var(--g6)">No categories yet — <a href="admin-events-detail.html?event_id=${ev.event_id}" style="font-weight:700;color:var(--ink);text-decoration:underline">add one</a></div></div>`;
+
+  dc.innerHTML = `
+    <div class="dhd">
+      <small>${ev.event_code} · ${ev.event_type}</small>
+      <h2>${ev.event_name}</h2>
+      <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span class="badge ${ev.status}">${statusLabel(ev.status)}</span>
+        <span style="font-size:12px;color:var(--g6)">${fmtDate(ev.event_date)}</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>Event Details</h3>
+      <dl class="kv">
+        <dt>Date</dt><dd>${fmtDate(ev.event_date)}</dd>
+        <dt>Time</dt><dd>${ev.start_time || '—'} – ${ev.end_time || '—'}</dd>
+        <dt>Location</dt><dd>${ev.location || '—'}</dd>
+        <dt>Organizer</dt><dd>${ev.organizer || '—'}</dd>
+        <dt>Contact</dt><dd>${ev.contact_phone || '—'}</dd>
+        <dt>Reg. Open</dt><dd>${fmtDate(ev.registration_open)}</dd>
+        <dt>Reg. Close</dt><dd>${fmtDate(ev.registration_close)}</dd>
+      </dl>
+    </div>
+
+    ${ev.description ? `<div class="sec"><h3>Description</h3><p style="font-size:13px;line-height:1.6">${ev.description}</p></div>` : ''}
+
+    ${catsHtml}
+
+    <div class="sec">
+      <h3>Status Flow</h3>
+      <div class="flow">
+        ${STATUS_FLOW.map((s, i) => `
+          <button class="flow-btn ${i < curIdx ? 'past' : ''} ${i === curIdx ? 'cur' : ''}"
+            ${i !== curIdx + 1 ? 'disabled' : `onclick="advanceStatus('${ev.event_id}','${s}')"`}>
+            <span>${statusLabel(s)}</span>
+            ${i === curIdx ? '<span>← Current</span>' : i < curIdx ? '<span>✓</span>' : '<span>→ Advance</span>'}
+          </button>
+        `).join('')}
+        ${ev.status !== 'CANCELLED' ? `
+          <button class="flow-btn cancel" onclick="cancelEvent('${ev.event_id}')">✕ Cancel Event</button>
+        ` : ''}
+      </div>
+    </div>
+
+    <div class="acts">
+      <a href="admin-events-detail.html?event_id=${ev.event_id}" class="btn primary">✏ Edit Event</a>
+      <a href="admin-events-detail.html?event_id=${ev.event_id}&tab=categories" class="btn">+ Categories</a>
+      <a href="admin-events-checkin.html?event_id=${ev.event_id}" class="btn">📷 Check-in</a>
+    </div>
+  `;
+}
+
+// ── Status advance ────────────────────────────────────────────
+async function advanceStatus(eventId, newStatus) {
+  try {
+    await post('evt.updateEventStatus', { event_id: eventId, status: newStatus });
+    toast(`Status → ${statusLabel(newStatus)}`);
+    // Refresh both list and detail
+    await loadEvents();
+    selectEvent(eventId);
+  } catch (err) {
+    toast('Error: ' + err.message);
+  }
+}
+
+async function cancelEvent(eventId) {
+  if (!confirm('Cancel this event?')) return;
+  try {
+    await post('evt.updateEventStatus', { event_id: eventId, status: 'CANCELLED' });
+    toast('Event cancelled');
+    await loadEvents();
+    selectEvent(eventId);
+  } catch (err) {
+    toast('Error: ' + err.message);
+  }
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+function openCreate() {
+  window.location.href = 'admin-events-detail.html';
+}
+
+// ── Init ──────────────────────────────────────────────────────
+if (token) {
+  showApp();
+} else {
+  showLogin();
+}
+</script>
+</html>
