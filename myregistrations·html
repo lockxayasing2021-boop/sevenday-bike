@@ -1,570 +1,365 @@
-<title>Sevenday — My Registrations</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>ການສະໝັກຂອງຂ້ອຍ</title>
+<link rel="stylesheet" href="Sevenday.css">
 <style>
-:root{
-  --black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;
-  --g1:#F3F3F3;--white:#fff;--accent:#FF3B00;
-  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
-  color-scheme:light;
+:root {
+  --accent: #FF3B00;
+  --radius: 12px;
 }
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
-    --g1:#1E1E1E;--white:#111;color-scheme:dark;
-  }
+
+.myreg-wrap {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem 4rem;
 }
-:root[data-theme="dark"]{
-  --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
-  --g1:#1E1E1E;--white:#111;color-scheme:dark;
+
+/* Login gate */
+#login-gate {
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  text-align: center;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
-button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
-a{color:inherit;text-decoration:none}
-img{max-width:100%}
-:focus-visible{outline:2px solid var(--black);outline-offset:2px}
-input,select{font:inherit;color:var(--ink);background:var(--white);border:1.5px solid var(--g3);padding:10px 14px;width:100%;font-size:15px;border-radius:0;appearance:none}
-input:focus,select:focus{outline:none;border-color:var(--black)}
-
-/* ── Nav ── */
-.top{background:var(--black);color:var(--white);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
-.top .in{max-width:680px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;gap:12px}
-.top .mark{width:34px;height:34px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px;flex-shrink:0}
-.top .title{font-size:15px;font-weight:800;color:var(--white);flex:1}
-.top .btn-logout{font-size:13px;font-weight:600;color:rgba(255,255,255,.65);flex-shrink:0;display:none}
-.top .btn-logout:hover{color:#fff}
-.top .btn-home{font-size:13px;font-weight:600;color:rgba(255,255,255,.65);flex-shrink:0}
-.top .btn-home:hover{color:#fff}
-
-/* ── Wrap ── */
-.wrap{max-width:680px;margin:0 auto;padding:32px 20px 80px}
-
-/* ═══════════════════════════════════
-   LOGIN SCREEN
-═══════════════════════════════════ */
-#screen-login{display:block}
-#screen-main{display:none}
-
-.login-box{max-width:420px;margin:0 auto}
-.login-hero{text-align:center;padding:0 0 32px}
-.login-hero .mark{width:56px;height:56px;background:var(--black);color:var(--white);display:grid;place-items:center;font-weight:900;font-size:26px;margin:0 auto 16px}
-.login-hero h1{font-size:24px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px}
-.login-hero p{font-size:14px;color:var(--g6);line-height:1.6}
-
-.login-card{background:var(--white);border:1.5px solid var(--g3);padding:28px 24px}
-
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--g6);margin-bottom:6px}
-.form-hint{font-size:12px;color:var(--g6);margin-top:5px}
-
-.tab-switch{display:flex;border:1.5px solid var(--g3);margin-bottom:20px;overflow:hidden}
-.tab-switch button{flex:1;padding:9px 0;font-size:13px;font-weight:700;background:none;border:none;color:var(--g6)}
-.tab-switch button.active{background:var(--black);color:var(--white)}
-
-.btn-primary{width:100%;padding:13px;background:var(--black);color:var(--white);font-weight:800;font-size:15px;letter-spacing:.01em;border:2px solid var(--black);transition:opacity .15s}
-.btn-primary:hover{opacity:.85}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed}
-
-.login-err{color:#c00;font-size:13px;font-weight:600;margin-top:10px;display:none}
-.login-err.show{display:block}
-.login-ok{color:#0a7c3e;font-size:13px;font-weight:600;margin-top:10px;display:none;text-align:center}
-.login-ok.show{display:block}
-
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--g6);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--g3)}
-
-.btn-guest{width:100%;padding:11px;background:none;color:var(--ink);font-weight:700;font-size:14px;border:1.5px solid var(--g3)}
-.btn-guest:hover{border-color:var(--black)}
-
-/* ═══════════════════════════════════
-   MAIN SCREEN
-═══════════════════════════════════ */
-.user-header{display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--g3);padding:18px 20px;margin-bottom:24px}
-.user-avatar{width:44px;height:44px;background:var(--black);color:var(--white);display:grid;place-items:center;font-weight:900;font-size:18px;flex-shrink:0}
-.user-name{font-size:16px;font-weight:800;line-height:1.2}
-.user-sub{font-size:13px;color:var(--g6);margin-top:2px}
-.user-header .spacer{flex:1}
-.btn-logout-main{font-size:13px;font-weight:700;color:var(--g6);border:1.5px solid var(--g3);padding:6px 14px}
-.btn-logout-main:hover{border-color:var(--black);color:var(--ink)}
-
-/* filter bar */
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.filter-btn{padding:6px 14px;font-size:13px;font-weight:700;border:1.5px solid var(--g3);color:var(--g6);background:var(--white);white-space:nowrap}
-.filter-btn.active{background:var(--black);color:var(--white);border-color:var(--black)}
-.filter-btn:hover:not(.active){border-color:var(--black);color:var(--ink)}
-
-/* section label */
-.section-label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g6);margin-bottom:12px}
-
-/* reg list */
-.reg-list{display:flex;flex-direction:column;gap:12px}
-
-/* reg card */
-.reg-card{background:var(--white);border:1.5px solid var(--g3);overflow:hidden;cursor:pointer;transition:border-color .15s}
-.reg-card:hover{border-color:var(--black)}
-.reg-card-top{background:var(--black);color:var(--white);padding:14px 18px;display:flex;align-items:flex-start;gap:12px}
-.reg-card-top .event-name{font-size:15px;font-weight:800;letter-spacing:-.1px;flex:1;line-height:1.3}
-.reg-card-top .status-badge{flex-shrink:0;padding:3px 10px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-top:1px}
-.badge-pending{background:#f5a623;color:#000}
-.badge-paid{background:#4A90D9;color:#fff}
-.badge-approved{background:#2ECC71;color:#000}
-.badge-rejected{background:#c0392b;color:#fff}
-.badge-cancelled{background:#888;color:#fff}
-
-.reg-card-body{padding:14px 18px}
-.reg-meta-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px}
-.reg-meta-item{font-size:13px;color:var(--g6)}
-.reg-meta-item strong{color:var(--ink);font-weight:700}
-
-.reg-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.cat-pill{font-size:11px;font-weight:700;padding:3px 10px;border:1.5px solid var(--g3);color:var(--g6)}
-
-.reg-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--g3)}
-.reg-total{font-size:16px;font-weight:900;letter-spacing:-.2px}
-.reg-link{font-size:12px;font-weight:700;color:var(--g6);display:flex;align-items:center;gap:4px}
-.reg-card:hover .reg-link{color:var(--ink)}
-
-/* empty / loading */
-.empty-state{text-align:center;padding:60px 20px;color:var(--g6)}
-.empty-state .ico{font-size:40px;margin-bottom:12px;opacity:.4}
-.empty-state h3{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px}
-.empty-state p{font-size:14px}
-.empty-state .btn-browse{display:inline-block;margin-top:20px;padding:11px 24px;background:var(--black);color:var(--white);font-weight:800;font-size:14px}
-
-.skele{background:var(--g3);border-radius:0;animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
-.skele-card{background:var(--white);border:1.5px solid var(--g3);overflow:hidden;margin-bottom:12px}
-.skele-top{height:52px;background:var(--g3)}
-.skele-body{padding:14px 18px;display:flex;flex-direction:column;gap:8px}
-.skele-line{height:12px;background:var(--g3)}
-
-/* guest lookup box */
-.guest-box{background:var(--white);border:1.5px solid var(--g3);padding:24px;margin-bottom:24px}
-.guest-box h3{font-size:15px;font-weight:800;margin-bottom:4px}
-.guest-box p{font-size:13px;color:var(--g6);margin-bottom:16px}
-.guest-row{display:flex;gap:0}
-.guest-row input{border-right:none;font-size:14px}
-.guest-row button{height:44px;padding:0 18px;background:var(--black);color:var(--white);font-weight:800;font-size:13px;border:1.5px solid var(--black);white-space:nowrap;flex-shrink:0}
-.guest-err{color:#c00;font-size:12px;margin-top:6px;font-weight:600;display:none}
-.guest-err.show{display:block}
-
-/* Mobile responsive */
-@media(max-width:480px){
-  .reg-meta-row{gap:10px}
-  .reg-card-top{flex-direction:column;gap:6px}
+#login-gate h2 { margin: 0 0 .5rem; font-size: 1.25rem; color: var(--grey-900); }
+#login-gate p  { color: var(--grey-600); font-size: .9rem; margin: 0 0 1.5rem; }
+.login-form { display: flex; flex-direction: column; gap: .85rem; text-align: left; }
+.login-form label { font-size: .8rem; color: var(--grey-600); letter-spacing: .04em; text-transform: uppercase; display: block; margin-bottom: .25rem; }
+.login-form input {
+  width: 100%; box-sizing: border-box;
+  border: 1.5px solid var(--grey-300); border-radius: 8px;
+  padding: .65rem .85rem; font-size: .95rem;
+  background: var(--white); color: var(--grey-900);
+  transition: border-color .15s;
 }
+.login-form input:focus { outline: none; border-color: var(--accent); }
+.btn-accent {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: .75rem 1.5rem;
+  font-size: .95rem; font-weight: 700; cursor: pointer; width: 100%;
+}
+.btn-accent:disabled { opacity: .6; cursor: not-allowed; }
+.login-error { color: #991B1B; font-size: .85rem; display: none; }
+
+/* Header bar */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: .75rem; margin-bottom: 1.5rem;
+}
+.page-header h1 { margin: 0; font-size: 1.5rem; color: var(--grey-900); }
+.user-chip {
+  display: flex; align-items: center; gap: .5rem;
+  background: var(--grey-100); border-radius: 999px;
+  padding: .35rem .85rem .35rem .5rem; font-size: .85rem; color: var(--grey-600);
+}
+.user-chip strong { color: var(--grey-900); }
+
+/* Filter tabs */
+.filter-tabs {
+  display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem;
+}
+.tab-btn {
+  border: 1.5px solid var(--grey-300); background: var(--white);
+  border-radius: 999px; padding: .4rem .95rem;
+  font-size: .85rem; cursor: pointer; color: var(--grey-600);
+  transition: all .15s;
+}
+.tab-btn.active {
+  border-color: var(--accent); background: var(--accent);
+  color: #fff; font-weight: 600;
+}
+
+/* Registration card */
+.reg-card {
+  background: var(--white);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: box-shadow .15s;
+}
+.reg-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+.reg-card-inner {
+  display: flex; align-items: stretch; gap: 0;
+}
+.reg-status-bar {
+  width: 4px; flex-shrink: 0;
+}
+.status-pending  { background: #F59E0B; }
+.status-approved { background: #10B981; }
+.status-rejected { background: #EF4444; }
+.status-checked  { background: #3B82F6; }
+
+.reg-body {
+  flex: 1; padding: 1.1rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+.reg-event-name {
+  flex: 1; min-width: 180px;
+}
+.reg-event-name h3 {
+  margin: 0 0 .2rem; font-size: 1rem; color: var(--grey-900);
+}
+.reg-event-name span { font-size: .82rem; color: var(--grey-600); }
+
+.reg-meta {
+  display: flex; flex-direction: column; gap: .2rem;
+  font-size: .82rem; color: var(--grey-600); min-width: 120px;
+}
+.reg-meta strong { color: var(--grey-900); font-size: .9rem; }
+
+.status-pill {
+  font-size: .75rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; padding: .3rem .75rem;
+  border-radius: 999px; flex-shrink: 0;
+}
+.status-pill.pending  { background:#FFF3CD; color:#856404; }
+.status-pill.approved { background:#D1FAE5; color:#065F46; }
+.status-pill.rejected { background:#FEE2E2; color:#991B1B; }
+.status-pill.checked  { background:#DBEAFE; color:#1E40AF; }
+
+.reg-action { padding: 0 1rem 0 0; flex-shrink: 0; }
+.btn-view {
+  background: transparent; color: var(--accent);
+  border: 1.5px solid var(--accent); border-radius: 8px;
+  padding: .45rem 1rem; font-size: .85rem; font-weight: 600;
+  cursor: pointer; text-decoration: none; display: inline-block;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 3rem 1rem;
+  color: var(--grey-600);
+}
+.empty-state svg { opacity: .3; margin-bottom: 1rem; }
+.empty-state p { margin: .25rem 0; }
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--grey-100) 25%, var(--grey-300) 50%, var(--grey-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.notice {
+  padding: 1rem 1.25rem; border-radius: var(--radius);
+  font-size: .9rem; margin-bottom: 1rem;
+}
+.notice.error { background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; }
 </style>
 
-<!-- ── Nav ── -->
-<nav class="top">
-  <div class="in">
-    <div class="mark">S</div>
-    <span class="title">การสมัครของฉัน</span>
-    <a href="events.html" class="btn-home">← ดู Events</a>
-    <button class="btn-logout" id="btn-logout" onclick="logout()">ออกจากระบบ</button>
-  </div>
-</nav>
+<div class="myreg-wrap">
+  <div id="notice-area"></div>
 
-<!-- ═══════════════════ LOGIN SCREEN ═══════════════════ -->
-<div class="wrap" id="screen-login">
-  <div class="login-box">
-    <div class="login-hero">
-      <div class="mark">S</div>
-      <h1>เข้าสู่ระบบ</h1>
-      <p>ดูสถานะการสมัครและ QR Card<br>ของคุณทุก Event ได้ในที่เดียว</p>
-    </div>
-
-    <div class="login-card">
-      <!-- Tab switch: Phone / Email -->
-      <div class="tab-switch" role="tablist">
-        <button class="active" id="tab-phone" onclick="switchTab('phone')" role="tab">📱 เบอร์โทรศัพท์</button>
-        <button id="tab-email" onclick="switchTab('email')" role="tab">✉️ อีเมล</button>
+  <!-- Login gate (hidden if already logged in) -->
+  <div id="login-gate" hidden>
+    <h2>ເຂົ້າສູ່ລະບົບ</h2>
+    <p>ໃສ່ເບີໂທ ຫຼື ອີເມລ ເພື່ອເບິ່ງການສະໝັກຂອງທ່ານ</p>
+    <form class="login-form" id="lookup-form" onsubmit="return false">
+      <div>
+        <label>ເບີໂທ ຫຼື ອີເມລ</label>
+        <input type="text" id="lookup-input" placeholder="e.g. 020XXXXXXXX ຫຼື name@email.com" autocomplete="username">
       </div>
+      <div id="lookup-error" class="login-error"></div>
+      <button type="submit" class="btn-accent" id="lookup-btn" onclick="doLookup()">ຄົ້ນຫາ</button>
+    </form>
+    <div style="margin-top:1.25rem;font-size:.82rem;color:var(--grey-600);">
+      ຍັງບໍ່ໄດ້ສະໝັກ? <a href="events.html" style="color:var(--accent);font-weight:600;">ເບິ່ງ Events</a>
+    </div>
+  </div>
 
-      <!-- Phone login -->
-      <div id="form-phone">
-        <div class="form-group">
-          <label>เบอร์โทรศัพท์</label>
-          <input type="tel" id="inp-phone" placeholder="020-000-0000" autocomplete="tel">
-          <div class="form-hint">ใช้เบอร์ที่ลงทะเบียนไว้กับ Sevenday</div>
-        </div>
-        <button class="btn-primary" id="btn-phone-login" onclick="loginPhone()">ดูการสมัครของฉัน</button>
+  <!-- Registrations list (hidden until loaded) -->
+  <div id="regs-view" hidden>
+    <div class="page-header">
+      <h1>ການສະໝັກຂອງຂ້ອຍ</h1>
+      <div id="user-chip" class="user-chip">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <strong id="user-name-chip">—</strong>
       </div>
-
-      <!-- Email login -->
-      <div id="form-email" style="display:none">
-        <div class="form-group">
-          <label>อีเมล</label>
-          <input type="email" id="inp-email" placeholder="your@email.com" autocomplete="email">
-          <div class="form-hint">ใช้อีเมลที่กรอกตอนสมัคร Event</div>
-        </div>
-        <button class="btn-primary" id="btn-email-login" onclick="loginEmail()">ดูการสมัครของฉัน</button>
-      </div>
-
-      <div class="login-err" id="login-err"></div>
-      <div class="login-ok" id="login-ok"></div>
-
-      <div class="divider">หรือ</div>
-
-      <!-- Guest lookup by Reg ID -->
-      <button class="btn-guest" onclick="guestMode()">ค้นหาด้วย Registration ID</button>
     </div>
 
-    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--g6);">
-      หากยังไม่เคยสมัคร Event → <a href="events.html" style="font-weight:700;color:var(--ink);text-decoration:underline">ดู Events ทั้งหมด</a>
-    </p>
-  </div>
-</div>
-
-<!-- ═══════════════════ MAIN SCREEN ═══════════════════ -->
-<div class="wrap" id="screen-main">
-
-  <!-- User header (hidden for guest) -->
-  <div class="user-header" id="user-header">
-    <div class="user-avatar" id="user-initials">?</div>
-    <div>
-      <div class="user-name" id="user-display-name">—</div>
-      <div class="user-sub" id="user-display-sub">—</div>
+    <div class="filter-tabs">
+      <button class="tab-btn active" data-filter="all"  onclick="filterRegs('all',this)">ທັງໝົດ</button>
+      <button class="tab-btn" data-filter="pending"    onclick="filterRegs('pending',this)">ລໍຖ້າ</button>
+      <button class="tab-btn" data-filter="approved"   onclick="filterRegs('approved',this)">ອະນຸມັດ</button>
+      <button class="tab-btn" data-filter="checked-in" onclick="filterRegs('checked-in',this)">ເຂົ້າຮ່ວມ</button>
+      <button class="tab-btn" data-filter="rejected"   onclick="filterRegs('rejected',this)">ປະຕິເສດ</button>
     </div>
-    <div class="spacer"></div>
-    <button class="btn-logout-main" onclick="logout()">ออกจากระบบ</button>
-  </div>
 
-  <!-- Guest: manual reg ID lookup -->
-  <div class="guest-box" id="guest-box" style="display:none">
-    <h3>ค้นหาการสมัคร</h3>
-    <p>กรอก Registration ID ที่ได้รับหลังจากสมัคร Event</p>
-    <div class="guest-row">
-      <input type="text" id="inp-guest-reg" placeholder="REG-XXXXXX" autocomplete="off">
-      <button onclick="lookupGuest()">ค้นหา</button>
+    <div id="skeletons">
+      ${[1,2,3].map(()=>`
+        <div class="reg-card" style="margin-bottom:1rem;">
+          <div class="reg-card-inner">
+            <div class="reg-status-bar skeleton" style="background:var(--grey-300);width:4px;"></div>
+            <div class="reg-body" style="gap:.75rem;">
+              <div style="flex:1"><div class="skeleton" style="height:1.1rem;width:220px;margin-bottom:.5rem;"></div><div class="skeleton" style="height:.85rem;width:140px;"></div></div>
+              <div class="skeleton" style="width:80px;height:1.8rem;border-radius:999px;"></div>
+            </div>
+          </div>
+        </div>`).join('')}
     </div>
-    <div class="guest-err" id="guest-err"></div>
+
+    <div id="regs-list"></div>
   </div>
-
-  <!-- Filter -->
-  <div class="filter-bar" id="filter-bar" style="display:none">
-    <button class="filter-btn active" data-filter="all" onclick="setFilter(this,'all')">ทั้งหมด</button>
-    <button class="filter-btn" data-filter="pending" onclick="setFilter(this,'pending')">รอชำระ</button>
-    <button class="filter-btn" data-filter="paid" onclick="setFilter(this,'paid')">ชำระแล้ว</button>
-    <button class="filter-btn" data-filter="approved" onclick="setFilter(this,'approved')">อนุมัติแล้ว ✅</button>
-    <button class="filter-btn" data-filter="rejected" onclick="setFilter(this,'rejected')">ไม่อนุมัติ</button>
-  </div>
-
-  <!-- Skeleton loader -->
-  <div id="skeleton-list">
-    <div class="skele-card"><div class="skele-top skele"></div><div class="skele-body"><div class="skele-line skele" style="width:70%"></div><div class="skele-line skele" style="width:45%"></div></div></div>
-    <div class="skele-card"><div class="skele-top skele"></div><div class="skele-body"><div class="skele-line skele" style="width:60%"></div><div class="skele-line skele" style="width:40%"></div></div></div>
-    <div class="skele-card"><div class="skele-top skele"></div><div class="skele-body"><div class="skele-line skele" style="width:75%"></div><div class="skele-line skele" style="width:50%"></div></div></div>
-  </div>
-
-  <!-- Registration list -->
-  <div class="reg-list" id="reg-list" style="display:none"></div>
-
-  <!-- Empty -->
-  <div class="empty-state" id="empty-state" style="display:none">
-    <div class="ico">🎽</div>
-    <h3>ยังไม่มีการสมัคร</h3>
-    <p>คุณยังไม่เคยสมัคร Event กับ Sevenday<br>มาลองดู Events ที่เปิดรับสมัครกันเลย!</p>
-    <a href="events.html" class="btn-browse">ดู Events ทั้งหมด</a>
-  </div>
-
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
-const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+const API_URL_EVT = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_SECRET  = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 
-// ── HMAC signing ──────────────────────────────────────
+let allRegs = [];
+
 async function hmacSign(body){
   const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw',enc.encode(API_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);
-  const sig = await crypto.subtle.sign('HMAC',key,enc.encode(body));
+  const key = await crypto.subtle.importKey('raw', enc.encode(EVT_SECRET),
+    {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
   return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-async function get(params){
+async function evtGet(params){
   const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
   const sig = await hmacSign(qs);
-  const res = await fetch(API_URL+'?'+qs+'&sig='+sig);
-  return JSON.parse(await res.text());
-}
-async function post(action,data){
-  const body = JSON.stringify({action,...data});
-  const sig = await hmacSign(body);
-  const res = await fetch(API_URL+'?sig='+sig,{method:'POST',headers:{'Content-Type':'application/json'},body});
+  const res = await fetch(API_URL_EVT+'?'+qs+'&sig='+sig);
   return JSON.parse(await res.text());
 }
 
-// ── Session storage (per-browser, non-sensitive) ──────
-const SESSION_KEY = 'sdEvtCustomer';
-function saveSession(obj){ try{ sessionStorage.setItem(SESSION_KEY,JSON.stringify(obj)); }catch(e){} }
-function loadSession(){ try{ const s=sessionStorage.getItem(SESSION_KEY); return s?JSON.parse(s):null; }catch(e){return null;} }
-function clearSession(){ try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){} }
-
-// ── State ─────────────────────────────────────────────
-let allRegs = [];
-let currentFilter = 'all';
-let isGuest = false;
-
-// ── Boot ──────────────────────────────────────────────
-(function init(){
-  const saved = loadSession();
-  if(saved && saved.lookup_key && saved.lookup_type){
-    // restore session
-    showMain(saved);
-    loadRegistrations(saved.lookup_type, saved.lookup_key);
-  } else {
-    // check URL param ?email= or ?phone=
-    const u = new URLSearchParams(location.search);
-    const em = u.get('email'), ph = u.get('phone');
-    if(em){ document.getElementById('inp-email').value=em; switchTab('email'); loginEmail(); }
-    else if(ph){ document.getElementById('inp-phone').value=ph; loginPhone(); }
-    else showLogin();
-  }
-})();
-
-// ── UI helpers ────────────────────────────────────────
-function showLogin(){
-  document.getElementById('screen-login').style.display='block';
-  document.getElementById('screen-main').style.display='none';
-  document.getElementById('btn-logout').style.display='none';
-}
-function showMain(session){
-  document.getElementById('screen-login').style.display='none';
-  document.getElementById('screen-main').style.display='block';
-  document.getElementById('btn-logout').style.display='block';
-  isGuest = session.is_guest || false;
-
-  if(isGuest){
-    document.getElementById('user-header').style.display='none';
-    document.getElementById('guest-box').style.display='block';
-    document.getElementById('filter-bar').style.display='none';
-    document.getElementById('skeleton-list').style.display='none';
-  } else {
-    document.getElementById('user-header').style.display='flex';
-    document.getElementById('guest-box').style.display='none';
-    document.getElementById('filter-bar').style.display='flex';
-    // fill user info
-    const name = session.display_name || session.lookup_key;
-    const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    document.getElementById('user-initials').textContent = initials;
-    document.getElementById('user-display-name').textContent = name;
-    document.getElementById('user-display-sub').textContent =
-      session.lookup_type==='phone' ? `📱 ${session.lookup_key}` : `✉️ ${session.lookup_key}`;
-  }
+function fmtDate(d){
+  if(!d) return '-';
+  return new Date(d).toLocaleDateString('lo-LA',{year:'numeric',month:'long',day:'numeric'});
 }
 
-function switchTab(t){
-  document.getElementById('tab-phone').classList.toggle('active',t==='phone');
-  document.getElementById('tab-email').classList.toggle('active',t==='email');
-  document.getElementById('form-phone').style.display=t==='phone'?'block':'none';
-  document.getElementById('form-email').style.display=t==='email'?'block':'none';
-  clearLoginErr();
+function statusCls(s){
+  return {pending:'pending', approved:'approved', rejected:'rejected', 'checked-in':'checked'}[s] || 'pending';
+}
+function statusLabel(s){
+  return {pending:'ລໍຖ້າ', approved:'ອະນຸມັດ', rejected:'ປະຕິເສດ', 'checked-in':'ເຂົ້າຮ່ວມ'}[s] || s;
 }
 
-function setErr(id,msg){ const el=document.getElementById(id); el.textContent=msg; el.classList.add('show'); }
-function clearLoginErr(){
-  document.getElementById('login-err').classList.remove('show');
-  document.getElementById('login-ok').classList.remove('show');
-}
-
-function guestMode(){
-  const session = {is_guest:true, lookup_key:'', lookup_type:'guest'};
-  saveSession(session);
-  showMain(session);
-}
-
-function logout(){
-  clearSession();
-  allRegs=[];
-  currentFilter='all';
-  // reset lists
-  document.getElementById('reg-list').innerHTML='';
-  document.getElementById('reg-list').style.display='none';
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('skeleton-list').style.display='none';
-  document.getElementById('inp-phone').value='';
-  document.getElementById('inp-email').value='';
-  clearLoginErr();
-  showLogin();
-}
-
-// ── Login ─────────────────────────────────────────────
-async function loginPhone(){
-  const phone = document.getElementById('inp-phone').value.trim();
-  if(!phone){ setErr('login-err','กรุณากรอกเบอร์โทรศัพท์'); return; }
-  clearLoginErr();
-  const btn = document.getElementById('btn-phone-login');
-  btn.disabled=true; btn.textContent='กำลังค้นหา…';
-  try{
-    const r = await post('evt.getCustomerByPhone',{phone});
-    if(r.success && r.customer){
-      const s={lookup_type:'phone',lookup_key:phone,display_name:r.customer.full_name||phone,customer_id:r.customer.customer_id};
-      saveSession(s);
-      showMain(s);
-      loadRegistrations('phone',phone);
-    } else {
-      // no POS customer — still allow by email match in registrations
-      const s={lookup_type:'phone',lookup_key:phone,display_name:phone};
-      saveSession(s);
-      showMain(s);
-      loadRegistrations('phone',phone);
-    }
-  }catch(e){
-    setErr('login-err','เกิดข้อผิดพลาด กรุณาลองใหม่');
-  }
-  btn.disabled=false; btn.textContent='ดูการสมัครของฉัน';
-}
-
-async function loginEmail(){
-  const email = document.getElementById('inp-email').value.trim();
-  if(!email || !email.includes('@')){ setErr('login-err','กรุณากรอกอีเมลที่ถูกต้อง'); return; }
-  clearLoginErr();
-  const btn = document.getElementById('btn-email-login');
-  btn.disabled=true; btn.textContent='กำลังค้นหา…';
-  try{
-    const r = await post('evt.getCustomerByEmail',{email});
-    const s={lookup_type:'email',lookup_key:email,display_name:(r.success&&r.customer)?r.customer.full_name:email,customer_id:(r.success&&r.customer)?r.customer.customer_id:null};
-    saveSession(s);
-    showMain(s);
-    loadRegistrations('email',email);
-  }catch(e){
-    setErr('login-err','เกิดข้อผิดพลาด กรุณาลองใหม่');
-  }
-  btn.disabled=false; btn.textContent='ดูการสมัครของฉัน';
-}
-
-// ── Guest lookup single reg ───────────────────────────
-async function lookupGuest(){
-  const regId = document.getElementById('inp-guest-reg').value.trim().toUpperCase();
-  if(!regId){ showGuestErr('กรุณากรอก Registration ID'); return; }
-  clearGuestErr();
-  try{
-    const r = await get({action:'evt.getRegistration',reg_id:regId});
-    if(r.success && r.registration){
-      // show as single-item list
-      allRegs = [r.registration];
-      renderList();
-    } else {
-      showGuestErr('ไม่พบ Registration ID นี้ กรุณาตรวจสอบอีกครั้ง');
-    }
-  }catch(e){ showGuestErr('เกิดข้อผิดพลาด กรุณาลองใหม่'); }
-}
-function showGuestErr(m){ const el=document.getElementById('guest-err'); el.textContent=m; el.classList.add('show'); }
-function clearGuestErr(){ document.getElementById('guest-err').classList.remove('show'); }
-
-// ── Load registrations ────────────────────────────────
-async function loadRegistrations(type, key){
-  document.getElementById('skeleton-list').style.display='block';
-  document.getElementById('reg-list').style.display='none';
-  document.getElementById('empty-state').style.display='none';
-  try{
-    const r = await post('evt.getMyRegistrations',{lookup_type:type,lookup_key:key});
-    document.getElementById('skeleton-list').style.display='none';
-    if(r.success && r.registrations && r.registrations.length>0){
-      allRegs = r.registrations;
-      renderList();
-    } else {
-      document.getElementById('empty-state').style.display='block';
-    }
-  }catch(e){
-    document.getElementById('skeleton-list').style.display='none';
-    document.getElementById('empty-state').style.display='block';
-  }
-}
-
-// ── Filter + render ───────────────────────────────────
-function setFilter(btn, filter){
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  currentFilter = filter;
-  renderList();
-}
-
-function renderList(){
-  const filtered = currentFilter==='all' ? allRegs : allRegs.filter(r=>r.status===currentFilter);
-  const list = document.getElementById('reg-list');
-  list.innerHTML='';
-
-  if(filtered.length===0){
-    list.style.display='none';
-    document.getElementById('empty-state').style.display='block';
+function renderRegs(list){
+  const el = document.getElementById('regs-list');
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      <p>ບໍ່ມີການສະໝັກ</p>
+      <p><a href="events.html" style="color:var(--accent);">ເບິ່ງ Events ທີ່ກໍາລັງເປີດ →</a></p>
+    </div>`;
     return;
   }
-  document.getElementById('empty-state').style.display='none';
-  list.style.display='flex';
-
-  // Sort: newest first
-  const sorted = [...filtered].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
-
-  sorted.forEach(reg=>{
-    list.appendChild(buildRegCard(reg));
-  });
-}
-
-function buildRegCard(reg){
-  const card = document.createElement('div');
-  card.className = 'reg-card';
-  card.onclick = () => { window.location.href = `events-registration.html?reg_id=${encodeURIComponent(reg.reg_id)}`; };
-
-  const statusLabel = {pending:'รอชำระเงิน',paid:'ชำระแล้ว',approved:'อนุมัติแล้ว',rejected:'ไม่อนุมัติ',cancelled:'ยกเลิก'}[reg.status]||reg.status;
-  const statusClass = 'badge-'+(reg.status||'pending');
-
-  // Format date
-  let dateStr = '';
-  if(reg.event_date){
-    try{
-      const d=new Date(reg.event_date);
-      dateStr = d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
-    }catch(e){ dateStr=reg.event_date; }
-  }
-
-  let regDateStr = '';
-  if(reg.created_at){
-    try{
-      const d=new Date(reg.created_at);
-      regDateStr = 'สมัครเมื่อ '+d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
-    }catch(e){}
-  }
-
-  // Category pills from participants
-  const cats = [...new Set((reg.participants||[]).map(p=>p.category_name).filter(Boolean))];
-  const catPills = cats.map(c=>`<span class="cat-pill">${escHtml(c)}</span>`).join('');
-
-  // Total formatted
-  const total = (reg.total_amount||0).toLocaleString('th-TH');
-  const pCount = (reg.participants||[]).length || reg.participant_count || 1;
-
-  // Status icon for approved
-  const qrIcon = reg.status==='approved' ? ' 📲' : '';
-
-  card.innerHTML = `
-    <div class="reg-card-top">
-      <div class="event-name">${escHtml(reg.event_name||'—')}${qrIcon}</div>
-      <span class="status-badge ${statusClass}">${statusLabel}</span>
-    </div>
-    <div class="reg-card-body">
-      <div class="reg-meta-row">
-        <div class="reg-meta-item"><strong>${escHtml(reg.reg_id||'—')}</strong></div>
-        ${dateStr?`<div class="reg-meta-item">📅 ${dateStr}</div>`:''}
-        <div class="reg-meta-item">👤 ${pCount} คน</div>
-        ${regDateStr?`<div class="reg-meta-item" style="color:var(--g6)">${regDateStr}</div>`:''}
-      </div>
-      ${catPills?`<div class="reg-cats">${catPills}</div>`:''}
-      <div class="reg-footer">
-        <div class="reg-total">${total} ₭</div>
-        <div class="reg-link">ดูรายละเอียด →</div>
+  el.innerHTML = list.map(r => `
+    <div class="reg-card">
+      <div class="reg-card-inner">
+        <div class="reg-status-bar status-${statusCls(r.status)}"></div>
+        <div class="reg-body">
+          <div class="reg-event-name">
+            <h3>${r.eventName || r.event_name || 'Event'}</h3>
+            <span>${fmtDate(r.eventDate || r.event_date)} · ${r.location || ''}</span>
+          </div>
+          <div class="reg-meta">
+            <strong>${r.categoryName || r.category || '-'}</strong>
+            <span>${r.fee != null ? Number(r.fee).toLocaleString()+' ₭' : ''}</span>
+            <span>ສະໝັກ: ${fmtDate(r.registeredAt || r.created_at)}</span>
+          </div>
+          <span class="status-pill ${statusCls(r.status)}">${statusLabel(r.status)}</span>
+        </div>
+        <div class="reg-action">
+          <a href="events-registration.html?id=${r.registrationId||r.id}" class="btn-view">ເບິ່ງ</a>
+        </div>
       </div>
     </div>
-  `;
-  return card;
+  `).join('');
 }
 
-function escHtml(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function filterRegs(f, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = f === 'all' ? allRegs : allRegs.filter(r=>r.status===f);
+  renderRegs(filtered);
 }
 
-// ── Enter key triggers ────────────────────────────────
-document.getElementById('inp-phone').addEventListener('keydown',e=>{ if(e.key==='Enter') loginPhone(); });
-document.getElementById('inp-email').addEventListener('keydown',e=>{ if(e.key==='Enter') loginEmail(); });
-document.getElementById('inp-guest-reg').addEventListener('keydown',e=>{ if(e.key==='Enter') lookupGuest(); });
+function notice(msg, type='error'){
+  document.getElementById('notice-area').innerHTML =
+    `<div class="notice ${type}">${msg}</div>`;
+}
+
+async function loadRegistrations(identifier){
+  // identifier can be phone, email, or customerId
+  try{
+    const param = identifier.includes('@')
+      ? { action:'evt.getMyRegistrations', email: identifier }
+      : isNaN(identifier.replace(/[-+\s]/g,''))
+        ? { action:'evt.getMyRegistrations', email: identifier }
+        : { action:'evt.getMyRegistrations', phone: identifier };
+
+    const data = await evtGet(param);
+
+    document.getElementById('skeletons').hidden = true;
+
+    if(!data.success){
+      notice(data.message || 'ເກີດຂໍ້ຜິດພາດ');
+      return;
+    }
+
+    allRegs = data.registrations || data.data || [];
+    renderRegs(allRegs);
+
+  } catch(e){
+    document.getElementById('skeletons').hidden = true;
+    notice('ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+    console.error(e);
+  }
+}
+
+async function doLookup(){
+  const val = document.getElementById('lookup-input').value.trim();
+  const errEl = document.getElementById('lookup-error');
+  errEl.style.display = 'none';
+
+  if(!val){ errEl.textContent='ກະລຸນາໃສ່ເບີໂທ ຫຼື ອີເມລ'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('lookup-btn');
+  btn.disabled = true; btn.textContent = 'ກໍາລັງຄົ້ນຫາ...';
+
+  // Show regs view
+  document.getElementById('login-gate').hidden = true;
+  document.getElementById('regs-view').hidden = false;
+  document.getElementById('user-name-chip').textContent = val;
+  document.getElementById('skeletons').hidden = false;
+
+  await loadRegistrations(val);
+
+  btn.disabled = false; btn.textContent = 'ຄົ້ນຫາ';
+}
+
+async function init(){
+  // Check if user is already logged in via sd_user (from sevendaybike.com)
+  const sdUser = JSON.parse(sessionStorage.getItem('sd_user') || 'null');
+
+  if(sdUser){
+    // Already logged in — skip gate, load directly
+    const identifier = sdUser.email || sdUser.phone || sdUser.id || '';
+    const displayName = sdUser.name || sdUser.firstName || identifier;
+
+    document.getElementById('regs-view').hidden = false;
+    document.getElementById('login-gate').hidden = true;
+    document.getElementById('user-name-chip').textContent = displayName;
+
+    if(!identifier){
+      document.getElementById('skeletons').hidden = true;
+      notice('ບໍ່ພົບຂໍ້ມູນ User ກະລຸນາ Login ໃໝ່');
+      return;
+    }
+
+    await loadRegistrations(identifier);
+  } else {
+    // Not logged in — show login gate
+    document.getElementById('login-gate').hidden = false;
+    document.getElementById('regs-view').hidden = true;
+  }
+}
+
+init();
 </script>
+<script src="Layout.js"></script>
