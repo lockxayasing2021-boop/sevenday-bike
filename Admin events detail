@@ -1,0 +1,954 @@
+<title>Sevenday Admin — Event Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;
+  --g1:#F3F3F3;--white:#fff;--accent:#FF3B00;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
+    --g1:#1E1E1E;--white:#111;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
+  --g1:#1E1E1E;--white:#111;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--white);border:1.5px solid var(--g3);padding:8px 12px;width:100%;font-size:14px;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--black)}
+input[type="file"]{padding:6px 10px;cursor:pointer}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 18px;font-weight:700;font-size:13px;border:2px solid var(--black);background:var(--white);color:var(--ink);white-space:nowrap;cursor:pointer;flex-shrink:0}
+.btn.primary{background:var(--black);color:var(--white)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.danger{border-color:#c00;color:#c00}
+.btn.ghost{border-color:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{height:32px;padding:0 12px;font-size:12px}
+
+/* ── Top nav ── */
+.top{background:var(--black);color:var(--white);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .in{max-width:900px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;gap:12px}
+.top .mark{width:34px;height:34px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px;flex-shrink:0}
+.top .title{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--white);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top .sub{font-size:11px;opacity:.5;font-weight:500;flex-shrink:0}
+.top .sp{flex:1}
+.top .btn{height:34px;font-size:12px;border-color:rgba(255,255,255,.35);color:var(--white);background:transparent}
+.top .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── Wrap ── */
+.wrap{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--g3);margin-bottom:28px}
+.tab{padding:10px 20px;font-weight:700;font-size:13px;letter-spacing:.3px;color:var(--g6);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s}
+.tab.on{color:var(--black);border-color:var(--black)}
+
+/* ── Section ── */
+.section{background:var(--white);border:1.5px solid var(--g3);padding:28px;margin-bottom:20px}
+.section-title{font-size:13px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--g6);margin-bottom:20px}
+
+/* ── Form ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+.label{font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--g6)}
+.label .req{color:var(--accent);margin-left:2px}
+.hint{font-size:12px;color:var(--g6);margin-top:2px}
+.field-full{grid-column:1/-1}
+.err-msg{font-size:12px;color:#c00;margin-top:3px}
+
+/* ── Cover preview ── */
+.cover-wrap{position:relative;width:100%;aspect-ratio:16/6;background:var(--g1);border:1.5px solid var(--g3);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cover-wrap img{width:100%;height:100%;object-fit:cover;display:none}
+.cover-wrap.has-img img{display:block}
+.cover-wrap.has-img .cover-placeholder{display:none}
+.cover-placeholder{color:var(--g6);font-size:13px;font-weight:600;text-align:center;pointer-events:none}
+.cover-wrap:hover .cover-overlay{opacity:1}
+.cover-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;gap:8px}
+#coverInput{display:none}
+
+/* ── Categories table ── */
+.cat-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.cat-bar .ttl{font-size:14px;font-weight:800;flex:1}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--g6);border-bottom:2px solid var(--g3);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--g3);vertical-align:middle}
+td.num{font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;font-size:11px;font-weight:700;letter-spacing:.3px;border-radius:0}
+.badge.open{background:#e6f4ea;color:#1b5e20}
+.badge.closed{background:#f3f3f3;color:#666}
+.badge.full{background:#fff3e0;color:#e65100}
+
+/* ── Category modal ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:600px){.modal-bg{align-items:center}}
+.modal{background:var(--white);width:100%;max-width:520px;padding:28px 24px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.modal-close{margin-left:auto;opacity:.5;font-size:20px;line-height:1;cursor:pointer;border:none;background:none;color:inherit}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid var(--g3)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:var(--white);padding:10px 20px;font-size:13px;font-weight:600;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Bottom save bar ── */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--g3);padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:10}
+.save-bar .sp{flex:1}
+
+/* ── Status chip (event) ── */
+.status-chip{display:inline-flex;align-items:center;padding:3px 10px;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border:1.5px solid currentColor}
+.status-chip.draft{color:var(--g6)}
+.status-chip.published{color:#1a7d3a}
+.status-chip.open{color:#0055cc}
+.status-chip.closed{color:var(--g9)}
+.status-chip.completed{color:#555}
+
+/* ── Login gate ── */
+.login-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--white);border:1.5px solid var(--g3);padding:40px;width:100%;max-width:380px;text-align:center}
+.login-box .logo{width:48px;height:48px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px;margin:0 auto 20px}
+.login-box h1{font-size:20px;font-weight:900;margin-bottom:6px}
+.login-box p{font-size:13px;color:var(--g6);margin-bottom:28px}
+.login-box input{margin-bottom:14px}
+.login-err{color:#c00;font-size:13px;margin-bottom:12px;display:none}
+
+/* ── Spinner ── */
+.spin{display:inline-block;width:18px;height:18px;border:2.5px solid var(--g3);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Delete confirm ── */
+.del-confirm{background:#fff5f5;border:1.5px solid #fcc;padding:20px;margin-bottom:20px;display:none}
+.del-confirm.show{display:block}
+.del-confirm p{font-size:14px;color:#800;margin-bottom:14px;font-weight:600}
+.del-confirm .actions{display:flex;gap:10px}
+</style>
+
+<!-- ── LOGIN GATE ── -->
+<div id="loginGate" class="login-gate" hidden>
+  <div class="login-box">
+    <div class="logo">S</div>
+    <h1>Sevenday Admin</h1>
+    <p>Event Management — กรุณาเข้าสู่ระบบ</p>
+    <div id="loginErr" class="login-err">รหัสผ่านไม่ถูกต้อง</div>
+    <input id="loginPwd" type="password" placeholder="Admin Password" autocomplete="current-password">
+    <button class="btn primary" style="width:100%;height:44px" onclick="doLogin()">เข้าสู่ระบบ</button>
+  </div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="app" hidden>
+
+<!-- Top nav -->
+<nav class="top">
+  <div class="in">
+    <div class="mark">S</div>
+    <div>
+      <div class="title" id="navTitle">Event Detail</div>
+    </div>
+    <div class="sp"></div>
+    <a href="admin-events.html" class="btn">← Events</a>
+    <a href="admin.html" class="btn">Orders</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- Status row -->
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+    <div id="statusChip" class="status-chip draft">Draft</div>
+    <div id="eventMeta" style="font-size:13px;color:var(--g6)"></div>
+    <div style="flex:1"></div>
+    <div id="statusActions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  </div>
+
+  <!-- Delete confirm -->
+  <div id="delConfirm" class="del-confirm">
+    <p>⚠️ ยืนยันลบ Event นี้? การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+    <div class="actions">
+      <button class="btn danger" onclick="confirmDelete()">ลบถาวร</button>
+      <button class="btn" onclick="document.getElementById('delConfirm').classList.remove('show')">ยกเลิก</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab on" data-tab="info" onclick="switchTab('info')">ข้อมูล Event</div>
+    <div class="tab" data-tab="categories" onclick="switchTab('categories')">หมวดหมู่ / ราคา</div>
+    <div class="tab" data-tab="settings" onclick="switchTab('settings')">การตั้งค่า</div>
+  </div>
+
+  <!-- ===== TAB: INFO ===== -->
+  <div id="tabInfo">
+
+    <div class="section">
+      <div class="section-title">ข้อมูลหลัก</div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="label">ชื่อ Event<span class="req">*</span></label>
+          <input id="eventName" type="text" placeholder="Sevenday Run 2026">
+          <div class="err-msg" id="errEventName"></div>
+        </div>
+        <div class="field">
+          <label class="label">Event Code<span class="req">*</span></label>
+          <input id="eventCode" type="text" placeholder="SDR2026" maxlength="20" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+          <span class="hint">ตัวอักษรพิมพ์ใหญ่ + ตัวเลขเท่านั้น</span>
+          <div class="err-msg" id="errEventCode"></div>
+        </div>
+        <div class="field">
+          <label class="label">ประเภท Event</label>
+          <select id="eventType">
+            <option value="run">Running</option>
+            <option value="cycling">Cycling</option>
+            <option value="triathlon">Triathlon</option>
+            <option value="walk">Walking</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label">จำนวนรับสูงสุด (0 = ไม่จำกัด)</label>
+          <input id="maxParticipants" type="number" min="0" value="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Cover image -->
+    <div class="section">
+      <div class="section-title">ภาพปก Event</div>
+      <div class="cover-wrap" id="coverWrap" onclick="document.getElementById('coverInput').click()">
+        <img id="coverPreview" src="" alt="cover">
+        <div class="cover-placeholder">
+          <div>📸</div>
+          <div>คลิกเพื่อเลือกภาพ (แนะนำ 1200×450px)</div>
+        </div>
+        <div class="cover-overlay">🖼 เปลี่ยนภาพ</div>
+      </div>
+      <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+      <div style="margin-top:10px">
+        <label class="label">หรือใส่ URL ภาพ</label>
+        <input id="coverUrl" type="url" placeholder="https://..." style="margin-top:6px" oninput="updateCoverFromUrl(this.value)">
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="section">
+      <div class="section-title">รายละเอียด</div>
+      <div class="field">
+        <label class="label">คำอธิบาย</label>
+        <textarea id="description" rows="5" placeholder="รายละเอียดกิจกรรม..."></textarea>
+      </div>
+      <div style="margin-top:16px">
+        <label class="label">Terms & Conditions URL</label>
+        <input id="termsUrl" type="url" placeholder="https://..." style="margin-top:6px">
+      </div>
+    </div>
+
+    <!-- Date & Location -->
+    <div class="section">
+      <div class="section-title">วัน เวลา และสถานที่</div>
+      <div class="grid-3">
+        <div class="field">
+          <label class="label">วันจัดงาน<span class="req">*</span></label>
+          <input id="eventDate" type="date">
+          <div class="err-msg" id="errEventDate"></div>
+        </div>
+        <div class="field">
+          <label class="label">เวลาเริ่ม</label>
+          <input id="startTime" type="time">
+        </div>
+        <div class="field">
+          <label class="label">เวลาสิ้นสุด</label>
+          <input id="endTime" type="time">
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="field">
+          <label class="label">สถานที่<span class="req">*</span></label>
+          <input id="location" type="text" placeholder="สนามกีฬา...">
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="field">
+          <label class="label">Latitude</label>
+          <input id="lat" type="number" step="any" placeholder="17.96">
+        </div>
+        <div class="field">
+          <label class="label">Longitude</label>
+          <input id="lng" type="number" step="any" placeholder="102.61">
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration window -->
+    <div class="section">
+      <div class="section-title">ช่วงเวลาลงทะเบียน</div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="label">เปิดรับสมัคร</label>
+          <input id="regOpen" type="datetime-local">
+        </div>
+        <div class="field">
+          <label class="label">ปิดรับสมัคร</label>
+          <input id="regClose" type="datetime-local">
+        </div>
+      </div>
+    </div>
+
+    <!-- Organizer -->
+    <div class="section">
+      <div class="section-title">ผู้จัดงาน</div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="label">ชื่อผู้จัดงาน</label>
+          <input id="organizer" type="text" placeholder="Sevenday Sport">
+        </div>
+        <div class="field">
+          <label class="label">เบอร์ติดต่อ</label>
+          <input id="contactPhone" type="tel" placeholder="+856 20 XXXX XXXX">
+        </div>
+        <div class="field">
+          <label class="label">อีเมลติดต่อ</label>
+          <input id="contactEmail" type="email" placeholder="info@sevenday.la">
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tabInfo -->
+
+  <!-- ===== TAB: CATEGORIES ===== -->
+  <div id="tabCategories" hidden>
+
+    <div class="section">
+      <div class="cat-bar">
+        <div class="ttl">หมวดหมู่ / ประเภท / ราคา</div>
+        <button class="btn primary sm" onclick="openCatModal(null)">+ เพิ่มหมวดหมู่</button>
+      </div>
+      <p id="catNote" style="font-size:13px;color:var(--g6);margin-bottom:16px" hidden>บันทึก Event ก่อนเพื่อเพิ่มหมวดหมู่</p>
+      <div class="table-wrap">
+        <table id="catTable">
+          <thead>
+            <tr>
+              <th>ชื่อหมวด</th>
+              <th>ระยะ</th>
+              <th>ราคา</th>
+              <th>Early Bird</th>
+              <th>จำนวนรับ</th>
+              <th>ลงทะเบียน</th>
+              <th>สถานะ</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="catBody">
+            <tr><td colspan="8" style="text-align:center;padding:24px;color:var(--g6)">ยังไม่มีหมวดหมู่</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /tabCategories -->
+
+  <!-- ===== TAB: SETTINGS ===== -->
+  <div id="tabSettings" hidden>
+
+    <div class="section">
+      <div class="section-title">การแสดงผล & สิทธิ์</div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="chkPublic" style="width:16px;height:16px">
+          <div>
+            <div style="font-weight:700">แสดงใน Public Events</div>
+            <div style="font-size:12px;color:var(--g6)">ผู้ใช้ทั่วไปสามารถค้นหาและสมัครได้</div>
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="chkFeatured" style="width:16px;height:16px">
+          <div>
+            <div style="font-weight:700">Featured Event</div>
+            <div style="font-size:12px;color:var(--g6)">แสดงในส่วน Highlight ของหน้าหลัก</div>
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="chkRequireApproval" style="width:16px;height:16px">
+          <div>
+            <div style="font-weight:700">ต้องอนุมัติการสมัคร</div>
+            <div style="font-size:12px;color:var(--g6)">Admin ต้องอนุมัติแต่ละ registration ก่อน</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">ลิงก์ด่วน</div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="quickLinks">
+        <div style="font-size:13px;color:var(--g6)">บันทึก Event ก่อนเพื่อดูลิงก์</div>
+      </div>
+    </div>
+
+    <div class="section" style="border-color:#fcc">
+      <div class="section-title" style="color:#c00">Danger Zone</div>
+      <p style="font-size:13px;color:var(--g6);margin-bottom:16px">การลบ Event จะลบหมวดหมู่ทั้งหมด — ไม่สามารถย้อนกลับ</p>
+      <button class="btn danger" onclick="document.getElementById('delConfirm').classList.add('show');window.scrollTo({top:0,behavior:'smooth'})">ลบ Event นี้</button>
+    </div>
+
+  </div><!-- /tabSettings -->
+
+</div><!-- /wrap -->
+
+<!-- ── Save bar ── -->
+<div class="save-bar">
+  <div style="font-size:13px;color:var(--g6)" id="saveInfo">แก้ไขแล้วบันทึก</div>
+  <div class="sp"></div>
+  <button class="btn" onclick="history.back()">ยกเลิก</button>
+  <button class="btn primary" id="saveBtn" onclick="saveEvent()">
+    <span id="saveBtnTxt">💾 บันทึก</span>
+    <span id="saveSpin" class="spin" hidden></span>
+  </button>
+</div>
+
+</div><!-- /app -->
+
+<!-- ── Category Modal ── -->
+<div id="catModal" class="modal-bg" hidden onclick="if(event.target===this)closeCatModal()">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="catModalTitle">เพิ่มหมวดหมู่</span>
+      <button class="modal-close" onclick="closeCatModal()">×</button>
+    </div>
+    <div class="grid-2">
+      <div class="field field-full">
+        <label class="label">ชื่อหมวดหมู่<span class="req">*</span></label>
+        <input id="catName" type="text" placeholder="10K, Half Marathon, VIP...">
+        <div class="err-msg" id="errCatName"></div>
+      </div>
+      <div class="field">
+        <label class="label">ระยะทาง (km)</label>
+        <input id="catDistance" type="number" min="0" step="0.1" placeholder="10">
+      </div>
+      <div class="field">
+        <label class="label">ราคา (LAK)<span class="req">*</span></label>
+        <input id="catPrice" type="number" min="0" placeholder="100000">
+        <div class="err-msg" id="errCatPrice"></div>
+      </div>
+      <div class="field">
+        <label class="label">ราคา Early Bird (LAK)</label>
+        <input id="catEarlyPrice" type="number" min="0" placeholder="80000">
+      </div>
+      <div class="field">
+        <label class="label">Early Bird ถึงวันที่</label>
+        <input id="catEarlyDeadline" type="date">
+      </div>
+      <div class="field">
+        <label class="label">จำนวนรับสูงสุด (0 = ไม่จำกัด)</label>
+        <input id="catMaxSlots" type="number" min="0" value="0">
+      </div>
+      <div class="field">
+        <label class="label">BIB เริ่มต้น</label>
+        <input id="catBibStart" type="number" min="1" value="1">
+      </div>
+      <div class="field">
+        <label class="label">BIB สุดท้าย</label>
+        <input id="catBibEnd" type="number" min="0" value="0" placeholder="0 = ไม่จำกัด">
+      </div>
+      <div class="field field-full">
+        <label class="label">คำอธิบาย</label>
+        <textarea id="catDesc" rows="3" placeholder="รายละเอียดหมวดนี้..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeCatModal()">ยกเลิก</button>
+      <button class="btn primary" id="catSaveBtn" onclick="saveCategory()">บันทึกหมวดหมู่</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div id="toast" class="toast"></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+
+// ── State ──
+let token = null;
+let eventId = null;  // null = create mode
+let eventData = null;
+let categories = [];
+let editingCatId = null;
+let isDirty = false;
+
+// ── Init ──
+(function(){
+  try { token = sessionStorage.getItem('admin_token'); } catch(e){}
+  const params = new URLSearchParams(location.search);
+  eventId = params.get('event_id') || null;
+
+  if (!token) { showLogin(); return; }
+  initApp();
+})();
+
+function showLogin(){
+  document.getElementById('loginGate').hidden = false;
+  document.getElementById('app').hidden = true;
+  document.getElementById('loginPwd').focus();
+}
+
+async function doLogin(){
+  const pwd = document.getElementById('loginPwd').value.trim();
+  if (!pwd) return;
+  try {
+    const res = await post('adminLogin', { password: pwd });
+    if (res.token) {
+      try { sessionStorage.setItem('admin_token', res.token); } catch(e){}
+      token = res.token;
+      document.getElementById('loginGate').hidden = true;
+      document.getElementById('app').hidden = false;
+      initApp();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('loginErr').textContent = 'เชื่อมต่อ API ล้มเหลว';
+  }
+}
+
+document.getElementById('loginPwd') && document.getElementById('loginPwd').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function initApp(){
+  document.getElementById('app').hidden = false;
+  document.getElementById('loginGate').hidden = true;
+  if (eventId) {
+    await loadEvent();
+  } else {
+    // Create mode
+    document.getElementById('navTitle').textContent = 'สร้าง Event ใหม่';
+    document.getElementById('catNote').hidden = false;
+    document.getElementById('saveInfo').textContent = 'กรอกข้อมูล Event';
+    renderStatusChip('draft');
+    renderStatusActions('draft');
+  }
+  setupDirtyTracking();
+}
+
+async function loadEvent(){
+  try {
+    const res = await get({ action: 'evt.getEvent', event_id: eventId, token });
+    if (res.error) { showToast('โหลดข้อมูลล้มเหลว: ' + res.error, 'err'); return; }
+    eventData = res.event;
+    categories = res.categories || [];
+    fillForm();
+    renderCategories();
+    renderStatusChip(eventData.status);
+    renderStatusActions(eventData.status);
+    document.getElementById('navTitle').textContent = eventData.event_name || 'Event Detail';
+    renderQuickLinks();
+  } catch(e) {
+    showToast('โหลดข้อมูลล้มเหลว', 'err');
+  }
+}
+
+function fillForm(){
+  const e = eventData;
+  setValue('eventName', e.event_name);
+  setValue('eventCode', e.event_code);
+  setSelect('eventType', e.event_type);
+  setValue('maxParticipants', e.max_participants || 0);
+  setValue('description', e.description);
+  setValue('termsUrl', e.terms_url);
+  setValue('eventDate', toDateInput(e.event_date));
+  setValue('startTime', e.start_time);
+  setValue('endTime', e.end_time);
+  setValue('location', e.location);
+  setValue('lat', e.latitude);
+  setValue('lng', e.longitude);
+  setValue('regOpen', toDateTimeLocal(e.registration_open));
+  setValue('regClose', toDateTimeLocal(e.registration_close));
+  setValue('organizer', e.organizer);
+  setValue('contactPhone', e.contact_phone);
+  setValue('contactEmail', e.contact_email);
+  setCheck('chkPublic', e.is_public == '1' || e.is_public === true);
+  setCheck('chkFeatured', e.is_featured == '1' || e.is_featured === true);
+  setCheck('chkRequireApproval', e.require_approval == '1' || e.require_approval === true);
+  if (e.cover_image) {
+    setValue('coverUrl', e.cover_image);
+    updateCoverFromUrl(e.cover_image);
+  }
+  const meta = [];
+  if (e.created_at) meta.push('สร้าง: ' + fmtDate(e.created_at));
+  if (e.updated_at) meta.push('แก้ไข: ' + fmtDate(e.updated_at));
+  document.getElementById('eventMeta').textContent = meta.join('  ·  ');
+}
+
+// ── Form helpers ──
+function setValue(id, v){ const el = document.getElementById(id); if(el && v != null) el.value = v; }
+function setSelect(id, v){ const el = document.getElementById(id); if(el && v != null) el.value = v; }
+function setCheck(id, v){ const el = document.getElementById(id); if(el) el.checked = !!v; }
+function toDateInput(v){ if(!v) return ''; try { return new Date(v).toISOString().slice(0,10); } catch(e){ return ''; } }
+function toDateTimeLocal(v){ if(!v) return ''; try { return new Date(v).toISOString().slice(0,16); } catch(e){ return ''; } }
+
+// ── Dirty tracking ──
+function setupDirtyTracking(){
+  const form = document.getElementById('app');
+  form.querySelectorAll('input,select,textarea').forEach(el => {
+    el.addEventListener('input', () => { isDirty = true; });
+    el.addEventListener('change', () => { isDirty = true; });
+  });
+}
+
+// ── Tabs ──
+function switchTab(name){
+  ['info','categories','settings'].forEach(t => {
+    document.querySelector(`.tab[data-tab="${t}"]`).classList.toggle('on', t === name);
+    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).hidden = (t !== name);
+  });
+}
+
+// ── Cover preview ──
+function previewCover(input){
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('coverPreview');
+    img.src = e.target.result;
+    document.getElementById('coverWrap').classList.add('has-img');
+    document.getElementById('coverUrl').value = '';
+  };
+  reader.readAsDataURL(file);
+  isDirty = true;
+}
+
+function updateCoverFromUrl(url){
+  if (!url) return;
+  const img = document.getElementById('coverPreview');
+  img.src = url;
+  img.onload = () => document.getElementById('coverWrap').classList.add('has-img');
+  img.onerror = () => document.getElementById('coverWrap').classList.remove('has-img');
+}
+
+// ── Status chip ──
+const STATUS_LABELS = { draft:'Draft', published:'Published', open:'Open Registration',
+                        closed:'Closed', completed:'Completed' };
+function renderStatusChip(status){
+  const chip = document.getElementById('statusChip');
+  chip.className = 'status-chip ' + (status||'draft');
+  chip.textContent = STATUS_LABELS[status] || status;
+}
+
+// ── Status actions ──
+const STATUS_NEXT = {
+  draft:      [{ label:'📢 Publish', next:'published' }],
+  published:  [{ label:'🟢 Open Registration', next:'open' }, { label:'↩ ย้อนกลับ Draft', next:'draft' }],
+  open:       [{ label:'🔒 Close Registration', next:'closed' }],
+  closed:     [{ label:'✅ Mark Completed', next:'completed' }, { label:'🟢 Re-open', next:'open' }],
+  completed:  [],
+};
+function renderStatusActions(status){
+  const bar = document.getElementById('statusActions');
+  bar.innerHTML = '';
+  (STATUS_NEXT[status] || []).forEach(a => {
+    const btn = document.createElement('button');
+    btn.className = 'btn sm';
+    btn.textContent = a.label;
+    btn.onclick = () => advanceStatus(a.next);
+    bar.appendChild(btn);
+  });
+  // Checkin link
+  if ((status === 'open' || status === 'closed' || status === 'completed') && eventId) {
+    const a = document.createElement('a');
+    a.href = 'admin-events-checkin.html?event_id=' + encodeURIComponent(eventId);
+    a.className = 'btn sm accent';
+    a.textContent = '📲 Check-in';
+    bar.appendChild(a);
+  }
+}
+
+async function advanceStatus(newStatus){
+  if (!eventId) { showToast('บันทึก Event ก่อน', 'err'); return; }
+  try {
+    const res = await post('evt.updateEventStatus', { event_id: eventId, status: newStatus, token });
+    if (res.error) { showToast(res.error, 'err'); return; }
+    if (eventData) eventData.status = newStatus;
+    renderStatusChip(newStatus);
+    renderStatusActions(newStatus);
+    showToast('อัปเดตสถานะเป็น ' + (STATUS_LABELS[newStatus]||newStatus));
+  } catch(e){ showToast('อัปเดตล้มเหลว','err'); }
+}
+
+// ── Save event ──
+async function saveEvent(){
+  if (!validateForm()) return;
+  const btn = document.getElementById('saveBtn');
+  const txt = document.getElementById('saveBtnTxt');
+  const spin = document.getElementById('saveSpin');
+  btn.disabled = true; txt.hidden = true; spin.hidden = false;
+
+  const payload = gatherForm();
+  const action = eventId ? 'evt.updateEvent' : 'evt.createEvent';
+  try {
+    const res = await post(action, payload);
+    if (res.error) { showToast(res.error, 'err'); return; }
+    if (!eventId && res.event_id) {
+      eventId = res.event_id;
+      history.replaceState({}, '', '?event_id=' + encodeURIComponent(eventId));
+      document.getElementById('catNote').hidden = true;
+      renderQuickLinks();
+    }
+    isDirty = false;
+    showToast('บันทึกเรียบร้อย ✓');
+    if (eventData) Object.assign(eventData, payload);
+    else eventData = payload;
+    renderStatusActions(payload.status || 'draft');
+  } catch(e){ showToast('บันทึกล้มเหลว','err'); }
+  finally { btn.disabled = false; txt.hidden = false; spin.hidden = true; }
+}
+
+function gatherForm(){
+  return {
+    token,
+    event_id: eventId,
+    event_name: gv('eventName'),
+    event_code: gv('eventCode'),
+    event_type: gv('eventType'),
+    max_participants: parseInt(gv('maxParticipants')||0),
+    description: gv('description'),
+    terms_url: gv('termsUrl'),
+    event_date: gv('eventDate'),
+    start_time: gv('startTime'),
+    end_time: gv('endTime'),
+    location: gv('location'),
+    latitude: parseFloat(gv('lat')||0)||null,
+    longitude: parseFloat(gv('lng')||0)||null,
+    registration_open: gv('regOpen') ? new Date(gv('regOpen')).toISOString() : '',
+    registration_close: gv('regClose') ? new Date(gv('regClose')).toISOString() : '',
+    organizer: gv('organizer'),
+    contact_phone: gv('contactPhone'),
+    contact_email: gv('contactEmail'),
+    cover_image: gv('coverUrl'),
+    is_public: document.getElementById('chkPublic').checked ? 1 : 0,
+    is_featured: document.getElementById('chkFeatured').checked ? 1 : 0,
+    require_approval: document.getElementById('chkRequireApproval').checked ? 1 : 0,
+  };
+}
+
+function gv(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function validateForm(){
+  let ok = true;
+  const rules = [
+    ['eventName','errEventName','ชื่อ Event จำเป็น'],
+    ['eventCode','errEventCode','Event Code จำเป็น'],
+    ['eventDate','errEventDate','วันจัดงานจำเป็น'],
+  ];
+  rules.forEach(([fId, eId, msg]) => {
+    const val = gv(fId);
+    const errEl = document.getElementById(eId);
+    if (!val) { if(errEl) errEl.textContent = msg; ok = false; }
+    else { if(errEl) errEl.textContent = ''; }
+  });
+  if (!ok) { switchTab('info'); }
+  return ok;
+}
+
+// ── Delete ──
+async function confirmDelete(){
+  if (!eventId) { history.back(); return; }
+  try {
+    const res = await post('evt.deleteEvent', { event_id: eventId, token });
+    if (res.error) { showToast(res.error,'err'); return; }
+    showToast('ลบ Event เรียบร้อย');
+    setTimeout(() => { window.location.href = 'admin-events.html'; }, 900);
+  } catch(e){ showToast('ลบล้มเหลว','err'); }
+}
+
+// ── Quick links ──
+function renderQuickLinks(){
+  if (!eventId) return;
+  const base = location.origin + location.pathname.replace('admin-events-detail.html','');
+  const links = [
+    { label:'Public Event Page', href: base + 'events.html?event_id=' + eventId },
+    { label:'Register Page', href: base + 'events-register.html?event_id=' + eventId },
+    { label:'Check-in', href: base + 'admin-events-checkin.html?event_id=' + eventId },
+  ];
+  const cont = document.getElementById('quickLinks');
+  cont.innerHTML = links.map(l =>
+    `<a href="${l.href}" target="_blank" style="display:flex;align-items:center;gap:8px;font-size:13px;padding:10px 14px;border:1.5px solid var(--g3);background:var(--g1)">
+      <span style="flex:1;font-weight:600">${l.label}</span>
+      <span style="color:var(--g6);font-size:11px;word-break:break-all">${l.href}</span>
+      ↗
+    </a>`
+  ).join('');
+}
+
+// ── Categories ──
+function renderCategories(){
+  const tbody = document.getElementById('catBody');
+  if (!categories.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--g6)">ยังไม่มีหมวดหมู่</td></tr>';
+    return;
+  }
+  tbody.innerHTML = categories.map(c => {
+    const statusBadge = c.status === 'open'
+      ? `<span class="badge open">Open</span>`
+      : c.status === 'full'
+      ? `<span class="badge full">Full</span>`
+      : `<span class="badge closed">Closed</span>`;
+    const price = fmtNum(c.price);
+    const earlyPrice = c.early_bird_price ? fmtNum(c.early_bird_price) : '—';
+    const slots = c.max_slots > 0 ? c.max_slots : '∞';
+    return `<tr>
+      <td><strong>${esc(c.category_name)}</strong></td>
+      <td>${c.distance_km ? c.distance_km+'km' : '—'}</td>
+      <td class="num">${price}</td>
+      <td class="num">${earlyPrice}</td>
+      <td class="num">${slots}</td>
+      <td class="num">${c.registered_count || 0}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn sm" onclick='openCatModal(${JSON.stringify(c)})'>แก้ไข</button>
+          <button class="btn sm danger" onclick="deleteCategory('${c.category_id}')">ลบ</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openCatModal(cat){
+  if (!eventId) { showToast('บันทึก Event ก่อนเพิ่มหมวดหมู่','err'); return; }
+  editingCatId = cat ? cat.category_id : null;
+  document.getElementById('catModalTitle').textContent = cat ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
+  setValue('catName', cat ? cat.category_name : '');
+  setValue('catDistance', cat ? cat.distance_km : '');
+  setValue('catPrice', cat ? cat.price : '');
+  setValue('catEarlyPrice', cat ? cat.early_bird_price : '');
+  setValue('catEarlyDeadline', cat ? toDateInput(cat.early_bird_deadline) : '');
+  setValue('catMaxSlots', cat ? (cat.max_slots||0) : 0);
+  setValue('catBibStart', cat ? (cat.bib_start||1) : 1);
+  setValue('catBibEnd', cat ? (cat.bib_end||0) : 0);
+  setValue('catDesc', cat ? cat.description : '');
+  document.getElementById('errCatName').textContent = '';
+  document.getElementById('errCatPrice').textContent = '';
+  document.getElementById('catModal').hidden = false;
+}
+
+function closeCatModal(){ document.getElementById('catModal').hidden = true; }
+
+async function saveCategory(){
+  const name = gv('catName');
+  const price = gv('catPrice');
+  if (!name) { document.getElementById('errCatName').textContent = 'ชื่อหมวดจำเป็น'; return; }
+  if (!price) { document.getElementById('errCatPrice').textContent = 'ราคาจำเป็น'; return; }
+  document.getElementById('errCatName').textContent = '';
+  document.getElementById('errCatPrice').textContent = '';
+
+  const btn = document.getElementById('catSaveBtn');
+  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+
+  const payload = {
+    token, event_id: eventId,
+    category_id: editingCatId,
+    category_name: name,
+    distance_km: parseFloat(gv('catDistance'))||0,
+    price: parseInt(price)||0,
+    early_bird_price: parseInt(gv('catEarlyPrice'))||0,
+    early_bird_deadline: gv('catEarlyDeadline'),
+    max_slots: parseInt(gv('catMaxSlots'))||0,
+    bib_start: parseInt(gv('catBibStart'))||1,
+    bib_end: parseInt(gv('catBibEnd'))||0,
+    description: gv('catDesc'),
+  };
+
+  const action = editingCatId ? 'evt.updateCategory' : 'evt.createCategory';
+  try {
+    const res = await post(action, payload);
+    if (res.error) { showToast(res.error,'err'); return; }
+    closeCatModal();
+    showToast('บันทึกหมวดหมู่เรียบร้อย ✓');
+    await reloadCategories();
+  } catch(e){ showToast('บันทึกล้มเหลว','err'); }
+  finally { btn.disabled = false; btn.textContent = 'บันทึกหมวดหมู่'; }
+}
+
+async function deleteCategory(catId){
+  if (!confirm('ลบหมวดหมู่นี้?')) return;
+  try {
+    const res = await post('evt.deleteCategory', { token, event_id: eventId, category_id: catId });
+    if (res.error) { showToast(res.error,'err'); return; }
+    showToast('ลบหมวดหมู่เรียบร้อย');
+    await reloadCategories();
+  } catch(e){ showToast('ลบล้มเหลว','err'); }
+}
+
+async function reloadCategories(){
+  try {
+    const res = await get({ action: 'evt.getEvent', event_id: eventId, token });
+    categories = res.categories || [];
+    renderCategories();
+  } catch(e){}
+}
+
+// ── Format ──
+function fmtNum(n){ return Number(n||0).toLocaleString('th-TH'); }
+function fmtDate(v){ try { return new Date(v).toLocaleDateString('th-TH',{year:'numeric',month:'short',day:'numeric'}); } catch(e){ return v||''; } }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── API helpers ──
+async function hmacSign(body){
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(API_SECRET), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function get(params){
+  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  const sig = await hmacSign(qs);
+  const url = API_URL + '?' + qs + '&sig=' + sig;
+  const res = await fetch(url);
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e){ throw new Error('JSON parse: '+text.slice(0,200)); }
+}
+
+async function post(action, data){
+  const body = JSON.stringify({ action, ...data });
+  const sig = await hmacSign(body);
+  const res = await fetch(API_URL + '?sig=' + sig, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e){ throw new Error('JSON parse: '+text.slice(0,200)); }
+}
+
+// ── Toast ──
+let toastTimer;
+function showToast(msg, type){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = type === 'err' ? '#c00' : 'var(--black)';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── Warn on unsaved ──
+window.addEventListener('beforeunload', e => {
+  if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+</script>
