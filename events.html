@@ -1,379 +1,310 @@
-<title>Sevenday Events</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Events — Sevenday Bike</title>
+<link rel="stylesheet" href="Sevenday.css">
 <style>
-:root{
-  --black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;
-  --g1:#F3F3F3;--white:#fff;--accent:#FF3B00;
-  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
-  color-scheme:light;
+:root {
+  --accent: #FF3B00;
 }
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
-    --g1:#1E1E1E;--white:#111;color-scheme:dark;
-  }
+
+.evt-hero {
+  background: var(--grey-900);
+  color: var(--white);
+  padding: 56px 0 40px;
+  text-align: center;
 }
-:root[data-theme="dark"]{
-  --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
-  --g1:#1E1E1E;--white:#111;color-scheme:dark;
+.evt-hero h1 { font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 900; margin: 0 0 8px; }
+.evt-hero p  { color: var(--grey-300); margin: 0; font-size: 1.05rem; }
+
+.evt-filters {
+  background: var(--grey-100);
+  border-bottom: 1px solid var(--grey-300);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
-button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
-a{color:inherit;text-decoration:none}
-img{max-width:100%}
-:focus-visible{outline:2px solid var(--black);outline-offset:2px}
-
-/* ── Top nav ── */
-.top{background:var(--black);color:var(--white);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
-.top .in{max-width:1200px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;gap:14px}
-.top .mark{width:34px;height:34px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px;flex-shrink:0}
-.top .brand{font-size:16px;font-weight:900;letter-spacing:-.3px;color:var(--white)}
-.top .sp{flex:1}
-.top .nav-link{font-size:13px;font-weight:600;opacity:.6;padding:6px 10px;color:var(--white)}
-.top .nav-link.on{opacity:1}
-
-/* ── Hero ── */
-.hero{background:var(--black);color:var(--white);padding:56px 20px 48px;text-align:center}
-.hero h1{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-.5px;text-wrap:balance;margin-bottom:10px}
-.hero p{font-size:16px;opacity:.6;font-weight:500;max-width:480px;margin:0 auto}
-
-/* ── Toolbar ── */
-.toolbar{background:var(--white);border-bottom:1.5px solid var(--g3);position:sticky;top:calc(58px + env(safe-area-inset-top,0px));z-index:15}
-.toolbar .in{max-width:1200px;margin:0 auto;padding:0 20px;height:52px;display:flex;align-items:center;gap:10px;overflow-x:auto;scrollbar-width:none}
-.toolbar .in::-webkit-scrollbar{display:none}
-.filter-btn{height:32px;padding:0 14px;font-size:12px;font-weight:700;border:1.5px solid var(--g3);background:transparent;color:var(--g6);white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .15s}
-.filter-btn.on{border-color:var(--black);background:var(--black);color:var(--white)}
-.filter-btn:hover:not(.on){border-color:var(--g9);color:var(--ink)}
-.tb-sep{width:1px;height:20px;background:var(--g3);flex-shrink:0}
-.search-wrap{flex:1;min-width:120px;position:relative}
-.search-wrap input{height:32px;width:100%;border:1.5px solid var(--g3);padding:0 10px 0 32px;font:inherit;font-size:13px;background:var(--g1);color:var(--ink)}
-.search-wrap input:focus{outline:none;border-color:var(--black)}
-.search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--g6);pointer-events:none}
-
-/* ── Grid ── */
-.wrap{max-width:1200px;margin:0 auto;padding:32px 20px 80px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
-@media(max-width:600px){.grid{grid-template-columns:1fr;gap:16px}}
-
-/* ── Event card ── */
-.card{background:var(--white);border:1.5px solid var(--g3);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s;cursor:pointer}
-.card:hover{border-color:var(--black);box-shadow:4px 4px 0 var(--black)}
-.card-cover{aspect-ratio:16/7;overflow:hidden;background:var(--g1);position:relative;flex-shrink:0}
-.card-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
-.card:hover .card-cover img{transform:scale(1.03)}
-.card-cover .no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--g3)}
-.card-cover .tag{position:absolute;top:10px;left:10px;background:var(--black);color:var(--white);font-size:10px;font-weight:800;letter-spacing:.6px;padding:3px 8px;text-transform:uppercase}
-.card-cover .status-tag{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;letter-spacing:.5px;padding:3px 8px;text-transform:uppercase}
-.status-tag.open{background:#1a7d3a;color:#fff}
-.status-tag.published{background:#0055cc;color:#fff}
-.status-tag.closed{background:var(--g9);color:#fff}
-.status-tag.completed{background:var(--g6);color:#fff}
-
-.card-body{padding:18px 18px 14px;display:flex;flex-direction:column;flex:1;gap:0}
-.card-title{font-size:17px;font-weight:800;letter-spacing:-.2px;line-height:1.3;margin-bottom:8px;text-wrap:balance}
-.card-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
-.card-meta .row{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--g6)}
-.card-meta .row svg{flex-shrink:0;color:var(--g6)}
-.card-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.cat-pill{border:1.5px solid var(--g3);padding:3px 9px;font-size:11px;font-weight:700;color:var(--g6)}
-.cat-pill .price{color:var(--ink);font-weight:800}
-.card-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--g3);display:flex;align-items:center;gap:8px}
-.btn-reg{flex:1;height:40px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;border:none;cursor:pointer;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-reg:disabled{background:var(--g3);color:var(--g6);cursor:not-allowed}
-.btn-detail{height:40px;padding:0 14px;font-size:12px;font-weight:700;border:1.5px solid var(--g3);background:transparent;color:var(--g6);cursor:pointer;white-space:nowrap}
-.btn-detail:hover{border-color:var(--ink);color:var(--ink)}
-
-/* ── Featured card (wider) ── */
-.card.featured{border-color:var(--accent);grid-column:1/-1}
-@media(min-width:900px){
-  .card.featured{flex-direction:row}
-  .card.featured .card-cover{aspect-ratio:auto;min-height:220px;flex:0 0 45%}
-  .card.featured .card-body{padding:24px}
+.evt-filter-inner {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.card.featured .card-title{font-size:22px}
-.featured-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--accent);margin-bottom:10px;text-transform:uppercase}
+.evt-filter-inner::-webkit-scrollbar { display: none; }
+.evt-filter-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 14px 18px;
+  font-family: var(--font);
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--grey-600);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.evt-filter-btn.active, .evt-filter-btn:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* ── Empty / loading ── */
-.empty{text-align:center;padding:80px 20px;color:var(--g6)}
-.empty .ico{font-size:48px;margin-bottom:16px}
-.empty p{font-size:15px;font-weight:500}
-.skeleton{background:linear-gradient(90deg,var(--g1) 25%,var(--g3) 50%,var(--g1) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.sk-card{background:var(--white);border:1.5px solid var(--g3);overflow:hidden}
-.sk-cover{height:180px;width:100%}
-.sk-line{height:14px;margin:16px 18px 8px;border-radius:0}
-.sk-line.short{width:55%;margin-top:0}
+.evt-section { max-width: var(--wrap); margin: 0 auto; padding: 40px 16px 64px; }
+.evt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 24px; }
 
-/* ── Pagination ── */
-.pager{display:flex;justify-content:center;gap:8px;margin-top:40px}
-.pager button{width:36px;height:36px;border:1.5px solid var(--g3);font-weight:700;font-size:13px;background:var(--white);color:var(--ink);cursor:pointer}
-.pager button.on{border-color:var(--black);background:var(--black);color:var(--white)}
-.pager button:disabled{opacity:.35;cursor:not-allowed}
+.evt-card {
+  border: 1px solid var(--grey-300);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s, transform .2s;
+}
+.evt-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
+.evt-card-img {
+  aspect-ratio: 16/9;
+  background: var(--grey-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.evt-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.evt-card-img svg { width: 80px; height: 80px; color: var(--grey-300); }
+.evt-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.evt-badge.open   { background: #00C853; color: #fff; }
+.evt-badge.soon   { background: var(--accent); color: #fff; }
+.evt-badge.full   { background: var(--grey-600); color: #fff; }
+.evt-badge.closed { background: var(--grey-300); color: var(--grey-900); }
 
-/* ── Count label ── */
-.count-label{font-size:13px;color:var(--g6);margin-bottom:20px;font-weight:500}
-.count-label strong{color:var(--ink);font-weight:800}
+.evt-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.evt-card-cat  { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.evt-card-name { font-size: 1.1rem; font-weight: 800; color: var(--grey-900); line-height: 1.3; text-wrap: balance; }
+.evt-meta { display: flex; flex-direction: column; gap: 5px; }
+.evt-meta-row { display: flex; align-items: flex-start; gap: 8px; font-size: .85rem; color: var(--grey-600); }
+.evt-meta-row svg { flex-shrink: 0; width: 15px; height: 15px; margin-top: 1px; }
+.evt-price { font-size: 1.1rem; font-weight: 800; color: var(--grey-900); }
+.evt-price .free { color: #00C853; }
+.evt-spots { font-size: .8rem; color: var(--grey-600); }
+.evt-card-foot { padding: 0 20px 20px; }
+.evt-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .95rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.evt-btn:hover { opacity: .88; }
+.evt-btn.disabled { background: var(--grey-300); color: var(--grey-600); cursor: not-allowed; pointer-events: none; }
+
+.evt-empty { text-align: center; padding: 80px 16px; color: var(--grey-600); }
+.evt-empty svg { width: 64px; height: 64px; margin-bottom: 16px; color: var(--grey-300); }
+.evt-empty h3 { margin: 0 0 8px; color: var(--grey-900); }
+.evt-skeleton { animation: sk 1.4s infinite ease-in-out; background: var(--grey-100); border-radius: 6px; }
+@keyframes sk { 0%,100%{opacity:.6} 50%{opacity:1} }
 </style>
 
-<!-- Top nav -->
-<nav class="top">
-  <div class="in">
-    <div class="mark">S</div>
-    <div class="brand">Sevenday</div>
-    <div class="sp"></div>
-    <a href="index.html" class="nav-link">Shop</a>
-    <a href="events.html" class="nav-link on">Events</a>
+<section class="evt-hero">
+  <div style="max-width:var(--wrap);margin:0 auto;padding:0 16px">
+    <h1>Events &amp; Rides</h1>
+    <p>ກິດຈະກໍາຈັກຍານ, ແຂ່ງຂັນ, ແລະ ສໍາຮ່ວງກຸ່ມ ຢູ່ Sevenday Bike</p>
   </div>
-</nav>
+</section>
 
-<!-- Hero -->
-<div class="hero">
-  <h1>Sevenday Events</h1>
-  <p>กิจกรรมกีฬาและการแข่งขัน — ลงทะเบียนออนไลน์ได้ที่นี่</p>
+<div class="evt-filters">
+  <div class="evt-filter-inner">
+    <button class="evt-filter-btn active" data-cat="">ທັງໝົດ</button>
+    <button class="evt-filter-btn" data-cat="race">ແຂ່ງຂັນ</button>
+    <button class="evt-filter-btn" data-cat="ride">ຂີ່ກຸ່ມ</button>
+    <button class="evt-filter-btn" data-cat="clinic">Clinic</button>
+    <button class="evt-filter-btn" data-cat="mtb">MTB</button>
+    <button class="evt-filter-btn" data-cat="road">Road</button>
+  </div>
 </div>
 
-<!-- Toolbar -->
-<div class="toolbar">
-  <div class="in">
-    <button class="filter-btn on" data-filter="all" onclick="setFilter('all',this)">ทั้งหมด</button>
-    <button class="filter-btn" data-filter="open" onclick="setFilter('open',this)">เปิดรับสมัคร</button>
-    <button class="filter-btn" data-filter="published" onclick="setFilter('published',this)">เร็วๆ นี้</button>
-    <button class="filter-btn" data-filter="completed" onclick="setFilter('completed',this)">ผ่านมาแล้ว</button>
-    <div class="tb-sep"></div>
-    <button class="filter-btn" data-type="run" onclick="setType('run',this)">🏃 Running</button>
-    <button class="filter-btn" data-type="cycling" onclick="setType('cycling',this)">🚴 Cycling</button>
-    <button class="filter-btn" data-type="triathlon" onclick="setType('triathlon',this)">🏊 Triathlon</button>
-    <div class="tb-sep"></div>
-    <div class="search-wrap">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="searchInput" type="search" placeholder="ค้นหา event..." oninput="onSearch(this.value)">
+<section class="evt-section">
+  <div id="evtGrid" class="evt-grid">
+    <div style="border:1px solid var(--grey-300);border-radius:12px;overflow:hidden">
+      <div class="evt-skeleton" style="aspect-ratio:16/9"></div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div class="evt-skeleton" style="height:14px;width:60%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:20px;width:90%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:14px;width:75%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:40px;border-radius:8px;margin-top:8px"></div>
+      </div>
+    </div>
+    <div style="border:1px solid var(--grey-300);border-radius:12px;overflow:hidden">
+      <div class="evt-skeleton" style="aspect-ratio:16/9"></div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div class="evt-skeleton" style="height:14px;width:50%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:20px;width:85%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:14px;width:70%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:40px;border-radius:8px;margin-top:8px"></div>
+      </div>
+    </div>
+    <div style="border:1px solid var(--grey-300);border-radius:12px;overflow:hidden">
+      <div class="evt-skeleton" style="aspect-ratio:16/9"></div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div class="evt-skeleton" style="height:14px;width:55%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:20px;width:80%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:14px;width:65%;border-radius:4px"></div>
+        <div class="evt-skeleton" style="height:40px;border-radius:8px;margin-top:8px"></div>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- Content -->
-<div class="wrap">
-  <div id="countLabel" class="count-label" hidden></div>
-  <div id="grid" class="grid"></div>
-  <div id="pager" class="pager" hidden></div>
-</div>
+</section>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
-const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
-const PAGE_SIZE = 12;
+const API_URL_EVT = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_SECRET  = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+
+async function hmacSign(body){
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(EVT_SECRET), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function evtGet(params){
+  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  const sig = await hmacSign(qs);
+  const res = await fetch(API_URL_EVT+'?'+qs+'&sig='+sig);
+  return JSON.parse(await res.text());
+}
 
 let allEvents = [];
-let filtered = [];
-let currentFilter = 'all';
-let currentType = '';
-let searchQ = '';
-let currentPage = 1;
+let activeCat = '';
 
-// ── Init ──
-(async function(){
-  // Check URL params for direct event_id
-  const params = new URLSearchParams(location.search);
-  const directId = params.get('event_id');
-  if (directId) {
-    window.location.href = 'events-register.html?event_id=' + encodeURIComponent(directId);
-    return;
-  }
-  showSkeletons();
-  try {
-    const res = await get({ action: 'evt.getEvents' });
-    allEvents = (res.events || []).filter(e => e.is_public == '1' || e.is_public === true || e.is_public == 1);
-    applyFilters();
-  } catch(e) {
-    document.getElementById('grid').innerHTML = `
-      <div class="empty" style="grid-column:1/-1">
-        <div class="ico">⚡</div>
-        <p>โหลดข้อมูลล้มเหลว กรุณาลองใหม่</p>
-        <button style="margin-top:16px;padding:8px 20px;border:1.5px solid var(--black);font-weight:700;cursor:pointer;font:inherit" onclick="location.reload()">ลองใหม่</button>
-      </div>`;
-  }
-})();
-
-// ── Filters ──
-function setFilter(val, btn){
-  currentFilter = val;
-  currentPage = 1;
-  document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  applyFilters();
+function statusOf(e){
+  const now = Date.now();
+  const regStart = e.registrationStart ? new Date(e.registrationStart).getTime() : 0;
+  const regEnd   = e.registrationEnd   ? new Date(e.registrationEnd).getTime()   : Infinity;
+  const spots = e.availableSpots ?? ((e.maxParticipants||0) - (e.registeredCount||0));
+  if(e.maxParticipants && spots <= 0) return 'full';
+  if(now < regStart) return 'soon';
+  if(now > regEnd)   return 'closed';
+  return 'open';
 }
 
-function setType(val, btn){
-  if (currentType === val) {
-    currentType = '';
-    btn.classList.remove('on');
-  } else {
-    currentType = val;
-    document.querySelectorAll('.filter-btn[data-type]').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-  }
-  currentPage = 1;
-  applyFilters();
+function badgeFor(e){
+  const s = statusOf(e);
+  const labels = { open:'ເປີດຮັບ', soon:'ໄວໆນີ້', full:'ເຕັມ', closed:'ປິດ' };
+  return `<span class="evt-badge ${s}">${labels[s]||s}</span>`;
 }
 
-let searchTimer;
-function onSearch(v){
-  searchQ = v.trim().toLowerCase();
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { currentPage = 1; applyFilters(); }, 250);
-}
-
-function applyFilters(){
-  filtered = allEvents.filter(e => {
-    const statusOk = currentFilter === 'all' || e.status === currentFilter;
-    const typeOk = !currentType || e.event_type === currentType;
-    const q = searchQ;
-    const searchOk = !q || (e.event_name||'').toLowerCase().includes(q) ||
-      (e.event_code||'').toLowerCase().includes(q) ||
-      (e.location||'').toLowerCase().includes(q);
-    return statusOk && typeOk && searchOk;
-  });
-  // Sort: featured first, then by event_date asc
-  filtered.sort((a,b) => {
-    if ((b.is_featured==1||b.is_featured=='1') && !(a.is_featured==1||a.is_featured=='1')) return 1;
-    if ((a.is_featured==1||a.is_featured=='1') && !(b.is_featured==1||b.is_featured=='1')) return -1;
-    return new Date(a.event_date) - new Date(b.event_date);
-  });
-  renderPage();
-}
-
-function renderPage(){
-  const total = filtered.length;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-  if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const slice = filtered.slice(start, start + PAGE_SIZE);
-
-  const label = document.getElementById('countLabel');
-  if (total > 0) {
-    label.hidden = false;
-    label.innerHTML = `พบ <strong>${total}</strong> event${total!==1?'s':''}`;
-  } else {
-    label.hidden = true;
-  }
-
-  const grid = document.getElementById('grid');
-  if (!slice.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="ico">🏁</div><p>ไม่พบ event ที่ตรงกับเงื่อนไข</p></div>`;
-    document.getElementById('pager').hidden = true;
-    return;
-  }
-  grid.innerHTML = slice.map(e => renderCard(e)).join('');
-  renderPager(totalPages);
+function fmtDate(d){
+  if(!d) return '';
+  try{ return new Date(d).toLocaleDateString('lo-LA',{day:'numeric',month:'short',year:'numeric'}); }
+  catch(_){ return d; }
 }
 
 function renderCard(e){
-  const isFeatured = e.is_featured == 1 || e.is_featured === '1';
-  const regOpen = e.status === 'open';
-  const regClosed = e.status === 'closed' || e.status === 'completed';
-  const typeLabel = {run:'Running',cycling:'Cycling',triathlon:'Triathlon',walk:'Walking',other:'Other'}[e.event_type] || (e.event_type||'');
-  const statusLabel = {open:'เปิดรับสมัคร',published:'เร็วๆ นี้',closed:'ปิดรับสมัคร',completed:'จบแล้ว',draft:'Draft'}[e.status] || e.status;
+  const status = statusOf(e);
+  const canReg = status === 'open';
+  const img = e.imageUrl
+    ? `<img src="${e.imageUrl}" alt="${e.name}" loading="lazy">`
+    : `<svg viewBox="0 0 80 70" fill="none" stroke="currentColor" stroke-width="3" style="width:80px;height:80px;color:var(--grey-300)"><use href="#i-flag"/></svg>`;
+  const spots = e.availableSpots ?? ((e.maxParticipants||0) - (e.registeredCount||0));
+  const spotsText = e.maxParticipants
+    ? `<span class="evt-spots">ທີ່ຫວ່າງ: ${Math.max(0,spots)} / ${e.maxParticipants}</span>` : '';
+  const priceText = !e.fee || e.fee == 0
+    ? `<span class="free">ຟຣີ</span>`
+    : `<span>₭${Math.round((e.fee||0)*698).toLocaleString()}</span>`;
 
-  const cats = (e.categories||[]).slice(0,4);
-  const catPills = cats.map(c => {
-    const p = fmtNum(c.price);
-    const ep = c.early_bird_price && new Date(c.early_bird_deadline) > new Date() ? fmtNum(c.early_bird_price) : null;
-    return `<span class="cat-pill">${esc(c.category_name)} <span class="price">${ep ? ep+'<s style="color:var(--g6);font-weight:500;margin-left:3px">'+p+'</s>' : p}</span></span>`;
-  }).join('');
-  const moreCats = e.categories && e.categories.length > 4 ? `<span class="cat-pill" style="color:var(--g6)">+${e.categories.length-4} more</span>` : '';
+  const btnLabel = {open:'ສະໝັກເລີຍ', soon:'ໄວໆນີ້', full:'ເຕັມແລ້ວ', closed:'ປິດຮັບ'}[status]||'ສະໝັກ';
+  const href = canReg ? `events-register.html?id=${encodeURIComponent(e.id)}` : '#';
 
-  const coverSrc = e.cover_image;
-  const coverHtml = coverSrc
-    ? `<img src="${esc(coverSrc)}" alt="${esc(e.event_name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-img>🏅</div>'">`
-    : `<div class="no-img">🏅</div>`;
-
-  const regLink = `events-register.html?event_id=${encodeURIComponent(e.event_id)}`;
-  const detailLink = `events-register.html?event_id=${encodeURIComponent(e.event_id)}&view=detail`;
-
-  const btnLabel = regOpen ? 'สมัครเลย →' : regClosed ? 'ปิดรับสมัครแล้ว' : 'ดูรายละเอียด';
-
-  return `
-<div class="card${isFeatured?' featured':''}" onclick="location.href='${regLink}'">
-  <div class="card-cover">
-    ${coverHtml}
-    ${typeLabel ? `<span class="tag">${typeLabel}</span>` : ''}
-    <span class="status-tag ${e.status||'draft'}">${statusLabel}</span>
-  </div>
-  <div class="card-body">
-    ${isFeatured ? `<div class="featured-badge">⭐ Featured Event</div>` : ''}
-    <div class="card-title">${esc(e.event_name)}</div>
-    <div class="card-meta">
-      <div class="row">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span>${fmtDate(e.event_date)}${e.start_time?' · '+e.start_time:''}</span>
+  return `<div class="evt-card">
+  <div class="evt-card-img">${img}${badgeFor(e)}</div>
+  <div class="evt-card-body">
+    <span class="evt-card-cat">${e.category||'Event'}</span>
+    <div class="evt-card-name">${e.name}</div>
+    <div class="evt-meta">
+      <div class="evt-meta-row">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>${fmtDate(e.eventDate||e.startDate)}</span>
       </div>
-      ${e.location ? `<div class="row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${esc(e.location)}</span></div>` : ''}
-      ${e.registration_close && regOpen ? `<div class="row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>ปิดรับ ${fmtDate(e.registration_close)}</span></div>` : ''}
+      ${e.location?`<div class="evt-meta-row"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>${e.location}</span></div>`:''}
+      ${e.distance?`<div class="evt-meta-row"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M15 6l6 6-6 6"/></svg><span>${e.distance}</span></div>`:''}
     </div>
-    ${catPills||moreCats ? `<div class="card-cats">${catPills}${moreCats}</div>` : ''}
-    <div class="card-foot">
-      <button class="btn-reg" ${regClosed?'disabled':''} onclick="event.stopPropagation();${regOpen?`location.href='${regLink}'`:`location.href='${detailLink}'`}">${btnLabel}</button>
-      <button class="btn-detail" onclick="event.stopPropagation();location.href='${detailLink}'">รายละเอียด</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px">
+      <div class="evt-price">${priceText}</div>${spotsText}
     </div>
+  </div>
+  <div class="evt-card-foot">
+    <a class="evt-btn${canReg?'':' disabled'}" href="${href}">${btnLabel}</a>
   </div>
 </div>`;
 }
 
-// ── Skeletons ──
-function showSkeletons(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = Array(6).fill(0).map(() => `
-    <div class="sk-card">
-      <div class="sk-cover skeleton"></div>
-      <div class="sk-line skeleton"></div>
-      <div class="sk-line short skeleton"></div>
-      <div class="sk-line skeleton" style="margin:8px 18px 18px;height:36px"></div>
-    </div>`).join('');
-}
-
-// ── Pager ──
-function renderPager(totalPages){
-  const pager = document.getElementById('pager');
-  if (totalPages <= 1) { pager.hidden = true; return; }
-  pager.hidden = false;
-  let html = `<button ${currentPage===1?'disabled':''} onclick="goPage(${currentPage-1})">‹</button>`;
-  for (let i=1;i<=totalPages;i++){
-    if (i===1||i===totalPages||Math.abs(i-currentPage)<=1){
-      html += `<button class="${i===currentPage?'on':''}" onclick="goPage(${i})">${i}</button>`;
-    } else if (Math.abs(i-currentPage)===2){
-      html += `<button disabled style="border:none;background:none">…</button>`;
-    }
+function renderGrid(events){
+  const grid = document.getElementById('evtGrid');
+  if(!events.length){
+    grid.innerHTML = `<div class="evt-empty" style="grid-column:1/-1">
+      <svg viewBox="0 0 80 70" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 16px"><use href="#i-flag"/></svg>
+      <h3>ບໍ່ມີ Events ໃນຂະນະນີ້</h3>
+      <p>ກວດໃໝ່ໄວໆ ຫຼື ຕິດຕາມ Facebook ຂອງເຮົາ</p>
+    </div>`;
+    return;
   }
-  html += `<button ${currentPage===totalPages?'disabled':''} onclick="goPage(${currentPage+1})">›</button>`;
-  pager.innerHTML = html;
+  grid.innerHTML = events.map(renderCard).join('');
 }
 
-function goPage(n){ currentPage = n; renderPage(); window.scrollTo({top:0,behavior:'smooth'}); }
-
-// ── Format ──
-function fmtNum(n){ return Number(n||0).toLocaleString('th-TH'); }
-function fmtDate(v){
-  if (!v) return '';
-  try {
-    return new Date(v).toLocaleDateString('th-TH',{year:'numeric',month:'short',day:'numeric',weekday:'short'});
-  } catch(e){ return v; }
-}
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// ── API ──
-async function hmacSign(body){
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw',enc.encode(API_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);
-  const sig = await crypto.subtle.sign('HMAC',key,enc.encode(body));
-  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+async function loadEvents(){
+  try{
+    const res = await evtGet({ action:'evt.getEvents', status:'published' });
+    allEvents = Array.isArray(res) ? res : (res.data || res.events || []);
+    filterEvents();
+  }catch(err){
+    document.getElementById('evtGrid').innerHTML = `<div class="evt-empty" style="grid-column:1/-1">
+      <svg viewBox="0 0 80 70" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 16px"><use href="#i-flag"/></svg>
+      <h3>ໂຫຼດ Events ບໍ່ໄດ້</h3>
+      <p>ກວດ connection ແລ້ວລອງໃໝ່</p>
+    </div>`;
+  }
 }
 
-async function get(params){
-  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
-  const sig = await hmacSign(qs);
-  const res = await fetch(API_URL+'?'+qs+'&sig='+sig);
-  const text = await res.text();
-  try { return JSON.parse(text); } catch(e){ throw new Error(text.slice(0,200)); }
+function filterEvents(){
+  const filtered = activeCat
+    ? allEvents.filter(e => (e.category||'').toLowerCase().includes(activeCat))
+    : allEvents;
+  renderGrid(filtered);
 }
+
+document.querySelectorAll('.evt-filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.evt-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    filterEvents();
+  });
+});
+
+const urlCat = new URLSearchParams(location.search).get('cat');
+if(urlCat){
+  activeCat = urlCat;
+  document.querySelectorAll('.evt-filter-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.cat===urlCat);
+  });
+}
+
+loadEvents();
 </script>
+<script src="Layout.js"></script>
