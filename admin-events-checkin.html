@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Sevenday Check-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<style>
+/* Gate-side check-in station: one column on phone, scanner + log side by side on tablet/desktop */
+:root{
+  --black:#000; --ink:#1C1C1C; --g9:#2B2B2B; --g6:#6E6E6E; --g3:#D4D4D4; --g1:#F3F3F3; --white:#fff;
+  --accent:#FF3B00;
+  --ok:#0F8A4C; --ok-bg:#E7F6EE;
+  --warn:#B86E00; --warn-bg:#FFF4DF;
+  --bad:#C4161C; --bad-bg:#FDECEC;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A; --g1:#1A1A1A; --white:#111;
+    --ok:#3DD68C; --ok-bg:#0E2A1C; --warn:#FFB547; --warn-bg:#2E2008; --bad:#FF6B6B; --bad-bg:#2E1010;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A; --g1:#1A1A1A; --white:#111;
+  --ok:#3DD68C; --ok-bg:#0E2A1C; --warn:#FFB547; --warn-bg:#2E2008; --bad:#FF6B6B; --bad-bg:#2E1010;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+input,select{font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:42px;padding:0 16px;font-weight:700;font-size:14px;border:2px solid var(--black);background:var(--white);color:var(--ink)}
+.btn.primary{background:var(--black);color:var(--white)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12px;border-width:1px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Top bar */
+.top{background:#000;color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .in{max-width:1200px;margin:0 auto;padding:0 16px;height:54px;display:flex;align-items:center;gap:12px}
+.top .mark{width:30px;height:30px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:14px;flex-shrink:0}
+.top .crumb{font-size:13px;color:rgba(255,255,255,.55);display:flex;gap:6px;align-items:center;flex:1;min-width:0;white-space:nowrap;overflow:hidden}
+.top .crumb a{font-weight:600}
+.top .crumb b{color:#fff;font-weight:800}
+.top .tb{height:32px;padding:0 12px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.35);color:#fff}
+
+.wrap{max-width:1200px;margin:0 auto;padding:16px 16px 60px}
+
+/* Event bar */
+.evbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6)}
+.field select,.field input{height:42px;border:1px solid var(--g3);padding:0 12px;background:var(--white);color:var(--ink);min-width:0}
+.field.grow{flex:1 1 260px}
+.field.station{flex:0 1 200px}
+
+/* Progress */
+.prog{background:var(--white);border:1px solid var(--g3);padding:14px 16px;margin-bottom:14px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 16px;align-items:center}
+.prog .big{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums}
+.prog .big small{font-size:16px;color:var(--g6);font-weight:700;letter-spacing:0}
+.prog .bar{height:10px;background:var(--g1);border:1px solid var(--g3);position:relative;overflow:hidden}
+.prog .bar i{position:absolute;inset:0 auto 0 0;background:var(--ok);width:0;transition:width .4s}
+.prog .pct{font-weight:800;font-variant-numeric:tabular-nums;font-size:18px}
+.prog .sub{grid-column:1/-1;font-size:12px;color:var(--g6)}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;align-items:start}
+
+/* Mode tabs */
+.tabs{display:flex;border:2px solid var(--black);margin-bottom:12px}
+.tabs button{flex:1;height:44px;font-weight:800;font-size:14px}
+.tabs button[aria-selected="true"]{background:var(--black);color:var(--white)}
+
+/* Scanner */
+.scan{background:#000;position:relative;aspect-ratio:4/3;max-width:100%;max-height:52vh;width:100%;overflow:hidden;border:1px solid var(--g3)}
+.scan video{width:100%;height:100%;object-fit:cover;display:block}
+.scan .frame{position:absolute;inset:14% 22%;border:3px solid rgba(255,255,255,.85);box-shadow:0 0 0 999px rgba(0,0,0,.35)}
+.scan .frame::after{content:'';position:absolute;left:0;right:0;top:50%;height:2px;background:var(--accent);animation:sweep 2s ease-in-out infinite}
+@keyframes sweep{0%,100%{transform:translateY(-60px)}50%{transform:translateY(60px)}}
+@media(prefers-reduced-motion:reduce){.scan .frame::after{animation:none}}
+.scan .idle{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px}
+.scan .idle p{font-size:13px;opacity:.7;max-width:280px}
+.scan-ctl{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.scan-ctl .hint{font-size:12px;color:var(--g6);align-self:center;flex:1;min-width:160px}
+
+/* Manual entry */
+.manual{display:flex;gap:8px;margin-top:12px}
+.manual input{flex:1;min-width:0;height:46px;border:2px solid var(--black);padding:0 14px;background:var(--white);color:var(--ink);font-size:16px}
+
+/* Result card */
+.result{margin-top:12px;border:2px solid var(--g3);background:var(--white);padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center}
+.result.OK{border-color:var(--ok);background:var(--ok-bg)}
+.result.ALREADY{border-color:var(--warn);background:var(--warn-bg)}
+.result.BAD{border-color:var(--bad);background:var(--bad-bg)}
+.result .bib{grid-row:span 3;font-size:52px;font-weight:900;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;min-width:90px;text-align:center}
+.result .bib small{display:block;font-size:10px;letter-spacing:.1em;font-weight:800;color:var(--g6)}
+.result .st{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.result.OK .st{color:var(--ok)} .result.ALREADY .st{color:var(--warn)} .result.BAD .st{color:var(--bad)}
+.result .nm{font-size:22px;font-weight:900;line-height:1.2;letter-spacing:-.3px}
+.result .mt{font-size:13px;color:var(--g9)}
+.result .mt b{font-weight:800}
+.result .acts{grid-column:1/-1;display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+
+/* Search list */
+.slist{background:var(--white);border:1px solid var(--g3);margin-top:12px}
+.srow{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--g1)}
+.srow:last-child{border-bottom:none}
+.srow .b{font-weight:900;font-size:18px;font-variant-numeric:tabular-nums;text-align:center}
+.srow .n{font-weight:800;line-height:1.3}
+.srow .m{font-size:12px;color:var(--g6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Pills */
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;letter-spacing:.02em;white-space:nowrap;border:1px solid currentColor}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)} .pill.mute{color:var(--g6)}
+
+/* Log panel */
+.panel{background:var(--white);border:1px solid var(--g3);position:sticky;top:calc(env(safe-area-inset-top,0px) + 68px)}
+.panel .hd{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--g3)}
+.panel .hd h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.panel .bd{max-height:calc(100vh - 220px);overflow:auto}
+.lrow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--g1)}
+.lrow .b{font-weight:900;font-variant-numeric:tabular-nums;text-align:center}
+.lrow .n{font-weight:700;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .m{font-size:11px;color:var(--g6);font-variant-numeric:tabular-nums}
+.undo-box{grid-column:1/-1;display:flex;gap:6px}
+.undo-box input{flex:1;min-width:0;height:32px;border:1px solid var(--g3);padding:0 8px;background:var(--white);color:var(--ink);font-size:13px}
+.empty{padding:40px 16px;text-align:center;color:var(--g6);font-size:13px}
+
+/* Login */
+.login{min-height:100vh;background:#000;display:grid;place-items:center;padding:20px}
+.login form{background:var(--white);color:var(--ink);padding:32px;width:min(400px,100%);display:flex;flex-direction:column;gap:12px}
+.login h1{font-size:24px;font-weight:900;letter-spacing:-.4px}
+.login input{height:48px;border:1px solid var(--g3);padding:0 14px;font-size:16px;background:var(--white);color:var(--ink)}
+.msg-err{background:var(--bad-bg);border-left:3px solid var(--bad);padding:8px 12px;font-size:13px;color:var(--bad)}
+
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,80px);background:var(--black);color:var(--white);padding:11px 20px;font-weight:600;font-size:13px;transition:transform .22s;z-index:99;visibility:hidden;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .panel{position:static}
+  .panel .bd{max-height:none}
+}
+@media(max-width:480px){
+  .prog .big{font-size:28px}
+  .result .bib{font-size:40px;min-width:70px}
+  .result .nm{font-size:19px}
+  .top .crumb .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="loginScreen" class="login" hidden>
+  <form id="loginForm">
+    <div style="width:40px;height:40px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px">S</div>
+    <h1>Admin Login</h1>
+    <p style="color:var(--g6);font-size:14px;margin-top:-6px">Sevenday Events · Check-in</p>
+    <div id="loginMsg"></div>
+    <input id="loginPass" type="password" placeholder="Admin Password" autocomplete="current-password" required>
+    <button class="btn primary" type="submit" style="height:48px">ເຂົ້າສູ່ລະບົບ</button>
+  </form>
+</div>
+
+<div id="mainApp" hidden>
+  <div class="top">
+    <div class="in">
+      <div class="mark">S</div>
+      <div class="crumb">
+        <a href="admin-events.html" class="hide-sm">Events</a><span class="hide-sm">/</span>
+        <b>Check-in</b>
+      </div>
+      <a href="admin-events-registrations.html" id="regLink" class="tb" style="display:inline-flex;align-items:center">ລາຍຊື່</a>
+      <button class="tb" type="button" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="evbar">
+      <div class="field grow">
+        <label for="evSel">ງານ (Event)</label>
+        <select id="evSel"><option value="">ກຳລັງໂຫຼດ…</option></select>
+      </div>
+      <div class="field station">
+        <label for="station">ຈຸດ / ຜູ້ກວດ</label>
+        <input id="station" placeholder="ເຊັ່ນ Gate A – ນ້ອຍ" maxlength="40">
+      </div>
+    </div>
+
+    <div class="prog" aria-live="polite">
+      <div class="big"><span id="nIn">0</span> <small>/ <span id="nPaid">0</span></small></div>
+      <div class="bar" role="progressbar" aria-label="Checked in" aria-valuemin="0" aria-valuemax="100" id="barWrap"><i id="bar"></i></div>
+      <div class="pct" id="pct">0%</div>
+      <div class="sub" id="progSub">Check-in ແລ້ວ / ຊຳລະແລ້ວ</div>
+    </div>
+
+    <div class="layout">
+      <section>
+        <div class="tabs" role="tablist">
+          <button role="tab" id="tabScan" aria-selected="true" onclick="setMode('scan')">ສະແກນ QR</button>
+          <button role="tab" id="tabSearch" aria-selected="false" onclick="setMode('search')">ຄົ້ນຫາ BIB / ຊື່</button>
+        </div>
+
+        <div id="result" class="result" style="margin:0 0 12px" hidden aria-live="assertive"></div>
+        <div id="modeScan">
+          <div class="scan">
+            <video id="video" playsinline muted></video>
+            <div class="frame" id="frame" hidden></div>
+            <div class="idle" id="scanIdle">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7V4h3M21 7V4h-3M3 17v3h3M21 17v3h-3"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="7" width="4" height="4"/><rect x="7" y="13" width="4" height="4"/><path d="M13 13h4v4"/></svg>
+              <button class="btn accent" type="button" id="camBtn" onclick="startCam()">ເປີດກ້ອງສະແກນ</button>
+              <p id="camMsg">ສະແກນ QR ຈາກໜ້າ “ການລົງທະບຽນຂອງຂ້ອຍ” ຂອງນັກແຂ່ງ</p>
+            </div>
+          </div>
+          <div class="scan-ctl">
+            <span class="hint" id="scanHint">ສະແກນຕໍ່ເນື່ອງໄດ້ — QR ດຽວກັນຈະບໍ່ຖືກອ່ານຊ້ຳພາຍໃນ 4 ວິນາທີ</span>
+            <button class="btn sm" type="button" id="flipBtn" onclick="flipCam()" hidden>ສະຫຼັບກ້ອງ</button>
+            <button class="btn sm" type="button" id="stopBtn" onclick="stopCam()" hidden>ປິດກ້ອງ</button>
+          </div>
+          <form class="manual" id="bibForm">
+            <input id="bibIn" inputmode="numeric" placeholder="ຫຼື ໃສ່ເລກ BIB ແລ້ວກົດ Check-in" aria-label="BIB number" autocomplete="off">
+            <button class="btn primary" type="submit">Check-in</button>
+          </form>
+        </div>
+
+        <div id="modeSearch" hidden>
+          <form class="manual" id="searchForm" style="margin-top:0">
+            <input id="searchIn" placeholder="ຊື່, BIB ຫຼື ເລກລົງທະບຽນ" aria-label="Search participant" autocomplete="off">
+            <button class="btn primary" type="submit">ຄົ້ນຫາ</button>
+          </form>
+          <div class="slist" id="slist"><div class="empty">ພິມຊື່ ຫຼື BIB ເພື່ອຄົ້ນຫາ</div></div>
+        </div>
+
+      </section>
+
+      <aside class="panel">
+        <div class="hd">
+          <h2>Check-in ຫຼ້າສຸດ</h2>
+          <button class="btn sm" type="button" onclick="loadAll()">ໂຫຼດໃໝ່</button>
+        </div>
+        <div class="bd" id="log"><div class="empty">ຍັງບໍ່ມີ</div></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+
+let token = sessionStorage.getItem('sd_admin') || '';
+let eventId = '';
+let busy = false;
+
+// ── helpers ──────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k){ try { return localStorage.getItem(k) || ''; } catch(_) { return ''; } },
+  set(k,v){ try { localStorage.setItem(k, v); } catch(_) {} }
+};
+function toast(msg){
+  const el = $('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+function fmtTime(iso){
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+function stationName(){ return ($('station').value.trim() || 'admin').slice(0, 40); }
+
+async function post(action, data){
+  const r = await fetch(`${API_URL}?action=${encodeURIComponent(action)}&secret=${API_SECRET}`, {
+    method: 'POST',
+    body: JSON.stringify({ action, secret: API_SECRET, token, admin_id: stationName(), ...data })
+  });
+  const j = await r.json();
+  if (j.ok === false) {
+    if (String(j.error).includes('ADMIN_AUTH')) { logout(); throw new Error('Session ໝົດອາຍຸ — ກະລຸນາ Login ໃໝ່'); }
+    throw new Error(j.error || 'API error');
+  }
+  return j.data !== undefined ? j.data : j;
+}
+async function get(params){
+  const qs = new URLSearchParams({ secret: API_SECRET, ...params }).toString();
+  const r = await fetch(`${API_URL}?${qs}`);
+  const j = await r.json();
+  if (j.ok === false) throw new Error(j.error || 'API error');
+  return j.data !== undefined ? j.data : j;
+}
+
+// ── auth ─────────────────────────────────────────────────────
+function logout(){
+  sessionStorage.removeItem('sd_admin'); token = '';
+  stopCam();
+  $('mainApp').hidden = true; $('loginScreen').hidden = false;
+}
+function showApp(){
+  $('loginScreen').hidden = true; $('mainApp').hidden = false;
+  loadEvents();
+}
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('loginMsg').innerHTML = '';
+  try {
+    const r = await post('adminLogin', { password: $('loginPass').value });
+    if (!r.token) throw new Error(r.error || 'Login ບໍ່ສຳເລັດ');
+    token = r.token; sessionStorage.setItem('sd_admin', token);
+    showApp();
+  } catch (err) {
+    $('loginMsg').innerHTML = `<div class="msg-err">${esc(err.message)}</div>`;
+  }
+});
+
+// ── events ───────────────────────────────────────────────────
+async function loadEvents(){
+  try {
+    const r = await get({ action: 'evt.getEvents', admin: '1' });
+    const list = (r.events || []).filter(e => e.status !== 'CANCELLED' && e.status !== 'DRAFT');
+    const want = new URLSearchParams(location.search).get('event_id') || store.get('sd_ci_event');
+    if (!list.length) { $('evSel').innerHTML = '<option value="">ບໍ່ມີງານ</option>'; return; }
+    // ເລືອກງານທີ່ໃກ້ວັນນີ້ທີ່ສຸດ ຖ້າບໍ່ມີທີ່ກຳນົດ
+    const today = new Date().toISOString().slice(0,10);
+    const near = list.find(e => (e.event_date || '') >= today) || list[list.length-1];
+    $('evSel').innerHTML = list.map(e =>
+      `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date ? ' · ' + esc(e.event_date) : ''}</option>`).join('');
+    $('evSel').value = list.some(e => e.event_id === want) ? want : near.event_id;
+    selectEvent($('evSel').value);
+  } catch (err) {
+    $('evSel').innerHTML = '<option value="">ໂຫຼດບໍ່ໄດ້</option>';
+    toast('ໂຫຼດງານບໍ່ໄດ້: ' + err.message);
+  }
+}
+$('evSel').addEventListener('change', e => selectEvent(e.target.value));
+$('station').value = store.get('sd_ci_station');
+$('station').addEventListener('change', e => store.set('sd_ci_station', e.target.value.trim()));
+
+function selectEvent(id){
+  eventId = id; store.set('sd_ci_event', id);
+  $('regLink').href = 'admin-events-registrations.html?event_id=' + encodeURIComponent(id);
+  $('result').hidden = true;
+  loadAll();
+}
+
+async function loadAll(){
+  if (!eventId) return;
+  await Promise.all([loadStats(), loadLog()]);
+}
+async function loadStats(){
+  try {
+    const s = await post('evt.getEventStats', { event_id: eventId });
+    const st = s.stats || s;
+    setProgress(Number(st.checked_in) || 0, Number(st.paid) || 0);
+  } catch (err) { toast(err.message); }
+}
+function setProgress(nIn, nPaid){
+  $('nIn').textContent = nIn; $('nPaid').textContent = nPaid;
+  const p = nPaid ? Math.round(nIn / nPaid * 100) : 0;
+  $('bar').style.width = Math.min(100, p) + '%';
+  $('barWrap').setAttribute('aria-valuenow', p);
+  $('pct').textContent = p + '%';
+  $('progSub').textContent = `Check-in ແລ້ວ ${nIn} ຄົນ · ຍັງເຫຼືອ ${Math.max(0, nPaid - nIn)} ຄົນ (ຈາກທີ່ຊຳລະແລ້ວ)`;
+}
+
+async function loadLog(){
+  try {
+    const r = await post('evt.getParticipants', { event_id: eventId, checkin_status: 'CHECKED_IN', limit: 200 });
+    const list = (r.participants || []).sort((a,b) => (b.checkin_time || '').localeCompare(a.checkin_time || ''));
+    renderLog(list.slice(0, 50));
+  } catch (err) {
+    $('log').innerHTML = `<div class="empty">${esc(err.message)}</div>`;
+  }
+}
+function renderLog(list){
+  if (!list.length) { $('log').innerHTML = '<div class="empty">ຍັງບໍ່ມີຄົນ Check-in</div>'; return; }
+  $('log').innerHTML = list.map(p => `
+    <div class="lrow" data-id="${esc(p.registration_id)}">
+      <div class="b">${esc(p.bib_number || '—')}</div>
+      <div style="min-width:0">
+        <div class="n">${esc(p.first_name)} ${esc(p.last_name)}</div>
+        <div class="m">${esc(fmtTime(p.checkin_time))} · ${esc(p.category_name || '')}</div>
+      </div>
+      <button class="btn sm" type="button" onclick="askUndo(this)">ຍົກເລີກ</button>
+    </div>`).join('');
+}
+
+// ── undo (needs a reason; logged on server) ─────────────────
+function askUndo(btn){
+  const row = btn.closest('.lrow');
+  if (row.querySelector('.undo-box')) return;
+  const box = document.createElement('form');
+  box.className = 'undo-box';
+  box.innerHTML = `<input placeholder="ເຫດຜົນ (ເຊັ່ນ ສະແກນຜິດຄົນ)" required maxlength="200" aria-label="Reason">
+    <button class="btn sm primary" type="submit">ຢືນຢັນ</button>
+    <button class="btn sm" type="button">ປິດ</button>`;
+  box.querySelector('button[type=button]').onclick = () => box.remove();
+  box.onsubmit = async e => {
+    e.preventDefault();
+    const reason = box.querySelector('input').value.trim();
+    if (!reason) return;
+    try {
+      await post('evt.undoCheckIn', { registration_id: row.dataset.id, reason });
+      toast('ຍົກເລີກ Check-in ແລ້ວ');
+      loadAll();
+    } catch (err) { toast(err.message); }
+  };
+  row.appendChild(box);
+  box.querySelector('input').focus();
+}
+
+// ── check-in core ────────────────────────────────────────────
+const STATUS = {
+  OK:          { cls:'OK',      t:'Check-in ສຳເລັດ' },
+  ALREADY:     { cls:'ALREADY', t:'Check-in ແລ້ວກ່ອນໜ້ານີ້' },
+  UNPAID:      { cls:'BAD',     t:'ຍັງບໍ່ໄດ້ຊຳລະ — ຫ້າມເຂົ້າ' },
+  CANCELLED:   { cls:'BAD',     t:'ການລົງທະບຽນຖືກຍົກເລີກ' },
+  WRONG_EVENT: { cls:'BAD',     t:'QR ນີ້ເປັນຂອງງານອື່ນ' },
+  NOT_FOUND:   { cls:'BAD',     t:'ບໍ່ພົບການລົງທະບຽນ' },
+};
+
+async function doCheckIn(payload){
+  if (!eventId) { toast('ເລືອກງານກ່ອນ'); return; }
+  if (busy) return;
+  busy = true;
+  showResult({ status:'_LOADING' });
+  try {
+    const r = await post('evt.checkIn', { event_id: eventId, ...payload });
+    // ຮອງຮັບ backend ເກົ່າ (checked_in / already_checked_in)
+    if (!r.status) r.status = r.already_checked_in ? 'ALREADY' : (r.checked_in ? 'OK' : 'NOT_FOUND');
+    showResult(r);
+    feedback(r.status);
+    if (r.status === 'OK') loadAll();
+  } catch (err) {
+    showResult({ status:'_ERROR', message: err.message });
+    feedback('BAD');
+  } finally { busy = false; }
+}
+
+function showResult(r){
+  const el = $('result');
+  el.hidden = false;
+  clearTimeout(el._t);
+  if (r.status === '_LOADING') {
+    el.className = 'result';
+    el.innerHTML = `<div class="bib">…</div><div class="st" style="color:var(--g6)">ກຳລັງກວດ…</div>`;
+    return;
+  }
+  if (r.status === '_ERROR') {
+    el.className = 'result BAD';
+    el.innerHTML = `<div class="bib">!</div><div class="st">ເກີດຂໍ້ຜິດພາດ</div><div class="mt">${esc(r.message)}</div>`;
+    return;
+  }
+  const s = STATUS[r.status] || STATUS.NOT_FOUND;
+  const p = r.participant || {};
+  const name = [p.first_name, p.last_name].filter(Boolean).join(' ');
+  let extra = '';
+  if (r.status === 'ALREADY') extra = `<div class="mt">ເວລາ <b>${esc(fmtTime(r.checkin_time))}</b>${r.checked_by ? ' · ໂດຍ ' + esc(r.checked_by) : ''}</div>`;
+  if (r.status === 'UNPAID') extra = `<div class="mt">ສະຖານະຊຳລະ: <b>${esc(r.payment_status || '-')}</b> — ສົ່ງໄປໂຕະການເງິນ</div>`;
+  el.className = 'result ' + s.cls;
+  el.innerHTML = `
+    <div class="bib"><small>BIB</small>${esc(r.bib_number || '—')}</div>
+    <div class="st">${s.t}</div>
+    ${name ? `<div class="nm">${esc(name)}${p.nickname ? ` <span style="font-weight:600;color:var(--g6)">(${esc(p.nickname)})</span>` : ''}</div>` : ''}
+    ${r.category_name || p.jersey_size ? `<div class="mt">${r.category_name ? `<b>${esc(r.category_name)}</b>${r.distance ? ' · ' + esc(r.distance) : ''}` : ''}${p.jersey_size ? ` · ເສື້ອ <b>${esc(p.jersey_size)}</b>` : ''}</div>` : ''}
+    ${extra}`;
+  if (r.status === 'OK') el._t = setTimeout(() => { el.hidden = true; }, 6000);
+}
+
+// Beep + vibrate. Audio is allowed because the camera was started by a tap.
+let actx = null;
+function feedback(status){
+  const ok = status === 'OK', warn = status === 'ALREADY';
+  try { navigator.vibrate && navigator.vibrate(ok ? 80 : [120, 80, 120]); } catch(_) {}
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const tones = ok ? [880] : warn ? [660, 660] : [220, 180];
+    tones.forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = f; o.type = 'square'; g.gain.value = .06;
+      o.connect(g); g.connect(actx.destination);
+      const t = actx.currentTime + i * .18;
+      o.start(t); o.stop(t + (ok ? .12 : .14));
+    });
+  } catch(_) {}
+}
+
+// ── camera scanner (BarcodeDetector when available, else jsQR) ──
+let stream = null, raf = 0, facing = 'environment', detector = null;
+let lastCode = '', lastAt = 0;
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+async function startCam(){
+  $('camMsg').textContent = 'ກຳລັງເປີດກ້ອງ…';
+  try {
+    if (!detector && 'BarcodeDetector' in window) {
+      try {
+        const fm = await BarcodeDetector.getSupportedFormats();
+        if (fm.includes('qr_code')) detector = new BarcodeDetector({ formats: ['qr_code'] });
+      } catch(_) {}
+    }
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+    const v = $('video'); v.srcObject = stream; await v.play();
+    $('scanIdle').hidden = true; $('frame').hidden = false;
+    $('stopBtn').hidden = false; $('flipBtn').hidden = false;
+    if (actx && actx.state === 'suspended') actx.resume();
+    loop();
+  } catch (err) {
+    $('camMsg').textContent = err.name === 'NotAllowedError'
+      ? 'ບໍ່ໄດ້ຮັບອະນຸຍາດໃຊ້ກ້ອງ — ເປີດສິດກ້ອງໃນການຕັ້ງຄ່າ Browser ແລ້ວລອງໃໝ່ ຫຼື ໃສ່ BIB ດ້ານລຸ່ມ'
+      : 'ເປີດກ້ອງບໍ່ໄດ້ (' + err.message + ') — ໃສ່ BIB ດ້ານລຸ່ມແທນ';
+  }
+}
+function stopCam(){
+  cancelAnimationFrame(raf);
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  stream = null;
+  $('scanIdle').hidden = false; $('frame').hidden = true;
+  $('stopBtn').hidden = true; $('flipBtn').hidden = true;
+  $('camMsg').textContent = 'ສະແກນ QR ຈາກໜ້າ “ການລົງທະບຽນຂອງຂ້ອຍ” ຂອງນັກແຂ່ງ';
+}
+function flipCam(){ facing = facing === 'environment' ? 'user' : 'environment'; stopCam(); startCam(); }
+
+let scanning = false;
+async function loop(){
+  if (!stream) return;
+  const v = $('video');
+  if (!scanning && v.readyState >= 2 && !busy) {
+    scanning = true;
+    try {
+      let code = '';
+      if (detector) {
+        const res = await detector.detect(v);
+        code = res[0] && res[0].rawValue || '';
+      } else if (window.jsQR) {
+        const w = 640, h = Math.round(v.videoHeight / v.videoWidth * w) || 480;
+        canvas.width = w; canvas.height = h;
+        ctx.drawImage(v, 0, 0, w, h);
+        const img = ctx.getImageData(0, 0, w, h);
+        const q = jsQR(img.data, w, h, { inversionAttempts: 'dontInvert' });
+        code = q ? q.data : '';
+      }
+      if (code) onCode(code);
+    } catch(_) {}
+    scanning = false;
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+// QR holds the random qr_token only. Also accept a URL that carries it (?qr= / ?token=).
+function parseToken(raw){
+  const s = String(raw).trim();
+  try {
+    const u = new URL(s);
+    return u.searchParams.get('qr') || u.searchParams.get('qr_token') || u.searchParams.get('token') || '';
+  } catch(_) {}
+  return /^[A-Za-z0-9_-]{16,64}$/.test(s) ? s : '';
+}
+function onCode(raw){
+  const now = Date.now();
+  if (raw === lastCode && now - lastAt < 4000) return;
+  lastCode = raw; lastAt = now;
+  const tok = parseToken(raw);
+  if (!tok) { showResult({ status:'_ERROR', message:'QR ນີ້ບໍ່ແມ່ນ QR ລົງທະບຽນ Sevenday' }); feedback('BAD'); return; }
+  doCheckIn({ qr_token: tok });
+}
+
+$('bibForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const bib = $('bibIn').value.trim();
+  if (!bib) return;
+  doCheckIn({ bib_number: bib });
+  $('bibIn').value = '';
+});
+
+// ── search mode ──────────────────────────────────────────────
+function setMode(m){
+  const scan = m === 'scan';
+  $('tabScan').setAttribute('aria-selected', scan); $('tabSearch').setAttribute('aria-selected', !scan);
+  $('modeScan').hidden = !scan; $('modeSearch').hidden = scan;
+  if (!scan) { stopCam(); $('searchIn').focus(); }
+}
+$('searchForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const q = $('searchIn').value.trim();
+  if (!q || !eventId) return;
+  $('slist').innerHTML = '<div class="empty">ກຳລັງຄົ້ນຫາ…</div>';
+  try {
+    const r = await post('evt.getParticipants', { event_id: eventId, search: q, limit: 30 });
+    renderSearch(r.participants || []);
+  } catch (err) { $('slist').innerHTML = `<div class="empty">${esc(err.message)}</div>`; }
+});
+function pillFor(p){
+  if (String(p.reg_status).toUpperCase() === 'CANCELLED') return '<span class="pill mute">ຍົກເລີກ</span>';
+  if (p.checkin_status === 'CHECKED_IN') return `<span class="pill ok">IN ${esc(fmtTime(p.checkin_time).slice(0,5))}</span>`;
+  if (p.payment_status !== 'PAID') return '<span class="pill bad">ຍັງບໍ່ຈ່າຍ</span>';
+  return '';
+}
+function renderSearch(list){
+  if (!list.length) { $('slist').innerHTML = '<div class="empty">ບໍ່ພົບ</div>'; return; }
+  $('slist').innerHTML = list.map(p => {
+    const can = p.payment_status === 'PAID' && p.checkin_status !== 'CHECKED_IN' && String(p.reg_status).toUpperCase() !== 'CANCELLED';
+    return `<div class="srow">
+      <div class="b">${esc(p.bib_number || '—')}</div>
+      <div style="min-width:0">
+        <div class="n">${esc(p.first_name)} ${esc(p.last_name)} ${pillFor(p)}</div>
+        <div class="m">${esc(p.reg_number)} · ${esc(p.category_name)} · ເສື້ອ ${esc(p.jersey_size || '-')}</div>
+      </div>
+      ${can ? `<button class="btn sm primary" type="button" data-id="${esc(p.registration_id)}">Check-in</button>` : '<span></span>'}
+    </div>`;
+  }).join('');
+  $('slist').querySelectorAll('button[data-id]').forEach(b => b.onclick = async () => {
+    await doCheckIn({ registration_id: b.dataset.id });
+    $('searchForm').requestSubmit();
+  });
+}
+
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopCam(); });
+
+// ── boot ─────────────────────────────────────────────────────
+if (token) showApp(); else { $('loginScreen').hidden = false; }
+</script>
+</body>
+</html>
