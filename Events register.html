@@ -1,0 +1,806 @@
+<title>Sevenday — Event Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;
+  --g1:#F3F3F3;--white:#fff;--accent:#FF3B00;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
+    --g1:#1E1E1E;--white:#111;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --black:#fff;--ink:#ECECEC;--g9:#D0D0D0;--g6:#909090;--g3:#3A3A3A;
+  --g1:#1E1E1E;--white:#111;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--white);border:1.5px solid var(--g3);padding:9px 12px;width:100%;font-size:14px;transition:border-color .15s;border-radius:0}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--black)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E6E6E' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+
+/* ── Top nav ── */
+.top{background:var(--black);color:var(--white);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .in{max-width:720px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;gap:12px}
+.top .mark{width:34px;height:34px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px;flex-shrink:0}
+.top .title{font-size:15px;font-weight:800;color:var(--white);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top .btn-back{font-size:13px;font-weight:600;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:5px;flex-shrink:0}
+.top .btn-back:hover{color:#fff}
+
+/* ── Step bar ── */
+.stepbar{background:var(--white);border-bottom:1.5px solid var(--g3)}
+.stepbar .in{max-width:720px;margin:0 auto;padding:0 20px;display:flex;height:52px;align-items:center}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:default}
+.step::after{content:'';position:absolute;right:0;top:50%;width:1px;height:60%;background:var(--g3)}
+.step:last-child::after{display:none}
+.step-num{width:22px;height:22px;border-radius:50%;border:2px solid var(--g3);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--g6);margin-bottom:2px;transition:all .2s}
+.step-label{font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--g6);text-transform:uppercase;display:none}
+@media(min-width:500px){.step-label{display:block}}
+.step.done .step-num{background:var(--g9);border-color:var(--g9);color:#fff}
+.step.active .step-num{background:var(--accent);border-color:var(--accent);color:#fff}
+.step.active .step-label{color:var(--ink)}
+
+/* ── Wrap ── */
+.wrap{max-width:720px;margin:0 auto;padding:24px 20px 100px}
+
+/* ── Section ── */
+.section{background:var(--white);border:1.5px solid var(--g3);padding:24px;margin-bottom:16px}
+.section-title{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--g6);margin-bottom:18px}
+
+/* ── Event hero card ── */
+.event-hero{background:var(--white);border:1.5px solid var(--g3);overflow:hidden;margin-bottom:16px}
+.event-cover{width:100%;aspect-ratio:16/6;object-fit:cover;display:block;background:var(--g1)}
+.event-cover-placeholder{width:100%;aspect-ratio:16/6;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--g3)}
+.event-info{padding:18px}
+.event-name{font-size:22px;font-weight:900;letter-spacing:-.3px;margin-bottom:6px}
+.event-meta{display:flex;flex-direction:column;gap:5px}
+.event-meta .row{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--g6)}
+
+/* ── Category select cards ── */
+.cat-grid{display:flex;flex-direction:column;gap:10px}
+.cat-card{border:2px solid var(--g3);padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;align-items:center;gap:14px}
+.cat-card:hover{border-color:var(--g9)}
+.cat-card.selected{border-color:var(--accent);background:rgba(255,59,0,.04)}
+.cat-card.full{opacity:.5;cursor:not-allowed}
+.cat-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--g3);flex-shrink:0;display:grid;place-items:center;transition:all .15s}
+.cat-card.selected .cat-radio{border-color:var(--accent);background:var(--accent)}
+.cat-radio-dot{width:6px;height:6px;border-radius:50%;background:#fff;display:none}
+.cat-card.selected .cat-radio-dot{display:block}
+.cat-info{flex:1;min-width:0}
+.cat-name{font-weight:800;font-size:15px;margin-bottom:2px}
+.cat-sub{font-size:12px;color:var(--g6)}
+.cat-price-wrap{text-align:right;flex-shrink:0}
+.cat-price{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
+.cat-early{font-size:11px;color:#1a7d3a;font-weight:700}
+.cat-orig{font-size:12px;color:var(--g6);text-decoration:line-through;font-variant-numeric:tabular-nums}
+
+/* ── Form ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.grid-2{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+.label{font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--g6)}
+.label .req{color:var(--accent);margin-left:2px}
+.err-msg{font-size:12px;color:#c00}
+.field-full{grid-column:1/-1}
+.hint{font-size:12px;color:var(--g6);margin-top:2px}
+
+/* ── Participant block ── */
+.participant-block{border:1.5px solid var(--g3);padding:20px;margin-bottom:14px;position:relative}
+.participant-block .block-title{font-size:13px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.participant-block .remove-btn{margin-left:auto;font-size:12px;color:var(--g6);font-weight:700;cursor:pointer}
+.participant-block .remove-btn:hover{color:#c00}
+
+/* ── Order summary ── */
+.summary-line{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--g3);font-size:14px}
+.summary-line:last-child{border-bottom:none}
+.summary-line.total{font-weight:900;font-size:17px;padding-top:14px;border-top:2px solid var(--black)}
+.summary-line .val{font-variant-numeric:tabular-nums;font-weight:700}
+
+/* ── Review box ── */
+.review-item{padding:12px 0;border-bottom:1px solid var(--g3)}
+.review-item:last-child{border-bottom:none}
+.review-label{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--g6);margin-bottom:2px}
+.review-val{font-size:14px;font-weight:600}
+
+/* ── Payment upload ── */
+.bank-card{border:1.5px solid var(--g3);padding:16px;margin-bottom:12px}
+.bank-name{font-weight:800;font-size:15px;margin-bottom:4px}
+.bank-acc{font-size:20px;font-weight:900;letter-spacing:1px;font-variant-numeric:tabular-nums;margin-bottom:2px}
+.bank-holder{font-size:13px;color:var(--g6)}
+.upload-zone{border:2px dashed var(--g3);padding:32px 20px;text-align:center;cursor:pointer;transition:border-color .15s;position:relative}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--black)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone .ico{font-size:32px;margin-bottom:10px}
+.upload-zone p{font-size:13px;color:var(--g6);font-weight:500}
+.upload-zone .btn-txt{font-size:13px;font-weight:800;color:var(--black);text-decoration:underline;margin-top:6px}
+.preview-img{width:100%;max-height:300px;object-fit:contain;margin-top:14px;border:1.5px solid var(--g3);display:none}
+
+/* ── Success screen ── */
+.success-wrap{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px}
+.success-ico{width:72px;height:72px;background:var(--black);color:var(--white);display:grid;place-items:center;font-size:32px;margin:0 auto 24px;border-radius:50%}
+.success-wrap h2{font-size:24px;font-weight:900;margin-bottom:10px}
+.success-wrap p{font-size:15px;color:var(--g6);max-width:400px;margin:0 auto 28px}
+.reg-id-box{background:var(--g1);border:1.5px solid var(--g3);padding:16px 24px;margin:0 auto 28px;font-variant-numeric:tabular-nums}
+.reg-id-label{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--g6);margin-bottom:4px}
+.reg-id-val{font-size:22px;font-weight:900;letter-spacing:1px}
+
+/* ── Bottom bar ── */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--g3);padding:12px 20px;display:flex;gap:10px;align-items:center;z-index:15}
+.bottom-bar .sp{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;padding:0 22px;font-weight:800;font-size:14px;border:2px solid var(--black);background:var(--white);color:var(--ink);cursor:pointer;flex-shrink:0;white-space:nowrap}
+.btn.primary{background:var(--black);color:var(--white)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{height:36px;padding:0 14px;font-size:12px}
+.price-preview{font-size:13px;color:var(--g6)}
+.price-preview strong{font-size:17px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;display:block}
+
+/* ── Spinner ── */
+.spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Terms checkbox ── */
+.terms-check{display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer}
+.terms-check input{width:16px;height:16px;margin-top:1px;flex-shrink:0;cursor:pointer;accent-color:var(--black)}
+.terms-check a{color:var(--accent);text-decoration:underline}
+
+/* ── Loading overlay ── */
+.loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:flex;align-items:center;justify-content:center}
+.loading-box{background:var(--white);padding:32px 40px;text-align:center;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:14px}
+.spin-dark{display:inline-block;width:28px;height:28px;border:3px solid var(--g3);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite}
+
+/* ── Error banner ── */
+.err-banner{background:#fff0f0;border:1.5px solid #fcc;padding:14px 18px;font-size:14px;color:#c00;font-weight:600;margin-bottom:16px;display:none}
+.err-banner.show{display:block}
+</style>
+
+<!-- Top nav -->
+<nav class="top">
+  <div class="in">
+    <div class="mark">S</div>
+    <div class="title" id="navTitle">Event Registration</div>
+    <a href="events.html" class="btn-back">← Events</a>
+  </div>
+</nav>
+
+<!-- Step bar -->
+<div class="stepbar">
+  <div class="in">
+    <div class="step active" id="step1bar">
+      <div class="step-num">1</div>
+      <div class="step-label">เลือกประเภท</div>
+    </div>
+    <div class="step" id="step2bar">
+      <div class="step-num">2</div>
+      <div class="step-label">ข้อมูลผู้สมัคร</div>
+    </div>
+    <div class="step" id="step3bar">
+      <div class="step-num">3</div>
+      <div class="step-label">ยืนยัน</div>
+    </div>
+    <div class="step" id="step4bar">
+      <div class="step-num">4</div>
+      <div class="step-label">ชำระเงิน</div>
+    </div>
+  </div>
+</div>
+
+<!-- Wrap -->
+<div class="wrap" id="mainWrap">
+
+  <!-- Error banner -->
+  <div class="err-banner" id="errBanner"></div>
+
+  <!-- ===== STEP 1: Event detail + category select ===== -->
+  <div id="s1">
+    <!-- Event hero (populated by JS) -->
+    <div id="eventHero"></div>
+
+    <!-- Category selection -->
+    <div class="section" id="catSection">
+      <div class="section-title">เลือกประเภทการแข่งขัน</div>
+      <div class="cat-grid" id="catGrid">
+        <div style="color:var(--g6);font-size:14px;padding:20px 0;text-align:center">กำลังโหลด...</div>
+      </div>
+    </div>
+
+    <!-- Participant count -->
+    <div class="section" id="countSection" hidden>
+      <div class="section-title">จำนวนผู้สมัคร</div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="font-size:14px;color:var(--g6);flex:1">สมัครพร้อมกันกี่คน?</div>
+        <div style="display:flex;align-items:center;gap:0;border:1.5px solid var(--g3)">
+          <button style="width:40px;height:40px;font-size:20px;font-weight:700;border-right:1.5px solid var(--g3)" onclick="changeCount(-1)">−</button>
+          <span id="countDisplay" style="width:48px;text-align:center;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums">1</span>
+          <button style="width:40px;height:40px;font-size:20px;font-weight:700;border-left:1.5px solid var(--g3)" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: Participant info ===== -->
+  <div id="s2" hidden>
+    <div id="participantsForm"></div>
+    <div class="section">
+      <div class="section-title">ข้อมูลผู้ติดต่อ</div>
+      <div class="grid-2">
+        <div class="field field-full">
+          <label class="label">อีเมล (รับใบยืนยันการสมัคร)<span class="req">*</span></label>
+          <input id="contactEmail" type="email" placeholder="example@email.com" autocomplete="email">
+          <div class="err-msg" id="errContactEmail"></div>
+        </div>
+        <div class="field">
+          <label class="label">เบอร์โทรศัพท์<span class="req">*</span></label>
+          <input id="contactPhone" type="tel" placeholder="+856 20 XXXX XXXX" autocomplete="tel">
+          <div class="err-msg" id="errContactPhone"></div>
+        </div>
+        <div class="field" id="lineField">
+          <label class="label">LINE ID</label>
+          <input id="lineId" type="text" placeholder="@yourlineid">
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <label class="terms-check" id="termsCheck">
+        <input type="checkbox" id="agreeTerms">
+        <span>ฉันได้อ่านและยอมรับ <a id="termsLink" href="#" target="_blank">เงื่อนไขและข้อกำหนด</a> ของการแข่งขันนี้</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: Review & confirm ===== -->
+  <div id="s3" hidden>
+    <div class="section">
+      <div class="section-title">ตรวจสอบข้อมูลก่อนยืนยัน</div>
+      <div id="reviewContent"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">สรุปค่าใช้จ่าย</div>
+      <div id="summaryContent"></div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 4: Payment ===== -->
+  <div id="s4" hidden>
+    <div class="section">
+      <div class="section-title">ช่องทางชำระเงิน</div>
+      <div class="bank-card">
+        <div class="bank-name">🏦 BCEL (ທະນາຄານການຄ້າຕ່າງປະເທດລາວ)</div>
+        <div class="bank-acc">010-18-00-000000-00-1</div>
+        <div class="bank-holder">ບໍລິສັດ ເຊເວນເດ ສະປອດ ຈຳກັດ</div>
+      </div>
+      <div class="bank-card">
+        <div class="bank-name">🏦 LDB (ທະນາຄານພັດທະນາລາວ)</div>
+        <div class="bank-acc">000-0-00-000000-0</div>
+        <div class="bank-holder">ບໍລິສັດ ເຊເວນເດ ສະປອດ ຈຳກັດ</div>
+      </div>
+      <p style="font-size:13px;color:var(--g6);margin-top:8px">โอนตามยอดที่แสดงในหน้า 3 แล้วอัปโหลดสลิปด้านล่าง</p>
+    </div>
+    <div class="section">
+      <div class="section-title">อัปโหลดสลิปการโอนเงิน</div>
+      <div class="upload-zone" id="uploadZone"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleDrop(event)">
+        <input type="file" accept="image/*,application/pdf" id="slipInput" onchange="handleSlipFile(this.files[0])">
+        <div class="ico">📎</div>
+        <p>ลาก & วางสลิปที่นี่</p>
+        <div class="btn-txt">หรือคลิกเพื่อเลือกไฟล์</div>
+        <p style="margin-top:6px;font-size:11px">PNG, JPG, PDF • สูงสุด 5MB</p>
+      </div>
+      <img id="slipPreview" class="preview-img" alt="slip preview">
+      <div id="slipFilename" style="font-size:13px;color:var(--g6);margin-top:8px;font-weight:600"></div>
+      <div class="err-msg" id="errSlip" style="margin-top:6px"></div>
+    </div>
+    <div class="section">
+      <div class="field">
+        <label class="label">หมายเหตุ (ถ้ามี)</label>
+        <textarea id="paymentNote" rows="3" placeholder="เช่น โอนจากชื่อ..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SUCCESS ===== -->
+  <div id="sSuccess" hidden>
+    <div class="success-wrap">
+      <div class="success-ico">✓</div>
+      <h2>ส่งข้อมูลเรียบร้อย!</h2>
+      <p>เราได้รับการสมัครของคุณแล้ว ทีมงานจะตรวจสอบและยืนยันทางอีเมลภายใน 1–2 วันทำการ</p>
+      <div class="reg-id-box">
+        <div class="reg-id-label">Registration ID</div>
+        <div class="reg-id-val" id="successRegId">—</div>
+      </div>
+      <p style="font-size:13px;color:var(--g6);margin-bottom:24px">เก็บ Registration ID ไว้สำหรับอ้างอิง</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <a href="events.html" class="btn">← ดู Events อื่น</a>
+        <button class="btn primary" onclick="goMyReg()">ดูข้อมูลการสมัคร</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- Bottom bar -->
+<div class="bottom-bar" id="bottomBar">
+  <div id="priceSummary" class="price-preview" hidden></div>
+  <div class="sp"></div>
+  <button class="btn" id="btnBack" onclick="goBack()" hidden>← ย้อนกลับ</button>
+  <button class="btn accent" id="btnNext" onclick="goNext()" disabled>
+    <span id="btnNextTxt">ถัดไป →</span>
+    <span id="btnNextSpin" class="spin" hidden></span>
+  </button>
+</div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="loading-overlay" hidden>
+  <div class="loading-box">
+    <div class="spin-dark"></div>
+    <div id="loadingMsg">กำลังโหลด...</div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+
+// ── State ──
+let eventId = null;
+let eventData = null;
+let categories = [];
+let selectedCatId = null;
+let participantCount = 1;
+let currentStep = 1;
+let slipFile = null;
+let slipBase64 = null;
+let registrationId = null;
+
+// ── Init ──
+(async function(){
+  const params = new URLSearchParams(location.search);
+  eventId = params.get('event_id');
+  if (!eventId) { showErr('ไม่พบ event_id — กรุณากลับหน้า Events'); return; }
+  showLoading('กำลังโหลดข้อมูล Event...');
+  try {
+    const res = await get({ action:'evt.getEvent', event_id:eventId });
+    if (res.error || !res.event) { showErr(res.error||'ไม่พบ Event นี้'); hideLoading(); return; }
+    eventData = res.event;
+    categories = (res.categories||[]).filter(c => c.status !== 'closed' && (c.max_slots==0||c.max_slots=='0'||(parseInt(c.registered_count||0)<parseInt(c.max_slots||999999))));
+    renderEventHero();
+    renderCategories();
+    document.getElementById('navTitle').textContent = eventData.event_name||'Event Registration';
+    if (eventData.terms_url) document.getElementById('termsLink').href = eventData.terms_url;
+    // Check registration open
+    if (eventData.status !== 'open') {
+      document.getElementById('btnNext').disabled = true;
+      document.getElementById('btnNext').textContent = 'ยังไม่เปิดรับสมัคร';
+    }
+  } catch(e) { showErr('โหลดข้อมูลล้มเหลว: '+e.message); }
+  hideLoading();
+})();
+
+// ── Render event hero ──
+function renderEventHero(){
+  const e = eventData;
+  const typeLabel = {run:'Running',cycling:'Cycling',triathlon:'Triathlon',walk:'Walking',other:'Other'}[e.event_type]||'';
+  document.getElementById('eventHero').innerHTML = `
+    <div class="event-hero">
+      ${e.cover_image
+        ? `<img class="event-cover" src="${esc(e.cover_image)}" alt="${esc(e.event_name)}" onerror="this.outerHTML='<div class=event-cover-placeholder>🏅</div>'">`
+        : `<div class="event-cover-placeholder">🏅</div>`}
+      <div class="event-info">
+        <div class="event-name">${esc(e.event_name)}</div>
+        <div class="event-meta">
+          <div class="row">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>${fmtDate(e.event_date)}${e.start_time?' · '+e.start_time:''}</span>
+          </div>
+          ${e.location?`<div class="row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${esc(e.location)}</span></div>`:''}
+          ${e.registration_close?`<div class="row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>ปิดรับสมัคร ${fmtDate(e.registration_close)}</span></div>`:''}
+          ${typeLabel?`<div class="row"><span>🏷 ${typeLabel}</span></div>`:''}
+        </div>
+        ${e.description?`<div style="margin-top:12px;font-size:13px;color:var(--g6);line-height:1.6">${esc(e.description)}</div>`:''}
+      </div>
+    </div>`;
+}
+
+// ── Render categories ──
+function renderCategories(){
+  const grid = document.getElementById('catGrid');
+  if (!categories.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:24px;color:var(--g6);font-size:14px">ไม่มีหมวดหมู่ที่เปิดรับสมัคร</div>';
+    return;
+  }
+  grid.innerHTML = categories.map(c => {
+    const isEarly = c.early_bird_price && c.early_bird_deadline && new Date(c.early_bird_deadline) > new Date();
+    const displayPrice = isEarly ? parseInt(c.early_bird_price) : parseInt(c.price);
+    const origPrice = isEarly ? parseInt(c.price) : null;
+    const isFull = c.max_slots > 0 && parseInt(c.registered_count||0) >= parseInt(c.max_slots);
+    const slots = c.max_slots > 0 ? (parseInt(c.max_slots)-parseInt(c.registered_count||0))+' ที่นั่งคงเหลือ' : '';
+    return `<div class="cat-card${isFull?' full':''}" id="cat_${c.category_id}" onclick="${isFull?'':''=''}selectCat('${c.category_id}')">
+      <div class="cat-radio"><div class="cat-radio-dot"></div></div>
+      <div class="cat-info">
+        <div class="cat-name">${esc(c.category_name)}${c.distance_km?` · ${c.distance_km}km`:''}</div>
+        <div class="cat-sub">${isFull?'<span style="color:#c00;font-weight:700">เต็มแล้ว</span>':slots||c.description||''}</div>
+      </div>
+      <div class="cat-price-wrap">
+        ${isEarly?`<div class="cat-early">Early Bird</div>`:''}
+        <div class="cat-price">${fmtNum(displayPrice)}</div>
+        <div style="font-size:10px;color:var(--g6);font-weight:500">LAK</div>
+        ${origPrice?`<div class="cat-orig">${fmtNum(origPrice)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectCat(id){
+  selectedCatId = id;
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById('cat_'+id);
+  if (el) el.classList.add('selected');
+  document.getElementById('countSection').hidden = false;
+  document.getElementById('btnNext').disabled = false;
+  updatePricePreview();
+}
+
+// ── Participant count ──
+function changeCount(delta){
+  const max = 10;
+  participantCount = Math.max(1, Math.min(max, participantCount + delta));
+  document.getElementById('countDisplay').textContent = participantCount;
+  updatePricePreview();
+}
+
+function updatePricePreview(){
+  if (!selectedCatId) return;
+  const cat = categories.find(c => c.category_id === selectedCatId);
+  if (!cat) return;
+  const isEarly = cat.early_bird_price && cat.early_bird_deadline && new Date(cat.early_bird_deadline) > new Date();
+  const unitPrice = isEarly ? parseInt(cat.early_bird_price) : parseInt(cat.price);
+  const total = unitPrice * participantCount;
+  const el = document.getElementById('priceSummary');
+  el.hidden = false;
+  el.innerHTML = `${participantCount} คน × ${fmtNum(unitPrice)} LAK<strong>${fmtNum(total)} LAK</strong>`;
+}
+
+// ── Build participant form fields ──
+function buildParticipantForms(){
+  const container = document.getElementById('participantsForm');
+  container.innerHTML = '';
+  for (let i = 0; i < participantCount; i++){
+    const isFirst = i === 0;
+    const block = document.createElement('div');
+    block.className = 'participant-block section';
+    block.id = 'pblock_'+i;
+    block.innerHTML = `
+      <div class="block-title">
+        👤 ผู้สมัครที่ ${i+1}
+        ${!isFirst ? `<span class="remove-btn" onclick="removeParticipant(${i})">ลบ</span>` : ''}
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="label">ชื่อ (ภาษาอังกฤษ)<span class="req">*</span></label>
+          <input id="p${i}_fname" type="text" placeholder="FIRSTNAME" autocomplete="${isFirst?'given-name':'off'}">
+          <div class="err-msg" id="p${i}_err_fname"></div>
+        </div>
+        <div class="field">
+          <label class="label">นามสกุล (ภาษาอังกฤษ)<span class="req">*</span></label>
+          <input id="p${i}_lname" type="text" placeholder="LASTNAME" autocomplete="${isFirst?'family-name':'off'}">
+          <div class="err-msg" id="p${i}_err_lname"></div>
+        </div>
+        <div class="field">
+          <label class="label">เพศ<span class="req">*</span></label>
+          <select id="p${i}_gender">
+            <option value="">— เลือก —</option>
+            <option value="M">ชาย (Male)</option>
+            <option value="F">หญิง (Female)</option>
+          </select>
+          <div class="err-msg" id="p${i}_err_gender"></div>
+        </div>
+        <div class="field">
+          <label class="label">วันเกิด<span class="req">*</span></label>
+          <input id="p${i}_dob" type="date" autocomplete="${isFirst?'bday':'off'}">
+          <div class="err-msg" id="p${i}_err_dob"></div>
+        </div>
+        <div class="field">
+          <label class="label">เบอร์โทรฉุกเฉิน</label>
+          <input id="p${i}_emergency" type="tel" placeholder="+856 20 XXXX XXXX">
+        </div>
+        <div class="field">
+          <label class="label">ไซส์เสื้อ</label>
+          <select id="p${i}_shirt">
+            <option value="">— เลือก —</option>
+            <option>XS</option><option>S</option><option>M</option><option>L</option>
+            <option>XL</option><option>2XL</option><option>3XL</option>
+          </select>
+        </div>
+        <div class="field field-full">
+          <label class="label">โรคประจำตัว / แพ้ยา (ถ้ามี)</label>
+          <input id="p${i}_medical" type="text" placeholder="ระบุถ้ามี หรือปล่อยว่าง">
+        </div>
+      </div>`;
+    container.appendChild(block);
+  }
+}
+
+function removeParticipant(idx){
+  if (participantCount <= 1) return;
+  participantCount--;
+  document.getElementById('countDisplay').textContent = participantCount;
+  buildParticipantForms();
+  updatePricePreview();
+}
+
+// ── Validate step 2 ──
+function validateStep2(){
+  let ok = true;
+  for (let i = 0; i < participantCount; i++){
+    [['fname','ชื่อจำเป็น'],['lname','นามสกุลจำเป็น'],['gender','เพศจำเป็น'],['dob','วันเกิดจำเป็น']].forEach(([f, msg]) => {
+      const el = document.getElementById('p'+i+'_'+f);
+      const errEl = document.getElementById('p'+i+'_err_'+f);
+      if (!el || !el.value.trim()) { if(errEl) errEl.textContent = msg; ok = false; }
+      else { if(errEl) errEl.textContent = ''; }
+    });
+  }
+  const email = document.getElementById('contactEmail').value.trim();
+  const phone = document.getElementById('contactPhone').value.trim();
+  const errEmail = document.getElementById('errContactEmail');
+  const errPhone = document.getElementById('errContactPhone');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEmail.textContent = 'อีเมลไม่ถูกต้อง'; ok = false; }
+  else errEmail.textContent = '';
+  if (!phone) { errPhone.textContent = 'เบอร์โทรจำเป็น'; ok = false; }
+  else errPhone.textContent = '';
+  if (!document.getElementById('agreeTerms').checked) {
+    showErrBanner('กรุณายอมรับเงื่อนไขก่อนดำเนินการต่อ');
+    ok = false;
+  }
+  return ok;
+}
+
+// ── Gather participants data ──
+function gatherParticipants(){
+  const list = [];
+  for (let i = 0; i < participantCount; i++){
+    list.push({
+      first_name: gv('p'+i+'_fname'),
+      last_name:  gv('p'+i+'_lname'),
+      gender:     gv('p'+i+'_gender'),
+      date_of_birth: gv('p'+i+'_dob'),
+      emergency_contact: gv('p'+i+'_emergency'),
+      shirt_size:  gv('p'+i+'_shirt'),
+      medical_info: gv('p'+i+'_medical'),
+    });
+  }
+  return list;
+}
+
+// ── Render review (step 3) ──
+function renderReview(){
+  const cat = categories.find(c => c.category_id === selectedCatId);
+  const isEarly = cat && cat.early_bird_price && cat.early_bird_deadline && new Date(cat.early_bird_deadline) > new Date();
+  const unitPrice = cat ? (isEarly ? parseInt(cat.early_bird_price) : parseInt(cat.price)) : 0;
+  const total = unitPrice * participantCount;
+
+  // Participants
+  const pts = gatherParticipants();
+  const reviewHtml = pts.map((p,i) => `
+    <div class="review-item">
+      <div class="review-label">ผู้สมัครที่ ${i+1}</div>
+      <div class="review-val">${esc(p.first_name)} ${esc(p.last_name)} · ${p.gender==='M'?'ชาย':'หญิง'} · เกิด ${p.date_of_birth}</div>
+      ${p.shirt_size?`<div style="font-size:12px;color:var(--g6)">เสื้อ: ${p.shirt_size}</div>`:''}
+    </div>`).join('');
+
+  const contactHtml = `
+    <div class="review-item">
+      <div class="review-label">ข้อมูลผู้ติดต่อ</div>
+      <div class="review-val">${esc(gv('contactEmail'))} · ${esc(gv('contactPhone'))}</div>
+    </div>`;
+
+  document.getElementById('reviewContent').innerHTML = `
+    <div class="review-item">
+      <div class="review-label">Event</div>
+      <div class="review-val">${esc(eventData.event_name)}</div>
+    </div>
+    <div class="review-item">
+      <div class="review-label">ประเภท</div>
+      <div class="review-val">${cat ? esc(cat.category_name) : '—'}${cat&&cat.distance_km?' · '+cat.distance_km+'km':''}</div>
+    </div>
+    ${reviewHtml}${contactHtml}`;
+
+  // Summary
+  document.getElementById('summaryContent').innerHTML = `
+    <div class="summary-line">
+      <span>${cat?esc(cat.category_name):'—'} × ${participantCount} คน</span>
+      <span class="val">${fmtNum(unitPrice)} LAK</span>
+    </div>
+    ${isEarly?`<div class="summary-line"><span style="color:#1a7d3a;font-size:13px">Early Bird discount</span><span class="val" style="color:#1a7d3a">ราคาพิเศษ</span></div>`:''}
+    <div class="summary-line total">
+      <span>รวมทั้งหมด</span>
+      <span class="val">${fmtNum(total)} LAK</span>
+    </div>`;
+}
+
+// ── Slip upload ──
+function handleSlipFile(file){
+  if (!file) return;
+  if (file.size > 5*1024*1024) { document.getElementById('errSlip').textContent = 'ไฟล์ใหญ่เกิน 5MB'; return; }
+  document.getElementById('errSlip').textContent = '';
+  slipFile = file;
+  document.getElementById('slipFilename').textContent = '📎 '+file.name;
+  if (file.type.startsWith('image/')){
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('slipPreview');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      slipBase64 = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    document.getElementById('slipPreview').style.display = 'none';
+    // For PDF, store as base64 anyway for API
+    const reader = new FileReader();
+    reader.onload = e => { slipBase64 = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+  document.getElementById('btnNext').disabled = false;
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) handleSlipFile(file);
+}
+
+// ── Navigation ──
+function goNext(){
+  hideErrBanner();
+  if (currentStep === 1){
+    if (!selectedCatId) { showErrBanner('กรุณาเลือกประเภทการแข่งขัน'); return; }
+    buildParticipantForms();
+    goStep(2);
+  } else if (currentStep === 2){
+    if (!validateStep2()) return;
+    renderReview();
+    goStep(3);
+  } else if (currentStep === 3){
+    goStep(4);
+  } else if (currentStep === 4){
+    submitRegistration();
+  }
+}
+
+function goBack(){
+  hideErrBanner();
+  if (currentStep > 1) goStep(currentStep - 1);
+}
+
+function goStep(n){
+  // Hide all steps
+  [1,2,3,4].forEach(i => {
+    document.getElementById('s'+i).hidden = (i !== n);
+  });
+  // Update step bar
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('step'+i+'bar');
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  });
+  currentStep = n;
+  document.getElementById('btnBack').hidden = (n === 1);
+
+  // Update next button
+  const btnTxt = document.getElementById('btnNextTxt');
+  if (n === 4) { btnTxt.textContent = '✓ ส่งข้อมูล'; document.getElementById('btnNext').disabled = !slipFile; }
+  else if (n === 3) btnTxt.textContent = 'ยืนยัน & ชำระเงิน →';
+  else btnTxt.textContent = 'ถัดไป →';
+
+  // Price summary visibility
+  document.getElementById('priceSummary').hidden = !selectedCatId;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Submit ──
+async function submitRegistration(){
+  if (!slipBase64) { document.getElementById('errSlip').textContent = 'กรุณาอัปโหลดสลิปการโอนเงิน'; return; }
+  const btnNext = document.getElementById('btnNext');
+  const btnTxt = document.getElementById('btnNextTxt');
+  const spin = document.getElementById('btnNextSpin');
+  btnNext.disabled = true; btnTxt.hidden = true; spin.hidden = false;
+  showLoading('กำลังส่งข้อมูลการสมัคร...');
+
+  const cat = categories.find(c => c.category_id === selectedCatId);
+  const isEarly = cat && cat.early_bird_price && cat.early_bird_deadline && new Date(cat.early_bird_deadline) > new Date();
+  const unitPrice = cat ? (isEarly ? parseInt(cat.early_bird_price) : parseInt(cat.price)) : 0;
+
+  const payload = {
+    event_id: eventId,
+    category_id: selectedCatId,
+    contact: {
+      email: gv('contactEmail'),
+      phone: gv('contactPhone'),
+      line_id: gv('lineId'),
+    },
+    participants: gatherParticipants(),
+    payment: {
+      amount: unitPrice * participantCount,
+      slip_image: slipBase64,
+      note: gv('paymentNote'),
+    },
+  };
+
+  try {
+    const res = await post('evt.createRegistration', payload);
+    hideLoading();
+    if (res.error) {
+      showErrBanner('เกิดข้อผิดพลาด: '+res.error);
+      btnNext.disabled = false; btnTxt.hidden = false; spin.hidden = true;
+      return;
+    }
+    registrationId = res.registration_id;
+    document.getElementById('successRegId').textContent = registrationId || '—';
+    // Show success
+    [1,2,3,4].forEach(i => document.getElementById('s'+i).hidden = true);
+    document.getElementById('sSuccess').hidden = false;
+    document.getElementById('bottomBar').hidden = true;
+    document.getElementById('stepbar').style.display = 'none';
+    window.scrollTo({top:0,behavior:'smooth'});
+  } catch(e){
+    hideLoading();
+    showErrBanner('เชื่อมต่อ API ล้มเหลว: '+e.message);
+    btnNext.disabled = false; btnTxt.hidden = false; spin.hidden = true;
+  }
+}
+
+function goMyReg(){
+  if (registrationId) window.location.href = 'events-registration.html?reg_id='+encodeURIComponent(registrationId);
+  else window.location.href = 'events.html';
+}
+
+// ── Helpers ──
+function gv(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function fmtNum(n){ return Number(n||0).toLocaleString('th-TH'); }
+function fmtDate(v){
+  if(!v) return '';
+  try { return new Date(v).toLocaleDateString('th-TH',{year:'numeric',month:'short',day:'numeric',weekday:'short'}); }
+  catch(e){ return v; }
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showLoading(msg){ document.getElementById('loadingOverlay').hidden=false; document.getElementById('loadingMsg').textContent=msg||'กำลังโหลด...'; }
+function hideLoading(){ document.getElementById('loadingOverlay').hidden=true; }
+function showErr(msg){ document.getElementById('errBanner').textContent=msg; document.getElementById('errBanner').classList.add('show'); }
+function showErrBanner(msg){ document.getElementById('errBanner').textContent=msg; document.getElementById('errBanner').classList.add('show'); window.scrollTo({top:0,behavior:'smooth'}); }
+function hideErrBanner(){ document.getElementById('errBanner').classList.remove('show'); }
+
+// ── API ──
+async function hmacSign(body){
+  const enc=new TextEncoder();
+  const key=await crypto.subtle.importKey('raw',enc.encode(API_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  const sig=await crypto.subtle.sign('HMAC',key,enc.encode(body));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function get(params){
+  const qs=Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  const sig=await hmacSign(qs);
+  const res=await fetch(API_URL+'?'+qs+'&sig='+sig);
+  const text=await res.text();
+  try{ return JSON.parse(text); }catch(e){ throw new Error(text.slice(0,200)); }
+}
+async function post(action,data){
+  const body=JSON.stringify({action,...data});
+  const sig=await hmacSign(body);
+  const res=await fetch(API_URL+'?sig='+sig,{method:'POST',headers:{'Content-Type':'application/json'},body});
+  const text=await res.text();
+  try{ return JSON.parse(text); }catch(e){ throw new Error(text.slice(0,200)); }
+}
+</script>
