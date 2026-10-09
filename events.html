@@ -3,316 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events — Sevenday Bike</title>
+<meta name="description" content="ງານແຂ່ງຂັນ ແລະ ກິດຈະກຳປັ່ນລົດຖີບ ຂອງ Sevenday Bike ວຽງຈັນ — ສະໝັກອອນລາຍ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>Events — Sevenday Bike</title>
 <link rel="stylesheet" href="Sevenday.css">
 <style>
-:root {
-  --accent: #FF3B00;
-}
+.ev-hero{background:var(--black);color:var(--white);padding:48px 0 40px}
+.ev-hero h1{font-size:clamp(30px,5vw,48px);font-weight:900;letter-spacing:-1px;line-height:1.05;text-wrap:balance}
+.ev-hero p{color:var(--grey-300);margin-top:10px;max-width:56ch}
+.ev-hero .mine{display:inline-flex;margin-top:18px;font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:4px}
 
-.evt-hero {
-  background: var(--grey-900);
-  color: var(--white);
-  padding: 56px 0 40px;
-  text-align: center;
-}
-.evt-hero h1 { font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 900; margin: 0 0 8px; }
-.evt-hero p  { color: var(--grey-300); margin: 0; font-size: 1.05rem; }
+.ev-tabs{border-bottom:1px solid var(--grey-300);background:var(--white);position:sticky;top:76px;z-index:20}
+.ev-tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.ev-tabs .wrap::-webkit-scrollbar{display:none}
+.ev-tab{flex-shrink:0;padding:14px 16px;font-weight:700;font-size:14px;color:var(--grey-600);border-bottom:3px solid transparent}
+.ev-tab[aria-pressed="true"]{color:var(--black);border-bottom-color:var(--black)}
 
-.evt-filters {
-  background: var(--grey-100);
-  border-bottom: 1px solid var(--grey-300);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.evt-filter-inner {
-  max-width: var(--wrap);
-  margin: 0 auto;
-  padding: 0 16px;
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.evt-filter-inner::-webkit-scrollbar { display: none; }
-.evt-filter-btn {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  padding: 14px 18px;
-  font-family: var(--font);
-  font-size: .9rem;
-  font-weight: 600;
-  color: var(--grey-600);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color .15s, border-color .15s;
-}
-.evt-filter-btn.active, .evt-filter-btn:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.ev-list{padding:32px 0 72px}
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.ev-card{display:flex;flex-direction:column;border:1px solid var(--grey-300);background:var(--white);transition:border-color .15s}
+.ev-card:hover{border-color:var(--black)}
+.ev-cover{aspect-ratio:16/9;background:var(--grey-100);position:relative;overflow:hidden;display:grid;place-items:center}
+.ev-cover img{width:100%;height:100%;object-fit:cover}
+.ev-cover svg{width:96px;height:56px;color:var(--grey-300)}
+.ev-state{position:absolute;top:12px;left:12px;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--white);color:var(--black)}
+.ev-state.OPEN{background:var(--black);color:var(--white)}
+.ev-body{padding:18px 18px 0;display:flex;flex-direction:column;gap:6px;flex:1}
+.ev-type{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)}
+.ev-name{font-size:19px;font-weight:900;line-height:1.25;letter-spacing:-.3px;text-wrap:balance}
+.ev-meta{font-size:14px;color:var(--grey-600);display:flex;flex-direction:column;gap:2px}
+.ev-foot{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:16px 18px 18px;margin-top:auto}
+.ev-price small{display:block;font-size:12px!important;color:var(--grey-600);font-weight:600}
+.ev-price b{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
+.ev-left{font-size:12px;color:var(--grey-600);text-align:right}
+.ev-card .btn{height:44px;margin:0 18px 18px}
+.ev-card .btn-line{border:2px solid var(--black)}
 
-.evt-section { max-width: var(--wrap); margin: 0 auto; padding: 40px 16px 64px; }
-.evt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 24px; }
-
-.evt-card {
-  border: 1px solid var(--grey-300);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--white);
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow .2s, transform .2s;
-}
-.evt-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
-.evt-card-img {
-  aspect-ratio: 16/9;
-  background: var(--grey-100);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-.evt-card-img img { width: 100%; height: 100%; object-fit: cover; }
-.evt-card-img svg { width: 80px; height: 80px; color: var(--grey-300); }
-.evt-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-.evt-badge.open   { background: #00C853; color: #fff; }
-.evt-badge.soon   { background: var(--accent); color: #fff; }
-.evt-badge.full   { background: var(--grey-600); color: #fff; }
-.evt-badge.closed { background: var(--grey-300); color: var(--grey-900); }
-
-.evt-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
-.evt-card-cat  { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
-.evt-card-name { font-size: 1.1rem; font-weight: 800; color: var(--grey-900); line-height: 1.3; text-wrap: balance; }
-.evt-meta { display: flex; flex-direction: column; gap: 5px; }
-.evt-meta-row { display: flex; align-items: flex-start; gap: 8px; font-size: .85rem; color: var(--grey-600); }
-.evt-meta-row svg { flex-shrink: 0; width: 15px; height: 15px; margin-top: 1px; }
-.evt-price { font-size: 1.1rem; font-weight: 800; color: var(--grey-900); }
-.evt-price .free { color: #00C853; }
-.evt-spots { font-size: .8rem; color: var(--grey-600); }
-.evt-card-foot { padding: 0 20px 20px; }
-.evt-btn {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: .95rem;
-  font-weight: 700;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity .15s;
-}
-.evt-btn:hover { opacity: .88; }
-.evt-btn.disabled { background: var(--grey-300); color: var(--grey-600); cursor: not-allowed; pointer-events: none; }
-
-.evt-empty { text-align: center; padding: 80px 16px; color: var(--grey-600); }
-.evt-empty svg { width: 64px; height: 64px; margin-bottom: 16px; color: var(--grey-300); }
-.evt-empty h3 { margin: 0 0 8px; color: var(--grey-900); }
-.evt-skeleton { animation: sk 1.4s infinite ease-in-out; background: var(--grey-100); border-radius: 6px; }
-@keyframes sk { 0%,100%{opacity:.6} 50%{opacity:1} }
+.ev-empty{grid-column:1/-1;text-align:center;padding:64px 16px;color:var(--grey-600)}
+.ev-empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+.sk{background:var(--grey-100);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+@media(max-width:900px){.ev-tabs{top:64px}}
 </style>
+</head>
+<body>
 
-<section class="evt-hero">
-  <div style="max-width:var(--wrap);margin:0 auto;padding:0 16px">
+<section class="ev-hero">
+  <div class="wrap">
     <h1>Events &amp; Rides</h1>
-    <p>ກິດຈະກໍາຈັກຍານ, ແຂ່ງຂັນ, ແລະ ສໍາຮ່ວງກຸ່ມ ຢູ່ Sevenday Bike</p>
+    <p>ງານແຂ່ງຂັນ, ປັ່ນກຸ່ມ ແລະ ກິດຈະກຳຂອງ Sevenday Bike — ສະໝັກ ແລະ ຊຳລະອອນລາຍໄດ້ເລີຍ.</p>
+    <a class="mine" href="my-registrations.html">ເບິ່ງການສະໝັກຂອງຂ້ອຍ →</a>
   </div>
 </section>
 
-<div class="evt-filters">
-  <div class="evt-filter-inner">
-    <button class="evt-filter-btn active" data-cat="">ທັງໝົດ</button>
-    <button class="evt-filter-btn" data-cat="race">ແຂ່ງຂັນ</button>
-    <button class="evt-filter-btn" data-cat="ride">ຂີ່ກຸ່ມ</button>
-    <button class="evt-filter-btn" data-cat="clinic">Clinic</button>
-    <button class="evt-filter-btn" data-cat="mtb">MTB</button>
-    <button class="evt-filter-btn" data-cat="road">Road</button>
-  </div>
-</div>
+<nav class="ev-tabs" aria-label="ປະເພດງານ">
+  <div class="wrap" id="tabs"></div>
+</nav>
 
-<section class="evt-section">
-  <div id="evtGrid" class="evt-grid">
-    <div style="border:1px solid var(--grey-300);border-radius:12px;overflow:hidden">
-      <div class="evt-skeleton" style="aspect-ratio:16/9"></div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
-        <div class="evt-skeleton" style="height:14px;width:60%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:20px;width:90%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:14px;width:75%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:40px;border-radius:8px;margin-top:8px"></div>
-      </div>
-    </div>
-    <div style="border:1px solid var(--grey-300);border-radius:12px;overflow:hidden">
-      <div class="evt-skeleton" style="aspect-ratio:16/9"></div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
-        <div class="evt-skeleton" style="height:14px;width:50%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:20px;width:85%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:14px;width:70%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:40px;border-radius:8px;margin-top:8px"></div>
-      </div>
-    </div>
-    <div style="border:1px solid var(--grey-300);border-radius:12px;overflow:hidden">
-      <div class="evt-skeleton" style="aspect-ratio:16/9"></div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
-        <div class="evt-skeleton" style="height:14px;width:55%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:20px;width:80%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:14px;width:65%;border-radius:4px"></div>
-        <div class="evt-skeleton" style="height:40px;border-radius:8px;margin-top:8px"></div>
-      </div>
+<main class="ev-list">
+  <div class="wrap">
+    <div class="ev-grid" id="grid">
+      <div class="ev-card"><div class="ev-cover sk"></div><div class="ev-body"><div class="sk" style="height:14px;width:40%"></div><div class="sk" style="height:22px;width:85%"></div><div class="sk" style="height:14px;width:60%"></div></div><div class="ev-foot"></div></div>
+      <div class="ev-card"><div class="ev-cover sk"></div><div class="ev-body"><div class="sk" style="height:14px;width:40%"></div><div class="sk" style="height:22px;width:85%"></div><div class="sk" style="height:14px;width:60%"></div></div><div class="ev-foot"></div></div>
+      <div class="ev-card"><div class="ev-cover sk"></div><div class="ev-body"><div class="sk" style="height:14px;width:40%"></div><div class="sk" style="height:22px;width:85%"></div><div class="sk" style="height:14px;width:60%"></div></div><div class="ev-foot"></div></div>
     </div>
   </div>
-</section>
+</main>
 
 <script>
-const API_URL_EVT = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
-const EVT_SECRET  = 'SDdMc3wNjJEevs60n2oMQeGnuI';
-
-async function hmacSign(body){
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', enc.encode(EVT_SECRET), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
-  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
+/* Events API — names prefixed EVT_ so they don't clash with layout.js */
+const EVT_API = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_KEY = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 async function evtGet(params){
-  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
-  const sig = await hmacSign(qs);
-  const res = await fetch(API_URL_EVT+'?'+qs+'&sig='+sig);
-  return JSON.parse(await res.text());
+  const r = await fetch(EVT_API + '?' + new URLSearchParams({ secret: EVT_KEY, ...params }));
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'API error');
+  return j.data;
+}
+const evtEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const evtKip = n => '₭' + Math.round(Number(n) || 0).toLocaleString('en-US');
+const EVT_MONTHS = ['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+const evtDate = ymd => { if (!ymd) return ''; const [y,m,d] = ymd.split('-').map(Number); return `${d} ${EVT_MONTHS[m-1]} ${y}`; };
+const EVT_TYPES = { CYCLING:'ປັ່ນລົດຖີບ', RUNNING:'ແລ່ນ', COMMUNITY:'ກິດຈະກຳ', WORKSHOP:'Workshop', OTHER:'ອື່ນໆ' };
+const STATE = { OPEN:'ເປີດຮັບສະໝັກ', SOON:'ໄວໆນີ້', CLOSED:'ປິດຮັບສະໝັກ' };
+
+let events = [], type = new URLSearchParams(location.search).get('type') || '';
+
+function renderTabs(){
+  const types = ['', ...Object.keys(EVT_TYPES).filter(t => events.some(e => String(e.event_type).toUpperCase() === t))];
+  document.getElementById('tabs').innerHTML = types.map(t =>
+    `<button class="ev-tab" type="button" data-t="${t}" aria-pressed="${t === type}">${t ? EVT_TYPES[t] : 'ທັງໝົດ'}</button>`).join('');
+  document.querySelectorAll('.ev-tab').forEach(b => b.onclick = () => { type = b.dataset.t; renderTabs(); renderGrid(); });
 }
 
-let allEvents = [];
-let activeCat = '';
-
-function statusOf(e){
-  const now = Date.now();
-  const regStart = e.registrationStart ? new Date(e.registrationStart).getTime() : 0;
-  const regEnd   = e.registrationEnd   ? new Date(e.registrationEnd).getTime()   : Infinity;
-  const spots = e.availableSpots ?? ((e.maxParticipants||0) - (e.registeredCount||0));
-  if(e.maxParticipants && spots <= 0) return 'full';
-  if(now < regStart) return 'soon';
-  if(now > regEnd)   return 'closed';
-  return 'open';
-}
-
-function badgeFor(e){
-  const s = statusOf(e);
-  const labels = { open:'ເປີດຮັບ', soon:'ໄວໆນີ້', full:'ເຕັມ', closed:'ປິດ' };
-  return `<span class="evt-badge ${s}">${labels[s]||s}</span>`;
-}
-
-function fmtDate(d){
-  if(!d) return '';
-  try{ return new Date(d).toLocaleDateString('lo-LA',{day:'numeric',month:'short',year:'numeric'}); }
-  catch(_){ return d; }
-}
-
-function renderCard(e){
-  const status = statusOf(e);
-  const canReg = status === 'open';
-  const img = e.imageUrl
-    ? `<img src="${e.imageUrl}" alt="${e.name}" loading="lazy">`
-    : `<svg viewBox="0 0 80 70" fill="none" stroke="currentColor" stroke-width="3" style="width:80px;height:80px;color:var(--grey-300)"><use href="#i-flag"/></svg>`;
-  const spots = e.availableSpots ?? ((e.maxParticipants||0) - (e.registeredCount||0));
-  const spotsText = e.maxParticipants
-    ? `<span class="evt-spots">ທີ່ຫວ່າງ: ${Math.max(0,spots)} / ${e.maxParticipants}</span>` : '';
-  const priceText = !e.fee || e.fee == 0
-    ? `<span class="free">ຟຣີ</span>`
-    : `<span>₭${Math.round((e.fee||0)*698).toLocaleString()}</span>`;
-
-  const btnLabel = {open:'ສະໝັກເລີຍ', soon:'ໄວໆນີ້', full:'ເຕັມແລ້ວ', closed:'ປິດຮັບ'}[status]||'ສະໝັກ';
-  const href = canReg ? `events-register.html?id=${encodeURIComponent(e.id)}` : '#';
-
-  return `<div class="evt-card">
-  <div class="evt-card-img">${img}${badgeFor(e)}</div>
-  <div class="evt-card-body">
-    <span class="evt-card-cat">${e.category||'Event'}</span>
-    <div class="evt-card-name">${e.name}</div>
-    <div class="evt-meta">
-      <div class="evt-meta-row">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <span>${fmtDate(e.eventDate||e.startDate)}</span>
+function evCard(e){
+  const finished = e.status === 'EVENT_FINISHED';
+  const state = finished ? 'CLOSED' : e.registration_state;
+  const full = e.remaining === 0;
+  const canReg = state === 'OPEN' && !full;
+  const label = finished ? 'ງານຈົບແລ້ວ' : full ? 'ເຕັມແລ້ວ' : STATE[state] || state;
+  const price = e.price_from === null ? '' : e.price_from === e.price_to
+    ? (e.price_from ? evtKip(e.price_from) : 'ຟຣີ')
+    : `${e.price_from ? evtKip(e.price_from) : 'ຟຣີ'} – ${evtKip(e.price_to)}`;
+  const href = 'events-register.html?event_id=' + encodeURIComponent(e.event_id);
+  return `<article class="ev-card">
+    <a class="ev-cover" href="${href}">
+      ${e.cover_image ? `<img src="${evtEsc(e.cover_image)}" alt="" loading="lazy">` : '<svg viewBox="0 0 120 70" fill="none" stroke="currentColor" stroke-width="4"><use href="#i-bike"/></svg>'}
+      <span class="ev-state ${canReg ? 'OPEN' : ''}">${evtEsc(label)}</span>
+    </a>
+    <div class="ev-body">
+      <span class="ev-type">${evtEsc(EVT_TYPES[String(e.event_type).toUpperCase()] || e.event_type || '')}</span>
+      <a class="ev-name" href="${href}">${evtEsc(e.event_name)}</a>
+      <div class="ev-meta">
+        <span>${evtEsc(evtDate(e.event_date))}${e.start_time ? ' · ' + evtEsc(e.start_time) : ''}</span>
+        ${e.location ? `<span>${evtEsc(e.location)}</span>` : ''}
+        ${canReg && e.registration_close ? `<span>ປິດຮັບສະໝັກ ${evtEsc(evtDate(e.registration_close))}</span>` : ''}
       </div>
-      ${e.location?`<div class="evt-meta-row"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>${e.location}</span></div>`:''}
-      ${e.distance?`<div class="evt-meta-row"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M15 6l6 6-6 6"/></svg><span>${e.distance}</span></div>`:''}
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px">
-      <div class="evt-price">${priceText}</div>${spotsText}
+    <div class="ev-foot">
+      <div class="ev-price">${price ? `<small>ຄ່າສະໝັກ</small><b>${price}</b>` : ''}</div>
+      ${canReg && e.remaining !== null ? `<div class="ev-left">ເຫຼືອ ${e.remaining} ບ່ອນ</div>` : ''}
     </div>
-  </div>
-  <div class="evt-card-foot">
-    <a class="evt-btn${canReg?'':' disabled'}" href="${href}">${btnLabel}</a>
-  </div>
-</div>`;
+    <a class="btn ${canReg ? 'btn-black' : 'btn-line'}" href="${href}">${canReg ? 'ສະໝັກເລີຍ' : 'ເບິ່ງລາຍລະອຽດ'}</a>
+  </article>`;
 }
 
-function renderGrid(events){
-  const grid = document.getElementById('evtGrid');
-  if(!events.length){
-    grid.innerHTML = `<div class="evt-empty" style="grid-column:1/-1">
-      <svg viewBox="0 0 80 70" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 16px"><use href="#i-flag"/></svg>
-      <h3>ບໍ່ມີ Events ໃນຂະນະນີ້</h3>
-      <p>ກວດໃໝ່ໄວໆ ຫຼື ຕິດຕາມ Facebook ຂອງເຮົາ</p>
-    </div>`;
-    return;
+function renderGrid(){
+  const list = events.filter(e => !type || String(e.event_type).toUpperCase() === type);
+  // upcoming first, finished last
+  list.sort((a,b) => (a.status === 'EVENT_FINISHED') - (b.status === 'EVENT_FINISHED') || String(a.event_date).localeCompare(String(b.event_date)));
+  document.getElementById('grid').innerHTML = list.length ? list.map(evCard).join('')
+    : '<div class="ev-empty"><b>ຍັງບໍ່ມີງານໃນຕອນນີ້</b>ຕິດຕາມງານໃໝ່ໄດ້ທີ່ໜ້າ Facebook ຂອງຮ້ານ</div>';
+}
+
+(async function(){
+  try {
+    events = (await evtGet({ action: 'evt.getEvents' })).events || [];
+    renderTabs(); renderGrid();
+  } catch (err) {
+    document.getElementById('grid').innerHTML = `<div class="ev-empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b>${evtEsc(err.message)}<br><br><button class="btn btn-black" type="button" onclick="location.reload()">ລອງໃໝ່</button></div>`;
   }
-  grid.innerHTML = events.map(renderCard).join('');
-}
-
-async function loadEvents(){
-  try{
-    const res = await evtGet({ action:'evt.getEvents', status:'published' });
-    allEvents = Array.isArray(res) ? res : (res.data || res.events || []);
-    filterEvents();
-  }catch(err){
-    document.getElementById('evtGrid').innerHTML = `<div class="evt-empty" style="grid-column:1/-1">
-      <svg viewBox="0 0 80 70" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 16px"><use href="#i-flag"/></svg>
-      <h3>ໂຫຼດ Events ບໍ່ໄດ້</h3>
-      <p>ກວດ connection ແລ້ວລອງໃໝ່</p>
-    </div>`;
-  }
-}
-
-function filterEvents(){
-  const filtered = activeCat
-    ? allEvents.filter(e => (e.category||'').toLowerCase().includes(activeCat))
-    : allEvents;
-  renderGrid(filtered);
-}
-
-document.querySelectorAll('.evt-filter-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.evt-filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    activeCat = btn.dataset.cat;
-    filterEvents();
-  });
-});
-
-const urlCat = new URLSearchParams(location.search).get('cat');
-if(urlCat){
-  activeCat = urlCat;
-  document.querySelectorAll('.evt-filter-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.cat===urlCat);
-  });
-}
-
-loadEvents();
+})();
 </script>
 <script src="layout.js"></script>
+</body>
 </html>

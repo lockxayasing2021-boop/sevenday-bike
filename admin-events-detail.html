@@ -8,6 +8,7 @@
 <title>Sevenday Admin — Event Detail</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+[hidden]{display:none!important}
 :root{
   --black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;
   --g1:#F3F3F3;--white:#fff;--accent:#FF3B00;
@@ -217,16 +218,16 @@ tr:last-child td{border-bottom:none}
         <div class="field">
           <label class="label">ประเภท Event</label>
           <select id="eventType">
-            <option value="run">Running</option>
-            <option value="cycling">Cycling</option>
-            <option value="triathlon">Triathlon</option>
-            <option value="walk">Walking</option>
-            <option value="other">Other</option>
+            <option value="CYCLING">Cycling — ปั่นจักรยาน</option>
+            <option value="RUNNING">Running — วิ่ง</option>
+            <option value="COMMUNITY">Community — กิจกรรม</option>
+            <option value="WORKSHOP">Workshop</option>
+            <option value="OTHER">Other</option>
           </select>
         </div>
         <div class="field">
-          <label class="label">จำนวนรับสูงสุด (0 = ไม่จำกัด)</label>
-          <input id="maxParticipants" type="number" min="0" value="0">
+          <label class="label">จำนวนรับ</label>
+          <div class="hint" style="padding-top:10px">กำหนดในแต่ละหมวดหมู่ (แท็บ “หมวดหมู่ / ราคา”)</div>
         </div>
       </div>
     </div>
@@ -242,7 +243,8 @@ tr:last-child td{border-bottom:none}
         </div>
         <div class="cover-overlay">🖼 เปลี่ยนภาพ</div>
       </div>
-      <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+      <input type="file" id="coverInput" accept="image/*" onchange="uploadCover(this)">
+      <div class="hint" id="coverMsg" style="margin-top:6px">เลือกภาพแล้วระบบจะอัปโหลดให้อัตโนมัติ</div>
       <div style="margin-top:10px">
         <label class="label">หรือใส่ URL ภาพ</label>
         <input id="coverUrl" type="url" placeholder="https://..." style="margin-top:6px" oninput="updateCoverFromUrl(this.value)">
@@ -304,11 +306,12 @@ tr:last-child td{border-bottom:none}
       <div class="grid-2">
         <div class="field">
           <label class="label">เปิดรับสมัคร</label>
-          <input id="regOpen" type="datetime-local">
+          <input id="regOpen" type="date">
         </div>
         <div class="field">
           <label class="label">ปิดรับสมัคร</label>
-          <input id="regClose" type="datetime-local">
+          <input id="regClose" type="date">
+          <span class="hint">รับสมัครได้ถึง 23:59 ของวันนี้</span>
         </div>
       </div>
     </div>
@@ -349,10 +352,10 @@ tr:last-child td{border-bottom:none}
             <tr>
               <th>ชื่อหมวด</th>
               <th>ระยะ</th>
-              <th>ราคา</th>
-              <th>Early Bird</th>
+              <th>ราคา (₭)</th>
+              <th>เงื่อนไข</th>
               <th>จำนวนรับ</th>
-              <th>ลงทะเบียน</th>
+              <th>สมัครแล้ว</th>
               <th>สถานะ</th>
               <th></th>
             </tr>
@@ -370,33 +373,6 @@ tr:last-child td{border-bottom:none}
   <div id="tabSettings" hidden>
 
     <div class="section">
-      <div class="section-title">การแสดงผล & สิทธิ์</div>
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px">
-          <input type="checkbox" id="chkPublic" style="width:16px;height:16px">
-          <div>
-            <div style="font-weight:700">แสดงใน Public Events</div>
-            <div style="font-size:12px;color:var(--g6)">ผู้ใช้ทั่วไปสามารถค้นหาและสมัครได้</div>
-          </div>
-        </label>
-        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px">
-          <input type="checkbox" id="chkFeatured" style="width:16px;height:16px">
-          <div>
-            <div style="font-weight:700">Featured Event</div>
-            <div style="font-size:12px;color:var(--g6)">แสดงในส่วน Highlight ของหน้าหลัก</div>
-          </div>
-        </label>
-        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px">
-          <input type="checkbox" id="chkRequireApproval" style="width:16px;height:16px">
-          <div>
-            <div style="font-weight:700">ต้องอนุมัติการสมัคร</div>
-            <div style="font-size:12px;color:var(--g6)">Admin ต้องอนุมัติแต่ละ registration ก่อน</div>
-          </div>
-        </label>
-      </div>
-    </div>
-
-    <div class="section">
       <div class="section-title">ลิงก์ด่วน</div>
       <div style="display:flex;flex-direction:column;gap:10px" id="quickLinks">
         <div style="font-size:13px;color:var(--g6)">บันทึก Event ก่อนเพื่อดูลิงก์</div>
@@ -405,7 +381,7 @@ tr:last-child td{border-bottom:none}
 
     <div class="section" style="border-color:#fcc">
       <div class="section-title" style="color:#c00">Danger Zone</div>
-      <p style="font-size:13px;color:var(--g6);margin-bottom:16px">การลบ Event จะลบหมวดหมู่ทั้งหมด — ไม่สามารถย้อนกลับ</p>
+      <p style="font-size:13px;color:var(--g6);margin-bottom:16px">ลบได้เฉพาะงานที่ยังไม่มีคนสมัคร (ลบหมวดหมู่ทั้งหมดด้วย) — ถ้ามีคนสมัครแล้วให้เปลี่ยนสถานะเป็น Cancelled</p>
       <button class="btn danger" onclick="document.getElementById('delConfirm').classList.add('show');window.scrollTo({top:0,behavior:'smooth'})">ลบ Event นี้</button>
     </div>
 
@@ -434,43 +410,50 @@ tr:last-child td{border-bottom:none}
       <button class="modal-close" onclick="closeCatModal()">×</button>
     </div>
     <div class="grid-2">
-      <div class="field field-full">
+      <div class="field">
+        <label class="label">รหัสหมวด<span class="req">*</span></label>
+        <input id="catCode" type="text" placeholder="G60" maxlength="10" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+        <div class="err-msg" id="errCatCode"></div>
+      </div>
+      <div class="field">
         <label class="label">ชื่อหมวดหมู่<span class="req">*</span></label>
-        <input id="catName" type="text" placeholder="10K, Half Marathon, VIP...">
+        <input id="catName" type="text" placeholder="Gravel 60 KM">
         <div class="err-msg" id="errCatName"></div>
       </div>
       <div class="field">
-        <label class="label">ระยะทาง (km)</label>
-        <input id="catDistance" type="number" min="0" step="0.1" placeholder="10">
+        <label class="label">ระยะทาง</label>
+        <input id="catDistance" type="text" placeholder="60 km">
       </div>
       <div class="field">
-        <label class="label">ราคา (LAK)<span class="req">*</span></label>
-        <input id="catPrice" type="number" min="0" placeholder="100000">
+        <label class="label">ค่าสมัคร (LAK)<span class="req">*</span></label>
+        <input id="catPrice" type="number" min="0" step="1000" placeholder="350000">
+        <span class="hint">0 = ฟรี (ยืนยัน + ออก BIB อัตโนมัติ)</span>
         <div class="err-msg" id="errCatPrice"></div>
       </div>
       <div class="field">
-        <label class="label">ราคา Early Bird (LAK)</label>
-        <input id="catEarlyPrice" type="number" min="0" placeholder="80000">
+        <label class="label">จำนวนรับสูงสุด</label>
+        <input id="catCapacity" type="number" min="0" value="0">
+        <span class="hint">0 = ไม่จำกัด</span>
       </div>
       <div class="field">
-        <label class="label">Early Bird ถึงวันที่</label>
-        <input id="catEarlyDeadline" type="date">
+        <label class="label">เพศ</label>
+        <select id="catGender"><option value="ALL">ทุกเพศ</option><option value="MALE">ชายเท่านั้น</option><option value="FEMALE">หญิงเท่านั้น</option></select>
       </div>
       <div class="field">
-        <label class="label">จำนวนรับสูงสุด (0 = ไม่จำกัด)</label>
-        <input id="catMaxSlots" type="number" min="0" value="0">
+        <label class="label">อายุต่ำสุด</label>
+        <input id="catMinAge" type="number" min="0" placeholder="-">
       </div>
       <div class="field">
-        <label class="label">BIB เริ่มต้น</label>
-        <input id="catBibStart" type="number" min="1" value="1">
+        <label class="label">อายุสูงสุด</label>
+        <input id="catMaxAge" type="number" min="0" placeholder="-">
       </div>
       <div class="field">
-        <label class="label">BIB สุดท้าย</label>
-        <input id="catBibEnd" type="number" min="0" value="0" placeholder="0 = ไม่จำกัด">
+        <label class="label">สถานะ</label>
+        <select id="catStatus"><option value="ACTIVE">เปิดรับ</option><option value="CLOSED">ปิดรับ</option></select>
       </div>
       <div class="field field-full">
         <label class="label">คำอธิบาย</label>
-        <textarea id="catDesc" rows="3" placeholder="รายละเอียดหมวดนี้..."></textarea>
+        <textarea id="catDesc" rows="3" placeholder="เส้นทาง, จุดให้น้ำ, ของที่ได้รับ…"></textarea>
       </div>
     </div>
     <div class="modal-actions">
@@ -486,477 +469,293 @@ tr:last-child td{border-bottom:none}
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtNum = n => (Number(n) || 0).toLocaleString('en-US');
 
-// ── State ──
-let token = null;
-let eventId = null;  // null = create mode
-let eventData = null;
-let categories = [];
-let editingCatId = null;
-let isDirty = false;
+let token = sessionStorage.getItem('sd_admin') || '';   // ใช้ร่วมกับหน้า admin อื่น
+let eventId = new URLSearchParams(location.search).get('event_id') || '';
+let ev = null, cats = [], editingCat = null, dirty = false;
 
-// ── Init ──
-(function(){
-  try { token = sessionStorage.getItem('admin_token'); } catch(e){}
-  const params = new URLSearchParams(location.search);
-  eventId = params.get('event_id') || null;
-
-  if (!token) { showLogin(); return; }
-  initApp();
-})();
-
-function showLogin(){
-  document.getElementById('loginGate').hidden = false;
-  document.getElementById('app').hidden = true;
-  document.getElementById('loginPwd').focus();
+// ── API ─────────────────────────────────────────────────────
+async function post(action, data){
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, secret: API_SECRET, token, admin_id: 'admin-web', ...data }) });
+  const j = await r.json();
+  if (!j.ok) {
+    if (String(j.error).includes('ADMIN_AUTH')) { logout(); throw new Error('Session หมดอายุ — เข้าสู่ระบบใหม่'); }
+    throw new Error(j.error || 'API error');
+  }
+  if (j.data && j.data.ok === false) throw new Error(j.data.error || 'ไม่สำเร็จ');
+  return j.data;
+}
+async function get(params){
+  const r = await fetch(API_URL + '?' + new URLSearchParams({ secret: API_SECRET, ...params }));
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'API error');
+  return j.data;
+}
+let toastT;
+function showToast(msg, type){
+  const el = $('toast'); el.textContent = msg;
+  el.style.background = type === 'err' ? '#c00' : 'var(--black)';
+  el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
+// ── auth ────────────────────────────────────────────────────
+function logout(){ sessionStorage.removeItem('sd_admin'); token = ''; $('app').hidden = true; $('loginGate').hidden = false; }
 async function doLogin(){
-  const pwd = document.getElementById('loginPwd').value.trim();
-  if (!pwd) return;
+  const pw = $('loginPwd').value; if (!pw) return;
+  $('loginErr').style.display = 'none';
   try {
-    const res = await post('adminLogin', { password: pwd });
-    if (res.token) {
-      try { sessionStorage.setItem('admin_token', res.token); } catch(e){}
-      token = res.token;
-      document.getElementById('loginGate').hidden = true;
-      document.getElementById('app').hidden = false;
-      initApp();
-    } else {
-      document.getElementById('loginErr').style.display = 'block';
-    }
-  } catch(e) {
-    document.getElementById('loginErr').style.display = 'block';
-    document.getElementById('loginErr').textContent = 'เชื่อมต่อ API ล้มเหลว';
+    const r = await post('adminLogin', { password: pw });
+    if (!r.token) throw new Error(r.error || 'รหัสผ่านไม่ถูกต้อง');
+    token = r.token; sessionStorage.setItem('sd_admin', token); init();
+  } catch (err) { $('loginErr').textContent = err.message; $('loginErr').style.display = 'block'; }
+}
+$('loginPwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ── load ────────────────────────────────────────────────────
+async function init(){
+  $('loginGate').hidden = true; $('app').hidden = false;
+  if (eventId) await loadEvent();
+  else {
+    $('navTitle').textContent = 'สร้าง Event ใหม่';
+    $('catNote').hidden = false;
+    renderStatus('DRAFT');
+    $('saveInfo').textContent = 'กรอกข้อมูลแล้วกดบันทึก — จากนั้นเพิ่มหมวดหมู่';
   }
 }
-
-document.getElementById('loginPwd') && document.getElementById('loginPwd').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
-
-async function initApp(){
-  document.getElementById('app').hidden = false;
-  document.getElementById('loginGate').hidden = true;
-  if (eventId) {
-    await loadEvent();
-  } else {
-    // Create mode
-    document.getElementById('navTitle').textContent = 'สร้าง Event ใหม่';
-    document.getElementById('catNote').hidden = false;
-    document.getElementById('saveInfo').textContent = 'กรอกข้อมูล Event';
-    renderStatusChip('draft');
-    renderStatusActions('draft');
-  }
-  setupDirtyTracking();
-}
-
 async function loadEvent(){
   try {
-    const res = await get({ action: 'evt.getEvent', event_id: eventId, token });
-    if (res.error) { showToast('โหลดข้อมูลล้มเหลว: ' + res.error, 'err'); return; }
-    eventData = res.event;
-    categories = res.categories || [];
-    fillForm();
-    renderCategories();
-    renderStatusChip(eventData.status);
-    renderStatusActions(eventData.status);
-    document.getElementById('navTitle').textContent = eventData.event_name || 'Event Detail';
-    renderQuickLinks();
-  } catch(e) {
-    showToast('โหลดข้อมูลล้มเหลว', 'err');
-  }
+    ev = await get({ action: 'evt.getEvent', event_id: eventId });
+    cats = ev.categories || [];
+    fillForm(); renderCats(); renderStatus(ev.status); renderLinks();
+    $('navTitle').textContent = ev.event_name;
+    $('eventCode').disabled = true;
+    $('catNote').hidden = true;
+    dirty = false;
+    $('saveInfo').textContent = 'บันทึกแล้ว · ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+  } catch (err) { showToast('โหลดข้อมูลไม่ได้: ' + err.message, 'err'); }
 }
-
+const setV = (id, v) => { const el = $(id); if (el) el.value = v ?? ''; };
 function fillForm(){
-  const e = eventData;
-  setValue('eventName', e.event_name);
-  setValue('eventCode', e.event_code);
-  setSelect('eventType', e.event_type);
-  setValue('maxParticipants', e.max_participants || 0);
-  setValue('description', e.description);
-  setValue('termsUrl', e.terms_url);
-  setValue('eventDate', toDateInput(e.event_date));
-  setValue('startTime', e.start_time);
-  setValue('endTime', e.end_time);
-  setValue('location', e.location);
-  setValue('lat', e.latitude);
-  setValue('lng', e.longitude);
-  setValue('regOpen', toDateTimeLocal(e.registration_open));
-  setValue('regClose', toDateTimeLocal(e.registration_close));
-  setValue('organizer', e.organizer);
-  setValue('contactPhone', e.contact_phone);
-  setValue('contactEmail', e.contact_email);
-  setCheck('chkPublic', e.is_public == '1' || e.is_public === true);
-  setCheck('chkFeatured', e.is_featured == '1' || e.is_featured === true);
-  setCheck('chkRequireApproval', e.require_approval == '1' || e.require_approval === true);
-  if (e.cover_image) {
-    setValue('coverUrl', e.cover_image);
-    updateCoverFromUrl(e.cover_image);
-  }
-  const meta = [];
-  if (e.created_at) meta.push('สร้าง: ' + fmtDate(e.created_at));
-  if (e.updated_at) meta.push('แก้ไข: ' + fmtDate(e.updated_at));
-  document.getElementById('eventMeta').textContent = meta.join('  ·  ');
+  setV('eventName', ev.event_name); setV('eventCode', ev.event_code);
+  setV('eventType', String(ev.event_type || 'CYCLING').toUpperCase());
+  setV('description', ev.description); setV('termsUrl', ev.terms_url);
+  setV('eventDate', ev.event_date); setV('startTime', ev.start_time); setV('endTime', ev.end_time);
+  setV('location', ev.location); setV('lat', ev.latitude); setV('lng', ev.longitude);
+  setV('regOpen', ev.registration_open); setV('regClose', ev.registration_close);
+  setV('organizer', ev.organizer); setV('contactPhone', ev.contact_phone); setV('contactEmail', ev.contact_email);
+  setV('coverUrl', ev.cover_image); updateCoverFromUrl(ev.cover_image);
+  $('eventMeta').textContent = ev.event_code;
 }
 
-// ── Form helpers ──
-function setValue(id, v){ const el = document.getElementById(id); if(el && v != null) el.value = v; }
-function setSelect(id, v){ const el = document.getElementById(id); if(el && v != null) el.value = v; }
-function setCheck(id, v){ const el = document.getElementById(id); if(el) el.checked = !!v; }
-function toDateInput(v){ if(!v) return ''; try { return new Date(v).toISOString().slice(0,10); } catch(e){ return ''; } }
-function toDateTimeLocal(v){ if(!v) return ''; try { return new Date(v).toISOString().slice(0,16); } catch(e){ return ''; } }
-
-// ── Dirty tracking ──
-function setupDirtyTracking(){
-  const form = document.getElementById('app');
-  form.querySelectorAll('input,select,textarea').forEach(el => {
-    el.addEventListener('input', () => { isDirty = true; });
-    el.addEventListener('change', () => { isDirty = true; });
+// ── status ──────────────────────────────────────────────────
+const ST = {
+  DRAFT:               { cls:'draft',     t:'Draft (ยังไม่แสดง)' },
+  PUBLISHED:           { cls:'published', t:'แสดงแล้ว — ยังไม่เปิดรับ' },
+  REGISTRATION_OPEN:   { cls:'open',      t:'เปิดรับสมัคร' },
+  REGISTRATION_CLOSED: { cls:'closed',    t:'ปิดรับสมัคร' },
+  EVENT_FINISHED:      { cls:'completed', t:'จบงานแล้ว' },
+  CANCELLED:           { cls:'closed',    t:'ยกเลิก' },
+};
+const NEXT = {
+  DRAFT:               [['REGISTRATION_OPEN','🟢 เปิดรับสมัคร'], ['PUBLISHED','แสดงบนเว็บ (ยังไม่รับสมัคร)']],
+  PUBLISHED:           [['REGISTRATION_OPEN','🟢 เปิดรับสมัคร'], ['DRAFT','ซ่อน (Draft)']],
+  REGISTRATION_OPEN:   [['REGISTRATION_CLOSED','🔒 ปิดรับสมัคร']],
+  REGISTRATION_CLOSED: [['REGISTRATION_OPEN','เปิดรับอีกครั้ง'], ['EVENT_FINISHED','✅ จบงาน']],
+  EVENT_FINISHED:      [],
+  CANCELLED:           [['DRAFT','กู้คืนเป็น Draft']],
+};
+function renderStatus(st){
+  st = String(st || 'DRAFT').toUpperCase();
+  const s = ST[st] || ST.DRAFT;
+  $('statusChip').className = 'status-chip ' + s.cls; $('statusChip').textContent = s.t;
+  const bar = $('statusActions'); bar.innerHTML = '';
+  if (!eventId) return;
+  (NEXT[st] || []).forEach(([to, label]) => {
+    const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = label;
+    b.onclick = () => setStatus(to); bar.appendChild(b);
   });
+  if (!['CANCELLED','EVENT_FINISHED'].includes(st)) {
+    const c = document.createElement('button'); c.className = 'btn sm danger'; c.textContent = 'ยกเลิกงาน';
+    c.onclick = () => { if (confirm('ยกเลิกงานนี้? งานจะหายจากหน้าเว็บ และรับสมัครไม่ได้ (การคืนเงินผู้ที่จ่ายแล้วต้องทำเอง)')) setStatus('CANCELLED'); };
+    bar.appendChild(c);
+  }
+  if (['REGISTRATION_OPEN','REGISTRATION_CLOSED','EVENT_FINISHED'].includes(st)) {
+    const a = document.createElement('a'); a.className = 'btn sm accent'; a.textContent = '📲 Check-in';
+    a.href = 'admin-events-checkin.html?event_id=' + encodeURIComponent(eventId); bar.appendChild(a);
+  }
+}
+async function setStatus(to){
+  if (dirty && !confirm('มีการแก้ไขที่ยังไม่บันทึก — เปลี่ยนสถานะต่อเลย?')) return;
+  if (to === 'REGISTRATION_OPEN') {
+    if (!cats.some(c => String(c.status).toUpperCase() === 'ACTIVE')) { switchTab('categories'); return showToast('เพิ่มหมวดหมู่ที่เปิดรับอย่างน้อย 1 หมวดก่อนเปิดรับสมัคร', 'err'); }
+    if (!ev.registration_close) { switchTab('info'); return showToast('ใส่วันปิดรับสมัครก่อน', 'err'); }
+  }
+  try {
+    await post('evt.updateEventStatus', { event_id: eventId, status: to });
+    showToast('สถานะ: ' + (ST[to] || {}).t);
+    await loadEvent();
+  } catch (err) { showToast(err.message, 'err'); }
 }
 
-// ── Tabs ──
+// ── save event ─────────────────────────────────────────────
+const gv = id => ($(id) ? $(id).value.trim() : '');
+function validate(){
+  let ok = true;
+  [['eventName','errEventName','ใส่ชื่องาน'], ['eventCode','errEventCode','ใส่รหัสงาน (A-Z, 0-9)'], ['eventDate','errEventDate','ใส่วันจัดงาน']].forEach(([f, e, m]) => {
+    const bad = !gv(f); $(e).textContent = bad ? m : ''; if (bad) ok = false;
+  });
+  if (gv('regOpen') && gv('regClose') && gv('regOpen') > gv('regClose')) { showToast('วันเปิดรับต้องก่อนวันปิดรับ', 'err'); ok = false; }
+  if (gv('regClose') && gv('eventDate') && gv('regClose') > gv('eventDate')) { showToast('วันปิดรับสมัครต้องไม่เกินวันจัดงาน', 'err'); ok = false; }
+  if (!ok) switchTab('info');
+  return ok;
+}
+async function saveEvent(){
+  if (!validate()) return;
+  const btn = $('saveBtn'); btn.disabled = true; $('saveBtnTxt').hidden = true; $('saveSpin').hidden = false;
+  const data = {
+    event_name: gv('eventName'), event_type: gv('eventType'), description: gv('description'),
+    cover_image: gv('coverUrl'), event_date: gv('eventDate'), start_time: gv('startTime'), end_time: gv('endTime'),
+    location: gv('location'), latitude: gv('lat'), longitude: gv('lng'),
+    registration_open: gv('regOpen'), registration_close: gv('regClose'),
+    organizer: gv('organizer'), contact_phone: gv('contactPhone'), contact_email: gv('contactEmail'), terms_url: gv('termsUrl'),
+  };
+  try {
+    if (eventId) {
+      await post('evt.updateEvent', { event_id: eventId, ...data });
+      showToast('บันทึกแล้ว ✓');
+    } else {
+      const r = await post('evt.createEvent', { event_code: gv('eventCode'), ...data });
+      eventId = r.event_id;
+      history.replaceState(null, '', '?event_id=' + encodeURIComponent(eventId));
+      showToast('สร้างงานแล้ว — เพิ่มหมวดหมู่ต่อได้เลย');
+      setTimeout(() => switchTab('categories'), 300);
+    }
+    dirty = false;
+    await loadEvent();
+  } catch (err) { showToast(err.message, 'err'); }
+  finally { btn.disabled = false; $('saveBtnTxt').hidden = false; $('saveSpin').hidden = true; }
+}
+async function confirmDelete(){
+  if (!eventId) return location.href = 'admin-events.html';
+  try {
+    await post('evt.deleteEvent', { event_id: eventId });
+    dirty = false; showToast('ลบงานแล้ว');
+    setTimeout(() => location.href = 'admin-events.html', 700);
+  } catch (err) { $('delConfirm').classList.remove('show'); showToast(err.message, 'err'); }
+}
+
+// ── cover ──────────────────────────────────────────────────
+function updateCoverFromUrl(url){
+  const img = $('coverPreview'), wrap = $('coverWrap');
+  if (!url) { wrap.classList.remove('has-img'); img.removeAttribute('src'); return; }
+  img.onload = () => wrap.classList.add('has-img');
+  img.onerror = () => wrap.classList.remove('has-img');
+  img.src = url;
+}
+async function uploadCover(input){
+  const file = input.files[0]; if (!file) return;
+  $('coverMsg').textContent = 'กำลังอัปโหลด…';
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 1600 / bmp.width);
+    const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+    const r = await post('evt.uploadCover', { event_id: eventId, image: cv.toDataURL('image/jpeg', 0.85) });
+    setV('coverUrl', r.url); updateCoverFromUrl(r.url); dirty = true;
+    $('coverMsg').textContent = 'อัปโหลดแล้ว — กดบันทึกเพื่อใช้ภาพนี้';
+  } catch (err) { $('coverMsg').textContent = 'อัปโหลดไม่สำเร็จ: ' + err.message; }
+  input.value = '';
+}
+
+// ── tabs / links ───────────────────────────────────────────
 function switchTab(name){
   ['info','categories','settings'].forEach(t => {
     document.querySelector(`.tab[data-tab="${t}"]`).classList.toggle('on', t === name);
-    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).hidden = (t !== name);
+    $('tab' + t[0].toUpperCase() + t.slice(1)).hidden = t !== name;
   });
 }
-
-// ── Cover preview ──
-function previewCover(input){
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById('coverPreview');
-    img.src = e.target.result;
-    document.getElementById('coverWrap').classList.add('has-img');
-    document.getElementById('coverUrl').value = '';
-  };
-  reader.readAsDataURL(file);
-  isDirty = true;
+function renderLinks(){
+  const base = location.href.replace(/[^/]*$/, '');
+  const q = 'event_id=' + encodeURIComponent(eventId);
+  const links = [['หน้าสมัคร (ส่งให้ลูกค้า)', 'events-register.html?' + q], ['ผู้แข่งขัน / ตรวจสลิป', 'admin-events-participants.html?' + q], ['Check-in', 'admin-events-checkin.html?' + q]];
+  $('quickLinks').innerHTML = links.map(([l, h]) => `<a href="${esc(h)}" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;font-size:13px;padding:10px 14px;border:1.5px solid var(--g3);background:var(--g1)">
+    <b style="flex:1">${l}</b><span style="color:var(--g6);font-size:11px;word-break:break-all">${esc(base + h)}</span> ↗</a>`).join('');
 }
 
-function updateCoverFromUrl(url){
-  if (!url) return;
-  const img = document.getElementById('coverPreview');
-  img.src = url;
-  img.onload = () => document.getElementById('coverWrap').classList.add('has-img');
-  img.onerror = () => document.getElementById('coverWrap').classList.remove('has-img');
-}
-
-// ── Status chip ──
-const STATUS_LABELS = { draft:'Draft', published:'Published', open:'Open Registration',
-                        closed:'Closed', completed:'Completed' };
-function renderStatusChip(status){
-  const chip = document.getElementById('statusChip');
-  chip.className = 'status-chip ' + (status||'draft');
-  chip.textContent = STATUS_LABELS[status] || status;
-}
-
-// ── Status actions ──
-const STATUS_NEXT = {
-  draft:      [{ label:'📢 Publish', next:'published' }],
-  published:  [{ label:'🟢 Open Registration', next:'open' }, { label:'↩ ย้อนกลับ Draft', next:'draft' }],
-  open:       [{ label:'🔒 Close Registration', next:'closed' }],
-  closed:     [{ label:'✅ Mark Completed', next:'completed' }, { label:'🟢 Re-open', next:'open' }],
-  completed:  [],
-};
-function renderStatusActions(status){
-  const bar = document.getElementById('statusActions');
-  bar.innerHTML = '';
-  (STATUS_NEXT[status] || []).forEach(a => {
-    const btn = document.createElement('button');
-    btn.className = 'btn sm';
-    btn.textContent = a.label;
-    btn.onclick = () => advanceStatus(a.next);
-    bar.appendChild(btn);
-  });
-  // Checkin link
-  if ((status === 'open' || status === 'closed' || status === 'completed') && eventId) {
-    const a = document.createElement('a');
-    a.href = 'admin-events-checkin.html?event_id=' + encodeURIComponent(eventId);
-    a.className = 'btn sm accent';
-    a.textContent = '📲 Check-in';
-    bar.appendChild(a);
-  }
-}
-
-async function advanceStatus(newStatus){
-  if (!eventId) { showToast('บันทึก Event ก่อน', 'err'); return; }
-  try {
-    const res = await post('evt.updateEventStatus', { event_id: eventId, status: newStatus, token });
-    if (res.error) { showToast(res.error, 'err'); return; }
-    if (eventData) eventData.status = newStatus;
-    renderStatusChip(newStatus);
-    renderStatusActions(newStatus);
-    showToast('อัปเดตสถานะเป็น ' + (STATUS_LABELS[newStatus]||newStatus));
-  } catch(e){ showToast('อัปเดตล้มเหลว','err'); }
-}
-
-// ── Save event ──
-async function saveEvent(){
-  if (!validateForm()) return;
-  const btn = document.getElementById('saveBtn');
-  const txt = document.getElementById('saveBtnTxt');
-  const spin = document.getElementById('saveSpin');
-  btn.disabled = true; txt.hidden = true; spin.hidden = false;
-
-  const payload = gatherForm();
-  const action = eventId ? 'evt.updateEvent' : 'evt.createEvent';
-  try {
-    const res = await post(action, payload);
-    if (res.error) { showToast(res.error, 'err'); return; }
-    if (!eventId && res.event_id) {
-      eventId = res.event_id;
-      history.replaceState({}, '', '?event_id=' + encodeURIComponent(eventId));
-      document.getElementById('catNote').hidden = true;
-      renderQuickLinks();
-    }
-    isDirty = false;
-    showToast('บันทึกเรียบร้อย ✓');
-    if (eventData) Object.assign(eventData, payload);
-    else eventData = payload;
-    renderStatusActions(payload.status || 'draft');
-  } catch(e){ showToast('บันทึกล้มเหลว','err'); }
-  finally { btn.disabled = false; txt.hidden = false; spin.hidden = true; }
-}
-
-function gatherForm(){
-  return {
-    token,
-    event_id: eventId,
-    event_name: gv('eventName'),
-    event_code: gv('eventCode'),
-    event_type: gv('eventType'),
-    max_participants: parseInt(gv('maxParticipants')||0),
-    description: gv('description'),
-    terms_url: gv('termsUrl'),
-    event_date: gv('eventDate'),
-    start_time: gv('startTime'),
-    end_time: gv('endTime'),
-    location: gv('location'),
-    latitude: parseFloat(gv('lat')||0)||null,
-    longitude: parseFloat(gv('lng')||0)||null,
-    registration_open: gv('regOpen') ? new Date(gv('regOpen')).toISOString() : '',
-    registration_close: gv('regClose') ? new Date(gv('regClose')).toISOString() : '',
-    organizer: gv('organizer'),
-    contact_phone: gv('contactPhone'),
-    contact_email: gv('contactEmail'),
-    cover_image: gv('coverUrl'),
-    is_public: document.getElementById('chkPublic').checked ? 1 : 0,
-    is_featured: document.getElementById('chkFeatured').checked ? 1 : 0,
-    require_approval: document.getElementById('chkRequireApproval').checked ? 1 : 0,
-  };
-}
-
-function gv(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-
-function validateForm(){
-  let ok = true;
-  const rules = [
-    ['eventName','errEventName','ชื่อ Event จำเป็น'],
-    ['eventCode','errEventCode','Event Code จำเป็น'],
-    ['eventDate','errEventDate','วันจัดงานจำเป็น'],
-  ];
-  rules.forEach(([fId, eId, msg]) => {
-    const val = gv(fId);
-    const errEl = document.getElementById(eId);
-    if (!val) { if(errEl) errEl.textContent = msg; ok = false; }
-    else { if(errEl) errEl.textContent = ''; }
-  });
-  if (!ok) { switchTab('info'); }
-  return ok;
-}
-
-// ── Delete ──
-async function confirmDelete(){
-  if (!eventId) { history.back(); return; }
-  try {
-    const res = await post('evt.deleteEvent', { event_id: eventId, token });
-    if (res.error) { showToast(res.error,'err'); return; }
-    showToast('ลบ Event เรียบร้อย');
-    setTimeout(() => { window.location.href = 'admin-events.html'; }, 900);
-  } catch(e){ showToast('ลบล้มเหลว','err'); }
-}
-
-// ── Quick links ──
-function renderQuickLinks(){
-  if (!eventId) return;
-  const base = location.origin + location.pathname.replace('admin-events-detail.html','');
-  const links = [
-    { label:'Public Event Page', href: base + 'events.html?event_id=' + eventId },
-    { label:'Register Page', href: base + 'events-register.html?event_id=' + eventId },
-    { label:'Check-in', href: base + 'admin-events-checkin.html?event_id=' + eventId },
-  ];
-  const cont = document.getElementById('quickLinks');
-  cont.innerHTML = links.map(l =>
-    `<a href="${l.href}" target="_blank" style="display:flex;align-items:center;gap:8px;font-size:13px;padding:10px 14px;border:1.5px solid var(--g3);background:var(--g1)">
-      <span style="flex:1;font-weight:600">${l.label}</span>
-      <span style="color:var(--g6);font-size:11px;word-break:break-all">${l.href}</span>
-      ↗
-    </a>`
-  ).join('');
-}
-
-// ── Categories ──
-function renderCategories(){
-  const tbody = document.getElementById('catBody');
-  if (!categories.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--g6)">ยังไม่มีหมวดหมู่</td></tr>';
-    return;
-  }
-  tbody.innerHTML = categories.map(c => {
-    const statusBadge = c.status === 'open'
-      ? `<span class="badge open">Open</span>`
-      : c.status === 'full'
-      ? `<span class="badge full">Full</span>`
-      : `<span class="badge closed">Closed</span>`;
-    const price = fmtNum(c.price);
-    const earlyPrice = c.early_bird_price ? fmtNum(c.early_bird_price) : '—';
-    const slots = c.max_slots > 0 ? c.max_slots : '∞';
+// ── categories ─────────────────────────────────────────────
+function renderCats(){
+  const body = $('catBody');
+  if (!cats.length) { body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--g6)">ยังไม่มีหมวดหมู่ — กด “+ เพิ่มหมวดหมู่”</td></tr>'; return; }
+  body.innerHTML = cats.map((c, i) => {
+    const active = String(c.status).toUpperCase() === 'ACTIVE';
+    const full = c.capacity && c.registered_count >= c.capacity;
+    const rules = [c.gender_rule === 'MALE' ? 'ชาย' : c.gender_rule === 'FEMALE' ? 'หญิง' : '', c.min_age ? c.min_age + '+ ปี' : '', c.max_age ? '≤' + c.max_age + ' ปี' : ''].filter(Boolean).join(' · ') || '—';
     return `<tr>
-      <td><strong>${esc(c.category_name)}</strong></td>
-      <td>${c.distance_km ? c.distance_km+'km' : '—'}</td>
-      <td class="num">${price}</td>
-      <td class="num">${earlyPrice}</td>
-      <td class="num">${slots}</td>
+      <td><strong>${esc(c.category_name)}</strong><br><span style="color:var(--g6);font-size:11px">${esc(c.category_code)}</span></td>
+      <td>${esc(c.distance || '—')}</td>
+      <td class="num">${c.price_lak ? fmtNum(c.price_lak) : 'ฟรี'}</td>
+      <td style="font-size:12px">${esc(rules)}</td>
+      <td class="num">${c.capacity || '∞'}</td>
       <td class="num">${c.registered_count || 0}</td>
-      <td>${statusBadge}</td>
-      <td>
-        <div style="display:flex;gap:6px">
-          <button class="btn sm" onclick='openCatModal(${JSON.stringify(c)})'>แก้ไข</button>
-          <button class="btn sm danger" onclick="deleteCategory('${c.category_id}')">ลบ</button>
-        </div>
-      </td>
+      <td>${!active ? '<span class="badge closed">ปิดรับ</span>' : full ? '<span class="badge full">เต็ม</span>' : '<span class="badge open">เปิดรับ</span>'}</td>
+      <td><div style="display:flex;gap:6px"><button class="btn sm" type="button" data-edit="${i}">แก้ไข</button>${c.registered_count ? '' : `<button class="btn sm danger" type="button" data-del="${i}">ลบ</button>`}</div></td>
     </tr>`;
   }).join('');
+  body.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openCatModal(cats[b.dataset.edit]));
+  body.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteCategory(cats[b.dataset.del]));
 }
-
-function openCatModal(cat){
-  if (!eventId) { showToast('บันทึก Event ก่อนเพิ่มหมวดหมู่','err'); return; }
-  editingCatId = cat ? cat.category_id : null;
-  document.getElementById('catModalTitle').textContent = cat ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
-  setValue('catName', cat ? cat.category_name : '');
-  setValue('catDistance', cat ? cat.distance_km : '');
-  setValue('catPrice', cat ? cat.price : '');
-  setValue('catEarlyPrice', cat ? cat.early_bird_price : '');
-  setValue('catEarlyDeadline', cat ? toDateInput(cat.early_bird_deadline) : '');
-  setValue('catMaxSlots', cat ? (cat.max_slots||0) : 0);
-  setValue('catBibStart', cat ? (cat.bib_start||1) : 1);
-  setValue('catBibEnd', cat ? (cat.bib_end||0) : 0);
-  setValue('catDesc', cat ? cat.description : '');
-  document.getElementById('errCatName').textContent = '';
-  document.getElementById('errCatPrice').textContent = '';
-  document.getElementById('catModal').hidden = false;
+function openCatModal(c){
+  if (!eventId) { switchTab('info'); return showToast('บันทึกข้อมูลงานก่อน แล้วจึงเพิ่มหมวดหมู่', 'err'); }
+  editingCat = c;
+  $('catModalTitle').textContent = c ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
+  setV('catCode', c ? c.category_code : ''); $('catCode').disabled = !!c;
+  setV('catName', c ? c.category_name : ''); setV('catDistance', c ? c.distance : '');
+  setV('catPrice', c ? c.price_lak : ''); setV('catCapacity', c ? c.capacity : 0);
+  setV('catGender', c ? (c.gender_rule || 'ALL') : 'ALL');
+  setV('catMinAge', c ? c.min_age : ''); setV('catMaxAge', c ? c.max_age : '');
+  setV('catStatus', c ? String(c.status || 'ACTIVE').toUpperCase() : 'ACTIVE');
+  setV('catDesc', c ? c.description : '');
+  ['errCatCode','errCatName','errCatPrice'].forEach(id => $(id).textContent = '');
+  $('catModal').hidden = false; $('catName').focus();
 }
-
-function closeCatModal(){ document.getElementById('catModal').hidden = true; }
-
+function closeCatModal(){ $('catModal').hidden = true; }
 async function saveCategory(){
-  const name = gv('catName');
-  const price = gv('catPrice');
-  if (!name) { document.getElementById('errCatName').textContent = 'ชื่อหมวดจำเป็น'; return; }
-  if (!price) { document.getElementById('errCatPrice').textContent = 'ราคาจำเป็น'; return; }
-  document.getElementById('errCatName').textContent = '';
-  document.getElementById('errCatPrice').textContent = '';
-
-  const btn = document.getElementById('catSaveBtn');
-  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
-
-  const payload = {
-    token, event_id: eventId,
-    category_id: editingCatId,
-    category_name: name,
-    distance_km: parseFloat(gv('catDistance'))||0,
-    price: parseInt(price)||0,
-    early_bird_price: parseInt(gv('catEarlyPrice'))||0,
-    early_bird_deadline: gv('catEarlyDeadline'),
-    max_slots: parseInt(gv('catMaxSlots'))||0,
-    bib_start: parseInt(gv('catBibStart'))||1,
-    bib_end: parseInt(gv('catBibEnd'))||0,
-    description: gv('catDesc'),
+  const code = gv('catCode'), name = gv('catName'), price = gv('catPrice');
+  let bad = false;
+  if (!editingCat && !code) { $('errCatCode').textContent = 'ใส่รหัสหมวด'; bad = true; }
+  if (!name) { $('errCatName').textContent = 'ใส่ชื่อหมวด'; bad = true; }
+  if (price === '' || Number(price) < 0) { $('errCatPrice').textContent = 'ใส่ค่าสมัคร (0 = ฟรี)'; bad = true; }
+  if (bad) return;
+  const data = {
+    category_name: name, distance: gv('catDistance'), price_lak: Number(price) || 0,
+    capacity: parseInt(gv('catCapacity')) || 0, gender_rule: gv('catGender'),
+    min_age: gv('catMinAge'), max_age: gv('catMaxAge'), status: gv('catStatus'), description: gv('catDesc'),
   };
-
-  const action = editingCatId ? 'evt.updateCategory' : 'evt.createCategory';
+  if (editingCat && data.capacity && data.capacity < editingCat.registered_count) return showToast(`จำนวนรับต้องไม่น้อยกว่าที่สมัครแล้ว (${editingCat.registered_count})`, 'err');
+  const btn = $('catSaveBtn'); btn.disabled = true;
   try {
-    const res = await post(action, payload);
-    if (res.error) { showToast(res.error,'err'); return; }
-    closeCatModal();
-    showToast('บันทึกหมวดหมู่เรียบร้อย ✓');
-    await reloadCategories();
-  } catch(e){ showToast('บันทึกล้มเหลว','err'); }
-  finally { btn.disabled = false; btn.textContent = 'บันทึกหมวดหมู่'; }
+    if (editingCat) await post('evt.updateCategory', { category_id: editingCat.category_id, ...data });
+    else await post('evt.createCategory', { event_id: eventId, category_code: code, ...data });
+    closeCatModal(); showToast('บันทึกหมวดหมู่แล้ว ✓');
+    const keepDirty = dirty; await loadEvent(); dirty = keepDirty;
+    if (dirty) $('saveInfo').textContent = 'มีการแก้ไขข้อมูลงานที่ยังไม่บันทึก';
+  } catch (err) { showToast(err.message, 'err'); }
+  finally { btn.disabled = false; }
+}
+async function deleteCategory(c){
+  if (!confirm(`ลบหมวด “${c.category_name}”?`)) return;
+  try { await post('evt.deleteCategory', { category_id: c.category_id }); showToast('ลบแล้ว'); const k = dirty; await loadEvent(); dirty = k; }
+  catch (err) { showToast(err.message, 'err'); }
 }
 
-async function deleteCategory(catId){
-  if (!confirm('ลบหมวดหมู่นี้?')) return;
-  try {
-    const res = await post('evt.deleteCategory', { token, event_id: eventId, category_id: catId });
-    if (res.error) { showToast(res.error,'err'); return; }
-    showToast('ลบหมวดหมู่เรียบร้อย');
-    await reloadCategories();
-  } catch(e){ showToast('ลบล้มเหลว','err'); }
-}
+// ── unsaved changes ────────────────────────────────────────
+document.addEventListener('input', e => { if (e.target.closest('#tabInfo')) { dirty = true; $('saveInfo').textContent = 'มีการแก้ไขที่ยังไม่บันทึก'; } });
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('catModal').hidden) closeCatModal(); });
 
-async function reloadCategories(){
-  try {
-    const res = await get({ action: 'evt.getEvent', event_id: eventId, token });
-    categories = res.categories || [];
-    renderCategories();
-  } catch(e){}
-}
-
-// ── Format ──
-function fmtNum(n){ return Number(n||0).toLocaleString('th-TH'); }
-function fmtDate(v){ try { return new Date(v).toLocaleDateString('th-TH',{year:'numeric',month:'short',day:'numeric'}); } catch(e){ return v||''; } }
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// ── API helpers ──
-async function hmacSign(body){
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', enc.encode(API_SECRET), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
-  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-async function get(params){
-  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
-  const sig = await hmacSign(qs);
-  const url = API_URL + '?' + qs + '&sig=' + sig;
-  const res = await fetch(url);
-  const text = await res.text();
-  try { return JSON.parse(text); } catch(e){ throw new Error('JSON parse: '+text.slice(0,200)); }
-}
-
-async function post(action, data){
-  const body = JSON.stringify({ action, ...data });
-  const sig = await hmacSign(body);
-  const res = await fetch(API_URL + '?sig=' + sig, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body
-  });
-  const text = await res.text();
-  try { return JSON.parse(text); } catch(e){ throw new Error('JSON parse: '+text.slice(0,200)); }
-}
-
-// ── Toast ──
-let toastTimer;
-function showToast(msg, type){
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.style.background = type === 'err' ? '#c00' : 'var(--black)';
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-}
-
-// ── Warn on unsaved ──
-window.addEventListener('beforeunload', e => {
-  if (isDirty) { e.preventDefault(); e.returnValue = ''; }
-});
+if (token) init(); else $('loginGate').hidden = false;
 </script>
 </html>

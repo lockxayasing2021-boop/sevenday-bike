@@ -276,6 +276,7 @@ function payPill(p){
   if (s==='PAID') return '<span class="pill ok">ຊຳລະແລ້ວ</span>';
   if (s==='PENDING_VERIFICATION') return '<span class="pill warn">ລໍກວດ</span>';
   if (s==='REFUNDED') return '<span class="pill mute">ຄືນເງິນ</span>';
+  if (s==='REJECTED') return '<span class="pill bad">ສະລິບບໍ່ຜ່ານ</span>';
   return '<span class="pill bad">ຍັງບໍ່ຈ່າຍ</span>';
 }
 function ciPill(p){ return p.checkin_status==='CHECKED_IN' ? `<span class="pill ok">IN ${esc(fmtDT(p.checkin_time).split(', ')[1]||'')}</span>` : '<span style="color:var(--g6)">—</span>'; }

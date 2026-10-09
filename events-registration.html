@@ -3,379 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ການສະໝັກຂອງຂ້ອຍ — Sevenday Bike</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>ລາຍລະອຽດການສະໝັກ</title>
 <link rel="stylesheet" href="Sevenday.css">
-<style>
-:root {
-  --accent: #FF3B00;
-  --accent-dim: rgba(255,59,0,.12);
-  --radius: 12px;
-}
-
-.reg-wrap {
-  max-width: 680px;
-  margin: 2rem auto;
-  padding: 0 1rem 4rem;
-}
-
-/* Status badge */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  font-size: .8rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  padding: .35rem .85rem;
-  border-radius: 999px;
-}
-.status-badge.pending   { background:#FFF3CD; color:#856404; }
-.status-badge.approved  { background:#D1FAE5; color:#065F46; }
-.status-badge.rejected  { background:#FEE2E2; color:#991B1B; }
-.status-badge.checked   { background:#DBEAFE; color:#1E40AF; }
-
-/* Card */
-.reg-card {
-  background: var(--white);
-  border: 1px solid var(--grey-300);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-}
-.reg-card-header {
-  background: var(--accent);
-  color: #fff;
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: .75rem;
-}
-.reg-card-header h2 { margin: 0; font-size: 1.15rem; }
-.reg-card-body { padding: 1.5rem; }
-
-/* QR block */
-.qr-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1.5rem;
-  gap: 1rem;
-  border-bottom: 1px solid var(--grey-300);
-}
-#qr-canvas { width: 200px; height: 200px; }
-.qr-caption {
-  font-size: .8rem;
-  color: var(--grey-600);
-  text-align: center;
-}
-
-/* Detail rows */
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .75rem 1.25rem;
-  padding: 1.25rem 1.5rem;
-}
-@media(max-width:520px){ .detail-grid{ grid-template-columns:1fr; } }
-.detail-item label {
-  display: block;
-  font-size: .72rem;
-  color: var(--grey-600);
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  margin-bottom: .2rem;
-}
-.detail-item span {
-  font-size: .95rem;
-  color: var(--grey-900);
-  font-weight: 500;
-}
-
-/* Actions */
-.reg-actions {
-  display: flex;
-  gap: .75rem;
-  flex-wrap: wrap;
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--grey-300);
-}
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: .65rem 1.25rem;
-  font-size: .9rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-ghost {
-  background: transparent;
-  color: var(--accent);
-  border: 1.5px solid var(--accent);
-  border-radius: 8px;
-  padding: .65rem 1.25rem;
-  font-size: .9rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Skeleton */
-.skeleton {
-  background: linear-gradient(90deg, var(--grey-100) 25%, var(--grey-300) 50%, var(--grey-100) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 6px;
-  height: 1.1rem;
-}
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-/* Error/notice */
-.notice {
-  padding: 1.25rem 1.5rem;
-  border-radius: var(--radius);
-  margin-bottom: 1.5rem;
-  font-size: .95rem;
-}
-.notice.error { background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; }
-.notice.info  { background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE; }
-
-/* Timeline */
-.timeline {
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--grey-300);
-}
-.timeline h4 { font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--grey-600); margin: 0 0 .9rem; }
-.tl-item {
-  display: flex;
-  gap: .75rem;
-  align-items: flex-start;
-  padding: .5rem 0;
-}
-.tl-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--grey-300);
-  flex-shrink: 0;
-  margin-top: .35rem;
-}
-.tl-dot.done { background: #10B981; }
-.tl-dot.active { background: var(--accent); }
-.tl-text { font-size: .875rem; color: var(--grey-900); }
-.tl-time { font-size: .75rem; color: var(--grey-600); }
-</style>
-
-<div class="reg-wrap">
-  <div id="notice-area"></div>
-  <div id="reg-container">
-    <!-- skeleton -->
-    <div class="reg-card" id="skeleton-card">
-      <div class="reg-card-header" style="background:var(--grey-300);">
-        <div class="skeleton" style="width:200px;height:1.2rem;background:rgba(255,255,255,.3);"></div>
-        <div class="skeleton" style="width:80px;height:1.5rem;background:rgba(255,255,255,.3);border-radius:999px;"></div>
-      </div>
-      <div class="qr-block">
-        <div class="skeleton" style="width:200px;height:200px;border-radius:8px;"></div>
-      </div>
-      <div class="detail-grid">
-        <div class="detail-item"><div class="skeleton" style="width:80px;margin-bottom:.4rem;"></div><div class="skeleton" style="width:140px;height:1.3rem;"></div></div>
-        <div class="detail-item"><div class="skeleton" style="width:80px;margin-bottom:.4rem;"></div><div class="skeleton" style="width:120px;height:1.3rem;"></div></div>
-        <div class="detail-item"><div class="skeleton" style="width:80px;margin-bottom:.4rem;"></div><div class="skeleton" style="width:160px;height:1.3rem;"></div></div>
-        <div class="detail-item"><div class="skeleton" style="width:80px;margin-bottom:.4rem;"></div><div class="skeleton" style="width:100px;height:1.3rem;"></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+.rq{max-width:640px;margin:0 auto;padding:24px 20px 80px}
+.crumb{font-size:13px;color:var(--grey-600);margin-bottom:16px}
+.crumb a{text-decoration:underline;text-underline-offset:3px}
+.tk{border:2px solid var(--black)}
+.tk-hd{background:var(--black);color:var(--white);padding:18px 20px}
+.tk-hd small{font-size:12px!important;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+.tk-hd h1{font-size:22px;font-weight:900;line-height:1.2;margin-top:4px;text-wrap:balance}
+.tk-hd p{font-size:14px;opacity:.8;margin-top:4px}
+.tk-main{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;padding:20px;align-items:center;border-bottom:1px dashed var(--grey-300)}
+.bib{text-align:center;min-width:110px}
+.bib small{display:block;font-size:11px!important;font-weight:800;letter-spacing:.1em;color:var(--grey-600)}
+.bib b{font-size:56px;font-weight:900;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}
+.bib.none b{font-size:22px;letter-spacing:0;color:var(--grey-600)}
+.who b{display:block;font-size:22px;font-weight:900;line-height:1.2}
+.who span{color:var(--grey-600);font-size:14px}
+.tk-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.tk-rows div{padding:12px 20px;border-bottom:1px solid var(--grey-100)}
+.tk-rows small{display:block;font-size:11px!important;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)}
+.tk-rows b{font-weight:700;font-variant-numeric:tabular-nums}
+.st{display:inline-block;font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;border:1.5px solid currentColor}
+.st.ok{color:#0F7A43}.st.wait{color:#9A5B00}.st.bad{color:#B3141A}.st.mute{color:var(--grey-600)}
+.qr{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 20px}
+#qr{background:#fff;padding:12px;border:1px solid var(--grey-300)}
+#qr img,#qr canvas{display:block;width:220px!important;height:220px!important}
+.qr p{font-size:13px;color:var(--grey-600);text-align:center;max-width:36ch}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.acts .btn{height:46px;flex:1 1 180px}
+.btn-line{border:2px solid var(--black)}
+.box{border:1px solid var(--grey-300);padding:18px 20px;margin-top:16px}
+.box h2{font-size:18px;font-weight:900;margin-bottom:8px}
+.note{padding:12px 14px;border-left:4px solid #9A5B00;background:#FFF6E5;font-size:14px;margin-bottom:12px}
+.note.bad{border-color:#B3141A;background:#FDECEC}
+.rq-pay{display:grid;grid-template-columns:180px minmax(0,1fr);gap:18px;align-items:start}
+.rq-pay img{width:100%;border:1px solid var(--grey-300)}
+.amt{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums}
+.acct{background:var(--grey-100);padding:10px 12px;margin:8px 0 14px;font-size:14px}
+.copy{margin-left:6px;font-size:12px;font-weight:700;text-decoration:underline}
+.drop{border:2px dashed var(--grey-300);border-radius:10px;padding:16px;text-align:center;cursor:pointer;display:block}
+.drop.on,.drop:hover{border-color:var(--black)}
+.drop input{display:none}
+.drop img{max-height:200px;margin:10px auto 0;width:auto;border:none}
+.f{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.f label{font-size:14px;font-weight:700}
+.f input{height:46px;border:1.5px solid var(--grey-300);border-radius:8px;padding:0 12px;font:inherit;font-size:16px;background:var(--white);color:var(--ink)}
+.f input:focus{outline:none;border-color:var(--black)}
+.msg{padding:12px 14px;border-left:4px solid #B3141A;background:#FDECEC;color:#8A1014;margin:12px 0;font-size:14px}
+.find h1{font-size:26px;font-weight:900;margin-bottom:6px}
+.find p{color:var(--grey-600);margin-bottom:12px}
+.sk{background:var(--grey-100);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+@media(max-width:560px){
+  .tk-main{grid-template-columns:1fr;text-align:center}
+  .rq-pay{grid-template-columns:1fr}
+  .rq-pay img{max-width:220px;margin:0 auto}
+}
+@media print{
+  .announce,.header,.nav,.collect,.footer,.drawer,.toast,.acts,.box,.crumb{display:none!important}
+  .rq{padding:0;max-width:none}
+  .tk{border-width:1px}
+  .tk-hd{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<main class="rq">
+  <div class="crumb"><a href="events.html">Events</a> › <a href="my-registrations.html">ການສະໝັກຂອງຂ້ອຍ</a></div>
+  <div id="view">
+    <div class="tk"><div class="tk-hd sk" style="height:96px"></div><div style="padding:20px"><div class="sk" style="height:60px"></div></div><div class="qr"><div class="sk" style="width:244px;height:244px"></div></div></div>
+  </div>
+</main>
+
 <script>
-const API_URL_EVT = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
-const EVT_SECRET  = 'SDdMc3wNjJEevs60n2oMQeGnuI';
-
-async function hmacSign(body){
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', enc.encode(EVT_SECRET),
-    {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
-  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
+const EVT_API = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_KEY = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 async function evtGet(params){
-  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
-  const sig = await hmacSign(qs);
-  const res = await fetch(API_URL_EVT+'?'+qs+'&sig='+sig);
-  return JSON.parse(await res.text());
+  const r = await fetch(EVT_API + '?' + new URLSearchParams({ secret: EVT_KEY, ...params }));
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || 'API error'); return j.data;
+}
+async function evtPost(action, data){
+  const r = await fetch(EVT_API, { method: 'POST', body: JSON.stringify({ action, secret: EVT_KEY, ...data }) });
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || 'API error'); return j.data;
+}
+const $ = id => document.getElementById(id);
+const evtEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const evtKip = n => '₭' + Math.round(Number(n) || 0).toLocaleString('en-US');
+const EVT_MONTHS = ['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+const evtDate = ymd => { if (!ymd) return '-'; const [y,m,d] = String(ymd).slice(0,10).split('-').map(Number); return `${d} ${EVT_MONTHS[m-1]} ${y}`; };
+const evtTime = iso => iso ? new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+
+// Registrations opened on this device (so guests can find them again from "ການສະໝັກຂອງຂ້ອຍ")
+function remember(r){
+  try {
+    const list = JSON.parse(localStorage.getItem('sd_evt_regs') || '[]').filter(x => x.t !== r.qr_token);
+    list.unshift({ t: r.qr_token, n: r.reg_number, e: r.event ? r.event.event_name : '', d: r.event ? r.event.event_date : '',
+      p: r.participant ? r.participant.first_name + ' ' + r.participant.last_name : '' });
+    localStorage.setItem('sd_evt_regs', JSON.stringify(list.slice(0, 20)));
+  } catch(_) {}
 }
 
-function notice(msg, type='error'){
-  document.getElementById('notice-area').innerHTML =
-    `<div class="notice ${type}">${msg}</div>`;
+const token = new URLSearchParams(location.search).get('t');
+let reg = null, slipData = '';
+
+function payPill(r){
+  const ps = String(r.payment_status).toUpperCase();
+  if (String(r.reg_status).toUpperCase() === 'CANCELLED') return '<span class="st mute">ຍົກເລີກແລ້ວ</span>';
+  return { PAID:'<span class="st ok">ຊຳລະແລ້ວ</span>', PENDING_VERIFICATION:'<span class="st wait">ລໍກວດສະລິບ</span>',
+    REJECTED:'<span class="st bad">ສະລິບບໍ່ຜ່ານ</span>', REFUNDED:'<span class="st mute">ຄືນເງິນແລ້ວ</span>' }[ps] || '<span class="st bad">ຍັງບໍ່ຊຳລະ</span>';
 }
 
-function statusBadge(s){
-  const map = {
-    pending:  ['pending',  'ລໍຖ້າການອະນຸມັດ'],
-    approved: ['approved', 'ອະນຸມັດແລ້ວ'],
-    rejected: ['rejected', 'ຖືກປະຕິເສດ'],
-    'checked-in':['checked','ເຂົ້າຮ່ວມແລ້ວ'],
-  };
-  const [cls, label] = map[s] || ['pending', s];
-  return `<span class="status-badge ${cls}">${label}</span>`;
+async function load(){
+  if (!token) return showFind();
+  try { reg = await evtGet({ action: 'evt.getRegistration', t: token }); }
+  catch (err) { return showFind('ເປີດການສະໝັກນີ້ບໍ່ໄດ້: ' + err.message); }
+  remember(reg);
+  render();
 }
 
-function fmtDate(d){
-  if(!d) return '-';
-  const dt = new Date(d);
-  return dt.toLocaleDateString('lo-LA', {year:'numeric',month:'long',day:'numeric'});
-}
-
-function renderReg(r){
-  const container = document.getElementById('reg-container');
-
-  // QR token must come from backend — never use registration ID directly
-  const qrToken = r.qrToken || r.qr_token || '';
-
-  container.innerHTML = `
-    <div class="reg-card">
-      <div class="reg-card-header">
-        <div>
-          <div style="font-size:.75rem;opacity:.8;margin-bottom:.25rem;letter-spacing:.04em">ໃບຢືນຢັນການສະໝັກ</div>
-          <h2>${r.eventName || r.event_name || 'Event'}</h2>
-        </div>
-        ${statusBadge(r.status)}
+function render(){
+  const r = reg, e = r.event || {}, p = r.participant || {}, c = r.category || {};
+  const cancelled = String(r.reg_status).toUpperCase() === 'CANCELLED';
+  const paid = String(r.payment_status).toUpperCase() === 'PAID';
+  const inn = r.checkin_status === 'CHECKED_IN';
+  const lp = r.last_payment;
+  document.title = r.reg_number + ' — ' + (e.event_name || 'Sevenday');
+  $('view').innerHTML = `
+    <article class="tk">
+      <header class="tk-hd">
+        <small>ໃບລົງທະບຽນ · ${evtEsc(r.reg_number)}</small>
+        <h1>${evtEsc(e.event_name)}</h1>
+        <p>${evtDate(e.event_date)}${e.start_time ? ' · ' + evtEsc(e.start_time) : ''}${e.location ? ' · ' + evtEsc(e.location) : ''}</p>
+      </header>
+      <div class="tk-main">
+        <div class="bib ${r.bib_number ? '' : 'none'}"><small>BIB</small><b>${r.bib_number ? evtEsc(r.bib_number) : 'ລໍອອກເລກ'}</b></div>
+        <div class="who"><b>${evtEsc(p.first_name)} ${evtEsc(p.last_name)}</b><span>${evtEsc(c.category_name)}${c.distance ? ' · ' + evtEsc(c.distance) : ''}</span></div>
       </div>
-
-      ${qrToken ? `
-      <div class="qr-block">
-        <div id="qr-canvas"></div>
-        <div class="qr-caption">
-          ສະແກນ QR ທີ່ Check-in<br>
-          <span style="color:var(--grey-900);font-weight:600">${r.registrationId || r.id || ''}</span>
-        </div>
-      </div>` : `
-      <div class="qr-block" style="padding:1.5rem">
-        <div style="background:var(--grey-100);border-radius:8px;padding:1.25rem 2rem;text-align:center;color:var(--grey-600);font-size:.9rem;">
-          ${r.status === 'pending' ? 'QR Code ຈະສະແດງຫຼັງຈາກໄດ້ຮັບການອະນຸມັດ' :
-            r.status === 'rejected' ? 'ການສະໝັກຖືກປະຕິເສດ' : 'ບໍ່ມີ QR Token'}
-        </div>
+      <div class="tk-rows">
+        <div><small>ການຊຳລະ</small>${payPill(r)}</div>
+        <div><small>Check-in</small>${inn ? `<span class="st ok">ເຂົ້າງານແລ້ວ ${evtTime(r.checkin_time)}</span>` : '<b>ຍັງບໍ່</b>'}</div>
+        <div><small>ຄ່າສະໝັກ</small><b>${Number(r.total) ? evtKip(r.total) : 'ຟຣີ'}</b></div>
+        <div><small>ໄຊສ໌ເສື້ອ</small><b>${evtEsc(p.jersey_size || '-')}</b></div>
+      </div>
+      ${cancelled ? '<div class="qr"><p>ການລົງທະບຽນນີ້ຖືກຍົກເລີກແລ້ວ — ສອບຖາມໄດ້ທີ່ຮ້ານ 020 9884 4344</p></div>' : `
+      <div class="qr">
+        <div id="qr" role="img" aria-label="QR Check-in"></div>
+        <p>${paid ? 'ສະແດງ QR ນີ້ທີ່ໂຕະ Check-in ໃນມື້ງານ' : 'QR ນີ້ໃຊ້ Check-in ໄດ້ຫຼັງຈາກການຊຳລະຜ່ານແລ້ວ'}</p>
       </div>`}
+    </article>
 
-      <div class="detail-grid">
-        <div class="detail-item"><label>ຊື່-ນາມສະກຸນ</label><span>${r.firstName||''} ${r.lastName||''}</span></div>
-        <div class="detail-item"><label>ເບີໂທ</label><span>${r.phone||r.phoneNumber||'-'}</span></div>
-        <div class="detail-item"><label>ປະເພດ / Category</label><span>${r.categoryName||r.category||'-'}</span></div>
-        <div class="detail-item"><label>ຄ່າສະໝັກ</label><span>${r.fee!=null ? Number(r.fee).toLocaleString()+' ₭' : '-'}</span></div>
-        <div class="detail-item"><label>ວັນງານ</label><span>${fmtDate(r.eventDate||r.event_date)}</span></div>
-        <div class="detail-item"><label>ສະຖານທີ</label><span>${r.location||'-'}</span></div>
-        <div class="detail-item"><label>ວັນທີສະໝັກ</label><span>${fmtDate(r.registeredAt||r.created_at)}</span></div>
-        <div class="detail-item"><label>ລະຫັດການສະໝັກ</label><span style="font-variant-numeric:tabular-nums">${r.registrationId||r.id||'-'}</span></div>
-      </div>
+    ${!cancelled && String(r.payment_status).toUpperCase() === 'PENDING_VERIFICATION' ? `<div class="box"><div class="note" style="margin:0">ໄດ້ຮັບສະລິບແລ້ວ ${lp && lp.date ? '(' + evtDate(lp.date) + ')' : ''} — ທີມງານຈະກວດ ແລະ ອອກເລກ BIB ໃຫ້ ພາຍໃນ 1 ວັນ.</div></div>` : ''}
+    ${r.can_pay ? payBox(r) : ''}
 
-      ${r.note||r.adminNote ? `
-      <div style="padding:.75rem 1.5rem;background:var(--grey-100);margin:0 1.5rem 1.25rem;border-radius:8px;">
-        <label style="font-size:.72rem;color:var(--grey-600);text-transform:uppercase;letter-spacing:.04em;">ໝາຍເຫດ</label>
-        <p style="margin:.25rem 0 0;font-size:.9rem;">${r.note||r.adminNote}</p>
-      </div>` : ''}
-
-      <div class="timeline">
-        <h4>ຂັ້ນຕອນ</h4>
-        ${buildTimeline(r.status)}
-      </div>
-
-      <div class="reg-actions">
-        <a href="events.html" class="btn-ghost" style="text-decoration:none;">← ກັບໄປ Events</a>
-        <a href="my-registrations.html" class="btn-primary" style="text-decoration:none;">ການສະໝັກຂອງຂ້ອຍ</a>
-        <button class="btn-ghost" onclick="window.print()">ພິມ / Save PDF</button>
-      </div>
-    </div>
-  `;
-
-  // Generate QR if token available
-  if(qrToken){
-    try{
-      new QRCode(document.getElementById('qr-canvas'), {
-        text: qrToken,
-        width: 200, height: 200,
-        colorDark:'#2B2B2B', colorLight:'#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    } catch(e){ console.warn('QR gen failed', e); }
-  }
-}
-
-function buildTimeline(status){
-  const steps = [
-    {key:'registered', label:'ສົ່ງການສະໝັກ', desc:'ໄດ້ຮັບຟອມສະໝັກແລ້ວ'},
-    {key:'pending',    label:'ລໍຖ້າການອະນຸມັດ', desc:'ທີມງານກໍາລັງກວດສອບ'},
-    {key:'approved',   label:'ອະນຸມັດ', desc:'ການສະໝັກໄດ້ຮັບການອະນຸມັດ'},
-    {key:'checked-in', label:'ເຂົ້າຮ່ວມ', desc:'Scan QR ທີ່ Check-in'},
-  ];
-  const order = {registered:0, pending:1, approved:2, 'checked-in':3, rejected:1};
-  const cur = order[status] ?? 1;
-
-  if(status === 'rejected'){
-    return `<div class="tl-item">
-      <div class="tl-dot active" style="background:#EF4444;"></div>
-      <div><div class="tl-text">ຖືກປະຕິເສດ</div><div class="tl-time">ກະລຸນາຕິດຕໍ່ທີມງານ</div></div>
+    <div class="acts">
+      ${cancelled ? '' : '<button class="btn btn-black" type="button" onclick="saveQr()">ບັນທຶກຮູບ QR</button><button class="btn btn-line" type="button" onclick="window.print()">ພິມ / ບັນທຶກ PDF</button>'}
+      <a class="btn btn-line" href="events.html">ເບິ່ງງານອື່ນ</a>
     </div>`;
-  }
+  if (!cancelled && window.QRCode) new QRCode($('qr'), { text: r.qr_token, width: 440, height: 440, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  if (r.can_pay) bindSlip();
+}
 
-  return steps.map((s,i) => `
-    <div class="tl-item">
-      <div class="tl-dot ${i < cur ? 'done' : i === cur ? 'active' : ''}"></div>
+function payBox(r){
+  const lp = r.last_payment, rejected = String(r.payment_status).toUpperCase() === 'REJECTED';
+  return `<section class="box" id="payBox">
+    <h2>ຊຳລະຄ່າສະໝັກ</h2>
+    ${rejected ? `<div class="note bad">ສະລິບກ່ອນໜ້ານີ້ກວດບໍ່ຜ່ານ${lp && lp.note ? ': ' + evtEsc(lp.note) : ''}. ກະລຸນາແນບສະລິບໃໝ່.</div>` : ''}
+    <div class="rq-pay">
+      <img src="pay-qr.png" alt="QR OnePay ຂອງຮ້ານ Sevenday Bike" width="560" height="557">
       <div>
-        <div class="tl-text">${s.label}</div>
-        <div class="tl-time">${i <= cur ? s.desc : ''}</div>
+        <div style="font-size:14px;color:var(--grey-600)">ຍອດທີ່ຕ້ອງໂອນ</div>
+        <div class="amt">${evtKip(r.total)}</div>
+        <div class="acct">ຫຼື ໂອນເຂົ້າ BCEL One<br><b>KITTIPHAN XAYASING MR</b><br><b id="acctNo">013120001235446001</b><button class="copy" type="button" onclick="copyAcct(this)">ຄັດລອກ</button></div>
+        <label class="drop" id="drop"><input type="file" id="slip" accept="image/*,application/pdf"><b>ແນບສະລິບການໂອນ</b><br><span style="font-size:13px;color:var(--grey-600)" id="slipTxt">ຮູບ ຫຼື PDF ບໍ່ເກີນ 5MB</span><img id="slipPrev" alt="" hidden></label>
+        <div class="f"><label for="ref">ເລກອ້າງອີງການໂອນ (ຖ້າມີ)</label><input id="ref" maxlength="60"></div>
+        <div id="payErr" class="msg" hidden role="alert"></div>
+        <div class="acts" style="margin-top:12px"><button class="btn btn-black" type="button" id="paySend" onclick="sendSlip()">ສົ່ງສະລິບ</button></div>
       </div>
     </div>
-  `).join('');
+  </section>`;
+}
+function bindSlip(){
+  $('slip').addEventListener('change', async e => {
+    const file = e.target.files[0]; slipData = ''; $('slipPrev').hidden = true; $('payErr').hidden = true;
+    if (!file) return;
+    try {
+      if (file.type === 'application/pdf') {
+        if (file.size > 5 * 1024 * 1024) throw new Error('PDF ໃຫຍ່ເກີນ 5MB');
+        slipData = await new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = no; fr.readAsDataURL(file); });
+        $('slipTxt').textContent = '📄 ' + file.name;
+      } else {
+        const img = await createImageBitmap(file);
+        const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+        const cv = document.createElement('canvas'); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        slipData = cv.toDataURL('image/jpeg', 0.82);
+        $('slipPrev').src = slipData; $('slipPrev').hidden = false; $('slipTxt').textContent = file.name;
+      }
+      $('drop').classList.add('on');
+    } catch (err) { $('payErr').textContent = 'ອ່ານໄຟລ໌ບໍ່ໄດ້: ' + err.message; $('payErr').hidden = false; }
+  });
+}
+async function sendSlip(){
+  if (!slipData) { $('payErr').textContent = 'ແນບສະລິບກ່ອນ'; $('payErr').hidden = false; return; }
+  const b = $('paySend'); b.disabled = true; b.textContent = 'ກຳລັງສົ່ງ…';
+  try {
+    await evtPost('evt.submitPayment', { qr_token: token, amount: reg.total, payment_method: 'QR_PAYMENT', payment_reference: $('ref').value.trim(), proof_image: slipData });
+    await load();
+  } catch (err) { $('payErr').textContent = err.message; $('payErr').hidden = false; b.disabled = false; b.textContent = 'ສົ່ງສະລິບ'; }
+}
+function copyAcct(btn){
+  const t = $('acctNo').textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = 'ຄັດລອກແລ້ວ'; },
+    () => { const rg = document.createRange(); rg.selectNode($('acctNo')); getSelection().removeAllRanges(); getSelection().addRange(rg); });
+}
+function saveQr(){
+  const src = $('qr').querySelector('canvas');
+  if (!src) return;
+  // white card: QR + BIB + name, so it can be shown from the photo gallery
+  const W = 600, cv = document.createElement('canvas'); cv.width = W; cv.height = 760;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, W, 760);
+  g.drawImage(src, 80, 60, 440, 440);
+  g.fillStyle = '#000'; g.textAlign = 'center';
+  g.font = '900 64px Archivo, sans-serif'; g.fillText(reg.bib_number ? 'BIB ' + reg.bib_number : reg.reg_number, W/2, 590);
+  g.font = '700 30px "Noto Sans Lao", sans-serif'; g.fillText(((reg.participant||{}).first_name || '') + ' ' + ((reg.participant||{}).last_name || ''), W/2, 645);
+  g.font = '500 24px "Noto Sans Lao", sans-serif'; g.fillStyle = '#555'; g.fillText((reg.event||{}).event_name || '', W/2, 690);
+  const a = document.createElement('a'); a.href = cv.toDataURL('image/png'); a.download = reg.reg_number + '-QR.png'; a.click();
 }
 
-async function init(){
-  const params = new URLSearchParams(location.search);
-  const regId = params.get('id');
-
-  if(!regId){
-    notice('ບໍ່ພົບລະຫັດການສະໝັກ ກະລຸນາກວດສອບ URL ອີກຄັ້ງ');
-    document.getElementById('skeleton-card').remove();
-    return;
-  }
-
-  // Check sd_user for auth context (optional — view is semi-public via registration ID)
-  const sdUser = JSON.parse(sessionStorage.getItem('sd_user')||'null');
-
-  try{
-    const data = await evtGet({ action:'evt.getRegistrationDetail', id: regId });
-
-    document.getElementById('skeleton-card').remove();
-
-    if(!data.success){
-      notice(data.message || 'ບໍ່ພົບຂໍ້ມູນການສະໝັກ');
-      return;
-    }
-
-    const reg = data.registration || data.data || data;
-
-    // Privacy check: if sd_user exists, only show if it's their registration
-    if(sdUser && reg.customerId && sdUser.id && reg.customerId !== sdUser.id){
-      notice('ບໍ່ມີສິດໃນການເຂົ້າເບິ່ງຂໍ້ມູນນີ້');
-      return;
-    }
-
-    renderReg(reg);
-
-  } catch(e){
-    document.getElementById('skeleton-card').remove();
-    notice('ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-    console.error(e);
-  }
+function showFind(err){
+  $('view').innerHTML = `<section class="find">
+    <h1>ເປີດການສະໝັກ</h1>
+    <p>ໃສ່ເລກລົງທະບຽນ (ເຊັ່ນ SD-GR26-000001) ແລະ ເບີໂທທີ່ໃຊ້ສະໝັກ</p>
+    ${err ? `<div class="msg">${evtEsc(err)}</div>` : ''}
+    <form id="findForm">
+      <div class="f"><label for="fn">ເລກລົງທະບຽນ</label><input id="fn" required autocomplete="off" autocapitalize="characters"></div>
+      <div class="f"><label for="fp">ເບີໂທ</label><input id="fp" type="tel" inputmode="tel" required></div>
+      <div id="findErr" class="msg" hidden></div>
+      <div class="acts"><button class="btn btn-black" type="submit">ເປີດ</button></div>
+    </form>
+  </section>`;
+  $('findForm').onsubmit = async e => {
+    e.preventDefault();
+    const b = e.target.querySelector('button'); b.disabled = true;
+    try {
+      const r = await evtPost('evt.findRegistration', { reg_number: $('fn').value.trim(), phone: $('fp').value.trim() });
+      location.href = 'events-registration.html?t=' + encodeURIComponent(r.qr_token);
+    } catch (err) { $('findErr').textContent = err.message; $('findErr').hidden = false; b.disabled = false; }
+  };
 }
 
-init();
+load();
 </script>
 <script src="layout.js"></script>
+</body>
 </html>

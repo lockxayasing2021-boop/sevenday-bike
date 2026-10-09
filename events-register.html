@@ -3,735 +3,400 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ສະໝັກ Event — Sevenday Bike</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>ສະໝັກ Event — Sevenday Bike</title>
 <link rel="stylesheet" href="Sevenday.css">
 <style>
-:root { --accent:#FF3B00; }
+.rg{max-width:760px;margin:0 auto;padding:24px 20px 80px}
+.crumb{font-size:13px;color:var(--grey-600);margin-bottom:16px}
+.crumb a{text-decoration:underline;text-underline-offset:3px}
 
-.reg-wrap {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 32px 16px 80px;
-}
+.evh{border:1px solid var(--grey-300);margin-bottom:24px}
+.evh-cover{aspect-ratio:21/9;background:var(--grey-100);overflow:hidden}
+.evh-cover img{width:100%;height:100%;object-fit:cover}
+.evh-body{padding:18px 20px}
+.evh h1{font-size:clamp(22px,4vw,30px);font-weight:900;letter-spacing:-.5px;line-height:1.15;text-wrap:balance}
+.evh-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 18px;margin-top:14px}
+.evh-meta div small{display:block;font-size:11px!important;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)}
+.evh-meta div b{font-weight:700}
+.evh-desc{margin-top:14px;color:var(--grey-900);white-space:pre-line;max-width:65ch}
 
-/* breadcrumb */
-.reg-crumb { font-size: .82rem; color: var(--grey-600); margin-bottom: 24px; }
-.reg-crumb a { color: var(--grey-600); text-decoration: none; }
-.reg-crumb a:hover { color: var(--accent); }
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:22px;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;font-size:12px;font-weight:700;color:var(--grey-600);border-top:4px solid var(--grey-300);padding-top:8px}
+.steps li::before{content:counter(s) ". "}
+.steps li.on{color:var(--black);border-color:var(--black)}
+.steps li.er-done{color:var(--black);border-color:var(--grey-900)}
 
-/* event summary banner */
-.reg-event-banner {
-  background: var(--grey-100);
-  border: 1px solid var(--grey-300);
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
-  align-items: flex-start;
-}
-.reg-event-banner img {
-  width: 100px;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-.reg-event-info h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 6px; color: var(--grey-900); }
-.reg-event-meta { font-size: .82rem; color: var(--grey-600); display: flex; flex-direction: column; gap: 3px; }
+.panel h2{font-size:20px;font-weight:900;margin-bottom:14px}
+.er-cats{display:flex;flex-direction:column;gap:10px}
+.er-cat{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:14px;align-items:center;border:2px solid var(--grey-300);padding:14px 16px;cursor:pointer}
+.er-cat:hover{border-color:var(--grey-600)}
+.er-cat:has(input:checked){border-color:var(--black);background:var(--grey-100)}
+.er-cat input{width:18px;height:18px;accent-color:var(--black)}
+.er-cat b{display:block;font-size:16px;font-weight:800}
+.er-cat small{color:var(--grey-600);font-size:13px!important}
+.er-cat .pr{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.er-cat.off{opacity:.5;cursor:not-allowed}
 
-/* steps indicator */
-.reg-steps {
-  display: flex;
-  gap: 0;
-  margin-bottom: 32px;
-  border-bottom: 2px solid var(--grey-300);
-}
-.reg-step {
-  flex: 1;
-  padding: 12px 8px;
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--grey-600);
-  text-align: center;
-  position: relative;
-  cursor: default;
-}
-.reg-step.done   { color: var(--accent); }
-.reg-step.active { color: var(--grey-900); font-weight: 800; }
-.reg-step.active::after, .reg-step.done::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0; right: 0;
-  height: 2px;
-  background: var(--accent);
-}
-.reg-step-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--grey-300);
-  color: var(--grey-600);
-  font-size: .75rem;
-  font-weight: 800;
-  margin-right: 6px;
-}
-.reg-step.active .reg-step-num { background: var(--accent); color: #fff; }
-.reg-step.done   .reg-step-num { background: #00C853; color: #fff; }
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.form .full{grid-column:1/-1}
+.form h3{grid-column:1/-1;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600);margin-top:10px;padding-top:12px;border-top:1px solid var(--grey-300)}
+.form h3:first-child{margin-top:0;padding-top:0;border-top:none}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f label{font-size:14px;font-weight:700}
+.f label i{color:#C4161C;font-style:normal}
+.f input,.f select,.f textarea{height:46px;border:1.5px solid var(--grey-300);border-radius:8px;padding:0 12px;font:inherit;font-size:16px;background:var(--white);color:var(--ink);width:100%}
+.f textarea{height:auto;padding:10px 12px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--black)}
+.f .hint{font-size:12px;color:var(--grey-600)}
+.f.bad input,.f.bad select{border-color:#C4161C}
+.f .err{font-size:12px;color:#C4161C;display:none}
+.f.bad .err{display:block}
+.er-sizes{display:flex;flex-wrap:wrap;gap:6px}
+.er-sizes label{position:relative}
+.er-sizes input{position:absolute;opacity:0;pointer-events:none}
+.er-sizes span{display:grid;place-items:center;min-width:52px;height:42px;padding:0 10px;border:1.5px solid var(--grey-300);border-radius:8px;font-weight:800;cursor:pointer}
+.er-sizes input:checked+span{background:var(--black);color:var(--white);border-color:var(--black)}
+.er-sizes input:focus-visible+span{outline:2px solid var(--black);outline-offset:2px}
 
-/* panels */
-.reg-panel { display: none; }
-.reg-panel.active { display: block; }
+.sum{border:1px solid var(--grey-300)}
+.sum dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0}
+.sum dt,.sum dd{padding:10px 16px;border-bottom:1px solid var(--grey-100)}
+.sum dt{color:var(--grey-600);font-size:14px}
+.sum dd{font-weight:600;word-break:break-word}
+.sum .tot{display:flex;justify-content:space-between;padding:16px;font-size:20px;font-weight:900;background:var(--grey-100)}
+.agree{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:14px}
+.agree input{width:18px;height:18px;margin-top:2px;accent-color:var(--black);flex-shrink:0}
 
-/* form */
-.reg-section-title { font-size: 1rem; font-weight: 800; color: var(--grey-900); margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--grey-300); }
-.reg-field { margin-bottom: 18px; }
-.reg-field label { display: block; font-size: .85rem; font-weight: 600; color: var(--grey-900); margin-bottom: 6px; }
-.reg-field label .req { color: var(--accent); margin-left: 2px; }
-.reg-field input,
-.reg-field select,
-.reg-field textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 11px 14px;
-  border: 1.5px solid var(--grey-300);
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: .95rem;
-  color: var(--grey-900);
-  background: var(--white);
-  transition: border-color .15s;
-}
-.reg-field input:focus,
-.reg-field select:focus,
-.reg-field textarea:focus { outline: none; border-color: var(--accent); }
-.reg-field .hint { font-size: .78rem; color: var(--grey-600); margin-top: 4px; }
+.er-pay{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:start}
+.er-pay img{width:100%;border:1px solid var(--grey-300)}
+.er-pay .amt{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums}
+.acct{background:var(--grey-100);padding:12px 14px;margin:10px 0 16px;font-size:14px}
+.acct b{font-variant-numeric:tabular-nums}
+.copy{margin-left:6px;font-size:12px;font-weight:700;text-decoration:underline}
+.drop{border:2px dashed var(--grey-300);border-radius:10px;padding:18px;text-align:center;cursor:pointer;display:block}
+.drop:hover,.drop.on{border-color:var(--black)}
+.drop input{display:none}
+.drop img{max-height:220px;margin:10px auto 0;width:auto;border:none}
 
-.reg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media(max-width:480px){ .reg-row { grid-template-columns: 1fr; } }
+.er-actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.er-actions .btn{height:50px}
+.er-actions .grow{flex:1}
+.btn-line{border:2px solid var(--black)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.later{font-size:14px;text-decoration:underline;text-underline-offset:3px;color:var(--grey-600);margin-top:12px;display:inline-block}
 
-/* category picker */
-.reg-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 10px; }
-.reg-cat-item {
-  border: 2px solid var(--grey-300);
-  border-radius: 10px;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
+.msg{padding:12px 14px;border-left:4px solid #C4161C;background:#FDECEC;color:#8A1014;margin:14px 0;font-size:14px}
+.er-done{text-align:center;padding:24px 0}
+.er-done .tick{width:64px;height:64px;border-radius:50%;background:var(--black);color:var(--white);display:grid;place-items:center;margin:0 auto 16px}
+.er-done h2{font-size:26px;font-weight:900}
+.er-done .num{display:inline-block;margin:16px 0;padding:12px 20px;border:2px solid var(--black);font-size:22px;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.er-done p{color:var(--grey-600);max-width:46ch;margin:0 auto}
+.er-done .er-actions{justify-content:center}
+.sk{background:var(--grey-100);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+@media(max-width:620px){
+  .form{grid-template-columns:1fr}
+  .er-pay{grid-template-columns:1fr}
+  .er-pay img{max-width:240px;margin:0 auto}
+  .sum dl{grid-template-columns:110px minmax(0,1fr)}
+  .steps li{font-size:11px}
 }
-.reg-cat-item:hover { border-color: var(--accent); }
-.reg-cat-item.selected { border-color: var(--accent); background: rgba(255,59,0,.07); }
-.reg-cat-item input { display: none; }
-.reg-cat-name { font-weight: 700; font-size: .9rem; color: var(--grey-900); }
-.reg-cat-fee  { font-size: .8rem; color: var(--grey-600); margin-top: 2px; }
-.reg-cat-dist { font-size: .78rem; color: var(--accent); font-weight: 600; }
-
-/* payment */
-.reg-bank-card {
-  border: 1.5px solid var(--grey-300);
-  border-radius: 10px;
-  padding: 18px;
-  margin-bottom: 20px;
-  background: var(--grey-100);
-}
-.reg-bank-card h4 { margin: 0 0 10px; font-size: .9rem; font-weight: 800; }
-.reg-bank-row { display: flex; justify-content: space-between; align-items: center; font-size: .88rem; margin-bottom: 6px; color: var(--grey-900); }
-.reg-bank-row span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; }
-.reg-copy-btn {
-  background: none;
-  border: 1px solid var(--grey-300);
-  border-radius: 6px;
-  padding: 2px 10px;
-  font-size: .78rem;
-  cursor: pointer;
-  color: var(--grey-600);
-  transition: border-color .15s, color .15s;
-}
-.reg-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-.reg-amount-due {
-  background: var(--accent);
-  color: #fff;
-  border-radius: 10px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  font-weight: 700;
-}
-.reg-amount-due .num { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
-
-/* slip upload */
-.reg-upload-area {
-  border: 2px dashed var(--grey-300);
-  border-radius: 10px;
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color .15s;
-}
-.reg-upload-area:hover, .reg-upload-area.drag { border-color: var(--accent); }
-.reg-upload-area input { display: none; }
-.reg-upload-icon { font-size: 2rem; margin-bottom: 8px; }
-.reg-upload-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 12px; display: none; }
-
-/* summary */
-.reg-summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--grey-300);
-  font-size: .88rem;
-}
-.reg-summary-row:last-child { border-bottom: none; }
-.reg-summary-label { color: var(--grey-600); flex-shrink: 0; margin-right: 16px; }
-.reg-summary-value { font-weight: 600; color: var(--grey-900); text-align: right; }
-
-/* nav buttons */
-.reg-nav {
-  display: flex;
-  gap: 12px;
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid var(--grey-300);
-}
-.reg-nav-back {
-  flex: 0 0 auto;
-  background: none;
-  border: 1.5px solid var(--grey-300);
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-family: var(--font);
-  font-size: .95rem;
-  font-weight: 600;
-  color: var(--grey-600);
-  cursor: pointer;
-  transition: border-color .15s;
-}
-.reg-nav-back:hover { border-color: var(--grey-900); color: var(--grey-900); }
-.reg-nav-next {
-  flex: 1;
-  background: var(--accent);
-  border: none;
-  border-radius: 8px;
-  padding: 14px;
-  font-family: var(--font);
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  transition: opacity .15s;
-}
-.reg-nav-next:hover { opacity: .88; }
-.reg-nav-next:disabled { opacity: .5; cursor: not-allowed; }
-.reg-nav-next.loading::after { content: ' …'; }
-
-/* success */
-.reg-success { text-align: center; padding: 40px 0; }
-.reg-success-icon { font-size: 3.5rem; margin-bottom: 16px; }
-.reg-success h2 { font-size: 1.5rem; font-weight: 900; margin: 0 0 10px; color: var(--grey-900); }
-.reg-success p { color: var(--grey-600); margin: 0 0 24px; }
-.reg-success-id {
-  display: inline-block;
-  background: var(--grey-100);
-  border: 1px solid var(--grey-300);
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: var(--grey-900);
-  margin-bottom: 24px;
-}
-.reg-success-actions { display: flex; flex-direction: column; gap: 12px; }
-.reg-btn-primary {
-  display: block;
-  padding: 14px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-}
-.reg-btn-secondary {
-  display: block;
-  padding: 12px;
-  background: none;
-  color: var(--grey-900);
-  border: 1.5px solid var(--grey-300);
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: .95rem;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.err-msg { color: var(--accent); font-size: .82rem; margin-top: 4px; display: none; }
-.err-msg.show { display: block; }
 </style>
+</head>
+<body>
 
-<div class="reg-wrap">
-  <!-- breadcrumb -->
-  <nav class="reg-crumb" aria-label="breadcrumb">
-    <a href="events.html">Events</a> › <span id="bcrEventName">ສະໝັກເຂົ້າຮ່ວມ</span>
-  </nav>
+<main class="rg">
+  <div class="crumb"><a href="events.html">Events</a> › <span id="crumbName">ສະໝັກ</span></div>
 
-  <!-- event banner -->
-  <div class="reg-event-banner" id="eventBanner">
-    <div style="flex:1">
-      <div class="evt-skeleton" style="height:18px;width:70%;border-radius:4px;margin-bottom:8px"></div>
-      <div class="evt-skeleton" style="height:14px;width:55%;border-radius:4px;margin-bottom:6px"></div>
-      <div class="evt-skeleton" style="height:14px;width:45%;border-radius:4px"></div>
-    </div>
+  <div id="evHead"><div class="evh"><div class="evh-cover sk"></div><div class="evh-body"><div class="sk" style="height:28px;width:70%"></div></div></div></div>
+  <div id="closedMsg" hidden></div>
+
+  <div id="flow" hidden>
+    <ol class="steps" id="steps">
+      <li>ລຸ້ນ</li><li>ຜູ້ແຂ່ງ</li><li>ກວດສອບ</li><li>ຊຳລະ</li>
+    </ol>
+    <div id="err" class="msg" hidden role="alert"></div>
+
+    <!-- 1. Category -->
+    <section class="panel" data-step="1">
+      <h2>ເລືອກລຸ້ນ</h2>
+      <div class="er-cats" id="cats"></div>
+      <div class="er-actions"><button class="btn btn-black grow" type="button" onclick="go(2)">ຕໍ່ໄປ</button></div>
+    </section>
+
+    <!-- 2. Participant -->
+    <section class="panel" data-step="2" hidden>
+      <h2>ຂໍ້ມູນຜູ້ແຂ່ງ</h2>
+      <p id="loginHint" style="font-size:14px;color:var(--grey-600);margin:-6px 0 14px" hidden>ມີບັນຊີ? <a href="login.html" style="text-decoration:underline">ເຂົ້າສູ່ລະບົບ</a> ເພື່ອໃຫ້ການສະໝັກຂຶ້ນໃນ “ການສະໝັກຂອງຂ້ອຍ”.</p>
+      <form class="form" id="pform" novalidate>
+        <h3>ຂໍ້ມູນສ່ວນຕົວ</h3>
+        <div class="f"><label for="first_name">ຊື່ <i>*</i></label><input id="first_name" name="first_name" autocomplete="given-name" required><span class="err">ໃສ່ຊື່</span></div>
+        <div class="f"><label for="last_name">ນາມສະກຸນ <i>*</i></label><input id="last_name" name="last_name" autocomplete="family-name" required><span class="err">ໃສ່ນາມສະກຸນ</span></div>
+        <div class="f"><label for="nickname">ຊື່ຫຼິ້ນ</label><input id="nickname" name="nickname"></div>
+        <div class="f"><label for="gender">ເພດ <i>*</i></label>
+          <select id="gender" name="gender" required><option value="">ເລືອກ</option><option value="male">ຊາຍ</option><option value="female">ຍິງ</option></select><span class="err">ເລືອກເພດ</span></div>
+        <div class="f"><label for="date_of_birth">ວັນເດືອນປີເກີດ <i>*</i></label><input id="date_of_birth" name="date_of_birth" type="date" autocomplete="bday" required><span class="err">ໃສ່ວັນເກີດ</span></div>
+        <div class="f"><label for="nationality">ສັນຊາດ</label><input id="nationality" name="nationality" value="ລາວ"></div>
+
+        <h3>ຕິດຕໍ່</h3>
+        <div class="f"><label for="phone">ເບີໂທ / WhatsApp <i>*</i></label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="020 xxxx xxxx" required><span class="err">ໃສ່ເບີໂທໃຫ້ຖືກຕ້ອງ</span></div>
+        <div class="f"><label for="email">ອີເມວ</label><input id="email" name="email" type="email" autocomplete="email"><span class="hint">ຈະສົ່ງລິ້ງ QR Check-in ໃຫ້ທາງອີເມວ</span><span class="err">ອີເມວບໍ່ຖືກຕ້ອງ</span></div>
+        <div class="f"><label for="emergency_name">ຜູ້ຕິດຕໍ່ສຸກເສີນ <i>*</i></label><input id="emergency_name" name="emergency_name" required><span class="err">ໃສ່ຊື່ຜູ້ຕິດຕໍ່ສຸກເສີນ</span></div>
+        <div class="f"><label for="emergency_phone">ເບີສຸກເສີນ <i>*</i></label><input id="emergency_phone" name="emergency_phone" type="tel" inputmode="tel" required><span class="err">ໃສ່ເບີສຸກເສີນ</span></div>
+
+        <h3>ເສື້ອ ແລະ ອຸປະກອນ</h3>
+        <div class="f full"><label>ໄຊສ໌ເສື້ອ <i>*</i></label>
+          <div class="er-sizes" id="sizes"></div><span class="err">ເລືອກໄຊສ໌ເສື້ອ</span></div>
+        <div class="f bike"><label for="bike_brand">ຍີ່ຫໍ້ລົດຖີບ</label><input id="bike_brand" name="bike_brand" placeholder="Trek, Giant…"></div>
+        <div class="f bike"><label for="bike_model">ລຸ້ນລົດ</label><input id="bike_model" name="bike_model"></div>
+        <div class="f bike"><label for="bike_wheel_size">ຂະໜາດລໍ້</label>
+          <select id="bike_wheel_size" name="bike_wheel_size"><option value="">-</option><option>20"</option><option>24"</option><option>26"</option><option>27.5"</option><option>29"</option><option>700c</option></select></div>
+        <div class="f full"><label for="medical_note">ໂລກປະຈຳຕົວ / ແພ້ຢາ</label><textarea id="medical_note" name="medical_note" rows="2" placeholder="ຖ້າບໍ່ມີ ປ່ອຍວ່າງ"></textarea></div>
+      </form>
+      <div class="er-actions"><button class="btn btn-line" type="button" onclick="go(1)">ກັບຄືນ</button><button class="btn btn-black grow" type="button" onclick="go(3)">ຕໍ່ໄປ</button></div>
+    </section>
+
+    <!-- 3. Review -->
+    <section class="panel" data-step="3" hidden>
+      <h2>ກວດສອບຂໍ້ມູນ</h2>
+      <div class="sum" id="sum"></div>
+      <label class="agree"><input type="checkbox" id="agree"><span>ຂ້ອຍຍອມຮັບກົດລະບຽບຂອງງານ ແລະ ຮັບຮູ້ວ່າການແຂ່ງຂັນມີຄວາມສ່ຽງ. ຂໍ້ມູນສ່ວນຕົວໃຊ້ສະເພາະການຈັດງານນີ້.<span id="termsLink"></span></span></label>
+      <div class="er-actions"><button class="btn btn-line" type="button" onclick="go(2)">ແກ້ໄຂ</button><button class="btn btn-black grow" type="button" id="toPay" onclick="go(4)">ໄປຊຳລະ</button></div>
+    </section>
+
+    <!-- 4. Payment -->
+    <section class="panel" data-step="4" hidden>
+      <h2>ຊຳລະຄ່າສະໝັກ</h2>
+      <div class="er-pay">
+        <img src="pay-qr.png" alt="QR OnePay ຂອງຮ້ານ Sevenday Bike" width="560" height="557">
+        <div>
+          <div style="font-size:14px;color:var(--grey-600)">ຍອດທີ່ຕ້ອງໂອນ</div>
+          <div class="amt" id="amt">₭0</div>
+          <div class="acct">ຫຼື ໂອນເຂົ້າ BCEL One<br><b>KITTIPHAN XAYASING MR</b><br><b id="acctNo">013120001235446001</b><button class="copy" type="button" onclick="copyAcct(this)">ຄັດລອກ</button></div>
+          <label class="drop" id="drop">
+            <input type="file" id="slip" accept="image/*,application/pdf">
+            <b>ແນບສະລິບການໂອນ</b><br><span style="font-size:13px;color:var(--grey-600)" id="slipTxt">ແຕະເພື່ອເລືອກຮູບ ຫຼື PDF (ບໍ່ເກີນ 5MB)</span>
+            <img id="slipPrev" alt="" hidden>
+          </label>
+          <div class="f" style="margin-top:12px"><label for="ref">ເລກອ້າງອີງການໂອນ (ຖ້າມີ)</label><input id="ref" maxlength="60"></div>
+        </div>
+      </div>
+      <div class="er-actions"><button class="btn btn-line" type="button" onclick="go(3)">ກັບຄືນ</button><button class="btn btn-black grow" type="button" id="submitPay" onclick="submit(true)">ສົ່ງການສະໝັກ</button></div>
+      <button class="later" type="button" onclick="submit(false)">ສະໝັກກ່ອນ ແລ້ວແນບສະລິບພາຍຫຼັງ</button>
+    </section>
   </div>
 
-  <!-- steps -->
-  <div class="reg-steps" role="tablist">
-    <div class="reg-step active" data-step="1" role="tab">
-      <span class="reg-step-num">1</span>ຂໍ້ມູນ
-    </div>
-    <div class="reg-step" data-step="2" role="tab">
-      <span class="reg-step-num">2</span>ໝວດ
-    </div>
-    <div class="reg-step" data-step="3" role="tab">
-      <span class="reg-step-num">3</span>ຊໍາລະ
-    </div>
-    <div class="reg-step" data-step="4" role="tab">
-      <span class="reg-step-num">4</span>ຢືນຢັນ
-    </div>
-  </div>
-
-  <!-- Panel 1: Personal Info -->
-  <div class="reg-panel active" id="panel1">
-    <div class="reg-section-title">ຂໍ້ມູນສ່ວນຕົວ</div>
-    <div class="reg-row">
-      <div class="reg-field">
-        <label>ຊື່ <span class="req">*</span></label>
-        <input type="text" id="fName" placeholder="ຊື່ຂອງທ່ານ" autocomplete="given-name">
-        <div class="err-msg" id="err-fName">ກະລຸນາໃສ່ຊື່</div>
-      </div>
-      <div class="reg-field">
-        <label>ນາມສະກຸນ <span class="req">*</span></label>
-        <input type="text" id="fLastname" placeholder="ນາມສະກຸນ" autocomplete="family-name">
-        <div class="err-msg" id="err-fLastname">ກະລຸນາໃສ່ນາມສະກຸນ</div>
-      </div>
-    </div>
-    <div class="reg-row">
-      <div class="reg-field">
-        <label>ເບີໂທ <span class="req">*</span></label>
-        <input type="tel" id="fPhone" placeholder="020 XXXX XXXX" autocomplete="tel">
-        <div class="err-msg" id="err-fPhone">ກະລຸນາໃສ່ເບີໂທ</div>
-      </div>
-      <div class="reg-field">
-        <label>ອີເມລ</label>
-        <input type="email" id="fEmail" placeholder="example@email.com" autocomplete="email">
-      </div>
-    </div>
-    <div class="reg-row">
-      <div class="reg-field">
-        <label>ວັນເດືອນປີເກີດ <span class="req">*</span></label>
-        <input type="date" id="fDob">
-        <div class="err-msg" id="err-fDob">ກະລຸນາໃສ່ວັນເກີດ</div>
-      </div>
-      <div class="reg-field">
-        <label>ເພດ <span class="req">*</span></label>
-        <select id="fGender">
-          <option value="">— ເລືອກ —</option>
-          <option value="male">ຊາຍ</option>
-          <option value="female">ຍິງ</option>
-          <option value="other">ອື່ນໆ</option>
-        </select>
-        <div class="err-msg" id="err-fGender">ກະລຸນາເລືອກເພດ</div>
-      </div>
-    </div>
-    <div class="reg-field">
-      <label>ຍານພາຫະນະ / ຈັກຍານ</label>
-      <input type="text" id="fBike" placeholder="ຍີ່ຫໍ້ ແລະ ຮຸ່ນ ຈັກຍານ">
-    </div>
-    <div class="reg-field">
-      <label>ຜູ້ຕິດຕໍ່ຉຸກເຉີນ <span class="req">*</span></label>
-      <input type="text" id="fEmergency" placeholder="ຊື່ ແລະ ເບີໂທ">
-      <div class="err-msg" id="err-fEmergency">ກະລຸນາໃສ່ຜູ້ຕິດຕໍ່ຉຸກເຈີນ</div>
-    </div>
-    <div class="reg-nav">
-      <button class="reg-nav-next" id="btn1Next" onclick="goStep(2)">ຕໍ່ໄປ: ເລືອກໝວດ →</button>
-    </div>
-  </div>
-
-  <!-- Panel 2: Category Selection -->
-  <div class="reg-panel" id="panel2">
-    <div class="reg-section-title">ເລືອກໝວດການແຂ່ງຂັນ</div>
-    <div class="reg-cats" id="catsList">
-      <div class="evt-skeleton" style="height:80px;border-radius:10px"></div>
-      <div class="evt-skeleton" style="height:80px;border-radius:10px"></div>
-      <div class="evt-skeleton" style="height:80px;border-radius:10px"></div>
-    </div>
-    <div class="err-msg show" id="err-cat" style="display:none">ກະລຸນາເລືອກໝວດ</div>
-    <div class="reg-nav">
-      <button class="reg-nav-back" onclick="goStep(1)">← ກັບຄືນ</button>
-      <button class="reg-nav-next" id="btn2Next" onclick="goStep(3)">ຕໍ່ໄປ: ຊໍາລະ →</button>
-    </div>
-  </div>
-
-  <!-- Panel 3: Payment -->
-  <div class="reg-panel" id="panel3">
-    <div class="reg-section-title">ຊໍາລະຄ່າສະໝັກ</div>
-
-    <div class="reg-amount-due">
-      <span>ຈໍານວນທີ່ຕ້ອງຊໍາລະ</span>
-      <span class="num" id="amountDue">₭0</span>
-    </div>
-
-    <div class="reg-bank-card">
-      <h4>ໂອນຜ່ານ BCEL One</h4>
-      <div class="reg-bank-row">
-        <span>ຊື່ບັນຊີ</span>
-        <span>Sevenday Bike Co., Ltd</span>
-      </div>
-      <div class="reg-bank-row">
-        <span>ເລກບັນຊີ</span>
-        <span>
-          <span id="bankAccNum">010-XXX-XXXXXX</span>
-          <!-- ← ໃສ່ເລກບັນຊີຈິງ -->
-          <button class="reg-copy-btn" onclick="copyBank()">ຄັດລອກ</button>
-        </span>
-      </div>
-      <div class="reg-bank-row">
-        <span>ຈໍານວນ</span>
-        <span id="bankAmount">0 LAK</span>
-      </div>
-    </div>
-
-    <div class="reg-bank-card">
-      <h4>ໂອນຜ່ານ KPlus / PromptPay (THB)</h4>
-      <div class="reg-bank-row">
-        <span>ຊື່ບັນຊີ</span>
-        <span>Sevenday Bike</span>
-      </div>
-      <div class="reg-bank-row">
-        <span>ເລກບັນຊີ</span>
-        <span>
-          <span id="thbAccNum">XXX-X-XXXXX-X</span>
-          <!-- ← ໃສ່ເລກບັນຊີ THB ຈິງ -->
-          <button class="reg-copy-btn" onclick="copyThb()">ຄັດລອກ</button>
-        </span>
-      </div>
-      <div class="reg-bank-row">
-        <span>ຈໍານວນ</span>
-        <span id="thbAmount">0 THB</span>
-      </div>
-    </div>
-
-    <div class="reg-field">
-      <label>ອັບໂຫຼດສະລິບໂອນເງິນ <span class="req">*</span></label>
-      <div class="reg-upload-area" id="uploadArea" onclick="document.getElementById('slipFile').click()">
-        <input type="file" id="slipFile" accept="image/*" onchange="previewSlip(this)">
-        <div class="reg-upload-icon">📄</div>
-        <div style="font-weight:600;color:var(--grey-900)">ຄລິກເພື່ອເລືອກຮູບ</div>
-        <div style="font-size:.82rem;color:var(--grey-600);margin-top:4px">JPG, PNG ຂະໜາດ ≤5MB</div>
-        <img id="slipPreview" class="reg-upload-preview" alt="slip preview">
-      </div>
-      <div class="err-msg" id="err-slip">ກະລຸນາອັບໂຫຼດສະລິບ</div>
-    </div>
-
-    <div class="reg-nav">
-      <button class="reg-nav-back" onclick="goStep(2)">← ກັບຄືນ</button>
-      <button class="reg-nav-next" id="btn3Next" onclick="goStep(4)">ຕໍ່ໄປ: ຢືນຢັນ →</button>
-    </div>
-  </div>
-
-  <!-- Panel 4: Confirm & Submit -->
-  <div class="reg-panel" id="panel4">
-    <div class="reg-section-title">ກວດສອບຂໍ້ມູນ</div>
-    <div id="summaryRows"></div>
-    <div class="reg-field" style="margin-top:20px">
-      <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer">
-        <input type="checkbox" id="fConsent" style="width:auto;margin-top:3px">
-        <span style="font-size:.85rem;color:var(--grey-600)">ຂ້ອຍຍອມຮັບ <a href="#" style="color:var(--accent)">ກົດລະບຽບການແຂ່ງຂັນ</a> ແລະ ການໃຊ້ຂໍ້ມູນສ່ວນຕົວ</span>
-      </label>
-    </div>
-    <div class="reg-nav">
-      <button class="reg-nav-back" onclick="goStep(3)">← ກັບຄືນ</button>
-      <button class="reg-nav-next" id="btnSubmit" onclick="submitReg()">✓ ຢືນຢັນການສະໝັກ</button>
-    </div>
-  </div>
-
-  <!-- Success -->
-  <div class="reg-panel" id="panelSuccess">
-    <div class="reg-success">
-      <div class="reg-success-icon">🎉</div>
-      <h2>ສະໝັກສໍາເລັດແລ້ວ!</h2>
-      <p>ພວກເຮົາໄດ້ຮັບການສະໝັກຂອງທ່ານ ແລະ ກໍາລັງກວດສອບ</p>
-      <div class="reg-success-id" id="successRegId">REG-XXXXXX</div>
-      <p style="font-size:.85rem;color:var(--grey-600);margin-bottom:24px">
-        ເກັບ Registration ID ໄວ້ເພື່ອຕິດຕາມສະຖານະ
-      </p>
-      <div class="reg-success-actions">
-        <a id="btnViewReg" href="events-registration.html" class="reg-btn-primary">ເບິ່ງ QR &amp; ສະຖານະ</a>
-        <a href="events.html" class="reg-btn-secondary">ກັບໄປ Events</a>
-      </div>
-    </div>
-  </div>
-</div>
+  <section id="done" class="er-done" hidden aria-live="polite"></section>
+</main>
 
 <script>
-const API_URL_EVT = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
-const EVT_SECRET  = 'SDdMc3wNjJEevs60n2oMQeGnuI';
-const THB_TO_LAK  = 698;
-
-async function hmacSign(body){
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', enc.encode(EVT_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
-  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
+const EVT_API = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_KEY = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 async function evtGet(params){
-  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
-  const sig = await hmacSign(qs);
-  const res = await fetch(API_URL_EVT+'?'+qs+'&sig='+sig);
-  return JSON.parse(await res.text());
+  const r = await fetch(EVT_API + '?' + new URLSearchParams({ secret: EVT_KEY, ...params }));
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || 'API error'); return j.data;
 }
 async function evtPost(action, data){
-  const body = JSON.stringify({ action, ...data });
-  const sig = await hmacSign(body);
-  const res = await fetch(API_URL_EVT+'?sig='+sig, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body
-  });
-  return JSON.parse(await res.text());
+  const r = await fetch(EVT_API, { method: 'POST', body: JSON.stringify({ action, secret: EVT_KEY, ...data }) });
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || 'API error'); return j.data;
 }
+const $ = id => document.getElementById(id);
+const evtEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const evtKip = n => '₭' + Math.round(Number(n) || 0).toLocaleString('en-US');
+const EVT_MONTHS = ['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+const evtDate = ymd => { if (!ymd) return '-'; const [y,m,d] = ymd.split('-').map(Number); return `${d} ${EVT_MONTHS[m-1]} ${y}`; };
+const SIZES = ['XS','S','M','L','XL','2XL','3XL'];
+const user = (() => { try { return JSON.parse(sessionStorage.getItem('sd_user') || 'null'); } catch(_) { return null; } })();
 
-let evtData = null;
-let selectedCat = null;
-let slipDataUrl = null;
-let currentStep = 1;
+let ev = null, step = 1, slipData = '';
+const eventId = new URLSearchParams(location.search).get('event_id') || new URLSearchParams(location.search).get('id');
 
-// Load event from URL
-const urlParams = new URLSearchParams(location.search);
-const eventId = urlParams.get('id');
-if(!eventId){ location.href = 'events.html'; }
+function showErr(m){ const e = $('err'); e.textContent = m; e.hidden = !m; if (m) e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+const cat = () => { const c = document.querySelector('input[name=cat]:checked'); return c && ev.categories.find(x => x.category_id === c.value); };
+const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
 
-async function loadEvent(){
-  try{
-    const res = await evtGet({ action:'evt.getEventDetail', id: eventId });
-    evtData = res.data || res;
-    document.getElementById('bcrEventName').textContent = evtData.name || 'ສະໝັກ';
-
-    // render banner
-    const banner = document.getElementById('eventBanner');
-    const imgHtml = evtData.imageUrl
-      ? `<img src="${evtData.imageUrl}" alt="${evtData.name}" style="width:100px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;flex-shrink:0">`
-      : '';
-    const d = evtData.eventDate || evtData.startDate || '';
-    const dateStr = d ? new Date(d).toLocaleDateString('lo-LA',{day:'numeric',month:'short',year:'numeric'}) : '';
-    banner.innerHTML = `${imgHtml}<div class="reg-event-info">
-      <h2>${evtData.name}</h2>
-      <div class="reg-event-meta">
-        ${dateStr ? `<span>📅 ${dateStr}</span>` : ''}
-        ${evtData.location ? `<span>📍 ${evtData.location}</span>` : ''}
+(async function(){
+  if (!eventId) { location.replace('events.html'); return; }
+  try { ev = await evtGet({ action: 'evt.getEvent', event_id: eventId }); }
+  catch (err) { $('evHead').innerHTML = `<div class="msg">${evtEsc(err.message)} — <a href="events.html" style="text-decoration:underline">ກັບໄປໜ້າ Events</a></div>`; return; }
+  document.title = ev.event_name + ' — ສະໝັກ';
+  $('crumbName').textContent = ev.event_name;
+  $('evHead').innerHTML = `<div class="evh">
+    ${ev.cover_image ? `<div class="evh-cover"><img src="${evtEsc(ev.cover_image)}" alt=""></div>` : ''}
+    <div class="evh-body">
+      <h1>${evtEsc(ev.event_name)}</h1>
+      <div class="evh-meta">
+        <div><small>ວັນທີ</small><b>${evtDate(ev.event_date)}${ev.start_time ? ' · ' + evtEsc(ev.start_time) : ''}</b></div>
+        <div><small>ສະຖານທີ່</small><b>${evtEsc(ev.location || '-')}</b></div>
+        <div><small>ປິດຮັບສະໝັກ</small><b>${evtDate(ev.registration_close)}</b></div>
+        ${ev.contact_phone ? `<div><small>ສອບຖາມ</small><b>${evtEsc(ev.contact_phone)}</b></div>` : ''}
       </div>
-    </div>`;
-
-    // render categories
-    const cats = evtData.categories || [{ id:'open', name:'Open', fee: evtData.fee||0, distance:evtData.distance||'' }];
-    const catsEl = document.getElementById('catsList');
-    catsEl.innerHTML = cats.map(c => `
-      <label class="reg-cat-item" onclick="selectCat('${c.id}','${c.name}',${c.fee||0})">
-        <input type="radio" name="regCat" value="${c.id}">
-        <div class="reg-cat-name">${c.name}</div>
-        ${c.distance ? `<div class="reg-cat-dist">${c.distance}</div>` : ''}
-        <div class="reg-cat-fee">${!c.fee||c.fee==0 ? 'ຟຣີ' : '₭'+Math.round((c.fee||0)*THB_TO_LAK).toLocaleString()}</div>
-      </label>`).join('');
-  }catch(e){
-    document.getElementById('eventBanner').innerHTML = '<span style="color:var(--accent)">ໂຫຼດ event ບໍ່ໄດ້</span>';
-  }
-}
-
-function selectCat(id, name, fee){
-  selectedCat = { id, name, fee };
-  document.querySelectorAll('.reg-cat-item').forEach(el => el.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  document.getElementById('err-cat').style.display = 'none';
-  // update payment amounts
-  const lak = Math.round((fee||0) * THB_TO_LAK);
-  document.getElementById('amountDue').textContent = `₭${lak.toLocaleString()}`;
-  document.getElementById('bankAmount').textContent  = `${lak.toLocaleString()} LAK`;
-  document.getElementById('thbAmount').textContent   = `${(fee||0).toLocaleString()} THB`;
-}
-
-function goStep(n){
-  // validate current step
-  if(currentStep === 1 && n > 1){
-    const errs = [
-      { id:'fName',      err:'err-fName',      test: v => v.trim() },
-      { id:'fLastname',  err:'err-fLastname',  test: v => v.trim() },
-      { id:'fPhone',     err:'err-fPhone',      test: v => v.trim() },
-      { id:'fDob',       err:'err-fDob',        test: v => v.trim() },
-      { id:'fGender',    err:'err-fGender',     test: v => v },
-      { id:'fEmergency', err:'err-fEmergency',  test: v => v.trim() },
-    ];
-    let ok = true;
-    errs.forEach(({id, err, test}) => {
-      const val = document.getElementById(id).value;
-      const show = !test(val);
-      document.getElementById(err).style.display = show ? 'block' : 'none';
-      if(show) ok = false;
-    });
-    if(!ok) return;
-  }
-  if(currentStep === 2 && n > 2){
-    if(!selectedCat){ document.getElementById('err-cat').style.display='block'; return; }
-  }
-  if(currentStep === 3 && n > 3){
-    if(!slipDataUrl){ document.getElementById('err-slip').style.display='block'; return; }
-  }
-
-  currentStep = n;
-  document.querySelectorAll('.reg-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel'+n).classList.add('active');
-  document.querySelectorAll('.reg-step').forEach(s => {
-    const sn = +s.dataset.step;
-    s.classList.remove('active','done');
-    if(sn === n)  s.classList.add('active');
-    if(sn < n)    s.classList.add('done');
-  });
-  window.scrollTo({top:0,behavior:'smooth'});
-
-  if(n === 4) buildSummary();
-}
-
-function buildSummary(){
-  const rows = [
-    ['ຊື່-ນາມສະກຸນ', `${document.getElementById('fName').value} ${document.getElementById('fLastname').value}`],
-    ['ເບີໂທ', document.getElementById('fPhone').value],
-    ['ອີເມລ', document.getElementById('fEmail').value || '—'],
-    ['ເພດ', {male:'ຊາຍ',female:'ຍິງ',other:'ອື່ນໆ'}[document.getElementById('fGender').value]||'—'],
-    ['ໝວດ', selectedCat?.name||'—'],
-    ['ຄ່າສະໝັກ', selectedCat?.fee ? `₭${Math.round(selectedCat.fee*THB_TO_LAK).toLocaleString()}` : 'ຟຣີ'],
-  ];
-  document.getElementById('summaryRows').innerHTML = rows.map(([l,v])=>`
-    <div class="reg-summary-row">
-      <span class="reg-summary-label">${l}</span>
-      <span class="reg-summary-value">${v}</span>
-    </div>`).join('');
-}
-
-async function submitReg(){
-  if(!document.getElementById('fConsent').checked){
-    if(typeof toast==='function') toast('ກະລຸນາຍອມຮັບກົດລະບຽບ');
+      ${ev.description ? `<p class="evh-desc">${evtEsc(ev.description)}</p>` : ''}
+    </div></div>`;
+  if (ev.registration_state !== 'OPEN') {
+    $('closedMsg').hidden = false;
+    $('closedMsg').innerHTML = `<div class="msg" style="border-color:var(--black);background:var(--grey-100);color:var(--ink)">${ev.registration_state === 'SOON' ? 'ຍັງບໍ່ເປີດຮັບສະໝັກ — ເປີດ ' + evtDate(ev.registration_open) : 'ງານນີ້ປິດຮັບສະໝັກແລ້ວ'}</div>`;
     return;
   }
-  const btn = document.getElementById('btnSubmit');
-  btn.disabled = true;
-  btn.classList.add('loading');
-  btn.textContent = 'ກໍາລັງສົ່ງ...';
+  const cats = ev.categories.filter(c => String(c.status).toUpperCase() === 'ACTIVE');
+  const pick = new URLSearchParams(location.search).get('category_id');
+  $('cats').innerHTML = cats.length ? cats.map(c => {
+    const full = c.remaining === 0;
+    const rules = [c.distance, c.gender_rule === 'MALE' ? 'ຊາຍ' : c.gender_rule === 'FEMALE' ? 'ຍິງ' : '', c.min_age ? `ອາຍຸ ${c.min_age}+` : '', c.max_age ? `ບໍ່ເກີນ ${c.max_age} ປີ` : ''].filter(Boolean).join(' · ');
+    return `<label class="er-cat ${full ? 'off' : ''}">
+      <input type="radio" name="cat" value="${evtEsc(c.category_id)}" ${full ? 'disabled' : ''} ${pick === c.category_id ? 'checked' : ''}>
+      <span><b>${evtEsc(c.category_name)}</b><small>${evtEsc(rules)}${c.description ? ' — ' + evtEsc(c.description) : ''}${full ? ' · ເຕັມແລ້ວ' : c.remaining !== null ? ` · ເຫຼືອ ${c.remaining} ບ່ອນ` : ''}</small></span>
+      <span class="pr">${c.price_lak ? evtKip(c.price_lak) : 'ຟຣີ'}</span></label>`;
+  }).join('') : '<div class="msg">ງານນີ້ຍັງບໍ່ມີລຸ້ນໃຫ້ສະໝັກ</div>';
+  $('sizes').innerHTML = SIZES.map(s => `<label><input type="radio" name="jersey_size" value="${s}"><span>${s}</span></label>`).join('');
+  document.querySelectorAll('.bike').forEach(el => el.hidden = !isBike());
+  if (ev.terms_url) $('termsLink').innerHTML = ` <a href="${evtEsc(ev.terms_url)}" target="_blank" rel="noopener" style="text-decoration:underline">ອ່ານກົດລະບຽບ</a>`;
+  if (user) {
+    const [fn, ...ln] = String(user.name || '').trim().split(/\s+/);
+    if (fn) $('first_name').value = fn;
+    if (ln.length) $('last_name').value = ln.join(' ');
+    if (user.phone) $('phone').value = user.phone;
+    if (user.email) $('email').value = user.email;
+  } else $('loginHint').hidden = false;
+  $('flow').hidden = false;
+  render();
+})();
 
-  try{
-    const payload = {
-      eventId,
-      categoryId: selectedCat?.id,
-      categoryName: selectedCat?.name,
-      fee: selectedCat?.fee || 0,
-      name: document.getElementById('fName').value.trim(),
-      lastname: document.getElementById('fLastname').value.trim(),
-      phone: document.getElementById('fPhone').value.trim(),
-      email: document.getElementById('fEmail').value.trim(),
-      dob: document.getElementById('fDob').value,
-      gender: document.getElementById('fGender').value,
-      bike: document.getElementById('fBike').value.trim(),
-      emergency: document.getElementById('fEmergency').value.trim(),
-      slipImage: slipDataUrl,
-    };
-
-    // try to link sd_user account
-    try{
-      const u = JSON.parse(sessionStorage.getItem('sd_user')||'null');
-      if(u) payload.customerId = u.id || u.customerId;
-    }catch(_){}
-
-    const res = await evtPost('evt.register', payload);
-    if(res.ok === false) throw new Error(res.error||'ສົ່ງຂໍ້ມູນບໍ່ສໍາເລັດ');
-
-    const regId = res.data?.registrationId || res.registrationId || 'REG-' + Date.now();
-    document.getElementById('successRegId').textContent = regId;
-    document.getElementById('btnViewReg').href = `events-registration.html?id=${encodeURIComponent(regId)}`;
-
-    // hide step UI, show success
-    document.querySelectorAll('.reg-panel').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.reg-steps').forEach(s=>s.style.display='none');
-    document.getElementById('panelSuccess').classList.add('active');
-
-  }catch(err){
-    if(typeof toast==='function') toast(`ຜິດພາດ: ${err.message}`);
-    btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.textContent = '✓ ຢືນຢັນການສະໝັກ';
-  }
+function render(){
+  document.querySelectorAll('.panel').forEach(p => p.hidden = Number(p.dataset.step) !== step);
+  document.querySelectorAll('#steps li').forEach((li, i) => { li.className = i + 1 === step ? 'on' : i + 1 < step ? 'done' : ''; });
+  const c = cat();
+  const free = c && !c.price_lak;
+  $('steps').lastElementChild.textContent = free ? 'ຢືນຢັນ' : 'ຊຳລະ';
+  $('toPay').textContent = free ? 'ຢືນຢັນການສະໝັກ' : 'ໄປຊຳລະ';
 }
 
-function previewSlip(input){
-  const file = input.files[0];
-  if(!file) return;
-  if(file.size > 5*1024*1024){ alert('ຮູບໃຫຍ່ເກີນ 5MB'); return; }
-  const reader = new FileReader();
-  reader.onload = e => {
-    slipDataUrl = e.target.result;
-    const prev = document.getElementById('slipPreview');
-    prev.src = slipDataUrl;
-    prev.style.display = 'block';
-    document.getElementById('err-slip').style.display = 'none';
+function vals(){
+  const o = {};
+  ['first_name','last_name','nickname','gender','date_of_birth','nationality','phone','email','emergency_name','emergency_phone','bike_brand','bike_model','bike_wheel_size','medical_note']
+    .forEach(k => o[k] = $(k).value.trim());
+  const js = document.querySelector('input[name=jersey_size]:checked'); o.jersey_size = js ? js.value : '';
+  return o;
+}
+function validate(){
+  const v = vals(); let first = null;
+  const rules = {
+    first_name: v.first_name, last_name: v.last_name, gender: v.gender, date_of_birth: v.date_of_birth,
+    phone: v.phone.replace(/\D/g,'').length >= 8, emergency_name: v.emergency_name,
+    emergency_phone: v.emergency_phone.replace(/\D/g,'').length >= 8,
+    email: !v.email || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email),
   };
-  reader.readAsDataURL(file);
+  Object.entries(rules).forEach(([k, ok]) => { const f = $(k).closest('.f'); f.classList.toggle('bad', !ok); if (!ok && !first) first = $(k); });
+  const sz = $('sizes').closest('.f'); sz.classList.toggle('bad', !v.jersey_size); if (!v.jersey_size && !first) first = sz;
+  if (first) { first.scrollIntoView({ block: 'center', behavior: 'smooth' }); if (first.focus) first.focus({ preventScroll: true }); }
+  return !first;
 }
+document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('.f.bad'); if (f) f.classList.remove('bad'); });
+document.addEventListener('change', e => { if (e.target.name === 'cat') { showErr(''); render(); } });
 
-function copyBank(){
-  const n = document.getElementById('bankAccNum').textContent;
-  navigator.clipboard.writeText(n).catch(()=>{});
-  if(typeof toast==='function') toast('ຄັດລອກເລກບັນຊີແລ້ວ');
-}
-function copyThb(){
-  const n = document.getElementById('thbAccNum').textContent;
-  navigator.clipboard.writeText(n).catch(()=>{});
-  if(typeof toast==='function') toast('ຄັດລອກເລກບັນຊີແລ້ວ');
-}
-
-// drag-drop on upload area
-const ua = document.getElementById('uploadArea');
-ua.addEventListener('dragover', e=>{ e.preventDefault(); ua.classList.add('drag'); });
-ua.addEventListener('dragleave', ()=> ua.classList.remove('drag'));
-ua.addEventListener('drop', e=>{
-  e.preventDefault(); ua.classList.remove('drag');
-  const f = e.dataTransfer.files[0];
-  if(f){ document.getElementById('slipFile').files = e.dataTransfer.files; previewSlip({files:[f]}); }
-});
-
-// auto-fill from sd_user if logged in
-try{
-  const u = JSON.parse(sessionStorage.getItem('sd_user')||'null');
-  if(u){
-    if(u.name)  document.getElementById('fName').value = (u.name||'').split(' ')[0];
-    if(u.name)  document.getElementById('fLastname').value = (u.name||'').split(' ').slice(1).join(' ');
-    if(u.phone) document.getElementById('fPhone').value = u.phone;
-    if(u.email) document.getElementById('fEmail').value = u.email;
+function go(n){
+  showErr('');
+  if (n > step) {
+    if (step === 1 && !cat()) return showErr('ເລືອກລຸ້ນກ່ອນ');
+    if (step === 2 && !validate()) return;
+    if (step === 3) {
+      if (!$('agree').checked) return showErr('ກະລຸນາຕິກຍອມຮັບກົດລະບຽບ');
+      if (!cat().price_lak) return submit(false);
+    }
   }
-}catch(_){}
+  if (n === 3) summary();
+  if (n === 4) $('amt').textContent = evtKip(cat().price_lak);
+  step = n; render();
+  window.scrollTo({ top: $('flow').offsetTop - 90, behavior: 'smooth' });
+}
 
-loadEvent();
+function summary(){
+  const v = vals(), c = cat();
+  const rows = [
+    ['ລຸ້ນ', c.category_name + (c.distance ? ' · ' + c.distance : '')],
+    ['ຊື່', `${v.first_name} ${v.last_name}${v.nickname ? ' (' + v.nickname + ')' : ''}`],
+    ['ເພດ / ວັນເກີດ', `${v.gender === 'male' ? 'ຊາຍ' : 'ຍິງ'} · ${v.date_of_birth}`],
+    ['ເບີໂທ', v.phone], ['ອີເມວ', v.email || '-'],
+    ['ສຸກເສີນ', `${v.emergency_name} · ${v.emergency_phone}`],
+    ['ໄຊສ໌ເສື້ອ', v.jersey_size],
+  ];
+  if (isBike() && (v.bike_brand || v.bike_model)) rows.push(['ລົດຖີບ', [v.bike_brand, v.bike_model, v.bike_wheel_size].filter(Boolean).join(' · ')]);
+  if (v.medical_note) rows.push(['ສຸຂະພາບ', v.medical_note]);
+  $('sum').innerHTML = `<dl>${rows.map(([k, x]) => `<dt>${k}</dt><dd>${evtEsc(x)}</dd>`).join('')}</dl>
+    <div class="tot"><span>ຄ່າສະໝັກ</span><span>${c.price_lak ? evtKip(c.price_lak) : 'ຟຣີ'}</span></div>`;
+}
+
+// ── slip: compress photos so phone pictures upload fast ──
+$('slip').addEventListener('change', async e => {
+  const file = e.target.files[0]; slipData = ''; $('slipPrev').hidden = true;
+  if (!file) return;
+  try {
+    if (file.type === 'application/pdf') {
+      if (file.size > 5 * 1024 * 1024) throw new Error('PDF ໃຫຍ່ເກີນ 5MB');
+      slipData = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+      $('slipTxt').textContent = '📄 ' + file.name;
+    } else {
+      const img = await createImageBitmap(file);
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas'); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      slipData = cv.toDataURL('image/jpeg', 0.82);
+      $('slipPrev').src = slipData; $('slipPrev').hidden = false;
+      $('slipTxt').textContent = file.name + ' · ແຕະເພື່ອປ່ຽນ';
+    }
+    $('drop').classList.add('on'); showErr('');
+  } catch (err) { showErr('ອ່ານໄຟລ໌ບໍ່ໄດ້: ' + err.message + ' — ລອງຖ່າຍໜ້າຈໍສະລິບແລ້ວແນບໃໝ່'); }
+});
+function copyAcct(btn){
+  const t = $('acctNo').textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = 'ຄັດລອກແລ້ວ'; },
+    () => { const r = document.createRange(); r.selectNode($('acctNo')); getSelection().removeAllRanges(); getSelection().addRange(r); });
+}
+
+let sending = false;
+async function submit(withSlip){
+  if (sending) return;
+  const c = cat();
+  if (withSlip && !slipData) return showErr('ແນບສະລິບການໂອນກ່ອນ — ຫຼື ກົດ “ສະໝັກກ່ອນ ແລ້ວແນບສະລິບພາຍຫຼັງ”');
+  sending = true; showErr('');
+  const btns = document.querySelectorAll('.er-actions .btn, .later'); btns.forEach(b => b.disabled = true);
+  const main = withSlip ? $('submitPay') : (c.price_lak ? document.querySelector('.later') : $('toPay'));
+  const label = main.textContent; main.textContent = 'ກຳລັງສົ່ງ…';
+  try {
+    const body = { event_id: ev.event_id, category_id: c.category_id, participant: vals() };
+    if (user && user.token) body.token = user.token;
+    if (withSlip) body.payment = { amount: c.price_lak, payment_method: 'QR_PAYMENT', payment_reference: $('ref').value.trim(), proof_image: slipData };
+    const r = await evtPost('evt.createRegistration', body);
+    done(r, c);
+  } catch (err) {
+    showErr(err.message);
+    btns.forEach(b => b.disabled = false); main.textContent = label; sending = false;
+  }
+}
+
+function done(r, c){
+  $('flow').hidden = true; $('evHead').hidden = true;
+  const link = 'events-registration.html?t=' + encodeURIComponent(r.qr_token);
+  const v = vals();
+  const status = r.payment_status === 'PAID' ? `ຢືນຢັນແລ້ວ · ເລກ BIB <b>${evtEsc(r.bib_number)}</b>`
+    : r.payment_status === 'PENDING_VERIFICATION' ? 'ໄດ້ຮັບສະລິບແລ້ວ — ທີມງານຈະກວດ ແລະ ອອກເລກ BIB ໃຫ້'
+    : `ຍັງບໍ່ໄດ້ຊຳລະ ${evtKip(r.total)} — ແນບສະລິບໄດ້ໃນໜ້າ QR`;
+  $('done').hidden = false;
+  $('done').innerHTML = `
+    <div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></div>
+    <h2>ສະໝັກສຳເລັດ</h2>
+    <div class="num">${evtEsc(r.reg_number)}</div>
+    <p>${evtEsc(ev.event_name)} · ${evtEsc(c.category_name)}<br>${status}</p>
+    <p style="margin-top:10px">${v.email ? 'ສົ່ງລິ້ງ QR ໄປທີ່ ' + evtEsc(v.email) + ' ແລ້ວ. ' : ''}ເກັບເລກລົງທະບຽນ ແລະ ເບີໂທໄວ້ ເພື່ອເປີດໜ້າ QR ຄືນ.</p>
+    <div class="er-actions">
+      <a class="btn btn-black" href="${link}">ເປີດໜ້າ QR ແລະ ສະຖານະ</a>
+      <a class="btn btn-line" href="events-register.html?event_id=${encodeURIComponent(ev.event_id)}">ສະໝັກໃຫ້ຄົນອື່ນ</a>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 <script src="layout.js"></script>
+</body>
 </html>
