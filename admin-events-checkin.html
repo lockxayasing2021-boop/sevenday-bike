@@ -181,7 +181,7 @@ input,select{font:inherit}
         <a href="admin-events.html" class="hide-sm">Events</a><span class="hide-sm">/</span>
         <b>Check-in</b>
       </div>
-      <a href="admin-events-registrations.html" id="regLink" class="tb" style="display:inline-flex;align-items:center">ລາຍຊື່</a>
+      <a href="admin-events-participants.html" id="regLink" class="tb" style="display:inline-flex;align-items:center">ລາຍຊື່</a>
       <button class="tb" type="button" onclick="logout()">Logout</button>
     </div>
   </div>
@@ -351,7 +351,7 @@ $('station').addEventListener('change', e => store.set('sd_ci_station', e.target
 
 function selectEvent(id){
   eventId = id; store.set('sd_ci_event', id);
-  $('regLink').href = 'admin-events-registrations.html?event_id=' + encodeURIComponent(id);
+  $('regLink').href = 'admin-events-participants.html?event_id=' + encodeURIComponent(id);
   $('result').hidden = true;
   loadAll();
 }

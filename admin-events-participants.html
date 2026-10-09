@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Sevenday Participants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Admin table + right-side drawer. Same tokens as admin-events / check-in pages. */
+:root{
+  --black:#000; --ink:#1C1C1C; --g9:#2B2B2B; --g6:#6E6E6E; --g3:#D4D4D4; --g1:#F3F3F3; --white:#fff;
+  --accent:#FF3B00;
+  --ok:#0F8A4C; --ok-bg:#E7F6EE; --warn:#B86E00; --warn-bg:#FFF4DF; --bad:#C4161C; --bad-bg:#FDECEC;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A; --g1:#1A1A1A; --white:#111;
+    --ok:#3DD68C; --ok-bg:#0E2A1C; --warn:#FFB547; --warn-bg:#2E2008; --bad:#FF6B6B; --bad-bg:#2E1010;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A; --g1:#1A1A1A; --white:#111;
+  --ok:#3DD68C; --ok-bg:#0E2A1C; --warn:#FFB547; --warn-bg:#2E2008; --bad:#FF6B6B; --bad-bg:#2E1010;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 14px;font-weight:700;font-size:13px;border:2px solid var(--black);background:var(--white);color:var(--ink);white-space:nowrap}
+.btn.primary{background:var(--black);color:var(--white)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.danger.fill{background:var(--bad);color:#fff}
+.btn.sm{height:30px;padding:0 10px;font-size:12px;border-width:1px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.top{background:#000;color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .in{max-width:1500px;margin:0 auto;padding:0 16px;height:54px;display:flex;align-items:center;gap:12px}
+.top .mark{width:30px;height:30px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:14px;flex-shrink:0}
+.top .crumb{font-size:13px;color:rgba(255,255,255,.55);display:flex;gap:6px;align-items:center;flex:1;min-width:0;white-space:nowrap;overflow:hidden}
+.top .crumb a{font-weight:600}
+.top .crumb b{color:#fff;font-weight:800}
+.top .tb{height:32px;padding:0 12px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.35);color:#fff;display:inline-flex;align-items:center}
+
+.wrap{max-width:1500px;margin:0 auto;padding:16px 16px 60px}
+
+.head{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6)}
+.field select,.field input,.field textarea{height:38px;border:1px solid var(--g3);padding:0 10px;background:var(--white);color:var(--ink);min-width:0;width:100%}
+.field textarea{height:auto;padding:8px 10px;resize:vertical}
+.head .grow{flex:1 1 280px}
+.exports{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Filter chips with counts */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border:1px solid var(--g3);background:var(--white);font-weight:700;font-size:12px}
+.chip b{font-variant-numeric:tabular-nums;font-weight:900}
+.chip[aria-pressed="true"]{background:var(--black);color:var(--white);border-color:var(--black)}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.toolbar input{flex:1 1 240px;min-width:0;height:38px;border:1px solid var(--g3);padding:0 12px;background:var(--white);color:var(--ink)}
+.toolbar select{height:38px;border:1px solid var(--g3);padding:0 10px;background:var(--white);color:var(--ink)}
+
+/* Table */
+.tbl-wrap{background:var(--white);border:1px solid var(--g3);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--g6);padding:10px 12px;border-bottom:1px solid var(--g3);white-space:nowrap;background:var(--white);position:sticky;top:0}
+td{padding:10px 12px;border-bottom:1px solid var(--g1);vertical-align:middle}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--g1)}
+tbody tr.sel{background:var(--g1);box-shadow:inset 3px 0 0 var(--accent)}
+td.bib{font-weight:900;font-size:15px;font-variant-numeric:tabular-nums;width:60px}
+td.nm b{display:block;font-weight:800}
+td.nm small{color:var(--g6);font-size:12px}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.foot{display:flex;justify-content:space-between;padding:10px 12px;font-size:12px;color:var(--g6);border-top:1px solid var(--g3)}
+
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;letter-spacing:.02em;white-space:nowrap;border:1px solid currentColor}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)} .pill.mute{color:var(--g6)}
+
+/* Jersey summary */
+.sizes{background:var(--white);border:1px solid var(--g3);margin-top:14px}
+.sizes h2{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:12px 14px;border-bottom:1px solid var(--g3)}
+.sizes table td,.sizes table th{text-align:center}
+.sizes table td:first-child,.sizes table th:first-child{text-align:left}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--white);z-index:41;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.15);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dh{padding:14px 16px;border-bottom:1px solid var(--g3);display:flex;gap:12px;align-items:center}
+.dh .bibbox{font-size:30px;font-weight:900;letter-spacing:-1px;min-width:64px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+.dh .bibbox small{display:block;font-size:9px;letter-spacing:.1em;color:var(--g6)}
+.dh h2{font-size:17px;font-weight:900;line-height:1.25;flex:1;min-width:0}
+.dh h2 small{display:block;font-size:12px;font-weight:600;color:var(--g6)}
+.db{overflow:auto;flex:1}
+.sec{padding:14px 16px;border-bottom:1px solid var(--g1)}
+.sec h3{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:5px 10px;font-size:13px}
+.kv dt{color:var(--g6)}
+.kv dd{font-weight:600;word-break:break-word}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2 .full{grid-column:1/-1}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.confirm{background:var(--bad-bg);border:1px solid var(--bad);padding:10px;margin-top:10px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.note{font-size:12px;color:var(--g6)}
+
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,80px);background:var(--black);color:var(--white);padding:11px 20px;font-weight:600;font-size:13px;transition:transform .22s;z-index:99;visibility:hidden;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.empty{padding:48px 16px;text-align:center;color:var(--g6)}
+
+.login{min-height:100vh;background:#000;display:grid;place-items:center;padding:20px}
+.login form{background:var(--white);padding:32px;width:min(400px,100%);display:flex;flex-direction:column;gap:12px}
+.login h1{font-size:24px;font-weight:900}
+.login input{height:48px;border:1px solid var(--g3);padding:0 14px;font-size:16px;background:var(--white);color:var(--ink)}
+.msg-err{background:var(--bad-bg);border-left:3px solid var(--bad);padding:8px 12px;font-size:13px;color:var(--bad)}
+
+@media(max-width:760px){
+  .col-hide{display:none}
+  .grid2{grid-template-columns:1fr}
+  .top .crumb .hide-sm{display:none}
+}
+
+/* ── PDF / print: start list grouped by category ── */
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  #app,#loginScreen,.toast,.scrim,.drawer{display:none!important}
+  #printArea{display:block}
+  .pr-head{display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px}
+  .pr-head h1{font-size:16pt;font-weight:900}
+  .pr-head div{font-size:9pt;text-align:right}
+  .pr-cat{break-inside:auto;margin-bottom:14px}
+  .pr-cat h2{font-size:12pt;font-weight:900;background:#000;color:#fff;padding:3px 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pr-cat table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  .pr-cat th{border-bottom:1.5px solid #000;text-align:left;padding:4px 6px;font-size:8pt;color:#000;position:static}
+  .pr-cat td{border-bottom:.5px solid #999;padding:5px 6px;color:#000}
+  .pr-cat tr{break-inside:avoid}
+  .pr-cat td.sig{width:28mm}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login" hidden>
+  <form id="loginForm">
+    <div style="width:40px;height:40px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px">S</div>
+    <h1>Admin Login</h1>
+    <p style="color:var(--g6);font-size:14px;margin-top:-6px">Sevenday Events · ຜູ້ແຂ່ງຂັນ</p>
+    <div id="loginMsg"></div>
+    <input id="loginPass" type="password" placeholder="Admin Password" autocomplete="current-password" required>
+    <button class="btn primary" type="submit" style="height:48px">ເຂົ້າສູ່ລະບົບ</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <div class="top">
+    <div class="in">
+      <div class="mark">S</div>
+      <div class="crumb">
+        <a href="admin-events.html" class="hide-sm">Events</a><span class="hide-sm">/</span><b>ຜູ້ແຂ່ງຂັນ</b>
+      </div>
+      <a class="tb" id="ciLink" href="admin-events-checkin.html">Check-in</a>
+      <button class="tb" type="button" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="head">
+      <div class="field grow">
+        <label for="evSel">ງານ (Event)</label>
+        <select id="evSel"><option>ກຳລັງໂຫຼດ…</option></select>
+      </div>
+      <div class="exports" aria-label="Export">
+        <button class="btn" type="button" onclick="exportXlsx()">Excel</button>
+        <button class="btn" type="button" onclick="exportCsv()">CSV</button>
+        <button class="btn" type="button" onclick="exportPdf()">PDF ລາຍຊື່</button>
+      </div>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="ຄົ້ນຫາ ຊື່, BIB, ເບີໂທ, ເລກລົງທະບຽນ" aria-label="Search">
+      <select id="catSel" aria-label="Category"><option value="">ທຸກລຸ້ນ</option></select>
+      <button class="btn" type="button" onclick="loadParticipants()">ໂຫຼດໃໝ່</button>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>BIB</th><th>ຊື່</th><th>ລຸ້ນ</th><th class="col-hide">ເສື້ອ</th>
+          <th class="col-hide">ເບີໂທ</th><th class="col-hide" style="text-align:right">ຍອດ (₭)</th>
+          <th>ຊຳລະ</th><th>Check-in</th>
+        </tr></thead>
+        <tbody id="tbody"><tr><td colspan="8" class="empty">ກຳລັງໂຫຼດ…</td></tr></tbody>
+      </table>
+      <div class="foot"><span id="countTxt"></span><span class="note">ການ Export ທຸກຄັ້ງຖືກບັນທຶກໃນ Audit log</span></div>
+    </div>
+
+    <div class="sizes">
+      <h2>ສະຫຼຸບຂະໜາດເສື້ອ (ສະເພາະທີ່ຊຳລະແລ້ວ)</h2>
+      <div style="overflow-x:auto"><table id="sizeTbl"></table></div>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" hidden aria-label="Participant detail"></aside>
+
+<div id="printArea"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+let token = sessionStorage.getItem('sd_admin') || '';
+let events = [], eventId = '', cats = [], all = [], filter = 'ALL', selId = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtK = n => (Number(n) || 0).toLocaleString('en-US');
+const fmtDT = iso => iso ? new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+const store = { get(k){ try { return localStorage.getItem(k) || ''; } catch(_) { return ''; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(_) {} } };
+function toast(m){ const el=$('toast'); el.textContent=m; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2800); }
+
+async function post(action, data){
+  const r = await fetch(`${API_URL}?action=${encodeURIComponent(action)}&secret=${API_SECRET}`, {
+    method:'POST', body: JSON.stringify({ action, secret: API_SECRET, token, admin_id: 'admin-web', ...data })
+  });
+  const j = await r.json();
+  if (j.ok === false) {
+    if (String(j.error).includes('ADMIN_AUTH')) { logout(); throw new Error('Session ໝົດອາຍຸ — Login ໃໝ່'); }
+    throw new Error(j.error || 'API error');
+  }
+  const d = j.data !== undefined ? j.data : j;
+  if (d && d.ok === false && d.error) throw new Error(d.error);
+  return d;
+}
+async function get(params){
+  const r = await fetch(`${API_URL}?${new URLSearchParams({ secret: API_SECRET, ...params })}`);
+  const j = await r.json();
+  if (j.ok === false) throw new Error(j.error || 'API error');
+  return j.data !== undefined ? j.data : j;
+}
+
+// ── auth ──
+function logout(){ sessionStorage.removeItem('sd_admin'); token=''; $('app').hidden=true; $('loginScreen').hidden=false; closeDrawer(); }
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault(); $('loginMsg').innerHTML='';
+  try {
+    const r = await post('adminLogin', { password: $('loginPass').value });
+    if (!r.token) throw new Error('Login ບໍ່ສຳເລັດ');
+    token = r.token; sessionStorage.setItem('sd_admin', token); boot();
+  } catch(err){ $('loginMsg').innerHTML = `<div class="msg-err">${esc(err.message)}</div>`; }
+});
+
+// ── status helpers ──
+function payPill(p){
+  const s = String(p.payment_status||'').toUpperCase();
+  if (String(p.reg_status).toUpperCase()==='CANCELLED') return '<span class="pill mute">ຍົກເລີກ</span>';
+  if (s==='PAID') return '<span class="pill ok">ຊຳລະແລ້ວ</span>';
+  if (s==='PENDING_VERIFICATION') return '<span class="pill warn">ລໍກວດ</span>';
+  if (s==='REFUNDED') return '<span class="pill mute">ຄືນເງິນ</span>';
+  return '<span class="pill bad">ຍັງບໍ່ຈ່າຍ</span>';
+}
+function ciPill(p){ return p.checkin_status==='CHECKED_IN' ? `<span class="pill ok">IN ${esc(fmtDT(p.checkin_time).split(', ')[1]||'')}</span>` : '<span style="color:var(--g6)">—</span>'; }
+const isCancelled = p => String(p.reg_status).toUpperCase()==='CANCELLED';
+const FILTERS = [
+  ['ALL','ທັງໝົດ', p => !isCancelled(p), 'var(--g6)'],
+  ['PENDING','ລໍກວດສະລິບ', p => !isCancelled(p) && p.payment_status==='PENDING_VERIFICATION', 'var(--warn)'],
+  ['UNPAID','ຍັງບໍ່ຈ່າຍ', p => !isCancelled(p) && !['PAID','PENDING_VERIFICATION'].includes(p.payment_status), 'var(--bad)'],
+  ['PAID','ຊຳລະແລ້ວ', p => !isCancelled(p) && p.payment_status==='PAID', 'var(--ok)'],
+  ['NOBIB','ບໍ່ມີ BIB', p => !isCancelled(p) && p.payment_status==='PAID' && !p.bib_number, 'var(--accent)'],
+  ['IN','Check-in ແລ້ວ', p => p.checkin_status==='CHECKED_IN', 'var(--ok)'],
+  ['CANCELLED','ຍົກເລີກ', isCancelled, 'var(--g6)'],
+];
+
+// ── load ──
+async function boot(){
+  $('loginScreen').hidden = true; $('app').hidden = false;
+  try {
+    const r = await get({ action:'evt.getEvents', admin:'1' });
+    events = (r.events||[]).filter(e => e.status !== 'DRAFT');
+    if (!events.length) { $('evSel').innerHTML='<option value="">ບໍ່ມີງານ</option>'; return; }
+    const want = new URLSearchParams(location.search).get('event_id') || store.get('sd_pt_event');
+    $('evSel').innerHTML = events.map(e => `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date?' · '+esc(e.event_date):''}</option>`).join('');
+    $('evSel').value = events.some(e=>e.event_id===want) ? want : events[events.length-1].event_id;
+    selectEvent($('evSel').value);
+  } catch(err){ toast('ໂຫຼດງານບໍ່ໄດ້: ' + err.message); }
+}
+$('evSel').addEventListener('change', e => selectEvent(e.target.value));
+async function selectEvent(id){
+  eventId = id; store.set('sd_pt_event', id);
+  $('ciLink').href = 'admin-events-checkin.html?event_id=' + encodeURIComponent(id);
+  closeDrawer();
+  try {
+    const ev = await get({ action:'evt.getEvent', event_id:id });
+    cats = ev.categories || [];
+  } catch(_) { cats = []; }
+  $('catSel').innerHTML = '<option value="">ທຸກລຸ້ນ</option>' + cats.map(c => `<option value="${esc(c.category_id)}">${esc(c.category_name)}</option>`).join('');
+  loadParticipants();
+}
+async function loadParticipants(){
+  $('tbody').innerHTML = '<tr><td colspan="8" class="empty">ກຳລັງໂຫຼດ…</td></tr>';
+  try {
+    const r = await post('evt.getParticipants', { event_id: eventId, full: true, export: true, limit: 5000 });
+    all = r.participants || [];
+    render();
+  } catch(err){ $('tbody').innerHTML = `<tr><td colspan="8" class="empty">${esc(err.message)}</td></tr>`; }
+}
+
+// ── filter + render ──
+function visible(){
+  const f = FILTERS.find(x => x[0]===filter)[2];
+  const q = $('q').value.trim().toLowerCase();
+  const cat = $('catSel').value;
+  return all.filter(p => f(p)
+    && (!cat || String(p.category_id)===cat)
+    && (!q || [p.first_name+' '+p.last_name, p.nickname, p.bib_number, p.phone, p.reg_number, p.email].join(' ').toLowerCase().includes(q)));
+}
+function render(){
+  $('chips').innerHTML = FILTERS.map(([k,l,fn,c]) =>
+    `<button class="chip" type="button" aria-pressed="${filter===k}" data-k="${k}"><span class="dot" style="background:${c}"></span>${l} <b>${all.filter(fn).length}</b></button>`).join('');
+  $('chips').querySelectorAll('.chip').forEach(b => b.onclick = () => { filter = b.dataset.k; render(); });
+  const list = visible();
+  $('countTxt').textContent = `ສະແດງ ${list.length} ຈາກ ${all.length} ລາຍການ`;
+  $('tbody').innerHTML = list.length ? list.map(p => `
+    <tr data-id="${esc(p.registration_id)}" class="${p.registration_id===selId?'sel':''}" tabindex="0">
+      <td class="bib">${esc(p.bib_number||'—')}</td>
+      <td class="nm"><b>${esc(p.first_name)} ${esc(p.last_name)}</b><small>${esc(p.reg_number)}${p.nickname?' · '+esc(p.nickname):''}</small></td>
+      <td>${esc(p.category_name)}</td>
+      <td class="col-hide">${esc(p.jersey_size||'-')}</td>
+      <td class="col-hide">${esc(p.phone)}</td>
+      <td class="col-hide num">${fmtK(p.total)}</td>
+      <td>${payPill(p)}</td>
+      <td>${ciPill(p)}</td>
+    </tr>`).join('') : '<tr><td colspan="8" class="empty">ບໍ່ມີລາຍການ</td></tr>';
+  $('tbody').querySelectorAll('tr[data-id]').forEach(tr => {
+    tr.onclick = () => openDrawer(tr.dataset.id);
+    tr.onkeydown = e => { if (e.key==='Enter') openDrawer(tr.dataset.id); };
+  });
+  renderSizes();
+}
+$('q').addEventListener('input', render);
+$('catSel').addEventListener('change', render);
+
+const SIZE_ORDER = ['XS','S','M','L','XL','2XL','XXL','3XL','XXXL','4XL'];
+function sizeSummary(){
+  const paid = all.filter(p => !isCancelled(p) && p.payment_status==='PAID');
+  const sizes = [...new Set(paid.map(p => String(p.jersey_size||'-').toUpperCase()))]
+    .sort((a,b) => (SIZE_ORDER.indexOf(a)+1||99) - (SIZE_ORDER.indexOf(b)+1||99));
+  const catNames = [...new Set(paid.map(p => p.category_name || '-'))];
+  const rows = catNames.map(c => ({ cat:c, n: sizes.map(s => paid.filter(p => (p.category_name||'-')===c && String(p.jersey_size||'-').toUpperCase()===s).length) }));
+  const tot = sizes.map((_,i) => rows.reduce((a,r)=>a+r.n[i],0));
+  return { sizes, rows, tot, total: paid.length };
+}
+function renderSizes(){
+  const s = sizeSummary();
+  if (!s.total) { $('sizeTbl').innerHTML = '<tr><td class="empty">ຍັງບໍ່ມີຜູ້ຊຳລະ</td></tr>'; return; }
+  $('sizeTbl').innerHTML = `<thead><tr><th>ລຸ້ນ</th>${s.sizes.map(z=>`<th>${esc(z)}</th>`).join('')}<th>ລວມ</th></tr></thead><tbody>`
+    + s.rows.map(r => `<tr style="cursor:default"><td>${esc(r.cat)}</td>${r.n.map(n=>`<td class="num" style="text-align:center">${n||'·'}</td>`).join('')}<td style="text-align:center;font-weight:800">${r.n.reduce((a,b)=>a+b,0)}</td></tr>`).join('')
+    + `<tr style="cursor:default;font-weight:900"><td>ລວມ</td>${s.tot.map(n=>`<td style="text-align:center">${n}</td>`).join('')}<td style="text-align:center">${s.total}</td></tr></tbody>`;
+}
+
+// ── drawer ──
+function closeDrawer(){ selId=null; $('drawer').hidden=true; $('scrim').hidden=true; document.querySelectorAll('tr.sel').forEach(t=>t.classList.remove('sel')); }
+document.addEventListener('keydown', e => { if (e.key==='Escape' && !$('drawer').hidden) closeDrawer(); });
+function openDrawer(id){
+  const p = all.find(x => x.registration_id===id); if (!p) return;
+  selId = id;
+  document.querySelectorAll('tr[data-id]').forEach(t => t.classList.toggle('sel', t.dataset.id===id));
+  const pay = p.payment, cancelled = isCancelled(p);
+  const proof = pay && pay.proof_image_id ? (String(pay.proof_image_id).startsWith('http') ? pay.proof_image_id : 'https://drive.google.com/file/d/' + encodeURIComponent(pay.proof_image_id) + '/view') : '';
+  const f = (k,l,type='text',full) => `<div class="field${full?' full':''}"><label for="f_${k}">${l}</label><input id="f_${k}" name="${k}" type="${type}" value="${esc(p[k]||'')}"></div>`;
+  $('drawer').innerHTML = `
+    <div class="dh">
+      <div class="bibbox"><small>BIB</small>${esc(p.bib_number||'—')}</div>
+      <h2>${esc(p.first_name)} ${esc(p.last_name)}<small>${esc(p.reg_number)} · ${esc(p.category_name)}${p.distance?' · '+esc(p.distance):''}</small></h2>
+      <button class="btn sm" type="button" onclick="closeDrawer()" aria-label="Close">✕</button>
+    </div>
+    <div class="db">
+      <div class="sec">
+        <h3>ສະຖານະ</h3>
+        <dl class="kv">
+          <dt>ການຊຳລະ</dt><dd>${payPill(p)}</dd>
+          <dt>Check-in</dt><dd>${p.checkin_status==='CHECKED_IN' ? `${esc(fmtDT(p.checkin_time))} · ${esc(p.checked_by||'')}` : 'ຍັງບໍ່'}</dd>
+          <dt>ຍອດ</dt><dd>₭ ${fmtK(p.total)}${Number(p.discount)?` (ສ່ວນຫຼຸດ ${fmtK(p.discount)})`:''}</dd>
+          <dt>ລົງທະບຽນ</dt><dd>${esc(fmtDT(p.reg_date))}</dd>
+        </dl>
+      </div>
+
+      ${pay ? `<div class="sec">
+        <h3>ການແຈ້ງຊຳລະລ່າສຸດ</h3>
+        <dl class="kv">
+          <dt>ຈຳນວນ</dt><dd>₭ ${fmtK(pay.amount)} ${Number(pay.amount)!==Number(p.total)?'<span class="pill bad">ບໍ່ກົງຍອດ</span>':''}</dd>
+          <dt>ວິທີ / ອ້າງອີງ</dt><dd>${esc(pay.method)} · ${esc(pay.reference||'-')}</dd>
+          <dt>ວັນທີ</dt><dd>${esc(fmtDT(pay.date))}</dd>
+          <dt>ສະລິບ</dt><dd>${proof ? `<a href="${esc(proof)}" target="_blank" rel="noopener" style="text-decoration:underline">ເປີດເບິ່ງສະລິບ</a>` : '-'}</dd>
+          ${pay.verified_by ? `<dt>ກວດໂດຍ</dt><dd>${esc(pay.verified_by)} · ${esc(fmtDT(pay.verified_at))}</dd>` : ''}
+        </dl>
+        ${pay.status==='PENDING_VERIFICATION' && !cancelled ? `
+          <div class="field" style="margin-top:10px"><label for="payNote">ໝາຍເຫດ (ຖ້າປະຕິເສດ ຕ້ອງໃສ່)</label><input id="payNote" maxlength="200"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn ok" type="button" onclick="verify('${esc(pay.payment_id)}','APPROVE')">ອະນຸມັດ + ອອກ BIB</button>
+            <button class="btn danger" type="button" onclick="verify('${esc(pay.payment_id)}','REJECT')">ປະຕິເສດ</button>
+          </div>` : ''}
+      </div>` : ''}
+
+      ${!cancelled && p.payment_status==='PAID' ? `<div class="sec">
+        <h3>ເລກ BIB</h3>
+        <form class="row" onsubmit="saveBib(event)">
+          <input id="bibIn" inputmode="numeric" pattern="[0-9]*" value="${esc(p.bib_number||'')}" style="height:38px;border:1px solid var(--g3);padding:0 10px;width:110px;background:var(--white);color:var(--ink);font-weight:800" aria-label="BIB">
+          <button class="btn" type="submit">ບັນທຶກ BIB</button>
+        </form>
+        <p class="note" style="margin-top:6px">ລະບົບກວດບໍ່ໃຫ້ BIB ຊ້ຳໃນງານດຽວກັນ</p>
+      </div>` : ''}
+
+      <form class="sec" id="editForm">
+        <h3>ຂໍ້ມູນຜູ້ແຂ່ງ <button class="btn sm primary" type="submit">ບັນທຶກ</button></h3>
+        <div class="grid2">
+          ${f('first_name','ຊື່')}${f('last_name','ນາມສະກຸນ')}
+          ${f('nickname','ຊື່ຫຼິ້ນ')}
+          <div class="field"><label for="f_gender">ເພດ</label><select id="f_gender" name="gender">${['','male','female','other'].map(g=>`<option ${String(p.gender).toLowerCase()===g?'selected':''} value="${g}">${{'':'-',male:'ຊາຍ',female:'ຍິງ',other:'ອື່ນໆ'}[g]}</option>`).join('')}</select></div>
+          ${f('date_of_birth','ວັນເກີດ','date')}${f('nationality','ສັນຊາດ')}
+          ${f('phone','ເບີໂທ','tel')}${f('email','Email','email')}
+          ${f('jersey_size','ຂະໜາດເສື້ອ')}${f('bike_wheel_size','ຂະໜາດລໍ້')}
+          ${f('bike_brand','ຍີ່ຫໍ້ລົດ')}${f('bike_model','ລຸ້ນລົດ')}
+          ${f('emergency_name','ຜູ້ຕິດຕໍ່ສຸກເສີນ')}${f('emergency_phone','ເບີສຸກເສີນ','tel')}
+          ${f('medical_note','ຂໍ້ມູນສຸຂະພາບ / ແພ້ຢາ','text',true)}
+          <div class="field full"><label for="f_notes">ໝາຍເຫດ (Admin)</label><textarea id="f_notes" name="notes" rows="2">${esc(p.notes||'')}</textarea></div>
+        </div>
+        <p class="note" style="margin-top:8px">ການແກ້ໄຂທຸກຄັ້ງບັນທຶກຄ່າເກົ່າ/ໃໝ່ໃນ Audit log</p>
+      </form>
+
+      ${!cancelled ? `<div class="sec">
+        <h3>ຍົກເລີກການລົງທະບຽນ</h3>
+        <button class="btn danger sm" type="button" onclick="this.nextElementSibling.hidden=false;this.hidden=true">ຍົກເລີກການລົງທະບຽນນີ້…</button>
+        <div class="confirm" hidden>
+          <b>ຢືນຢັນຍົກເລີກ ${esc(p.reg_number)}?</b>
+          <span>ສະຖານະຈະເປັນ “ຍົກເລີກ / ຄືນເງິນ” ແລະ ຄືນທີ່ນັ່ງໃຫ້ລຸ້ນ ${esc(p.category_name)} — ການຄືນເງິນຕົວຈິງຕ້ອງໂອນເອງ</span>
+          <div class="row"><button class="btn danger fill sm" type="button" onclick="cancelReg()">ຢືນຢັນຍົກເລີກ</button>
+          <button class="btn sm" type="button" onclick="this.closest('.confirm').hidden=true;this.closest('.sec').querySelector('button').hidden=false">ບໍ່</button></div>
+        </div>
+      </div>` : ''}
+    </div>`;
+  $('drawer').hidden = false; $('scrim').hidden = false;
+  $('editForm').onsubmit = saveEdit;
+}
+
+async function act(fn, okMsg){
+  try { await fn(); toast(okMsg); const keep = selId; await loadParticipants(); if (keep) openDrawer(keep); }
+  catch(err){ toast(err.message); }
+}
+function verify(payId, decision){
+  const note = ($('payNote')||{}).value || '';
+  if (decision==='REJECT' && !note.trim()) { toast('ໃສ່ເຫດຜົນທີ່ປະຕິເສດກ່ອນ'); $('payNote').focus(); return; }
+  act(() => post('evt.verifyPayment', { payment_id: payId, decision, note }), decision==='APPROVE' ? 'ອະນຸມັດແລ້ວ' : 'ປະຕິເສດແລ້ວ');
+}
+function saveBib(e){
+  e.preventDefault();
+  const bib = $('bibIn').value.trim();
+  if (!/^\d+$/.test(bib)) { toast('BIB ຕ້ອງເປັນຕົວເລກ'); return; }
+  act(() => post('evt.assignBib', { registration_id: selId, bib_number: bib }), 'ບັນທຶກ BIB ແລ້ວ');
+}
+function saveEdit(e){
+  e.preventDefault();
+  const fields = {};
+  new FormData($('editForm')).forEach((v,k) => { if (k!=='notes') fields[k] = v; });
+  const notes = $('f_notes').value;
+  act(() => post('evt.updateParticipant', { registration_id: selId, fields, notes }), 'ບັນທຶກແລ້ວ');
+}
+function cancelReg(){ act(() => post('evt.cancelRegistration', { registration_id: selId }), 'ຍົກເລີກແລ້ວ'); }
+
+// ── export ──
+const COLS = [
+  ['BIB','bib_number'],['ເລກລົງທະບຽນ','reg_number'],['ຊື່','first_name'],['ນາມສະກຸນ','last_name'],['ຊື່ຫຼິ້ນ','nickname'],
+  ['ເພດ','gender'],['ວັນເກີດ','date_of_birth'],['ສັນຊາດ','nationality'],['ລຸ້ນ','category_name'],['ໄລຍະ','distance'],
+  ['ເບີໂທ','phone'],['Email','email'],['ຂະໜາດເສື້ອ','jersey_size'],['ຍີ່ຫໍ້ລົດ','bike_brand'],['ລຸ້ນລົດ','bike_model'],['ຂະໜາດລໍ້','bike_wheel_size'],
+  ['ຜູ້ຕິດຕໍ່ສຸກເສີນ','emergency_name'],['ເບີສຸກເສີນ','emergency_phone'],['ສຸຂະພາບ','medical_note'],
+  ['ຍອດ (LAK)','total'],['ສະຖານະຊຳລະ','payment_status'],['ສະຖານະ','reg_status'],['Check-in','checkin_status'],['ເວລາ Check-in','checkin_time'],
+  ['ວັນລົງທະບຽນ','reg_date'],['ໝາຍເຫດ','notes'],
+];
+function evName(){ const e = events.find(x=>x.event_id===eventId); return e ? e.event_name : eventId; }
+function fileBase(){ const e = events.find(x=>x.event_id===eventId)||{}; return `${(e.event_code||'event')}_participants_${new Date().toISOString().slice(0,10)}`; }
+async function audit(format, rows){
+  await post('evt.logExport', { event_id: eventId, format, rows, filter: { status: filter, category: $('catSel').value, q: $('q').value.trim() } });
+}
+function rowsFor(list){ return list.map(p => COLS.map(([,k]) => k==='total' ? Number(p[k])||0 : (p[k] ?? ''))); }
+
+async function exportXlsx(){
+  const list = visible(); if (!list.length) return toast('ບໍ່ມີຂໍ້ມູນໃຫ້ Export');
+  if (!window.XLSX) return toast('ໂຫຼດ Excel library ບໍ່ສຳເລັດ — ລອງ CSV');
+  try { await audit('XLSX', list.length); } catch(err){ return toast(err.message); }
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([COLS.map(c=>c[0]), ...rowsFor(list)]);
+  ws['!cols'] = COLS.map(([h,k]) => ({ wch: ['first_name','last_name','email','emergency_name','medical_note','notes','category_name'].includes(k) ? 20 : 12 }));
+  ws['!freeze'] = { xSplit:0, ySplit:1 };
+  XLSX.utils.book_append_sheet(wb, ws, 'Participants');
+  const s = sizeSummary();
+  const ws2 = XLSX.utils.aoa_to_sheet([['ລຸ້ນ', ...s.sizes, 'ລວມ'], ...s.rows.map(r => [r.cat, ...r.n, r.n.reduce((a,b)=>a+b,0)]), ['ລວມ', ...s.tot, s.total]]);
+  XLSX.utils.book_append_sheet(wb, ws2, 'Jersey sizes');
+  XLSX.writeFile(wb, fileBase() + '.xlsx');
+  toast(`Export Excel ${list.length} ລາຍການ`);
+}
+async function exportCsv(){
+  const list = visible(); if (!list.length) return toast('ບໍ່ມີຂໍ້ມູນໃຫ້ Export');
+  try { await audit('CSV', list.length); } catch(err){ return toast(err.message); }
+  const q = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+  const csv = '﻿' + [COLS.map(c=>c[0]), ...rowsFor(list)].map(r => r.map(q).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+  a.download = fileBase() + '.csv'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast(`Export CSV ${list.length} ລາຍການ`);
+}
+// PDF = start list per category, via the browser's "Save as PDF"
+async function exportPdf(){
+  const list = visible().filter(p => !isCancelled(p) && p.payment_status==='PAID'); if (!list.length) return toast('ບໍ່ມີຜູ້ທີ່ຊຳລະແລ້ວໃນລາຍການນີ້');
+  try { await audit('PDF', list.length); } catch(err){ return toast(err.message); }
+  const e = events.find(x=>x.event_id===eventId)||{};
+  const groups = {};
+  list.forEach(p => (groups[p.category_name||'-'] = groups[p.category_name||'-'] || []).push(p));
+  $('printArea').innerHTML = `
+    <div class="pr-head"><h1>${esc(evName())}<br><span style="font-size:10pt;font-weight:600">ລາຍຊື່ຜູ້ແຂ່ງຂັນ (Start list)</span></h1>
+      <div>${esc(e.event_date||'')} ${esc(e.location||'')}<br>ພິມ ${esc(new Date().toLocaleString('en-GB'))} · ${list.length} ຄົນ</div></div>
+    ${Object.entries(groups).map(([c, ps]) => `<div class="pr-cat"><h2>${esc(c)} — ${ps.length} ຄົນ</h2>
+      <table><thead><tr><th>BIB</th><th>ຊື່ - ນາມສະກຸນ</th><th>ເພດ</th><th>ເສື້ອ</th><th>ເບີໂທ</th><th>ສຸກເສີນ</th><th>ລາຍເຊັນ</th></tr></thead><tbody>
+      ${ps.map(p => `<tr><td><b>${esc(p.bib_number||'—')}</b></td><td>${esc(p.first_name)} ${esc(p.last_name)}${p.nickname?' ('+esc(p.nickname)+')':''}</td>
+        <td>${esc({MALE:'ຊ',FEMALE:'ຍ'}[String(p.gender).toUpperCase()]||'')}</td><td>${esc(p.jersey_size||'')}</td><td>${esc(p.phone)}</td>
+        <td>${esc(p.emergency_phone||'')}</td><td class="sig"></td></tr>`).join('')}
+      </tbody></table></div>`).join('')}`;
+  setTimeout(() => window.print(), 50);
+}
+
+if (token) boot(); else $('loginScreen').hidden = false;
+</script>
+</body>
+</html>
