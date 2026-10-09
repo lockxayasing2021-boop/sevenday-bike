@@ -164,6 +164,7 @@ input,select,textarea{font:inherit}
     <a href="admin-events.html" class="top nav-link on">Events</a>
     <a href="admin-events-participants.html" class="top nav-link">ຜູ້ແຂ່ງ</a>
     <a href="admin-events-checkin.html" class="top nav-link">Check-in</a>
+    <a href="admin-events-results.html" class="top nav-link">ผลแข่ง</a>
     <button class="btn primary" onclick="openCreate()">+ New Event</button>
     <button class="btn" onclick="logout()" style="margin-left:4px">Logout</button>
   </div>
@@ -488,6 +489,7 @@ function renderDetail(ev) {
       <a href="admin-events-detail.html?event_id=${ev.event_id}" class="btn primary">✏ Edit Event</a>
       <a href="admin-events-detail.html?event_id=${ev.event_id}&tab=categories" class="btn">+ Categories</a>
       <a href="admin-events-checkin.html?event_id=${ev.event_id}" class="btn">📷 Check-in</a>
+      <a href="admin-events-results.html?event_id=${ev.event_id}" class="btn">🏁 ผลแข่ง</a>
     </div>
   `;
 }

@@ -585,6 +585,8 @@ function renderStatus(st){
   if (['REGISTRATION_OPEN','REGISTRATION_CLOSED','EVENT_FINISHED'].includes(st)) {
     const a = document.createElement('a'); a.className = 'btn sm accent'; a.textContent = '📲 Check-in';
     a.href = 'admin-events-checkin.html?event_id=' + encodeURIComponent(eventId); bar.appendChild(a);
+    const rs = document.createElement('a'); rs.className = 'btn sm'; rs.textContent = '🏁 ผลแข่ง';
+    rs.href = 'admin-events-results.html?event_id=' + encodeURIComponent(eventId); bar.appendChild(rs);
   }
 }
 async function setStatus(to){
@@ -680,7 +682,7 @@ function switchTab(name){
 function renderLinks(){
   const base = location.href.replace(/[^/]*$/, '');
   const q = 'event_id=' + encodeURIComponent(eventId);
-  const links = [['หน้าสมัคร (ส่งให้ลูกค้า)', 'events-register.html?' + q], ['ผู้แข่งขัน / ตรวจสลิป', 'admin-events-participants.html?' + q], ['Check-in', 'admin-events-checkin.html?' + q]];
+  const links = [['หน้าสมัคร (ส่งให้ลูกค้า)', 'events-register.html?' + q], ['ผู้แข่งขัน / ตรวจสลิป', 'admin-events-participants.html?' + q], ['Check-in', 'admin-events-checkin.html?' + q], ['บันทึกผลแข่ง', 'admin-events-results.html?' + q], ['หน้าผลแข่ง (สาธารณะ)', 'events-results.html?' + q]];
   $('quickLinks').innerHTML = links.map(([l, h]) => `<a href="${esc(h)}" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;font-size:13px;padding:10px 14px;border:1.5px solid var(--g3);background:var(--g1)">
     <b style="flex:1">${l}</b><span style="color:var(--g6);font-size:11px;word-break:break-all">${esc(base + h)}</span> ↗</a>`).join('');
 }

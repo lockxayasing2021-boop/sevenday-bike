@@ -54,6 +54,7 @@
     <h1>Events &amp; Rides</h1>
     <p>ງານແຂ່ງຂັນ, ປັ່ນກຸ່ມ ແລະ ກິດຈະກຳຂອງ Sevenday Bike — ສະໝັກ ແລະ ຊຳລະອອນລາຍໄດ້ເລີຍ.</p>
     <a class="mine" href="my-registrations.html">ເບິ່ງການສະໝັກຂອງຂ້ອຍ →</a>
+    <a class="mine" href="events-results.html" style="margin-left:20px">ຜົນການແຂ່ງຂັນ →</a>
   </div>
 </section>
 
@@ -102,7 +103,7 @@ function evCard(e){
   const state = finished ? 'CLOSED' : e.registration_state;
   const full = e.remaining === 0;
   const canReg = state === 'OPEN' && !full;
-  const label = finished ? 'ງານຈົບແລ້ວ' : full ? 'ເຕັມແລ້ວ' : STATE[state] || state;
+  const label = e.results_published ? 'ປະກາດຜົນແລ້ວ' : finished ? 'ງານຈົບແລ້ວ' : full ? 'ເຕັມແລ້ວ' : STATE[state] || state;
   const price = e.price_from === null ? '' : e.price_from === e.price_to
     ? (e.price_from ? evtKip(e.price_from) : 'ຟຣີ')
     : `${e.price_from ? evtKip(e.price_from) : 'ຟຣີ'} – ${evtKip(e.price_to)}`;
@@ -125,7 +126,9 @@ function evCard(e){
       <div class="ev-price">${price ? `<small>ຄ່າສະໝັກ</small><b>${price}</b>` : ''}</div>
       ${canReg && e.remaining !== null ? `<div class="ev-left">ເຫຼືອ ${e.remaining} ບ່ອນ</div>` : ''}
     </div>
-    <a class="btn ${canReg ? 'btn-black' : 'btn-line'}" href="${href}">${canReg ? 'ສະໝັກເລີຍ' : 'ເບິ່ງລາຍລະອຽດ'}</a>
+    ${e.results_published
+      ? `<a class="btn btn-black" href="events-results.html?event_id=${encodeURIComponent(e.event_id)}">ເບິ່ງຜົນການແຂ່ງຂັນ</a>`
+      : `<a class="btn ${canReg ? 'btn-black' : 'btn-line'}" href="${href}">${canReg ? 'ສະໝັກເລີຍ' : 'ເບິ່ງລາຍລະອຽດ'}</a>`}
   </article>`;
 }
 

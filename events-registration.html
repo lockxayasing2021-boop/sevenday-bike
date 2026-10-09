@@ -58,6 +58,10 @@
 .msg{padding:12px 14px;border-left:4px solid #B3141A;background:#FDECEC;color:#8A1014;margin:12px 0;font-size:14px}
 .find h1{font-size:26px;font-weight:900;margin-bottom:6px}
 .find p{color:var(--grey-600);margin-bottom:12px}
+.rq-res{display:flex;gap:28px;align-items:end;flex-wrap:wrap;padding:18px 20px;background:var(--black);color:var(--white)}
+.rq-res small{display:block;font-size:11px!important;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+.rq-res b{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
+.rq-res a{margin-left:auto;font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:4px}
 .sk{background:var(--grey-100);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.5}}
 @media(max-width:560px){
@@ -152,6 +156,7 @@ function render(){
         <div><small>ຄ່າສະໝັກ</small><b>${Number(r.total) ? evtKip(r.total) : 'ຟຣີ'}</b></div>
         <div><small>ໄຊສ໌ເສື້ອ</small><b>${evtEsc(p.jersey_size || '-')}</b></div>
       </div>
+      ${resBlock(r)}
       ${cancelled ? '<div class="qr"><p>ການລົງທະບຽນນີ້ຖືກຍົກເລີກແລ້ວ — ສອບຖາມໄດ້ທີ່ຮ້ານ 020 9884 4344</p></div>' : `
       <div class="qr">
         <div id="qr" role="img" aria-label="QR Check-in"></div>
@@ -168,6 +173,18 @@ function render(){
     </div>`;
   if (!cancelled && window.QRCode) new QRCode($('qr'), { text: r.qr_token, width: 440, height: 440, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
   if (r.can_pay) bindSlip();
+}
+
+function resBlock(r){
+  const x = r.result; if (!x) return '';
+  const fin = x.status === 'FINISHED';
+  const lbl = { DNF:'ບໍ່ຈົບ (DNF)', DNS:'ບໍ່ອອກຕົວ (DNS)', DSQ:'ຕັດສິດ (DSQ)' };
+  const link = 'events-results.html?event_id=' + encodeURIComponent(r.event_id || (r.event || {}).event_id || '') + (r.bib_number ? '&bib=' + encodeURIComponent(r.bib_number) : '');
+  return `<div class="rq-res">
+    <div><small>ຜົນການແຂ່ງຂັນ</small><b>${fin ? evtEsc(x.elapsed_time) : evtEsc(lbl[x.status] || x.status)}</b></div>
+    ${fin && x.category_rank ? `<div><small>ອັນດັບໃນລຸ້ນ</small><b>#${evtEsc(x.category_rank)}</b></div>` : ''}
+    <a href="${link}">ເບິ່ງຕາຕະລາງຜົນ →</a>
+  </div>`;
 }
 
 function payBox(r){

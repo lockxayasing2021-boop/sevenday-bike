@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ຜົນການແຂ່ງຂັນ — Sevenday Bike</title>
+<meta name="description" content="ຜົນການແຂ່ງຂັນ ແລະ ອັນດັບ ງານຂອງ Sevenday Bike ວຽງຈັນ">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Sevenday.css">
+<style>
+.rs-hero{background:var(--black);color:var(--white);padding:40px 0 32px}
+.rs-hero small{font-size:12px!important;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-300)}
+.rs-hero h1{font-size:clamp(26px,4.6vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-top:6px;text-wrap:balance}
+.rs-hero p{color:var(--grey-300);margin-top:8px}
+.rs-kpis{display:flex;gap:28px;flex-wrap:wrap;margin-top:20px}
+.rs-kpis b{display:block;font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.rs-kpis span{font-size:13px;color:var(--grey-300)}
+
+.rs-tabs{border-bottom:1px solid var(--grey-300);background:var(--white);position:sticky;top:76px;z-index:20}
+.rs-tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.rs-tabs .wrap::-webkit-scrollbar{display:none}
+.rs-tab{flex-shrink:0;padding:14px 16px;font-weight:700;font-size:14px;color:var(--grey-600);border-bottom:3px solid transparent}
+.rs-tab[aria-pressed="true"]{color:var(--black);border-bottom-color:var(--black)}
+
+.rs-main{padding:24px 0 72px}
+.rs-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.rs-tools input{flex:1 1 260px;height:46px;border:1.5px solid var(--grey-300);border-radius:8px;padding:0 14px;font:inherit;font-size:16px;background:var(--white);color:var(--ink)}
+.rs-tools input:focus{outline:none;border-color:var(--black)}
+.rs-seg{display:inline-flex;border:1.5px solid var(--grey-300);border-radius:8px;overflow:hidden;height:46px}
+.rs-seg button{padding:0 16px;font-weight:700;font-size:14px;color:var(--grey-600)}
+.rs-seg button[aria-pressed="true"]{background:var(--black);color:var(--white)}
+
+.rs-cat{margin-bottom:32px}
+.rs-cat h2{font-size:20px;font-weight:900;margin-bottom:10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.rs-cat h2 span{font-size:14px;font-weight:600;color:var(--grey-600)}
+.rs-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.rs-table th{text-align:left;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600);padding:10px 10px;border-bottom:2px solid var(--black)}
+.rs-table td{padding:12px 10px;border-bottom:1px solid var(--grey-100);vertical-align:middle}
+.rs-table tr.me td{background:#FFF6E5}
+.rs-rank{width:56px;font-size:20px;font-weight:900}
+.rs-rank.p1,.rs-rank.p2,.rs-rank.p3{font-size:0}
+.rs-rank.p1::after,.rs-rank.p2::after,.rs-rank.p3::after{font-size:15px;display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--black);color:var(--white)}
+.rs-rank.p1::after{content:"1"}.rs-rank.p2::after{content:"2"}.rs-rank.p3::after{content:"3"}
+.rs-bib{width:72px;font-weight:800}
+.rs-name b{display:block;font-weight:800}
+.rs-name small{font-size:13px!important;color:var(--grey-600)}
+.rs-table .rs-time{text-align:right;white-space:nowrap}
+.rs-time b{font-size:17px;font-weight:900}
+.rs-time small{display:block;font-size:12px!important;color:var(--grey-600)}
+.rs-st{display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px;border:1.5px solid currentColor;color:var(--grey-600)}
+.rs-st.DSQ{color:#B3141A}
+
+.rs-empty{text-align:center;padding:64px 16px;color:var(--grey-600)}
+.rs-empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+.rs-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.rs-ev{border:1px solid var(--grey-300);padding:18px;display:flex;flex-direction:column;gap:6px}
+.rs-ev:hover{border-color:var(--black)}
+.rs-ev b{font-size:18px;font-weight:900}
+.rs-ev span{font-size:14px;color:var(--grey-600)}
+.sk{background:var(--grey-100);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+@media(max-width:900px){.rs-tabs{top:64px}}
+@media(max-width:600px){
+  .rs-table th.hide-m,.rs-table td.hide-m{display:none}
+  .rs-rank{width:40px}.rs-bib{width:52px}
+  .rs-table td{padding:10px 6px}.rs-table th{padding:8px 6px}
+}
+</style>
+</head>
+<body>
+
+<section class="rs-hero">
+  <div class="wrap" id="hero">
+    <small>ຜົນການແຂ່ງຂັນ</small>
+    <h1>Results</h1>
+  </div>
+</section>
+
+<nav class="rs-tabs" aria-label="ລຸ້ນ" id="tabsNav" hidden>
+  <div class="wrap" id="tabs"></div>
+</nav>
+
+<main class="rs-main">
+  <div class="wrap" id="view">
+    <div class="sk" style="height:46px;margin-bottom:18px"></div>
+    <div class="sk" style="height:320px"></div>
+  </div>
+</main>
+
+<script>
+/* Events API — names prefixed so they don't clash with layout.js */
+const EVT_API = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_KEY = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+async function evtGet(params){
+  const r = await fetch(EVT_API + '?' + new URLSearchParams({ secret: EVT_KEY, ...params }));
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'API error');
+  return j.data;
+}
+const evtEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const EVT_MONTHS = ['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+const evtDate = ymd => { if (!ymd) return ''; const [y,m,d] = String(ymd).slice(0,10).split('-').map(Number); return `${d} ${EVT_MONTHS[m-1]} ${y}`; };
+const $ = id => document.getElementById(id);
+const RS_STATUS = { DNF:'ບໍ່ຈົບ (DNF)', DNS:'ບໍ່ອອກຕົວ (DNS)', DSQ:'ຕັດສິດ (DSQ)' };
+const GENDER = { male:'ຊາຍ', female:'ຍິງ' };
+
+const qs = new URLSearchParams(location.search);
+const eventId = qs.get('event_id') || '';
+const myBib = qs.get('bib') || '';
+let data = null, cat = '', gender = '', search = '';
+
+const secs = t => { const p = String(t || '').split(':').map(Number); if (p.some(isNaN) || !p.length) return null; return p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : p[0]*60 + (p[1] || 0); };
+const hms = s => { const h = Math.floor(s/3600), m = Math.floor(s%3600/60), x = s%60; return (h ? h + ':' + String(m).padStart(2,'0') : m) + ':' + String(x).padStart(2,'0'); };
+
+function renderHero(){
+  const e = data.event || {};
+  document.title = 'ຜົນ ' + (e.event_name || '') + ' — Sevenday Bike';
+  $('hero').innerHTML = `
+    <small>ຜົນການແຂ່ງຂັນ</small>
+    <h1>${evtEsc(e.event_name)}</h1>
+    <p>${evtEsc(evtDate(e.event_date))}${e.location ? ' · ' + evtEsc(e.location) : ''}</p>
+    ${data.published ? `<div class="rs-kpis">
+      <div><b>${data.finished || 0}</b><span>ເຂົ້າເສັ້ນໄຊ</span></div>
+      <div><b>${data.results.length}</b><span>ຜູ້ແຂ່ງທີ່ມີຜົນ</span></div>
+      <div><b>${data.categories.length}</b><span>ລຸ້ນ</span></div>
+    </div>` : ''}`;
+}
+
+function renderTabs(){
+  const cats = data.categories.filter(c => data.results.some(r => String(r.category_id) === String(c.category_id)));
+  if (cats.length < 2) { $('tabsNav').hidden = true; return; }
+  $('tabsNav').hidden = false;
+  $('tabs').innerHTML = [{ category_id:'', category_name:'ທຸກລຸ້ນ' }, ...cats].map(c =>
+    `<button class="rs-tab" type="button" data-c="${evtEsc(c.category_id)}" aria-pressed="${String(c.category_id) === cat}">${evtEsc(c.category_name)}</button>`).join('');
+  document.querySelectorAll('.rs-tab').forEach(b => b.onclick = () => { cat = b.dataset.c; renderTabs(); renderTable(); });
+}
+
+function rowMatch(r){
+  if (cat && String(r.category_id) !== cat) return false;
+  if (gender && r.gender !== gender) return false;
+  const q = search.trim().toLowerCase();
+  if (!q) return true;
+  return (r.first_name + ' ' + r.last_name + ' ' + (r.nickname || '')).toLowerCase().includes(q)
+    || String(r.bib_number) === q || String(r.reg_number).toLowerCase() === q;
+}
+
+function renderTable(){
+  const box = $('rows');
+  const groups = data.categories.map(c => {
+    const all = data.results.filter(r => String(r.category_id) === String(c.category_id));
+    const lead = all.filter(r => r.status === 'FINISHED').map(r => secs(r.elapsed_time)).filter(x => x !== null).sort((a,b) => a-b)[0];
+    return { c, lead, rows: all.filter(rowMatch) };
+  }).filter(g => g.rows.length);
+  if (!groups.length) { box.innerHTML = '<div class="rs-empty"><b>ບໍ່ພົບຜູ້ແຂ່ງ</b>ລອງຄົ້ນຫາດ້ວຍຊື່ ຫຼື ເລກ BIB ອື່ນ</div>'; return; }
+  box.innerHTML = groups.map(({ c, lead, rows }) => `
+    <section class="rs-cat">
+      <h2>${evtEsc(c.category_name)}${c.distance ? `<span>${evtEsc(c.distance)}</span>` : ''}</h2>
+      <table class="rs-table">
+        <thead><tr><th>ອັນດັບ</th><th>BIB</th><th>ຊື່</th><th class="hide-m">ເພດ</th><th class="rs-time">ເວລາ</th></tr></thead>
+        <tbody>${rows.map(r => {
+          const fin = r.status === 'FINISHED', s = fin ? secs(r.elapsed_time) : null;
+          const gap = fin && lead !== undefined && s !== null && s > lead ? '+' + hms(s - lead) : '';
+          const rk = fin ? r.category_rank : '';
+          const me = myBib && String(r.bib_number) === myBib;
+          return `<tr class="${me ? 'me' : ''}">
+            <td class="rs-rank ${rk && rk <= 3 ? 'p' + rk : ''}">${fin ? evtEsc(rk) : '–'}</td>
+            <td class="rs-bib">${evtEsc(r.bib_number)}</td>
+            <td class="rs-name"><b>${evtEsc(r.first_name)} ${evtEsc(r.last_name)}</b>${r.nickname ? `<small>${evtEsc(r.nickname)}</small>` : ''}</td>
+            <td class="hide-m">${evtEsc(GENDER[r.gender] || '')}${fin && r.gender_rank ? ` <small style="color:var(--grey-600)">#${evtEsc(r.gender_rank)}</small>` : ''}</td>
+            <td class="rs-time">${fin ? `<b>${evtEsc(r.elapsed_time)}</b>${gap ? `<small>${gap}</small>` : ''}` : `<span class="rs-st ${evtEsc(r.status)}">${evtEsc(RS_STATUS[r.status] || r.status)}</span>`}</td>
+          </tr>`; }).join('')}</tbody>
+      </table>
+    </section>`).join('');
+}
+
+function renderBody(){
+  if (!data.published) {
+    $('view').innerHTML = `<div class="rs-empty"><b>ຍັງບໍ່ປະກາດຜົນ</b>ຜົນຂອງງານນີ້ຈະປະກາດຫຼັງຈາກທີມງານກວດສອບແລ້ວ<br><br><a class="btn btn-black" href="events.html">ກັບໄປໜ້າ Events</a></div>`;
+    return;
+  }
+  const hasG = data.results.some(r => r.gender);
+  $('view').innerHTML = `
+    <div class="rs-tools">
+      <input id="q" type="search" placeholder="ຄົ້ນຫາ ຊື່ ຫຼື ເລກ BIB" value="${evtEsc(search)}" autocomplete="off">
+      ${hasG ? `<div class="rs-seg" role="group" aria-label="ເພດ">
+        <button type="button" data-g="" aria-pressed="true">ທັງໝົດ</button>
+        <button type="button" data-g="male" aria-pressed="false">ຊາຍ</button>
+        <button type="button" data-g="female" aria-pressed="false">ຍິງ</button>
+      </div>` : ''}
+    </div>
+    <div id="rows"></div>`;
+  $('q').oninput = e => { search = e.target.value; renderTable(); };
+  document.querySelectorAll('.rs-seg button').forEach(b => b.onclick = () => {
+    gender = b.dataset.g;
+    document.querySelectorAll('.rs-seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    renderTable();
+  });
+  renderTabs(); renderTable();
+  const me = document.querySelector('tr.me'); if (me) me.scrollIntoView({ block: 'center' });
+}
+
+async function eventChooser(){
+  const list = ((await evtGet({ action: 'evt.getEvents' })).events || []).filter(e => e.results_published)
+    .sort((a,b) => String(b.event_date).localeCompare(String(a.event_date)));
+  $('view').innerHTML = list.length ? `<div class="rs-list">${list.map(e => `
+      <a class="rs-ev" href="events-results.html?event_id=${encodeURIComponent(e.event_id)}">
+        <b>${evtEsc(e.event_name)}</b><span>${evtEsc(evtDate(e.event_date))}${e.location ? ' · ' + evtEsc(e.location) : ''}</span>
+        <span style="color:var(--ink);font-weight:700;text-decoration:underline">ເບິ່ງຜົນ →</span>
+      </a>`).join('')}</div>`
+    : '<div class="rs-empty"><b>ຍັງບໍ່ມີຜົນການແຂ່ງຂັນ</b><a href="events.html" style="text-decoration:underline">ເບິ່ງງານທີ່ກຳລັງຈະມາ</a></div>';
+}
+
+(async function(){
+  try {
+    if (!eventId) return await eventChooser();
+    data = await evtGet({ action: 'evt.getResults', event_id: eventId });
+    data.results = data.results || []; data.categories = data.categories || [];
+    renderHero(); renderBody();
+  } catch (err) {
+    $('view').innerHTML = `<div class="rs-empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b>${evtEsc(err.message)}<br><br><button class="btn btn-black" type="button" onclick="location.reload()">ລອງໃໝ່</button></div>`;
+  }
+})();
+</script>
+<script src="layout.js"></script>
+</body>
+</html>

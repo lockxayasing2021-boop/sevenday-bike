@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Sevenday Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Finish-line results desk: entry on the left, live ranking on the right. Same tokens as other admin pages. */
+:root{
+  --black:#000; --ink:#1C1C1C; --g9:#2B2B2B; --g6:#6E6E6E; --g3:#D4D4D4; --g1:#F3F3F3; --white:#fff;
+  --accent:#FF3B00; --ok:#0F8A4C; --ok-bg:#E7F6EE; --warn:#B86E00; --warn-bg:#FFF4DF; --bad:#C4161C; --bad-bg:#FDECEC;
+  --font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A; --g1:#1A1A1A; --white:#111;
+    --ok:#3DD68C; --ok-bg:#0E2A1C; --warn:#FFB547; --warn-bg:#2E2008; --bad:#FF6B6B; --bad-bg:#2E1010; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --black:#fff; --ink:#ECECEC; --g9:#D0D0D0; --g6:#909090; --g3:#3A3A3A; --g1:#1A1A1A; --white:#111;
+  --ok:#3DD68C; --ok-bg:#0E2A1C; --warn:#FFB547; --warn-bg:#2E2008; --bad:#FF6B6B; --bad-bg:#2E1010; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--white)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 14px;font-weight:700;font-size:13px;border:2px solid var(--black);background:var(--white);color:var(--ink);white-space:nowrap}
+.btn.primary{background:var(--black);color:var(--white)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.sm{height:30px;padding:0 10px;font-size:12px;border-width:1px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.top{background:#000;color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .in{max-width:1400px;margin:0 auto;padding:0 16px;height:54px;display:flex;align-items:center;gap:10px}
+.top .mark{width:30px;height:30px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:14px;flex-shrink:0}
+.top .crumb{font-size:13px;color:rgba(255,255,255,.55);display:flex;gap:6px;align-items:center;flex:1;min-width:0;white-space:nowrap;overflow:hidden}
+.top .crumb b{color:#fff;font-weight:800}
+.top .tb{height:32px;padding:0 12px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.35);color:#fff;display:inline-flex;align-items:center}
+
+.wrap{max-width:1400px;margin:0 auto;padding:16px 16px 60px}
+.head{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6)}
+.field select,.field input{height:40px;border:1px solid var(--g3);padding:0 10px;min-width:0;width:100%}
+.head .grow{flex:1 1 280px}
+
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.6fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--white);border:1px solid var(--g3);padding:12px 14px}
+.kpi b{display:block;font-size:26px;font-weight:900;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:12px;color:var(--g6);font-weight:600}
+.pub{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
+.pub .st{font-weight:800}
+.pub .st.on{color:var(--ok)}
+
+.layout{display:grid;grid-template-columns:420px minmax(0,1fr);gap:14px;align-items:start}
+.card{background:var(--white);border:1px solid var(--g3)}
+.card + .card{margin-top:14px}
+.card h2{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:12px 14px;border-bottom:1px solid var(--g3);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card .bd{padding:14px}
+
+.starts{display:flex;flex-direction:column;gap:8px}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:10px;align-items:center}
+.srow b{font-weight:800}
+.srow small{display:block;color:var(--g6);font-size:12px}
+.srow input{height:38px;border:1px solid var(--g3);padding:0 10px;font-variant-numeric:tabular-nums;text-align:center;font-weight:700}
+
+.mode{display:flex;border:2px solid var(--black);margin-bottom:12px}
+.mode button{flex:1;height:36px;font-weight:800;font-size:13px}
+.mode button[aria-pressed="true"]{background:var(--black);color:var(--white)}
+.entry{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px}
+.entry input,.entry select{height:52px;border:2px solid var(--black);padding:0 12px;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;min-width:0}
+.entry select{font-size:15px}
+.entry .full{grid-column:1/-1}
+.entry .row{grid-column:1/-1;display:flex;gap:8px}
+.entry .row .btn{flex:1;height:48px;font-size:14px}
+.help{font-size:12px;color:var(--g6);margin-top:8px}
+.who{min-height:22px;font-size:13px;font-weight:700;margin-top:8px}
+.who.bad{color:var(--bad)}
+
+.feed{max-height:220px;overflow:auto;border-top:1px solid var(--g1)}
+.fi{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--g1);font-size:13px}
+.fi b{font-weight:900;font-variant-numeric:tabular-nums}
+.fi .msg{color:var(--g6);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi.err .msg{color:var(--bad)} .fi.warn .msg{color:var(--warn)}
+textarea{width:100%;min-height:120px;border:1px solid var(--g3);padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:13px;resize:vertical}
+
+.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:10px 14px 0}
+.tab{height:32px;padding:0 12px;border:1px solid var(--g3);font-weight:700;font-size:12px}
+.tab[aria-pressed="true"]{background:var(--black);color:var(--white);border-color:var(--black)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--g6);padding:10px 12px;border-bottom:1px solid var(--g3);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--g1);vertical-align:middle}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+td.rk{font-weight:900;font-size:16px;width:52px}
+td.bib{font-weight:800;font-variant-numeric:tabular-nums}
+td.t{font-weight:800;font-variant-numeric:tabular-nums}
+td small{color:var(--g6);font-size:12px}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border:1px solid currentColor}
+.pill.bad{color:var(--bad)} .pill.warn{color:var(--warn)} .pill.mute{color:var(--g6)}
+.empty{padding:36px 16px;text-align:center;color:var(--g6)}
+details summary{cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,80px);background:var(--black);color:var(--white);padding:11px 20px;font-weight:600;font-size:13px;transition:transform .22s;z-index:99;visibility:hidden;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.login{min-height:100vh;background:#000;display:grid;place-items:center;padding:20px}
+.login form{background:var(--white);padding:32px;width:min(400px,100%);display:flex;flex-direction:column;gap:12px}
+.login h1{font-size:24px;font-weight:900}
+.login input{height:48px;border:1px solid var(--g3);padding:0 14px;font-size:16px}
+.msg-err{background:var(--bad-bg);border-left:3px solid var(--bad);padding:8px 12px;font-size:13px;color:var(--bad)}
+@media(max-width:1000px){ .layout{grid-template-columns:1fr} .strip{grid-template-columns:repeat(3,minmax(0,1fr))} .strip .pub{grid-column:1/-1} }
+@media(max-width:560px){ .col-x{display:none} .top .crumb .hide-sm{display:none} }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login" hidden>
+  <form id="loginForm">
+    <div style="width:40px;height:40px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px">S</div>
+    <h1>Admin Login</h1>
+    <p style="color:var(--g6);font-size:14px;margin-top:-6px">Sevenday Events · ผลการแข่งขัน</p>
+    <div id="loginMsg"></div>
+    <input id="loginPass" type="password" placeholder="Admin Password" autocomplete="current-password" required>
+    <button class="btn primary" type="submit" style="height:48px">เข้าสู่ระบบ</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <div class="top"><div class="in">
+    <div class="mark">S</div>
+    <div class="crumb"><a href="admin-events.html" class="hide-sm">Events</a><span class="hide-sm">/</span><b>ผลการแข่งขัน</b></div>
+    <a class="tb" id="lnkPart" href="admin-events-participants.html">ผู้แข่ง</a>
+    <a class="tb" id="lnkCi" href="admin-events-checkin.html">Check-in</a>
+    <button class="tb" type="button" onclick="logout()">Logout</button>
+  </div></div>
+
+  <div class="wrap">
+    <div class="head">
+      <div class="field grow"><label for="evSel">งาน</label><select id="evSel"><option>กำลังโหลด…</option></select></div>
+      <button class="btn" type="button" onclick="exportXlsx()">Excel</button>
+      <button class="btn" type="button" onclick="exportCsv()">CSV</button>
+    </div>
+
+    <div class="strip">
+      <div class="kpi"><b id="kFin">0</b><span>เข้าเส้นชัย</span></div>
+      <div class="kpi"><b id="kOut">0</b><span>DNF / DNS / DSQ</span></div>
+      <div class="kpi"><b id="kMiss">0</b><span>ยังไม่มีผล</span></div>
+      <div class="kpi pub">
+        <div><span>หน้าผลสาธารณะ</span><div class="st" id="pubSt">ยังไม่ประกาศ</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <a class="btn sm" id="pubLink" href="events-results.html" target="_blank" rel="noopener">เปิดหน้าผล ↗</a>
+          <button class="btn sm primary" id="pubBtn" type="button" onclick="togglePublish()">ประกาศผล</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section>
+        <div class="card">
+          <h2>เวลาปล่อยตัว (Gun time) <button class="btn sm" type="button" onclick="saveStarts()">บันทึก</button></h2>
+          <div class="bd"><div class="starts" id="starts"></div>
+            <p class="help">ใช้คำนวณเวลาที่ใช้ เมื่อบันทึกเป็น “เวลาเข้าเส้นชัย” — รูปแบบ ชม:นาที:วินาที เช่น 07:00:00</p></div>
+        </div>
+
+        <div class="card">
+          <h2>บันทึกผล</h2>
+          <div class="bd">
+            <div class="mode" role="group" aria-label="รูปแบบเวลา">
+              <button type="button" id="mClock" aria-pressed="true" onclick="setMode('clock')">เวลาเข้าเส้นชัย</button>
+              <button type="button" id="mElapsed" aria-pressed="false" onclick="setMode('elapsed')">เวลาที่ใช้</button>
+            </div>
+            <form class="entry" id="entryForm" autocomplete="off">
+              <input id="bib" inputmode="numeric" placeholder="BIB" aria-label="BIB">
+              <input id="time" inputmode="numeric" placeholder="09:12:45" aria-label="เวลา">
+              <select id="status" class="full" aria-label="สถานะ">
+                <option value="FINISHED">เข้าเส้นชัย (FINISHED)</option>
+                <option value="DNF">DNF — ไม่จบการแข่งขัน</option>
+                <option value="DNS">DNS — ไม่ได้ออกตัว</option>
+                <option value="DSQ">DSQ — ถูกตัดสิทธิ์</option>
+              </select>
+              <div class="row">
+                <button class="btn" type="button" id="nowBtn" onclick="saveNow()">เข้าเส้นตอนนี้</button>
+                <button class="btn primary" type="submit">บันทึก (Enter)</button>
+              </div>
+            </form>
+            <div class="who" id="who"></div>
+            <p class="help">พิมพ์ BIB → Enter → พิมพ์เวลา → Enter. “เข้าเส้นตอนนี้” ใช้เวลานาฬิกาของเครื่องนี้ทันที. บันทึก BIB เดิมซ้ำ = แก้ไขผล</p>
+          </div>
+          <div class="feed" id="feed"></div>
+        </div>
+
+        <div class="card">
+          <details>
+            <summary><h2>วางผลหลายรายการ <span class="btn sm">เปิด</span></h2></summary>
+            <div class="bd">
+              <textarea id="bulk" placeholder="1 09:12:45&#10;2 09:15:02&#10;7 DNF&#10;12 DNS"></textarea>
+              <p class="help">1 บรรทัด = BIB ตามด้วยเวลา หรือ DNF / DNS / DSQ — ใช้รูปแบบเวลาตามที่เลือกด้านบน (วางจาก Excel ได้)</p>
+              <button class="btn primary" type="button" style="margin-top:8px;width:100%" onclick="saveBulk()">บันทึกทั้งหมด</button>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section>
+        <div class="card">
+          <h2>ผลการแข่งขัน <button class="btn sm" type="button" onclick="loadResults()">โหลดใหม่</button></h2>
+          <div class="tabs" id="tabs"></div>
+          <div class="tbl"><table>
+            <thead><tr><th>อันดับ</th><th>BIB</th><th>ชื่อ</th><th class="col-x">เพศ</th><th>เวลา</th><th class="col-x">เข้าเส้น</th><th></th></tr></thead>
+            <tbody id="tbody"><tr><td colspan="7" class="empty">กำลังโหลด…</td></tr></tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <h2>ยังไม่มีผล <span id="missCount" style="font-weight:600;color:var(--g6)"></span></h2>
+          <div class="tbl"><table><tbody id="missing"></tbody></table></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
+let token = sessionStorage.getItem('sd_admin') || '';
+let events = [], eventId = '', data = { results: [], missing: [], categories: [] }, cat = '', mode = 'clock';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = { get(k){ try { return localStorage.getItem(k) || ''; } catch(_) { return ''; } }, set(k,v){ try { localStorage.setItem(k, v); } catch(_) {} } };
+function toast(m){ const el = $('toast'); el.textContent = m; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2800); }
+
+async function post(action, d){
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, secret: API_SECRET, token, admin_id: 'results-desk', ...d }) });
+  const j = await r.json();
+  if (!j.ok) { if (String(j.error).includes('ADMIN_AUTH')) { logout(); throw new Error('Session หมดอายุ — เข้าสู่ระบบใหม่'); } throw new Error(j.error || 'API error'); }
+  return j.data;
+}
+async function get(params){
+  const r = await fetch(API_URL + '?' + new URLSearchParams({ secret: API_SECRET, ...params }));
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || 'API error'); return j.data;
+}
+
+// ── auth ──
+function logout(){ sessionStorage.removeItem('sd_admin'); token = ''; $('app').hidden = true; $('loginScreen').hidden = false; }
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault(); $('loginMsg').innerHTML = '';
+  try { const r = await post('adminLogin', { password: $('loginPass').value }); if (!r.token) throw new Error(r.error || 'รหัสผ่านไม่ถูกต้อง'); token = r.token; sessionStorage.setItem('sd_admin', token); boot(); }
+  catch (err) { $('loginMsg').innerHTML = `<div class="msg-err">${esc(err.message)}</div>`; }
+});
+
+// ── events ──
+async function boot(){
+  $('loginScreen').hidden = true; $('app').hidden = false;
+  try {
+    events = ((await get({ action: 'evt.getEvents', admin: '1' })).events || []).filter(e => !['DRAFT','CANCELLED'].includes(e.status));
+    if (!events.length) { $('evSel').innerHTML = '<option value="">ไม่มีงาน</option>'; return; }
+    const want = new URLSearchParams(location.search).get('event_id') || store.get('sd_res_event');
+    const today = new Date().toISOString().slice(0, 10);
+    const near = [...events].reverse().find(e => (e.event_date || '') <= today) || events[0];
+    $('evSel').innerHTML = events.map(e => `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date ? ' · ' + esc(e.event_date) : ''}</option>`).join('');
+    $('evSel').value = events.some(e => e.event_id === want) ? want : near.event_id;
+    selectEvent($('evSel').value);
+  } catch (err) { toast('โหลดงานไม่ได้: ' + err.message); }
+}
+$('evSel').addEventListener('change', e => selectEvent(e.target.value));
+function selectEvent(id){
+  eventId = id; store.set('sd_res_event', id); cat = '';
+  const q = '?event_id=' + encodeURIComponent(id);
+  $('lnkPart').href = 'admin-events-participants.html' + q; $('lnkCi').href = 'admin-events-checkin.html' + q;
+  $('pubLink').href = 'events-results.html' + q;
+  $('feed').innerHTML = '';
+  loadResults();
+}
+async function loadResults(){
+  try {
+    data = await get({ action: 'evt.getResults', event_id: eventId, token });
+    render();
+  } catch (err) { $('tbody').innerHTML = `<tr><td colspan="7" class="empty">${esc(err.message)}</td></tr>`; }
+}
+
+// ── render ──
+function render(){
+  const res = data.results || [];
+  $('kFin').textContent = res.filter(r => r.status === 'FINISHED').length;
+  $('kOut').textContent = res.filter(r => r.status !== 'FINISHED').length;
+  $('kMiss').textContent = (data.missing || []).length;
+  $('pubSt').textContent = data.published ? 'ประกาศแล้ว — ทุกคนเห็น' : 'ยังไม่ประกาศ (เห็นเฉพาะแอดมิน)';
+  $('pubSt').className = 'st' + (data.published ? ' on' : '');
+  $('pubBtn').textContent = data.published ? 'ซ่อนผล' : 'ประกาศผล';
+  $('pubBtn').className = 'btn sm ' + (data.published ? '' : 'primary');
+  // start times
+  $('starts').innerHTML = (data.categories || []).map(c => `<div class="srow">
+      <div><b>${esc(c.category_name)}</b><small>${esc(c.distance || '')}</small></div>
+      <input data-cat="${esc(c.category_id)}" value="${esc(c.start_time || '')}" placeholder="07:00:00" inputmode="numeric" aria-label="เวลาปล่อยตัว ${esc(c.category_name)}">
+    </div>`).join('') || '<div class="empty">ยังไม่มีหมวดหมู่</div>';
+  // tabs
+  const cats = data.categories || [];
+  if (cat && !cats.some(c => c.category_id === cat)) cat = '';
+  if (!cat && cats.length) cat = cats[0].category_id;
+  $('tabs').innerHTML = cats.map(c => `<button class="tab" type="button" data-c="${esc(c.category_id)}" aria-pressed="${c.category_id === cat}">${esc(c.category_name)} · ${res.filter(r => r.category_id === c.category_id).length}</button>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(b => b.onclick = () => { cat = b.dataset.c; render(); });
+  const list = res.filter(r => r.category_id === cat);
+  const lead = list.find(r => r.status === 'FINISHED');
+  const leadS = lead ? secs(lead.elapsed_time) : 0;
+  $('tbody').innerHTML = list.length ? list.map(r => {
+    const fin = r.status === 'FINISHED';
+    const gap = fin && r !== lead && r.category_rank !== lead.category_rank ? '+' + hms(secs(r.elapsed_time) - leadS) : '';
+    return `<tr>
+      <td class="rk">${fin ? esc(r.category_rank) : `<span class="pill ${r.status === 'DSQ' ? 'bad' : 'mute'}">${esc(r.status)}</span>`}</td>
+      <td class="bib">${esc(r.bib_number)}</td>
+      <td>${esc(r.first_name)} ${esc(r.last_name)}${r.nickname ? ` <small>(${esc(r.nickname)})</small>` : ''}</td>
+      <td class="n col-x">${r.gender === 'male' ? 'ช' : r.gender === 'female' ? 'ญ' : '-'}${r.gender_rank ? ` <small>#${r.gender_rank}</small>` : ''}</td>
+      <td class="t">${fin ? esc(r.elapsed_time) : '—'}${gap ? `<br><small>${gap}</small>` : ''}</td>
+      <td class="n col-x"><small>${esc(r.finish_time || '')}</small></td>
+      <td><div style="display:flex;gap:4px"><button class="btn sm" type="button" data-edit="${esc(r.bib_number)}">แก้</button><button class="btn sm" type="button" data-del="${esc(r.registration_id)}" data-bib="${esc(r.bib_number)}">ลบ</button></div></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7" class="empty">ยังไม่มีผลในหมวดนี้</td></tr>';
+  $('tbody').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editBib(b.dataset.edit));
+  $('tbody').querySelectorAll('[data-del]').forEach(b => b.onclick = () => delResult(b));
+  // missing
+  const miss = data.missing || [];
+  $('missCount').textContent = miss.length ? `(${miss.length})` : '';
+  $('missing').innerHTML = miss.length ? miss.map(m => `<tr>
+      <td class="bib" style="width:60px">${esc(m.bib_number || '—')}</td>
+      <td>${esc(m.first_name)} ${esc(m.last_name)}<br><small>${esc(m.category_name)}</small></td>
+      <td>${m.checked_in ? '<span class="pill warn">Check-in แล้ว</span>' : '<span class="pill mute">ไม่ได้ Check-in</span>'}</td>
+      <td style="text-align:right"><button class="btn sm" type="button" data-dns="${esc(m.bib_number)}">${m.checked_in ? 'DNF' : 'DNS'}</button></td>
+    </tr>`).join('') : '<tr><td class="empty">ทุกคนมีผลแล้ว</td></tr>';
+  $('missing').querySelectorAll('[data-dns]').forEach(b => b.onclick = () => enqueue([{ bib_number: b.dataset.dns, status: b.textContent.trim() }]));
+}
+
+// ── time helpers ──
+function secs(t){ const p = String(t || '').split(':').map(Number); return p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : p.length === 2 ? p[0]*60 + p[1] : 0; }
+function hms(s){ s = Math.max(0, s); const h = Math.floor(s/3600), m = Math.floor(s%3600/60), x = s%60; return (h ? h + ':' + String(m).padStart(2,'0') : m) + ':' + String(x).padStart(2,'0'); }
+// "091245" → "09:12:45" so staff can type digits only
+function normTime(v){
+  v = String(v || '').trim().replace(/[.\s]/g, ':');
+  if (/^\d{5,6}$/.test(v)) v = v.padStart(6, '0').replace(/(\d\d)(\d\d)(\d\d)/, '$1:$2:$3');
+  else if (/^\d{3,4}$/.test(v)) v = v.padStart(4, '0').replace(/(\d\d)(\d\d)/, mode === 'clock' ? '$1:$2:00' : '$1:$2');
+  return v;
+}
+function setMode(m){
+  mode = m; store.set('sd_res_mode', m);
+  $('mClock').setAttribute('aria-pressed', m === 'clock'); $('mElapsed').setAttribute('aria-pressed', m === 'elapsed');
+  $('time').placeholder = m === 'clock' ? '09:12:45' : '2:12:45';
+  $('nowBtn').hidden = m !== 'clock';
+}
+setMode(store.get('sd_res_mode') || 'clock');
+
+// ── entry ──
+function lookupBib(b){
+  const r = (data.results || []).find(x => String(x.bib_number) === String(b));
+  if (r) return { name: `${r.first_name} ${r.last_name}`, cat: r.category_name, had: r.status === 'FINISHED' ? r.elapsed_time : r.status };
+  const m = (data.missing || []).find(x => String(x.bib_number) === String(b));
+  return m ? { name: `${m.first_name} ${m.last_name}`, cat: m.category_name } : null;
+}
+$('bib').addEventListener('input', () => {
+  const b = $('bib').value.trim(), w = lookupBib(b);
+  $('who').className = 'who' + (b && !w ? ' bad' : '');
+  $('who').textContent = !b ? '' : w ? `${w.name} · ${w.cat}${w.had ? ' — มีผลแล้ว (' + w.had + ') จะถูกแก้ไข' : ''}` : 'ไม่พบ BIB นี้ (หรือยังไม่ได้ชำระ)';
+});
+$('bib').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); ($('status').value === 'FINISHED' ? $('time') : $('entryForm').requestSubmit()) && $('time').focus(); } });
+$('entryForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const bib = $('bib').value.trim(), st = $('status').value;
+  if (!bib) return $('bib').focus();
+  const item = { bib_number: bib, status: st };
+  if (st === 'FINISHED') {
+    const t = normTime($('time').value);
+    if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) { toast('ใส่เวลาให้ถูก เช่น 09:12:45'); return $('time').focus(); }
+    item[mode === 'clock' ? 'finish_time' : 'elapsed_time'] = t;
+  }
+  enqueue([item]); clearEntry();
+});
+function saveNow(){
+  const bib = $('bib').value.trim(); if (!bib) { toast('ใส่ BIB ก่อน'); return $('bib').focus(); }
+  const d = new Date(), t = [d.getHours(), d.getMinutes(), d.getSeconds()].map(x => String(x).padStart(2, '0')).join(':');
+  enqueue([{ bib_number: bib, status: 'FINISHED', finish_time: t }]); clearEntry();
+}
+function clearEntry(){ $('bib').value = ''; $('time').value = ''; $('status').value = 'FINISHED'; $('who').textContent = ''; $('bib').focus(); }
+function editBib(b){
+  const r = (data.results || []).find(x => String(x.bib_number) === String(b)); if (!r) return;
+  setMode('elapsed'); $('bib').value = r.bib_number; $('status').value = r.status; $('time').value = r.status === 'FINISHED' ? r.elapsed_time : '';
+  $('bib').dispatchEvent(new Event('input')); $('time').focus(); window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+async function delResult(btn){
+  if (!confirm('ลบผลของ BIB ' + btn.dataset.bib + '?')) return;
+  try { await post('evt.deleteResult', { event_id: eventId, registration_id: btn.dataset.del }); toast('ลบแล้ว'); loadResults(); }
+  catch (err) { toast(err.message); }
+}
+function saveBulk(){
+  const items = [], bad = [];
+  $('bulk').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).forEach(l => {
+    const [bib, val] = l.split(/[\s,;\t]+/);
+    if (!bib || !val) return bad.push(l);
+    const st = val.toUpperCase();
+    if (['DNF','DNS','DSQ'].includes(st)) items.push({ bib_number: bib, status: st });
+    else { const t = normTime(val); if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) return bad.push(l); items.push({ bib_number: bib, status: 'FINISHED', [mode === 'clock' ? 'finish_time' : 'elapsed_time']: t }); }
+  });
+  if (bad.length) return toast('อ่านไม่ได้ ' + bad.length + ' บรรทัด: ' + bad.slice(0, 3).join(' | '));
+  if (!items.length) return;
+  enqueue(items); $('bulk').value = '';
+}
+async function saveStarts(){
+  const starts = {};
+  document.querySelectorAll('#starts input').forEach(i => starts[i.dataset.cat] = normTime(i.value));
+  try {
+    const r = await post('evt.saveResults', { event_id: eventId, starts, entries: [] });
+    if (r.errors.length) toast(r.errors[0].error); else toast('บันทึกเวลาปล่อยตัวแล้ว');
+    loadResults();
+  } catch (err) { toast(err.message); }
+}
+
+// Sequential queue so fast typing at the finish line never loses an entry
+const queue = []; let running = false;
+function feed(item, cls, msg){
+  const id = 'f' + Math.random().toString(36).slice(2);
+  const t = item.finish_time || item.elapsed_time || item.status;
+  $('feed').insertAdjacentHTML('afterbegin', `<div class="fi ${cls}" id="${id}"><b>${esc(item.bib_number)}</b><span class="msg">${esc(t)} · ${esc(msg)}</span><span></span></div>`);
+  return id;
+}
+function enqueue(items){
+  const ids = items.map(i => feed(i, '', 'กำลังบันทึก…'));
+  queue.push({ items, ids }); run();
+}
+async function run(){
+  if (running) return; running = true;
+  while (queue.length) {
+    const job = queue.shift();
+    try {
+      const r = await post('evt.saveResults', { event_id: eventId, entries: job.items });
+      const errBy = Object.fromEntries((r.errors || []).map(e => [e.ref, e.error]));
+      const warnBy = Object.fromEntries((r.warnings || []).map(e => [e.ref, e.warning]));
+      job.items.forEach((it, i) => {
+        const el = $(job.ids[i]); if (!el) return;
+        const ref = 'BIB ' + it.bib_number, e = errBy[ref], w = warnBy[ref], who = lookupBib(it.bib_number);
+        el.className = 'fi ' + (e ? 'err' : w ? 'warn' : '');
+        el.querySelector('.msg').textContent = `${it.finish_time || it.elapsed_time || it.status} · ${e || (who ? who.name : 'บันทึกแล้ว') + (w ? ' — ' + w : '')}`;
+        el.lastElementChild.textContent = e ? '✕' : '✓';
+      });
+    } catch (err) {
+      job.ids.forEach(id => { const el = $(id); if (el) { el.className = 'fi err'; el.querySelector('.msg').textContent = 'บันทึกไม่สำเร็จ: ' + err.message; } });
+    }
+    if (!queue.length) await loadResults();
+  }
+  running = false;
+}
+window.addEventListener('beforeunload', e => { if (queue.length || running) { e.preventDefault(); e.returnValue = ''; } });
+
+async function togglePublish(){
+  const to = !data.published;
+  if (to && (data.missing || []).length && !confirm(`ยังมี ${data.missing.length} คนที่ไม่มีผล — ประกาศเลยไหม?`)) return;
+  try { await post('evt.publishResults', { event_id: eventId, published: to }); toast(to ? 'ประกาศผลแล้ว' : 'ซ่อนผลแล้ว'); loadResults(); }
+  catch (err) { toast(err.message); }
+}
+
+// ── export (Result Report) ──
+function rows(){
+  return (data.results || []).map(r => [r.category_name, r.status === 'FINISHED' ? r.category_rank : r.status, r.bib_number, `${r.first_name} ${r.last_name}`,
+    r.gender, r.gender_rank || '', r.elapsed_time, r.start_time, r.finish_time, r.overall_rank || '', r.reg_number]);
+}
+const HEAD = ['หมวด','อันดับ','BIB','ชื่อ','เพศ','อันดับเพศ','เวลาที่ใช้','ปล่อยตัว','เข้าเส้น','อันดับรวม','เลขลงทะเบียน'];
+function fname(ext){ const e = events.find(x => x.event_id === eventId) || {}; return `${e.event_code || 'event'}_results.${ext}`; }
+async function exportXlsx(){
+  if (!window.XLSX) return toast('โหลด Excel ไม่ได้ — ใช้ CSV');
+  if (!(data.results || []).length) return toast('ยังไม่มีผล');
+  try { await post('evt.logExport', { event_id: eventId, format: 'RESULTS_XLSX', rows: data.results.length }); } catch (err) { return toast(err.message); }
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([HEAD, ...rows()]), 'Results'); XLSX.writeFile(wb, fname('xlsx'));
+}
+async function exportCsv(){
+  if (!(data.results || []).length) return toast('ยังไม่มีผล');
+  try { await post('evt.logExport', { event_id: eventId, format: 'RESULTS_CSV', rows: data.results.length }); } catch (err) { return toast(err.message); }
+  const q = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + [HEAD, ...rows()].map(r => r.map(q).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }));
+  a.download = fname('csv'); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+if (token) boot(); else $('loginScreen').hidden = false;
+</script>
+</body>
+</html>
