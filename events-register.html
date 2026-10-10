@@ -38,6 +38,10 @@
 .er-cat small{color:var(--grey-600);font-size:13px!important}
 .er-cat .pr{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .er-cat.off{opacity:.5;cursor:not-allowed}
+.er-cat .pr s{display:block;font-size:13px;font-weight:600;color:var(--grey-600)}
+.er-eb{display:table;margin-top:6px;font-size:12px!important;font-weight:800;color:#7A5A00!important;background:#FFF1C2;padding:2px 8px;border-radius:999px}
+.er-ebbar{display:flex;gap:10px;align-items:center;padding:12px 14px;margin-bottom:12px;background:#FFF1C2;border-left:4px solid #C99A00;font-size:14px}
+.er-ebbar b{font-weight:800}
 
 .form{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
 .form .full{grid-column:1/-1}
@@ -66,6 +70,8 @@
 .sum dt{color:var(--grey-600);font-size:14px}
 .sum dd{font-weight:600;word-break:break-word}
 .sum .tot{display:flex;justify-content:space-between;padding:16px;font-size:20px;font-weight:900;background:var(--grey-100)}
+.sum .tot.er-sub{font-size:14px;font-weight:600;padding:8px 16px 0;color:var(--grey-600)}
+.sum .tot.er-sub.eb{color:#7A5A00;font-weight:800;padding-bottom:4px}
 .agree{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:14px}
 .agree input{width:18px;height:18px;margin-top:2px;accent-color:var(--black);flex-shrink:0}
 
@@ -247,9 +253,11 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
     const rules = [c.distance, c.gender_rule === 'MALE' ? 'ຊາຍ' : c.gender_rule === 'FEMALE' ? 'ຍິງ' : '', c.min_age ? `ອາຍຸ ${c.min_age}+` : '', c.max_age ? `ບໍ່ເກີນ ${c.max_age} ປີ` : ''].filter(Boolean).join(' · ');
     return `<label class="er-cat ${full ? 'off' : ''}">
       <input type="radio" name="cat" value="${evtEsc(c.category_id)}" ${full ? 'disabled' : ''} ${pick === c.category_id ? 'checked' : ''}>
-      <span><b>${evtEsc(c.category_name)}</b><small>${evtEsc(rules)}${c.description ? ' — ' + evtEsc(c.description) : ''}${full ? ' · ເຕັມແລ້ວ' : c.remaining !== null ? ` · ເຫຼືອ ${c.remaining} ບ່ອນ` : ''}</small></span>
-      <span class="pr">${c.price_lak ? evtKip(c.price_lak) : 'ຟຣີ'}</span></label>`;
+      <span><b>${evtEsc(c.category_name)}</b><small>${evtEsc(rules)}${c.description ? ' — ' + evtEsc(c.description) : ''}${full ? ' · ເຕັມແລ້ວ' : c.remaining !== null ? ` · ເຫຼືອ ${c.remaining} ບ່ອນ` : ''}</small>${c.early_bird ? `<small class="er-eb">Early Bird · ຮອດ ${evtEsc(evtDate(c.early_bird.until))}${c.early_bird.remaining !== null ? ` · ເຫຼືອ ${c.early_bird.remaining} ສິດ` : ''}</small>` : ''}</span>
+      <span class="pr">${c.early_bird ? `<s>${evtKip(c.price_lak)}</s>` : ''}${priceOf(c) ? evtKip(priceOf(c)) : 'ຟຣີ'}</span></label>`;
   }).join('') : '<div class="msg">ງານນີ້ຍັງບໍ່ມີລຸ້ນໃຫ້ສະໝັກ</div>';
+  const ebs = cats.filter(c => c.early_bird).map(c => c.early_bird.until).sort();
+  if (ebs.length) $('cats').insertAdjacentHTML('beforebegin', `<div class="er-ebbar"><span aria-hidden="true">🐦</span><span><b>Early Bird</b> — ສະໝັກກ່ອນ ${evtEsc(evtDate(ebs[0]))} ຈ່າຍລາຄາພິເສດ</span></div>`);
   $('sizes').innerHTML = SIZES.map(s => `<label><input type="radio" name="jersey_size" value="${s}"><span>${s}</span></label>`).join('');
   document.querySelectorAll('.bike').forEach(el => el.hidden = !isBike());
   if (ev.terms_url) $('termsLink').innerHTML = ` <a href="${evtEsc(ev.terms_url)}" target="_blank" rel="noopener" style="text-decoration:underline">ອ່ານກົດລະບຽບ</a>`;
@@ -264,11 +272,13 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
   render();
 })();
 
+// ລາຄາຕອນນີ້ (Early Bird ຖ້າມີ) — ລະບົບຄິດລາຄາຈິງອີກຄັ້ງຕອນສົ່ງການສະໝັກ
+const priceOf = c => c ? (c.current_price_lak ?? c.price_lak) : 0;
 function render(){
   document.querySelectorAll('.panel').forEach(p => p.hidden = Number(p.dataset.step) !== step);
   document.querySelectorAll('#steps li').forEach((li, i) => { li.className = i + 1 === step ? 'on' : i + 1 < step ? 'done' : ''; });
   const c = cat();
-  const free = c && !c.price_lak;
+  const free = c && !priceOf(c);
   $('steps').lastElementChild.textContent = free ? 'ຢືນຢັນ' : 'ຊຳລະ';
   $('toPay').textContent = free ? 'ຢືນຢັນການສະໝັກ' : 'ໄປຊຳລະ';
 }
@@ -303,11 +313,11 @@ function go(n){
     if (step === 2 && !validate()) return;
     if (step === 3) {
       if (!$('agree').checked) return showErr('ກະລຸນາຕິກຍອມຮັບກົດລະບຽບ');
-      if (!cat().price_lak) return submit(false);
+      if (!priceOf(cat())) return submit(false);
     }
   }
   if (n === 3) summary();
-  if (n === 4) $('amt').textContent = evtKip(cat().price_lak);
+  if (n === 4) $('amt').textContent = evtKip(priceOf(cat()));
   step = n; render();
   window.scrollTo({ top: $('flow').offsetTop - 90, behavior: 'smooth' });
 }
@@ -325,7 +335,9 @@ function summary(){
   if (isBike() && (v.bike_brand || v.bike_model)) rows.push(['ລົດຖີບ', [v.bike_brand, v.bike_model, v.bike_wheel_size].filter(Boolean).join(' · ')]);
   if (v.medical_note) rows.push(['ສຸຂະພາບ', v.medical_note]);
   $('sum').innerHTML = `<dl>${rows.map(([k, x]) => `<dt>${k}</dt><dd>${evtEsc(x)}</dd>`).join('')}</dl>
-    <div class="tot"><span>ຄ່າສະໝັກ</span><span>${c.price_lak ? evtKip(c.price_lak) : 'ຟຣີ'}</span></div>`;
+    ${c.early_bird ? `<div class="tot er-sub"><span>ລາຄາປົກກະຕິ</span><span><s>${evtKip(c.price_lak)}</s></span></div>
+    <div class="tot er-sub eb"><span>ສ່ວນຫຼຸດ Early Bird</span><span>−${evtKip(c.price_lak - priceOf(c))}</span></div>` : ''}
+    <div class="tot"><span>ຄ່າສະໝັກ</span><span>${priceOf(c) ? evtKip(priceOf(c)) : 'ຟຣີ'}</span></div>`;
 }
 
 // ── slip: compress photos so phone pictures upload fast ──
@@ -362,12 +374,12 @@ async function submit(withSlip){
   if (withSlip && !slipData) return showErr('ແນບສະລິບການໂອນກ່ອນ — ຫຼື ກົດ “ສະໝັກກ່ອນ ແລ້ວແນບສະລິບພາຍຫຼັງ”');
   sending = true; showErr('');
   const btns = document.querySelectorAll('.er-actions .btn, .later'); btns.forEach(b => b.disabled = true);
-  const main = withSlip ? $('submitPay') : (c.price_lak ? document.querySelector('.later') : $('toPay'));
+  const main = withSlip ? $('submitPay') : (priceOf(c) ? document.querySelector('.later') : $('toPay'));
   const label = main.textContent; main.textContent = 'ກຳລັງສົ່ງ…';
   try {
     const body = { event_id: ev.event_id, category_id: c.category_id, participant: vals() };
     if (user && user.token) body.token = user.token;
-    if (withSlip) body.payment = { amount: c.price_lak, payment_method: 'QR_PAYMENT', payment_reference: $('ref').value.trim(), proof_image: slipData };
+    if (withSlip) body.payment = { amount: priceOf(c), payment_method: 'QR_PAYMENT', payment_reference: $('ref').value.trim(), proof_image: slipData };
     const r = await evtPost('evt.createRegistration', body);
     done(r, c);
   } catch (err) {

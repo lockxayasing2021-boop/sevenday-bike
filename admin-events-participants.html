@@ -400,7 +400,7 @@ function openDrawer(id){
         <dl class="kv">
           <dt>ການຊຳລະ</dt><dd>${payPill(p)}</dd>
           <dt>Check-in</dt><dd>${p.checkin_status==='CHECKED_IN' ? `${esc(fmtDT(p.checkin_time))} · ${esc(p.checked_by||'')}` : 'ຍັງບໍ່'}</dd>
-          <dt>ຍອດ</dt><dd>₭ ${fmtK(p.total)}${Number(p.discount)?` (ສ່ວນຫຼຸດ ${fmtK(p.discount)})`:''}</dd>
+          <dt>ຍອດ</dt><dd>₭ ${fmtK(p.total)}${Number(p.discount)?` <span class="pill" style="background:#FFF1C2;color:#7A5A00">Early Bird −${fmtK(p.discount)}</span>`:''}</dd>
           <dt>ລົງທະບຽນ</dt><dd>${esc(fmtDT(p.reg_date))}</dd>
         </dl>
       </div>
@@ -493,7 +493,7 @@ const COLS = [
   ['ເພດ','gender'],['ວັນເກີດ','date_of_birth'],['ສັນຊາດ','nationality'],['ລຸ້ນ','category_name'],['ໄລຍະ','distance'],
   ['ເບີໂທ','phone'],['Email','email'],['ຂະໜາດເສື້ອ','jersey_size'],['ຍີ່ຫໍ້ລົດ','bike_brand'],['ລຸ້ນລົດ','bike_model'],['ຂະໜາດລໍ້','bike_wheel_size'],
   ['ຜູ້ຕິດຕໍ່ສຸກເສີນ','emergency_name'],['ເບີສຸກເສີນ','emergency_phone'],['ສຸຂະພາບ','medical_note'],
-  ['ຍອດ (LAK)','total'],['ສະຖານະຊຳລະ','payment_status'],['ສະຖານະ','reg_status'],['Check-in','checkin_status'],['ເວລາ Check-in','checkin_time'],
+  ['ຍອດ (LAK)','total'],['ສ່ວນຫຼຸດ Early Bird (LAK)','discount'],['ສະຖານະຊຳລະ','payment_status'],['ສະຖານະ','reg_status'],['Check-in','checkin_status'],['ເວລາ Check-in','checkin_time'],
   ['ວັນລົງທະບຽນ','reg_date'],['ໝາຍເຫດ','notes'],
 ];
 function evName(){ const e = events.find(x=>x.event_id===eventId); return e ? e.event_name : eventId; }
@@ -501,7 +501,7 @@ function fileBase(){ const e = events.find(x=>x.event_id===eventId)||{}; return 
 async function audit(format, rows){
   await post('evt.logExport', { event_id: eventId, format, rows, filter: { status: filter, category: $('catSel').value, q: $('q').value.trim() } });
 }
-function rowsFor(list){ return list.map(p => COLS.map(([,k]) => k==='total' ? Number(p[k])||0 : (p[k] ?? ''))); }
+function rowsFor(list){ return list.map(p => COLS.map(([,k]) => (k==='total'||k==='discount') ? Number(p[k])||0 : (p[k] ?? ''))); }
 
 async function exportXlsx(){
   const list = visible(); if (!list.length) return toast('ບໍ່ມີຂໍ້ມູນໃຫ້ Export');

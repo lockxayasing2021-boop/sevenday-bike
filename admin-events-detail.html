@@ -74,6 +74,13 @@ input[type="file"]{padding:6px 10px;cursor:pointer}
 .label .req{color:var(--accent);margin-left:2px}
 .hint{font-size:12px;color:var(--g6);margin-top:2px}
 .field-full{grid-column:1/-1}
+.eb-box{grid-column:1/-1;border:1.5px dashed #c9a227;background:#fffaf0;border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px}
+.eb-box h4{grid-column:1/-1;font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
+.eb-box h4 span{font-weight:500;color:var(--g6);font-size:12px}
+.eb-box .field{margin:0}
+.eb-tag{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;color:#8a6d00;background:#fff3c4;border-radius:4px;padding:1px 6px;white-space:nowrap}
+.eb-tag.off{color:#777;background:#f0f0f0;text-decoration:line-through}
+@media(max-width:640px){.eb-box{grid-template-columns:1fr}}
 .err-msg{font-size:12px;color:#c00;margin-top:3px}
 
 /* ── Cover preview ── */
@@ -451,6 +458,25 @@ tr:last-child td{border-bottom:none}
         <label class="label">สถานะ</label>
         <select id="catStatus"><option value="ACTIVE">เปิดรับ</option><option value="CLOSED">ปิดรับ</option></select>
       </div>
+      <div class="eb-box">
+        <h4>🐦 Early Bird <span>ราคาพิเศษสำหรับคนสมัครก่อน — เว้นว่างถ้าไม่ใช้</span></h4>
+        <div class="field">
+          <label class="label">ราคา Early Bird (LAK)</label>
+          <input id="catEbPrice" type="number" min="0" step="1000" placeholder="250000">
+          <div class="err-msg" id="errCatEbPrice"></div>
+        </div>
+        <div class="field">
+          <label class="label">ถึงวันที่</label>
+          <input id="catEbUntil" type="date">
+          <span class="hint">รวมทั้งวัน (ถึง 23:59)</span>
+          <div class="err-msg" id="errCatEbUntil"></div>
+        </div>
+        <div class="field">
+          <label class="label">จำนวนสิทธิ์</label>
+          <input id="catEbQuota" type="number" min="0" value="0">
+          <span class="hint">0 = ไม่จำกัด (หมดเขตตามวันที่)</span>
+        </div>
+      </div>
       <div class="field field-full">
         <label class="label">คำอธิบาย</label>
         <textarea id="catDesc" rows="3" placeholder="เส้นทาง, จุดให้น้ำ, ของที่ได้รับ…"></textarea>
@@ -698,7 +724,7 @@ function renderCats(){
     return `<tr>
       <td><strong>${esc(c.category_name)}</strong><br><span style="color:var(--g6);font-size:11px">${esc(c.category_code)}</span></td>
       <td>${esc(c.distance || '—')}</td>
-      <td class="num">${c.price_lak ? fmtNum(c.price_lak) : 'ฟรี'}</td>
+      <td class="num">${c.price_lak ? fmtNum(c.price_lak) : 'ฟรี'}${ebTag(c)}</td>
       <td style="font-size:12px">${esc(rules)}</td>
       <td class="num">${c.capacity || '∞'}</td>
       <td class="num">${c.registered_count || 0}</td>
@@ -708,6 +734,13 @@ function renderCats(){
   }).join('');
   body.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openCatModal(cats[b.dataset.edit]));
   body.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteCategory(cats[b.dataset.del]));
+}
+function ebTag(c){
+  if (c.early_price_lak === '' || c.early_price_lak == null || !c.early_until) return '';
+  const d = new Date(c.early_until + 'T00:00:00').toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+  const live = !!c.early_bird;
+  const left = live && c.early_bird.remaining != null ? ` · เหลือ ${c.early_bird.remaining}` : '';
+  return `<br><span class="eb-tag ${live ? '' : 'off'}" title="${live ? 'กำลังใช้ราคา Early Bird' : 'หมดเขต / ครบจำนวนแล้ว'}">EB ${Number(c.early_price_lak) ? fmtNum(c.early_price_lak) : 'ฟรี'} ถึง ${d}${left}</span>`;
 }
 function openCatModal(c){
   if (!eventId) { switchTab('info'); return showToast('บันทึกข้อมูลงานก่อน แล้วจึงเพิ่มหมวดหมู่', 'err'); }
@@ -720,7 +753,9 @@ function openCatModal(c){
   setV('catMinAge', c ? c.min_age : ''); setV('catMaxAge', c ? c.max_age : '');
   setV('catStatus', c ? String(c.status || 'ACTIVE').toUpperCase() : 'ACTIVE');
   setV('catDesc', c ? c.description : '');
-  ['errCatCode','errCatName','errCatPrice'].forEach(id => $(id).textContent = '');
+  setV('catEbPrice', c && c.early_price_lak !== '' && c.early_price_lak != null ? c.early_price_lak : '');
+  setV('catEbUntil', c ? c.early_until || '' : ''); setV('catEbQuota', c && c.early_quota ? c.early_quota : 0);
+  ['errCatCode','errCatName','errCatPrice','errCatEbPrice','errCatEbUntil'].forEach(id => $(id).textContent = '');
   $('catModal').hidden = false; $('catName').focus();
 }
 function closeCatModal(){ $('catModal').hidden = true; }
@@ -730,11 +765,20 @@ async function saveCategory(){
   if (!editingCat && !code) { $('errCatCode').textContent = 'ใส่รหัสหมวด'; bad = true; }
   if (!name) { $('errCatName').textContent = 'ใส่ชื่อหมวด'; bad = true; }
   if (price === '' || Number(price) < 0) { $('errCatPrice').textContent = 'ใส่ค่าสมัคร (0 = ฟรี)'; bad = true; }
+  const ebP = gv('catEbPrice'), ebU = gv('catEbUntil');
+  ['errCatEbPrice','errCatEbUntil'].forEach(id => $(id).textContent = '');
+  if (ebP !== '' || ebU) {
+    if (ebP === '' || Number(ebP) < 0) { $('errCatEbPrice').textContent = 'ใส่ราคา Early Bird'; bad = true; }
+    else if (Number(ebP) >= Number(price)) { $('errCatEbPrice').textContent = 'ต้องต่ำกว่าค่าสมัครปกติ'; bad = true; }
+    if (!ebU) { $('errCatEbUntil').textContent = 'เลือกวันสิ้นสุด'; bad = true; }
+    else if (gv('regClose') && ebU > gv('regClose')) { $('errCatEbUntil').textContent = 'เกินวันปิดรับสมัคร (' + gv('regClose') + ')'; bad = true; }
+  }
   if (bad) return;
   const data = {
     category_name: name, distance: gv('catDistance'), price_lak: Number(price) || 0,
     capacity: parseInt(gv('catCapacity')) || 0, gender_rule: gv('catGender'),
     min_age: gv('catMinAge'), max_age: gv('catMaxAge'), status: gv('catStatus'), description: gv('catDesc'),
+    early_price_lak: ebP === '' ? '' : Number(ebP), early_until: ebU, early_quota: parseInt(gv('catEbQuota')) || 0,
   };
   if (editingCat && data.capacity && data.capacity < editingCat.registered_count) return showToast(`จำนวนรับต้องไม่น้อยกว่าที่สมัครแล้ว (${editingCat.registered_count})`, 'err');
   const btn = $('catSaveBtn'); btn.disabled = true;

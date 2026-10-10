@@ -29,6 +29,7 @@
 .ev-cover svg{width:96px;height:56px;color:var(--grey-300)}
 .ev-state{position:absolute;top:12px;left:12px;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--white);color:var(--black)}
 .ev-state.OPEN{background:var(--black);color:var(--white)}
+.ev-eb{position:absolute;top:12px;right:12px;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:#FFD54A;color:#3D2E00}
 .ev-body{padding:18px 18px 0;display:flex;flex-direction:column;gap:6px;flex:1}
 .ev-type{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)}
 .ev-name{font-size:19px;font-weight:900;line-height:1.25;letter-spacing:-.3px;text-wrap:balance}
@@ -112,6 +113,7 @@ function evCard(e){
     <a class="ev-cover" href="${href}">
       ${e.cover_image ? `<img src="${evtEsc(e.cover_image)}" alt="" loading="lazy">` : '<svg viewBox="0 0 120 70" fill="none" stroke="currentColor" stroke-width="4"><use href="#i-bike"/></svg>'}
       <span class="ev-state ${canReg ? 'OPEN' : ''}">${evtEsc(label)}</span>
+      ${canReg && e.early_bird_until ? `<span class="ev-eb">Early Bird ຮອດ ${evtEsc(evtDate(e.early_bird_until))}</span>` : ''}
     </a>
     <div class="ev-body">
       <span class="ev-type">${evtEsc(EVT_TYPES[String(e.event_type).toUpperCase()] || e.event_type || '')}</span>

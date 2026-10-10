@@ -153,7 +153,7 @@ function render(){
       <div class="tk-rows">
         <div><small>ການຊຳລະ</small>${payPill(r)}</div>
         <div><small>Check-in</small>${inn ? `<span class="st ok">ເຂົ້າງານແລ້ວ ${evtTime(r.checkin_time)}</span>` : '<b>ຍັງບໍ່</b>'}</div>
-        <div><small>ຄ່າສະໝັກ</small><b>${Number(r.total) ? evtKip(r.total) : 'ຟຣີ'}</b></div>
+        <div><small>ຄ່າສະໝັກ</small><b>${Number(r.total) ? evtKip(r.total) : 'ຟຣີ'}</b>${Number(r.discount) > 0 ? ` <span class="st" style="color:#7A5A00">Early Bird</span>` : ''}</div>
         <div><small>ໄຊສ໌ເສື້ອ</small><b>${evtEsc(p.jersey_size || '-')}</b></div>
       </div>
       ${resBlock(r)}
