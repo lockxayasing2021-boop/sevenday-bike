@@ -228,7 +228,7 @@ td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 <script>
 const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
-let token = sessionStorage.getItem('sd_admin') || '';
+let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');
 let events = [], eventId = '', cats = [], all = [], filter = 'ALL', selId = null;
 
 const $ = id => document.getElementById(id);
@@ -259,7 +259,7 @@ async function get(params){
 }
 
 // ── auth ──
-function logout(){ sessionStorage.removeItem('sd_admin'); token=''; $('app').hidden=true; $('loginScreen').hidden=false; closeDrawer(); }
+function logout(){ (sessionStorage.removeItem('sd_admin'),localStorage.removeItem('sd_admin')); token=''; $('app').hidden=true; $('loginScreen').hidden=false; closeDrawer(); }
 $('loginForm').addEventListener('submit', async e => {
   e.preventDefault(); $('loginMsg').innerHTML='';
   try {

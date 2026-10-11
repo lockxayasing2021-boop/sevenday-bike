@@ -499,7 +499,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtNum = n => (Number(n) || 0).toLocaleString('en-US');
 
-let token = sessionStorage.getItem('sd_admin') || '';   // ใช้ร่วมกับหน้า admin อื่น
+let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');   // ใช้ร่วมกับหน้า admin อื่น
 let eventId = new URLSearchParams(location.search).get('event_id') || '';
 let ev = null, cats = [], editingCat = null, dirty = false;
 
@@ -528,7 +528,7 @@ function showToast(msg, type){
 }
 
 // ── auth ────────────────────────────────────────────────────
-function logout(){ sessionStorage.removeItem('sd_admin'); token = ''; $('app').hidden = true; $('loginGate').hidden = false; }
+function logout(){ (sessionStorage.removeItem('sd_admin'),localStorage.removeItem('sd_admin')); token = ''; $('app').hidden = true; $('loginGate').hidden = false; }
 async function doLogin(){
   const pw = $('loginPwd').value; if (!pw) return;
   $('loginErr').style.display = 'none';

@@ -251,7 +251,7 @@ input,select,textarea{font:inherit}
 const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 
-let token = sessionStorage.getItem('sd_admin') || '';
+let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');
 let events = [];
 let selId = null;
 let statusFilter = '';
@@ -284,7 +284,7 @@ function toast(msg) {
 }
 
 function logout() {
-  sessionStorage.removeItem('sd_admin');
+  (sessionStorage.removeItem('sd_admin'),localStorage.removeItem('sd_admin'));
   token = '';
   showLogin();
 }

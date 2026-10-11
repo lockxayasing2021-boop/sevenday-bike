@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ອໍເດີ &amp; ງານສ້ອມ — Sevenday Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--black:#000;--ink:#1C1C1C;--g9:#2B2B2B;--g6:#6E6E6E;--g3:#D4D4D4;--g1:#F3F3F3;--white:#fff;--font:'Archivo','Noto Sans Lao',system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--g1);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid #000;outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;font-weight:700;font-size:14px;border:2px solid #000;background:#fff;text-decoration:none;white-space:nowrap}
+.btn.dark{background:#000;color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:#000}
+.login form{background:#fff;padding:36px;width:min(400px,100%)}
+.login .mark{width:46px;height:46px;background:#000;color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px;margin-bottom:18px}
+.login h1{font-size:26px;font-weight:900;letter-spacing:-.5px}
+.login p{color:var(--g6);margin:4px 0 22px}
+.login input{width:100%;height:50px;border:1px solid var(--g3);padding:0 14px;font:inherit;font-size:16px;margin-bottom:12px}
+.login input:focus{outline:none;border-color:#000;box-shadow:0 0 0 1px #000}
+.login .btn{width:100%;height:50px}
+.msg{background:var(--g1);border-left:4px solid #000;padding:10px 12px;font-size:14px;margin-bottom:12px}
+/* app */
+.top{background:#000;color:#fff;position:sticky;top:0;z-index:20}
+.top .in{max-width:1320px;margin:0 auto;padding:0 20px;height:62px;display:flex;align-items:center;gap:14px}
+.top .mark{width:36px;height:36px;background:#fff;color:#000;display:grid;place-items:center;font-weight:900}
+.top b{font-size:17px;font-weight:800}
+.top small{opacity:.6;font-size:12px;display:block;font-weight:500}
+.top .sp{flex:1}
+.top .btn{height:36px;background:transparent;color:#fff;border-color:#555}
+.wrap{max-width:1320px;margin:0 auto;padding:22px 20px 60px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:#fff;padding:18px;border:1px solid var(--g3);text-align:left;cursor:pointer}
+.stat.hot{background:#000;color:#fff;border-color:#000}
+.stat b{display:block;font-size:30px;font-weight:900;line-height:1.1}
+.stat span{font-size:13px;opacity:.75}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tabs{display:flex;background:#fff;border:1px solid var(--g3)}
+.tabs button{padding:10px 16px;font-weight:700;font-size:14px;border-right:1px solid var(--g3)}
+.tabs button:last-child{border-right:none}
+.tabs button.on{background:#000;color:#fff}
+.tabs i{font-style:normal;font-size:12px;margin-left:6px;opacity:.7}
+.bar select,.bar input{height:42px;border:1px solid var(--g3);padding:0 12px;font:inherit;background:#fff}
+.bar input{flex:1;min-width:180px}
+.layout{display:grid;grid-template-columns:1fr 440px;gap:16px;align-items:start}
+.list{background:#fff;border:1px solid var(--g3)}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--g1);cursor:pointer;text-align:left;width:100%}
+.row:hover{background:var(--g1)}
+.row.sel{background:var(--g1);box-shadow:inset 4px 0 0 #000}
+.row .ty{width:38px;height:38px;display:grid;place-items:center;background:var(--g1);font-size:18px}
+.row b{font-weight:800}
+.row .sub{font-size:13px;color:var(--g6);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46ch}
+.row .r{text-align:right}
+.row .amt{font-weight:800;display:block}
+.st{display:inline-block;font-size:12px;font-weight:800;padding:3px 8px;border:1px solid #000;white-space:nowrap}
+.st.new{background:#000;color:#fff}
+.st.done{background:var(--g3);border-color:var(--g3)}
+.st.cancel{color:var(--g6);border-color:var(--g3);text-decoration:line-through}
+.empty{padding:48px;text-align:center;color:var(--g6)}
+.detail{background:#fff;border:1px solid var(--g3);position:sticky;top:78px;max-height:calc(100vh - 96px);overflow:auto}
+.detail .hd{padding:18px 20px;border-bottom:1px solid var(--g3)}
+.detail .hd small{color:var(--g6)}
+.detail h2{font-size:22px;font-weight:900;letter-spacing:-.3px}
+.sec{padding:16px 20px;border-bottom:1px solid var(--g1)}
+.sec h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g6);margin-bottom:8px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:14px}
+.kv dt{color:var(--g6)}
+.items{white-space:pre-line;font-size:14px;background:var(--g1);padding:12px}
+.total{display:flex;justify-content:space-between;font-weight:900;font-size:20px;margin-top:10px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.flow{display:flex;flex-direction:column;gap:6px}
+.flow button{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--g3);font-weight:700;text-align:left}
+.flow button.cur{background:#000;color:#fff;border-color:#000}
+.flow button.past{color:var(--g6)}
+.flow button.cancel{margin-top:6px;color:var(--g6)}
+textarea{width:100%;min-height:70px;border:1px solid var(--g3);padding:10px;font:inherit;resize:vertical}
+.pick{padding:56px 24px;text-align:center;color:var(--g6)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);background:#000;color:#fff;padding:12px 20px;font-weight:600;transition:transform .25s;z-index:50;visibility:hidden}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.back{display:none}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  .detail{position:fixed;inset:0;max-height:none;z-index:30;display:none}
+  .detail.open{display:block}
+  .back{display:inline-flex;margin-bottom:10px}
+  .stats{grid-template-columns:1fr 1fr}
+  .row .sub{max-width:24ch}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec', API_SECRET='SDdMc3wNjJEevs60n2oMQeGnuI', THB_TO_LAK=698;
+const SHOP_NAME='Sevenday Bike';
+const FLOW={
+  order:['ໃໝ່','ຢືນຢັນແລ້ວ','ຊຳລະແລ້ວ','ພ້ອມຮັບ','ສຳເລັດ'],
+  booking:['ໃໝ່','ຢືນຢັນແລ້ວ','ກຳລັງສ້ອມ','ສຳເລັດ'],
+  film:['ໃໝ່','ສົ່ງລາຄາແລ້ວ','ຢືນຢັນແລ້ວ','ກຳລັງຕິດຟິມ','ສຳເລັດ']
+};
+const TYPE={order:['🛒','ຄຳສັ່ງຊື້'],booking:['🔧','ຈອງ Workshop'],film:['🎨','Film']};
+const $=id=>document.getElementById(id);
+let token=(sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||''), items=[], tab='all', stFilter='open', q='', sel=null, lastNew=-1;
+
+async function post(action,data){
+  const r=await fetch(`${API_URL}?action=${action}&secret=${API_SECRET}`,{method:'POST',body:JSON.stringify({action,secret:API_SECRET,token,...data})});
+  const j=await r.json(); if(j.ok===false) throw new Error(j.error||'API error'); return j.data;
+}
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600); }
+const money=t=>'₭'+Math.round(t*THB_TO_LAK).toLocaleString()+'  ·  ฿'+Math.round(t).toLocaleString();
+const when=d=>{ const x=new Date(d); return isNaN(x)?'':x.toLocaleString('lo-LA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+const ago=d=>{ const m=Math.round((Date.now()-new Date(d))/60000); return m<1?'ຫາກໍ່':m<60?m+' ນາທີກ່ອນ':m<1440?Math.round(m/60)+' ຊມ. ກ່ອນ':Math.round(m/1440)+' ມື້ກ່ອນ'; };
+const stCls=s=>s==='ໃໝ່'?'new':s==='ສຳເລັດ'?'done':s==='ຍົກເລີກ'?'cancel':'';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const wa=(phone,text)=>{ let p=String(phone).replace(/\D/g,''); if(p.startsWith('0')) p='856'+p.slice(1); else if(!p.startsWith('856')) p='856'+p; return `https://wa.me/${p}?text=${encodeURIComponent(text)}`; };
+
+/* ── Login ── */
+function showLogin(err){
+  $('app').innerHTML=`<div class="login"><form id="lf"><div class="mark">7</div><h1>ກ່ອງອໍເດີອອນລາຍ</h1><p>ສຳລັບພະນັກງານ Sevenday ເທົ່ານັ້ນ</p>
+    ${err?`<div class="msg">${esc(err)}</div>`:''}<input type="password" id="pw" placeholder="ລະຫັດຜ່ານແອັດມິນ" autocomplete="current-password" required autofocus>
+    <button class="btn dark" id="lb">ເຂົ້າສູ່ລະບົບ</button></form></div>`;
+  $('lf').onsubmit=async e=>{ e.preventDefault(); $('lb').disabled=true; $('lb').textContent='ກຳລັງກວດສອບ...';
+    try{ const d=await post('adminLogin',{password:$('pw').value}); if(!d.ok) throw new Error(d.error); token=d.token; sessionStorage.setItem('sd_admin',token); boot(); }
+    catch(x){ showLogin(x.message); } };
+}
+function logout(){ (sessionStorage.removeItem('sd_admin'),localStorage.removeItem('sd_admin')); token=''; showLogin(); }
+
+/* ── App ── */
+function shell(){
+  $('app').innerHTML=`<header class="top"><div class="in"><div class="mark">7</div><div><b>ກ່ອງອໍເດີອອນລາຍ</b><small id="upd">ກຳລັງໂຫຼດ...</small></div><div class="sp"></div>
+    <button class="btn" onclick="load(true)">↻ ໂຫຼດໃໝ່</button><a class="btn" href="index.html" target="_blank">ເບິ່ງເວັບ</a><button class="btn" onclick="logout()">ອອກ</button></div></header>
+    <main class="wrap"><div class="stats" id="stats"></div>
+    <div class="bar"><div class="tabs" id="tabs"></div>
+      <select id="stf" aria-label="ສະຖານະ"><option value="open">ຍັງບໍ່ປິດງານ</option><option value="all">ທຸກສະຖານະ</option><option value="ໃໝ່">ໃໝ່</option><option value="done">ສຳເລັດ</option><option value="ຍົກເລີກ">ຍົກເລີກ</option></select>
+      <input id="qs" type="search" placeholder="ຄົ້ນຫາ ຊື່ / ເບີໂທ / ເລກທີ່"></div>
+    <div class="layout"><div class="list" id="list"></div><aside class="detail" id="detail"><div class="pick">ເລືອກລາຍການທາງຊ້າຍ ເພື່ອເບິ່ງລາຍລະອຽດ</div></aside></div></main>`;
+  $('stf').value=stFilter; $('stf').onchange=e=>{stFilter=e.target.value;renderList();};
+  $('qs').oninput=e=>{q=e.target.value.toLowerCase();renderList();};
+}
+async function load(manual){
+  try{ const d=await post('adminList',{days:120}); items=d.items||[]; }
+  catch(x){ if(/ADMIN_AUTH/.test(x.message)) return logout(); toast('ໂຫຼດບໍ່ສຳເລັດ: '+x.message); return; }
+  const n=items.filter(i=>i.status==='ໃໝ່').length;
+  if(lastNew>=0 && n>lastNew){ toast(`ມີລາຍການໃໝ່ ${n-lastNew} ລາຍການ`); try{ new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YQAAAAA=').play(); }catch(_){} }
+  lastNew=n; document.title=(n?`(${n}) `:'')+'ກ່ອງອໍເດີອອນລາຍ — Sevenday';
+  $('upd').textContent='ອັບເດດ '+new Date().toLocaleTimeString('lo-LA',{hour:'2-digit',minute:'2-digit'})+' · ໂຫຼດອັດຕະໂນມັດທຸກ 1 ນາທີ';
+  renderStats(); renderList(); if(sel) renderDetail(items.find(i=>i.id===sel)); if(manual) toast('ອັບເດດແລ້ວ');
+}
+function renderStats(){
+  const c=f=>items.filter(f).length;
+  const S=[['ລາຍການໃໝ່',c(i=>i.status==='ໃໝ່'),'ໃໝ່','all'],['ລໍຖ້າໂອນເງິນ',c(i=>i.type==='order'&&i.status==='ຢືນຢັນແລ້ວ'&&/BCEL|ໂອນ/.test(i.payment)),'open','order'],
+    ['ພ້ອມໃຫ້ລູກຄ້າຮັບ',c(i=>i.status==='ພ້ອມຮັບ'),'open','order'],['ຈອງ Workshop ຄ້າງ',c(i=>i.type!=='order'&&!['ສຳເລັດ','ຍົກເລີກ'].includes(i.status)),'open','booking']];
+  $('stats').innerHTML=S.map(([l,n,sf,t],k)=>`<button class="stat ${k===0&&n?'hot':''}" onclick="stFilter='${sf}';tab='${t}';$('stf').value='${sf}';renderList()"><b>${n}</b><span>${l}</span></button>`).join('');
+}
+function renderList(){
+  const T=[['all','ທັງໝົດ'],['order','ຄຳສັ່ງຊື້'],['booking','Workshop'],['film','Film']];
+  const open=i=>!['ສຳເລັດ','ຍົກເລີກ'].includes(i.status);
+  $('tabs').innerHTML=T.map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="tab='${k}';renderList()">${l}<i>${items.filter(i=>(k==='all'||i.type===k)&&open(i)).length}</i></button>`).join('');
+  const L=items.filter(i=>(tab==='all'||i.type===tab)
+    &&(stFilter==='all'||(stFilter==='open'?open(i):stFilter==='done'?i.status==='ສຳເລັດ':i.status===stFilter))
+    &&(!q||(i.id+' '+i.name+' '+i.phone).toLowerCase().includes(q)));
+  $('list').innerHTML=L.length?L.map(i=>`<button class="row ${sel===i.id?'sel':''}" onclick="openItem('${i.id}')">
+      <span class="ty">${TYPE[i.type]?.[0]||'•'}</span>
+      <span><b>${esc(i.name)||'-'}</b> <span class="st ${stCls(i.status)}">${esc(i.status)}</span><span class="sub">${esc(i.id)} · ${esc(i.details.split('\n').join(', '))}</span></span>
+      <span class="r">${i.total?`<span class="amt">₭${Math.round(i.total*THB_TO_LAK).toLocaleString()}</span>`:''}<small style="color:var(--g6)">${ago(i.date)}</small></span></button>`).join('')
+    :`<div class="empty">${items.length?'ບໍ່ມີລາຍການທີ່ກົງກັບຕົວກອງ':'ຍັງບໍ່ມີລາຍການຈາກເວັບ — ຄຳສັ່ງຊື້ ແລະ ການຈອງໃໝ່ຈະຂຶ້ນບ່ອນນີ້'}</div>`;
+}
+function openItem(id){ sel=id; renderList(); renderDetail(items.find(i=>i.id===id)); $('detail').classList.add('open'); }
+function msgFor(i,st){
+  const n=i.name||'ລູກຄ້າ', id=i.id, amt='₭'+Math.round(i.total*THB_TO_LAK).toLocaleString();
+  if(i.type==='order'){
+    if(st==='ຢືນຢັນແລ້ວ') return /BCEL|ໂອນ/.test(i.payment)
+      ? `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນຄຳສັ່ງຊື້ ${id} ແລ້ວ\nຍອດທີ່ຕ້ອງໂອນ: ${amt}\nBCEL One: KITTIPHAN XAYASING MR\nເລກບັນຊີ: 013120001235446001\nໂອນແລ້ວສົ່ງສະລິບມາທາງນີ້ໄດ້ເລີຍ`
+      : `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນຄຳສັ່ງຊື້ ${id} ແລ້ວ ຍອດ ${amt} ຈ່າຍຕອນມາຮັບທີ່ຮ້ານ`;
+    if(st==='ຊຳລະແລ້ວ') return `ໄດ້ຮັບເງິນ ${amt} ສຳລັບຄຳສັ່ງຊື້ ${id} ແລ້ວ ຂອບໃຈຫຼາຍໆ 🙏 ຈະແຈ້ງເມື່ອສິນຄ້າພ້ອມຮັບ`;
+    if(st==='ພ້ອມຮັບ') return `ສະບາຍດີ ${n} ສິນຄ້າຄຳສັ່ງຊື້ ${id} ພ້ອມຮັບແລ້ວ ✅ ມາຮັບໄດ້ທີ່ຮ້ານ ${SHOP_NAME} (ເປີດ 09:00–18:00)`;
+  } else {
+    if(st==='ຢືນຢັນແລ້ວ') return `ສະບາຍດີ ${n} 🙏 ${SHOP_NAME} ຢືນຢັນການຈອງ ${id} ແລ້ວ ເອົາລົດມາຕາມວັນນັດໄດ້ເລີຍ`;
+    if(st==='ສົ່ງລາຄາແລ້ວ') return `ສະບາຍດີ ${n} 🙏 ລາຄາຟິມຫຸ້ມສີສຳລັບ ${id} ແມ່ນ ₭____ ສົນໃຈນັດວັນໄດ້ເລີຍ`;
+    if(st==='ສຳເລັດ') return `ສະບາຍດີ ${n} ລົດຖີບຂອງທ່ານ (${id}) ສຳເລັດແລ້ວ ✅ ມາຮັບໄດ້ທີ່ຮ້ານ ${SHOP_NAME}`;
+  }
+  return `ສະບາຍດີ ${n} ຈາກ ${SHOP_NAME} ກ່ຽວກັບ ${id}`;
+}
+function renderDetail(i){
+  const D=$('detail'); if(!i){ D.innerHTML='<div class="pick">ເລືອກລາຍການທາງຊ້າຍ</div>'; return; }
+  const flow=FLOW[i.type]||FLOW.booking, idx=flow.indexOf(i.status), next=flow[idx+1];
+  D.innerHTML=`<div class="hd"><button class="btn back" onclick="$('detail').classList.remove('open')">← ກັບຄືນ</button>
+      <small>${TYPE[i.type]?.[1]||''} · ${when(i.date)}</small><h2>${esc(i.id)}</h2><span class="st ${stCls(i.status)}">${esc(i.status)}</span></div>
+    <div class="sec"><h3>ລູກຄ້າ</h3><dl class="kv"><dt>ຊື່</dt><dd>${esc(i.name)}</dd><dt>ເບີໂທ</dt><dd>${esc(i.phone)}</dd>${i.email?`<dt>ອີເມວ</dt><dd>${esc(i.email)}</dd>`:''}</dl>
+      <div class="acts" style="margin-top:12px"><a class="btn dark" target="_blank" rel="noopener" href="${wa(i.phone,msgFor(i,next||i.status))}">WhatsApp${next?' (ຂໍ້ຄວາມ "'+next+'")':''}</a><a class="btn" href="tel:${esc(i.phone)}">ໂທ</a></div></div>
+    <div class="sec"><h3>${i.type==='order'?'ລາຍການສິນຄ້າ':'ລາຍລະອຽດ'}</h3><div class="items">${esc(i.details)}</div>
+      ${i.total?`<div class="total"><span>ລວມ</span><span>₭${Math.round(i.total*THB_TO_LAK).toLocaleString()}</span></div><small style="color:var(--g6)">฿${Math.round(i.total).toLocaleString()}</small>`:''}
+      <dl class="kv" style="margin-top:12px">${i.payment?`<dt>ການຊຳລະ</dt><dd>${esc(i.payment)}</dd>`:''}${i.delivery?`<dt>ການຮັບ</dt><dd>${esc(i.delivery)}</dd>`:''}${i.notes?`<dt>ໝາຍເຫດ</dt><dd>${esc(i.notes)}</dd>`:''}</dl></div>
+    <div class="sec"><h3>ອັບເດດສະຖານະ</h3><div class="flow">${flow.map((s,k)=>`<button class="${k===idx?'cur':k<idx?'past':''}" ${i.status==='ຍົກເລີກ'?'disabled':''} onclick="setStatus('${i.id}','${s}')"><span>${k<idx?'✓ ':''}${s}</span>${k===idx+1?'<span>ຂັ້ນຕໍ່ໄປ →</span>':''}</button>`).join('')}
+      ${i.status!=='ຍົກເລີກ'?`<button class="cancel" onclick="setStatus('${i.id}','ຍົກເລີກ')">ຍົກເລີກ${i.type==='order'?' (ລຶບບິນອອກຈາກ Sales ແລະ ຫັກແຕ້ມຄືນ)':''}</button>`:'<p style="color:var(--g6);font-size:14px">ລາຍການນີ້ຖືກຍົກເລີກແລ້ວ</p>'}</div></div>
+    <div class="sec"><h3>ໝາຍເຫດພາຍໃນ (ລູກຄ້າບໍ່ເຫັນ)</h3><textarea id="an">${esc(i.admin_note)}</textarea><button class="btn" style="margin-top:8px" onclick="saveNote('${i.id}')">ບັນທຶກໝາຍເຫດ</button></div>`;
+}
+async function setStatus(id,st){
+  const i=items.find(x=>x.id===id); if(!i||i.status===st) return;
+  if(st==='ຍົກເລີກ' && !confirm(i.type==='order'?`ຍົກເລີກ ${id}?\n\nບິນນີ້ຈະຖືກລຶບອອກຈາກ Sales ແລະ ຫັກແຕ້ມລູກຄ້າຄືນ — ຍ້ອນກັບບໍ່ໄດ້`:`ຍົກເລີກ ${id}?`)) return;
+  const old=i.status; i.status=st; renderStats(); renderList(); renderDetail(i);
+  try{ await post('adminUpdate',{id,status:st}); toast(`${id} → ${st}`); }
+  catch(x){ i.status=old; renderStats(); renderList(); renderDetail(i); if(/ADMIN_AUTH/.test(x.message)) return logout(); toast('ບັນທຶກບໍ່ສຳເລັດ: '+x.message); }
+}
+async function saveNote(id){ const v=$('an').value; try{ await post('adminUpdate',{id,admin_note:v}); items.find(x=>x.id===id).admin_note=v; toast('ບັນທຶກແລ້ວ'); }catch(x){ toast('ບັນທຶກບໍ່ສຳເລັດ: '+x.message); } }
+
+function boot(){ shell(); load(); clearInterval(window._iv); window._iv=setInterval(()=>{ if(!document.hidden) load(); },60000); }
+token ? boot() : showLogin();
+</script>
+</body>
+</html>

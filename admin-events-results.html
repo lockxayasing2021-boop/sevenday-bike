@@ -234,7 +234,7 @@ details summary::-webkit-details-marker{display:none}
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
-let token = sessionStorage.getItem('sd_admin') || '';
+let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');
 let events = [], eventId = '', data = { results: [], missing: [], categories: [] }, cat = '', mode = 'clock';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -253,7 +253,7 @@ async function get(params){
 }
 
 // ── auth ──
-function logout(){ sessionStorage.removeItem('sd_admin'); token = ''; $('app').hidden = true; $('loginScreen').hidden = false; }
+function logout(){ (sessionStorage.removeItem('sd_admin'),localStorage.removeItem('sd_admin')); token = ''; $('app').hidden = true; $('loginScreen').hidden = false; }
 $('loginForm').addEventListener('submit', async e => {
   e.preventDefault(); $('loginMsg').innerHTML = '';
   try { const r = await post('adminLogin', { password: $('loginPass').value }); if (!r.token) throw new Error(r.error || 'รหัสผ่านไม่ถูกต้อง'); token = r.token; sessionStorage.setItem('sd_admin', token); boot(); }
