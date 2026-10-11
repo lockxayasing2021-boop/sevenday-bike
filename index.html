@@ -85,6 +85,10 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 .s-dark{background:var(--black);color:var(--white)}
 .s-grey{background:var(--grey-100);color:var(--black)}
 .s-mid{background:#3A3A3A;color:var(--white)}
+.s-img{position:relative;background:#111 center/cover no-repeat;color:var(--white);text-decoration:none}
+.s-img.has-text::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,0) 100%)}
+.s-img .slide-text{position:relative;grid-column:1}
+.s-img h2,.s-img p{text-shadow:0 2px 12px rgba(0,0,0,.35)}
 .btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 28px;border-radius:999px;font-weight:700;font-size:15px;transition:background .2s,color .2s}
 .btn-white{background:var(--white);color:var(--black)}
 .btn-white:hover{background:var(--grey-300)}
@@ -260,6 +264,8 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
   .slide{grid-template-columns:1fr;height:auto;padding:40px 0 56px}
   .slide-text{padding:0 20px}
   .slide-art{display:none}
+  .s-img{min-height:360px;display:flex;align-items:flex-end}
+  .s-img.has-text::before{background:linear-gradient(0deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.25) 60%,rgba(0,0,0,0) 100%)}
   .hero-arrow{display:none}
   .rail{grid-auto-columns:calc((100% - 16px)/2.2)}
   .rail-btn{display:none}
@@ -567,17 +573,35 @@ function railMove(id,dir){ const r=document.getElementById(id); r.scrollBy({left
 function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທະບຽນແລ້ວ — ຈະສົ່ງໂປຣໂມຊັນໃຫ້ທາງອີເມວ'); }
 
 /* ── Hero carousel ── */
-let heroI = 0; const slides = document.querySelectorAll('.slide');
-const dots = document.getElementById('heroDots');
-slides.forEach((_,i)=>{ const b=document.createElement('button'); b.setAttribute('aria-label','ສະໄລ້ '+(i+1)); b.onclick=()=>heroTo(i); dots.appendChild(b); });
+let heroI = 0, slides = [];
+const dots = document.getElementById('heroDots'), heroDefault = document.getElementById('heroTrack').innerHTML;
+const hEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/* ສະໄລ້ທີ່ອັບໂຫຼດຈາກ Admin (ຖ້າບໍ່ມີ ໃຊ້ສະໄລ້ເດີມ) */
+function renderHero(){
+  const S = (SD_SITE.slides || []).filter(x => x && x.image);
+  const track = document.getElementById('heroTrack');
+  track.innerHTML = S.length ? S.map(x => {
+    const t = sdText(x.title), p = sdText(x.text), b = sdText(x.button), link = x.link || '';
+    const inner = `<div class="slide-text">${t ? `<h2>${hEsc(t)}</h2>` : ''}${p ? `<p>${hEsc(p)}</p>` : ''}${b && link ? `<a class="btn btn-white" href="${hEsc(link)}">${hEsc(b)}</a>` : ''}</div>`;
+    const cls = `slide s-img${t || p ? ' has-text' : ''}`, st = `style="background-image:url('${hEsc(x.image)}')"`;
+    return link && !b ? `<a class="${cls}" ${st} href="${hEsc(link)}" translate="no">${inner}</a>` : `<div class="${cls}" ${st} translate="no">${inner}</div>`;
+  }).join('') : heroDefault;
+  slides = track.querySelectorAll('.slide');
+  dots.innerHTML = '';
+  slides.forEach((_, i) => { const d = document.createElement('button'); d.setAttribute('aria-label', 'ສະໄລ້ ' + (i + 1)); d.onclick = () => { heroTo(i); resetHero(); }; dots.appendChild(d); });
+  document.querySelectorAll('.hero-arrow, .hero-dots').forEach(el => el.hidden = slides.length < 2);
+  heroTo(Math.min(heroI, slides.length - 1));
+}
 function heroTo(i){
   heroI = (i+slides.length)%slides.length;
   document.getElementById('heroTrack').style.transform = `translateX(-${heroI*100}%)`;
   dots.querySelectorAll('button').forEach((d,j)=>d.classList.toggle('on',j===heroI));
 }
 function heroGo(d){ heroTo(heroI+d); resetHero(); }
-let heroTimer; function resetHero(){ clearInterval(heroTimer); if(!matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer=setInterval(()=>heroTo(heroI+1),6000); }
-heroTo(0); resetHero();
+let heroTimer; function resetHero(){ clearInterval(heroTimer); if(slides.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer=setInterval(()=>heroTo(heroI+1),6000); }
+renderHero(); resetHero();
+document.addEventListener('siteconfig', () => { renderHero(); resetHero(); });
+document.addEventListener('langchange', () => { if ((SD_SITE.slides || []).length) renderHero(); });
 
 /* ── Currency: ປຸ່ມຢູ່ໃນ layout.js ── */
 document.addEventListener('currencychange', renderRails);

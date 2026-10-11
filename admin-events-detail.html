@@ -152,6 +152,8 @@ tr:last-child td{border-bottom:none}
 </style>
 
 <!-- ── LOGIN GATE ── -->
+<body>
+<script src="admin-i18n.js"></script>
 <div id="loginGate" class="login-gate" hidden>
   <div class="login-box">
     <div class="logo">S</div>
@@ -560,7 +562,7 @@ async function loadEvent(){
     $('eventCode').disabled = true;
     $('catNote').hidden = true;
     dirty = false;
-    $('saveInfo').textContent = 'บันทึกแล้ว · ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    $('saveInfo').textContent = 'บันทึกแล้ว · ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   } catch (err) { showToast('โหลดข้อมูลไม่ได้: ' + err.message, 'err'); }
 }
 const setV = (id, v) => { const el = $(id); if (el) el.value = v ?? ''; };
@@ -737,7 +739,7 @@ function renderCats(){
 }
 function ebTag(c){
   if (c.early_price_lak === '' || c.early_price_lak == null || !c.early_until) return '';
-  const d = new Date(c.early_until + 'T00:00:00').toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+  const d = new Date(c.early_until + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   const live = !!c.early_bird;
   const left = live && c.early_bird.remaining != null ? ` · เหลือ ${c.early_bird.remaining}` : '';
   return `<br><span class="eb-tag ${live ? '' : 'off'}" title="${live ? 'กำลังใช้ราคา Early Bird' : 'หมดเขต / ครบจำนวนแล้ว'}">EB ${Number(c.early_price_lak) ? fmtNum(c.early_price_lak) : 'ฟรี'} ถึง ${d}${left}</span>`;

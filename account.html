@@ -383,7 +383,7 @@ const user=JSON.parse(sessionStorage.getItem('sd_user')||'null');
 if(!user) location.replace('login.html');
 let data={orders:[],repairs:[],points:user?.points||0}, tab='orders';
 $('uName').textContent=user?.name||''; $('uMeta').textContent=[user?.email,user?.phone].filter(Boolean).join(' · ');
-const d8=d=>{ try{ return new Date(d).toLocaleDateString('lo-LA',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return String(d).slice(0,10); } };
+const d8=d=>{ try{ return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return String(d).slice(0,10); } };
 function render(){
   $('uPts').textContent=Number(data.points||0).toLocaleString();
   document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));

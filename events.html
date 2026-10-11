@@ -85,7 +85,7 @@ async function evtGet(params){
 }
 const evtEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const evtKip = n => '₭' + Math.round(Number(n) || 0).toLocaleString('en-US');
-const EVT_MONTHS = ['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+const EVT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];   // ວັນທີແບບອັງກິດ: 13 Dec 2026
 const evtDate = ymd => { if (!ymd) return ''; const [y,m,d] = ymd.split('-').map(Number); return `${d} ${EVT_MONTHS[m-1]} ${y}`; };
 const EVT_TYPES = { CYCLING:'ປັ່ນລົດຖີບ', RUNNING:'ແລ່ນ', COMMUNITY:'ກິດຈະກຳ', WORKSHOP:'Workshop', OTHER:'ອື່ນໆ' };
 const STATE = { OPEN:'ເປີດຮັບສະໝັກ', SOON:'ໄວໆນີ້', CLOSED:'ປິດຮັບສະໝັກ' };

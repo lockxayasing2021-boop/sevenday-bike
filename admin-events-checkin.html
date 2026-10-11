@@ -160,6 +160,7 @@ input,select{font:inherit}
 </style>
 </head>
 <body>
+<script src="admin-i18n.js"></script>
 
 <!-- Login -->
 <div id="loginScreen" class="login" hidden>
@@ -258,6 +259,7 @@ input,select{font:inherit}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+const enDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? String(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 
@@ -337,7 +339,7 @@ async function loadEvents(){
     const today = new Date().toISOString().slice(0,10);
     const near = list.find(e => (e.event_date || '') >= today) || list[list.length-1];
     $('evSel').innerHTML = list.map(e =>
-      `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date ? ' · ' + esc(e.event_date) : ''}</option>`).join('');
+      `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date ? ' · ' + esc(enDate(e.event_date)) : ''}</option>`).join('');
     $('evSel').value = list.some(e => e.event_id === want) ? want : near.event_id;
     selectEvent($('evSel').value);
   } catch (err) {

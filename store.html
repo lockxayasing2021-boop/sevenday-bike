@@ -335,7 +335,7 @@ main.wrap{padding-top:8px}
 
 
 
-<section class="phero "><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / ທີ່ຕັ້ງຮ້ານ</nav><h1>ທີ່ຕັ້ງຮ້ານ</h1><p>ມາລອງນັ່ງ ລອງປັ່ນ ຮັບສິນຄ້າ ຫຼື ສົ່ງສ້ອມ — ເປີດທຸກມື້ 09:00–18:00</p><a class="btn btn-white" data-shop="mapUrl" target="_blank" rel="noopener">ນຳທາງດ້ວຍ Google Maps</a></div><svg class="phero-art" viewBox="0 0 120 70" aria-hidden="true" style="color:#fff"><use href="#i-bike"/></svg></div></section>
+<section class="phero "><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / ທີ່ຕັ້ງຮ້ານ</nav><h1>ທີ່ຕັ້ງຮ້ານ</h1><p><span>ມາລອງນັ່ງ ລອງປັ່ນ ຮັບສິນຄ້າ ຫຼື ສົ່ງສ້ອມ</span> — <span data-shop="hours"></span></p><a class="btn btn-white" data-shop="mapUrl" target="_blank" rel="noopener">ນຳທາງດ້ວຍ Google Maps</a></div><svg class="phero-art" viewBox="0 0 120 70" aria-hidden="true" style="color:#fff"><use href="#i-bike"/></svg></div></section>
 <main class="wrap">
   
   <div class="st">
@@ -392,11 +392,28 @@ function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທ
 </script>
 <script>
 
-const D=['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ'], now=new Date(), d=now.getDay();
-document.getElementById('hrs').innerHTML=[1,2,3,4,5,6,0].map(i=>`<tr class="${i===d?'today':''}"><td>${D[i]}${i===d?' (ມື້ນີ້)':''}</td><td>09:00–18:00</td></tr>`).join('');
-const m=now.getHours()*60+now.getMinutes(), isOpen=m>=540&&m<1080, o=document.getElementById('open');
-o.classList.toggle('closed',!isOpen); o.querySelector('span').textContent=isOpen?'ເປີດຢູ່ຕອນນີ້ · ປິດ 18:00':'ປິດແລ້ວ · ເປີດ 09:00';
-
+/* ເວລາເປີດ-ປິດ ຕາມທີ່ຕັ້ງໃນ Admin (ເວລາລາວ) */
+const HR = {
+  lo: { d: ['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ'], today: 'ມື້ນີ້', closed: 'ປິດ', openNow: c => 'ເປີດຢູ່ຕອນນີ້ · ປິດ ' + c, closedNow: (o, d) => 'ປິດແລ້ວ · ເປີດ ' + (d ? d + ' ' : '') + o },
+  th: { d: ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'], today: 'วันนี้', closed: 'ปิด', openNow: c => 'เปิดอยู่ตอนนี้ · ปิด ' + c, closedNow: (o, d) => 'ปิดแล้ว · เปิด ' + (d ? d + ' ' : '') + o },
+  en: { d: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], today: 'today', closed: 'Closed', openNow: c => 'Open now · closes ' + c, closedNow: (o, d) => 'Closed · opens ' + (d ? d + ' ' : '') + o },
+};
+function renderHours(){
+  const L = HR[sdLang()] || HR.lo, H = sdHours();
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Vientiane', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  const d = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(p.weekday), hm = p.hour + ':' + p.minute;
+  const tb = document.getElementById('hrs'); tb.setAttribute('translate', 'no');
+  tb.innerHTML = [1,2,3,4,5,6,0].map(i => `<tr class="${i === d ? 'today' : ''}"><td>${L.d[i]}${i === d ? ' (' + L.today + ')' : ''}</td><td>${H[i].closed ? L.closed : H[i].open + '–' + H[i].close}</td></tr>`).join('');
+  const t = H[d], isOpen = !t.closed && hm >= t.open && hm < t.close, o = document.getElementById('open');
+  let msg;
+  if (isOpen) msg = L.openNow(t.close);
+  else if (!t.closed && hm < t.open) msg = L.closedNow(t.open, '');
+  else { let k = 1; while (k < 7 && H[(d + k) % 7].closed) k++; const n = (d + k) % 7; msg = k >= 7 ? L.closed : L.closedNow(H[n].open, L.d[n]); }
+  o.classList.toggle('closed', !isOpen); o.setAttribute('translate', 'no'); o.querySelector('span').textContent = msg;
+}
+renderHours();
+document.addEventListener('langchange', renderHours);
+document.addEventListener('siteconfig', renderHours);
 </script>
 </body>
 </html>

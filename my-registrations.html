@@ -81,7 +81,7 @@ async function evtPost(action, data){
 }
 const $ = id => document.getElementById(id);
 const evtEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const EVT_MONTHS = ['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+const EVT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];   // ວັນທີແບບອັງກິດ: 13 Dec 2026
 const evtDate = ymd => { if (!ymd) return ''; const [y,m,d] = String(ymd).slice(0,10).split('-').map(Number); return `${d} ${EVT_MONTHS[m-1]} ${y}`; };
 const link = t => 'events-registration.html?t=' + encodeURIComponent(t);
 const today = new Date().toISOString().slice(0, 10);

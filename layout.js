@@ -13,7 +13,10 @@
 .sd-drawer-prefs .sd-seg button{flex:1;padding:10px 6px;font-size:14px}
 @media(max-width:1180px){.sd-prefs .sd-seg button{padding:6px 8px}}
 @media(max-width:900px){.sd-prefs{display:none}.sd-pref-m{display:inline-flex}}
-html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans-serif}`;
+html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans-serif}
+.logo-mark.has-img{background:none!important;width:auto!important;height:auto!important;padding:0;display:flex;align-items:center}
+.logo-mark.has-img img{display:block;height:42px;width:auto;max-width:150px;object-fit:contain}
+@media(max-width:900px){.logo-mark.has-img img{height:36px;max-width:110px}}`;
   const TOP = `<!-- SVG sprite -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -117,7 +120,7 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
 <div class="collect">
   <div class="wrap">
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11H3z"/><path d="M9 20v-6h6v6"/></svg>
-    <span>ຮັບສິນຄ້າທີ່: <strong>Sevenday Bike ວຽງຈັນ</strong> · ເປີດທຸກມື້ 09:00–18:00</span>
+    <span>ຮັບສິນຄ້າທີ່: <strong>Sevenday Bike ວຽງຈັນ</strong> · <span data-shop="hours"></span></span>
     <a href="store.html">ເບິ່ງແຜນທີ່</a>
   </div>
 </div>`;
@@ -126,8 +129,8 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
     <div class="foot-grid">
       <div class="foot-brand">
         <a href="index.html" class="logo"><span class="logo-mark">7</span><span class="logo-text">Sevenday Bike</span></a>
-        <p>ຮ້ານລົດຖີບ ແລະ Workshop ທີ່ນະຄອນຫຼວງວຽງຈັນ. ເປີດທຸກມື້ 09:00–18:00.</p>
-        <div class="social"><a href="#" aria-label="Facebook">f</a><a href="#" aria-label="TikTok">tt</a><a href="#" aria-label="WhatsApp">wa</a></div>
+        <p><span>ຮ້ານລົດຖີບ ແລະ Workshop ທີ່ນະຄອນຫຼວງວຽງຈັນ.</span> <span data-shop="hours"></span></p>
+        <div class="social"><a href="#" data-social="facebook" target="_blank" rel="noopener" aria-label="Facebook">f</a><a href="#" data-social="tiktok" target="_blank" rel="noopener" aria-label="TikTok">tt</a><a href="#" data-social="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp">wa</a></div>
       </div>
       <div><h4>ສິນຄ້າ</h4><ul><li><a href="catalogue.html?cat=bikes">ລົດຖີບ</a></li><li><a href="catalogue.html?cat=parts">ອາໄຫຼ່</a></li><li><a href="catalogue.html?cat=accessories">ອຸປະກອນ</a></li><li><a href="catalogue.html?cat=used">ມືສອງ</a></li><li><a href="catalogue.html?sale=1">Sale</a></li></ul></div>
       <div><h4>Workshop</h4><ul><li><a href="service.html">ແພັກເກດ Service</a></li><li><a href="service.html#book">ຈອງຄິວ</a></li><li><a href="film.html">ຟິມຫຸ້ມສີ</a></li></ul></div>
@@ -198,6 +201,7 @@ const SHOP = {
   whatsapp: '8562098844344',
   email: 'Lock.xayasing2021@gmail.com',
   address: 'ບ້ານ ນາໄຊ, ເມືອງ ໄຊເສດຖາ, ນະຄອນຫຼວງວຽງຈັນ',
+  address0: 'ບ້ານ ນາໄຊ, ເມືອງ ໄຊເສດຖາ, ນະຄອນຫຼວງວຽງຈັນ',
   mapUrl: 'https://maps.app.goo.gl/NPF26zNDqQ4isNP28',
   hours: 'ເປີດທຸກມື້ 09:00–18:00',
   bank: 'BCEL One · KITTIPHAN XAYASING MR · 013120001235446001',
@@ -211,7 +215,60 @@ async function apiPost(action, data){
   if (j.ok === false) throw new Error(j.error || 'API error');
   return j.data !== undefined ? j.data : j;
 }
-function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:+856'+SHOP.phone.replace(/\s/g,'').replace(/^0/,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length) el.textContent=SHOP[k]; }); }
+/* ── ຕັ້ງຄ່າໜ້າເວັບຈາກ Admin (ໂລໂກ້, ສະໄລ້, ເວລາເປີດ-ປິດ, ຂໍ້ມູນຕິດຕໍ່) ──
+   ເກັບໄວ້ໃນເຄື່ອງ 5 ນາທີ ເພື່ອໃຫ້ໜ້າເວັບສະແດງທັນທີ ແລ້ວອັບເດດຢູ່ເບື້ອງຫຼັງ */
+let SD_SITE = {};
+try { SD_SITE = JSON.parse(localStorage.getItem('sd_site') || '{}') || {}; } catch (_) {}
+const SD_DAYS = { lo: ['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ'], th: ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'], en: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] };
+/* ເວລາເປີດ-ປິດ 7 ວັນ (0 = ອາທິດ) */
+function sdHours(){
+  const h = Array.isArray(SD_SITE.hours) && SD_SITE.hours.length === 7 ? SD_SITE.hours : null;
+  return h || Array.from({ length: 7 }, () => ({ closed: false, open: '09:00', close: '18:00' }));
+}
+function sdLang(){ return typeof SD_LANG === 'string' ? SD_LANG : 'lo'; }
+/* ຂໍ້ຄວາມເວລາເປີດ-ປິດ ຕາມພາສາ ເຊັ່ນ "ເປີດທຸກມື້ 09:00–18:00" ຫຼື "Mon–Sat 09:00–18:00 · Sun closed" */
+function sdHoursText(lang){
+  lang = lang || sdLang();
+  const h = sdHours(), D = SD_DAYS[lang] || SD_DAYS.lo, key = x => x.closed ? 'x' : x.open + '–' + x.close;
+  const L = { lo: { all: 'ເປີດທຸກມື້ ', closed: 'ປິດ' }, th: { all: 'เปิดทุกวัน ', closed: 'ปิด' }, en: { all: 'Open daily ', closed: 'closed' } }[lang] || {};
+  if (h.every(x => key(x) === key(h[0])) && !h[0].closed) return L.all + key(h[0]);
+  const order = [1, 2, 3, 4, 5, 6, 0], groups = [];
+  order.forEach(d => { const g = groups[groups.length - 1]; if (g && g.k === key(h[d])) g.days.push(d); else groups.push({ k: key(h[d]), days: [d] }); });
+  return groups.map(g => (g.days.length > 1 ? D[g.days[0]] + '–' + D[g.days[g.days.length - 1]] : D[g.days[0]]) + ' ' + (g.k === 'x' ? L.closed : g.k)).join(' · ');
+}
+function sdText(o){ if (!o) return ''; if (typeof o === 'string') return o; return o[sdLang()] || o.lo || o.en || o.th || ''; }
+function applySite(){
+  const c = SD_SITE.contact || {};
+  if (c.phone) SHOP.phone = c.phone;
+  if (c.whatsapp) SHOP.whatsapp = c.whatsapp;
+  if (c.email) SHOP.email = c.email;
+  if (c.mapUrl) SHOP.mapUrl = c.mapUrl;
+  SHOP.address = sdText(c.address) || SHOP.address0;
+  SHOP.hours = sdHoursText();
+  // ໂລໂກ້
+  document.querySelectorAll('.logo-mark').forEach(m => {
+    if (SD_SITE.logo) { if (!m.querySelector('img')) m.innerHTML = '<img alt="">'; m.querySelector('img').src = SD_SITE.logo; m.classList.add('has-img'); }
+    else if (m.querySelector('img')) { m.textContent = '7'; m.classList.remove('has-img'); }
+  });
+  if (SD_SITE.logo) { let f = document.querySelector('link[rel="icon"]'); if (!f) { f = document.createElement('link'); f.rel = 'icon'; document.head.appendChild(f); } f.href = SD_SITE.logo; }
+  // ໂຊຊຽວ
+  const soc = { facebook: c.facebook, tiktok: c.tiktok, whatsapp: SHOP.whatsapp ? 'https://wa.me/' + SHOP.whatsapp : '' };
+  document.querySelectorAll('[data-social]').forEach(a => { const u = soc[a.dataset.social]; a.hidden = !u; if (u) a.href = u; });
+  fillShop();
+}
+function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:+856'+SHOP.phone.replace(/\s/g,'').replace(/^0/,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length){ if(k==='hours'||k==='address') el.setAttribute('translate','no'); el.textContent=k==='hours'?sdHoursText():SHOP[k]; } }); }
+(async function loadSite(){
+  try{
+    const t = +localStorage.getItem('sd_site_t') || 0;
+    if (Date.now() - t < 5 * 60e3) return;
+    const j = await (await fetch(`${API_URL}?action=getSiteConfig&secret=${API_SECRET}`)).json();
+    if (!j || j.ok === false) return;
+    const c = j.data || {}, changed = JSON.stringify(c) !== JSON.stringify(SD_SITE);
+    try { localStorage.setItem('sd_site', JSON.stringify(c)); localStorage.setItem('sd_site_t', String(Date.now())); } catch (_) {}
+    if (changed) { SD_SITE = c; applySite(); document.dispatchEvent(new Event('siteconfig')); }
+  }catch(_){}
+})();
+document.addEventListener('langchange', applySite);
 /* ── ອັດຕາແລກປ່ຽນ: ດຶງຈາກ POS (Settings: LAK_TO_THB, USD_TO_THB) ຖ້າດຶງບໍ່ໄດ້ ໃຊ້ຄ່າລຸ່ມນີ້ ── */
 let THB_TO_LAK = 698;      // 1 ບາດ = ? ກີບ
 let USD_PER_THB = 0.031;   // 1 ບາດ = ? ໂດລາ (≈ 32 ບາດ / ໂດລາ)
@@ -310,7 +367,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   sdPrefLabel();
   try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ document.getElementById('accLink').href='account.html'; document.getElementById('accLabel').textContent=(u.name||'ບັນຊີ').split(' ')[0]; } }catch(_){}
   const q=new URLSearchParams(location.search).get('q'); if(q&&document.getElementById('q')) document.getElementById('q').value=q;
-  updateCartCount(); fillShop();
+  updateCartCount(); applySite();
 });
 
 /* ── ພາສາ: ລາວ (ຕົ້ນສະບັບ) / ไทย / English ──

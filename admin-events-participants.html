@@ -155,6 +155,7 @@ td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 </style>
 </head>
 <body>
+<script src="admin-i18n.js"></script>
 
 <div id="loginScreen" class="login" hidden>
   <form id="loginForm">
@@ -226,6 +227,7 @@ td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+const enDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? String(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');
@@ -299,7 +301,7 @@ async function boot(){
     events = (r.events||[]).filter(e => e.status !== 'DRAFT');
     if (!events.length) { $('evSel').innerHTML='<option value="">ບໍ່ມີງານ</option>'; return; }
     const want = new URLSearchParams(location.search).get('event_id') || store.get('sd_pt_event');
-    $('evSel').innerHTML = events.map(e => `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date?' · '+esc(e.event_date):''}</option>`).join('');
+    $('evSel').innerHTML = events.map(e => `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date?' · '+esc(enDate(e.event_date)):''}</option>`).join('');
     $('evSel').value = events.some(e=>e.event_id===want) ? want : events[events.length-1].event_id;
     selectEvent($('evSel').value);
   } catch(err){ toast('ໂຫຼດງານບໍ່ໄດ້: ' + err.message); }
@@ -538,7 +540,7 @@ async function exportPdf(){
   list.forEach(p => (groups[p.category_name||'-'] = groups[p.category_name||'-'] || []).push(p));
   $('printArea').innerHTML = `
     <div class="pr-head"><h1>${esc(evName())}<br><span style="font-size:10pt;font-weight:600">ລາຍຊື່ຜູ້ແຂ່ງຂັນ (Start list)</span></h1>
-      <div>${esc(e.event_date||'')} ${esc(e.location||'')}<br>ພິມ ${esc(new Date().toLocaleString('en-GB'))} · ${list.length} ຄົນ</div></div>
+      <div>${esc(enDate(e.event_date))} ${esc(e.location||'')}<br>ພິມ ${esc(new Date().toLocaleString('en-GB'))} · ${list.length} ຄົນ</div></div>
     ${Object.entries(groups).map(([c, ps]) => `<div class="pr-cat"><h2>${esc(c)} — ${ps.length} ຄົນ</h2>
       <table><thead><tr><th>BIB</th><th>ຊື່ - ນາມສະກຸນ</th><th>ເພດ</th><th>ເສື້ອ</th><th>ເບີໂທ</th><th>ສຸກເສີນ</th><th>ລາຍເຊັນ</th></tr></thead><tbody>
       ${ps.map(p => `<tr><td><b>${esc(p.bib_number||'—')}</b></td><td>${esc(p.first_name)} ${esc(p.last_name)}${p.nickname?' ('+esc(p.nickname)+')':''}</td>

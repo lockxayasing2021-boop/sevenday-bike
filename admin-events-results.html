@@ -124,6 +124,7 @@ details summary::-webkit-details-marker{display:none}
 </style>
 </head>
 <body>
+<script src="admin-i18n.js"></script>
 
 <div id="loginScreen" class="login" hidden>
   <form id="loginForm">
@@ -232,6 +233,7 @@ details summary::-webkit-details-marker{display:none}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+const enDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? String(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');
@@ -269,7 +271,7 @@ async function boot(){
     const want = new URLSearchParams(location.search).get('event_id') || store.get('sd_res_event');
     const today = new Date().toISOString().slice(0, 10);
     const near = [...events].reverse().find(e => (e.event_date || '') <= today) || events[0];
-    $('evSel').innerHTML = events.map(e => `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date ? ' · ' + esc(e.event_date) : ''}</option>`).join('');
+    $('evSel').innerHTML = events.map(e => `<option value="${esc(e.event_id)}">${esc(e.event_name)}${e.event_date ? ' · ' + esc(enDate(e.event_date)) : ''}</option>`).join('');
     $('evSel').value = events.some(e => e.event_id === want) ? want : near.event_id;
     selectEvent($('evSel').value);
   } catch (err) { toast('โหลดงานไม่ได้: ' + err.message); }
@@ -336,9 +338,9 @@ function render(){
       <td class="bib" style="width:60px">${esc(m.bib_number || '—')}</td>
       <td>${esc(m.first_name)} ${esc(m.last_name)}<br><small>${esc(m.category_name)}</small></td>
       <td>${m.checked_in ? '<span class="pill warn">Check-in แล้ว</span>' : '<span class="pill mute">ไม่ได้ Check-in</span>'}</td>
-      <td style="text-align:right"><button class="btn sm" type="button" data-dns="${esc(m.bib_number)}">${m.checked_in ? 'DNF' : 'DNS'}</button></td>
+      <td style="text-align:right"><button class="btn sm" type="button" data-dns="${esc(m.bib_number)}" data-st="${m.checked_in ? 'DNF' : 'DNS'}">${m.checked_in ? 'DNF' : 'DNS'}</button></td>
     </tr>`).join('') : '<tr><td class="empty">ทุกคนมีผลแล้ว</td></tr>';
-  $('missing').querySelectorAll('[data-dns]').forEach(b => b.onclick = () => enqueue([{ bib_number: b.dataset.dns, status: b.textContent.trim() }]));
+  $('missing').querySelectorAll('[data-dns]').forEach(b => b.onclick = () => enqueue([{ bib_number: b.dataset.dns, status: b.dataset.st }]));
 }
 
 // ── time helpers ──

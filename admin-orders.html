@@ -94,6 +94,7 @@ textarea{width:100%;min-height:70px;border:1px solid var(--g3);padding:10px;font
 </style>
 </head>
 <body>
+<script src="admin-i18n.js"></script>
 <div id="app"></div>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -114,7 +115,7 @@ async function post(action,data){
 }
 function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600); }
 const money=t=>'₭'+Math.round(t*THB_TO_LAK).toLocaleString()+'  ·  ฿'+Math.round(t).toLocaleString();
-const when=d=>{ const x=new Date(d); return isNaN(x)?'':x.toLocaleString('lo-LA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+const when=d=>{ const x=new Date(d); return isNaN(x)?'':x.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
 const ago=d=>{ const m=Math.round((Date.now()-new Date(d))/60000); return m<1?'ຫາກໍ່':m<60?m+' ນາທີກ່ອນ':m<1440?Math.round(m/60)+' ຊມ. ກ່ອນ':Math.round(m/1440)+' ມື້ກ່ອນ'; };
 const stCls=s=>s==='ໃໝ່'?'new':s==='ສຳເລັດ'?'done':s==='ຍົກເລີກ'?'cancel':'';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -149,7 +150,7 @@ async function load(manual){
   const n=items.filter(i=>i.status==='ໃໝ່').length;
   if(lastNew>=0 && n>lastNew){ toast(`ມີລາຍການໃໝ່ ${n-lastNew} ລາຍການ`); try{ new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YQAAAAA=').play(); }catch(_){} }
   lastNew=n; document.title=(n?`(${n}) `:'')+'ກ່ອງອໍເດີອອນລາຍ — Sevenday';
-  $('upd').textContent='ອັບເດດ '+new Date().toLocaleTimeString('lo-LA',{hour:'2-digit',minute:'2-digit'})+' · ໂຫຼດອັດຕະໂນມັດທຸກ 1 ນາທີ';
+  $('upd').textContent='ອັບເດດ '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · ໂຫຼດອັດຕະໂນມັດທຸກ 1 ນາທີ';
   renderStats(); renderList(); if(sel) renderDetail(items.find(i=>i.id===sel)); if(manual) toast('ອັບເດດແລ້ວ');
 }
 function renderStats(){

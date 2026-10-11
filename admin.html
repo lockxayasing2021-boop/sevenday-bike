@@ -90,6 +90,45 @@ a{color:inherit;text-decoration:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#000;color:#fff;padding:12px 18px;font-weight:700;font-size:14px;transition:transform .25s;z-index:99}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
+.alang{display:flex;border:1px solid #444;border-radius:999px;overflow:hidden;margin:8px 4px 10px}
+.alang button{flex:1;padding:7px 0;font-size:13px;font-weight:700;color:#bbb}
+.alang button.on{background:#fff;color:#000}
+.alang.light{border-color:var(--g3);margin:16px 0 0}
+.alang.light button{color:var(--g6)}
+.alang.light button.on{background:#000;color:#fff}
+/* site settings */
+.site-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:20px}
+.sc{margin-bottom:16px}
+.sc .bd{padding:16px}
+.hint{font-size:12px;color:var(--g6);margin-top:8px}
+.up{cursor:pointer}
+.logo-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.logo-row .btn{margin:0 6px 6px 0}
+.logo-prev{width:84px;height:84px;background:#000;color:#fff;display:grid;place-items:center;font-weight:900;font-size:36px;flex-shrink:0;overflow:hidden}
+.logo-prev.img{background:var(--g1);border:1px solid var(--g2)}
+.logo-prev img{max-width:100%;max-height:100%;object-fit:contain}
+.sl{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;padding:14px 0;border-top:1px solid var(--g2)}
+.sl:first-child{border-top:0;padding-top:0}
+.sl-img{position:relative;aspect-ratio:12/5;background:#111 center/cover no-repeat;display:flex;align-items:flex-end;padding:10px;color:#fff;font-weight:800;font-size:13px}
+.sl-img .num{position:absolute;top:8px;left:8px;background:#000;color:#fff;width:24px;height:24px;display:grid;place-items:center;font-size:12px}
+.sl-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.sl-f{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sl-f .k{grid-column:1/-1;font-size:12px;font-weight:800;color:var(--g6);margin-top:4px}
+.sl-f input,.sl-f select,.fgrid input,.hrs input[type=time]{width:100%;height:38px;border:1px solid var(--g3);padding:0 10px;font:inherit;font-size:14px;background:#fff}
+.sl-f input:focus,.fgrid input:focus{outline:none;border-color:#000}
+.sl-f .lk{grid-column:1/-1;display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px}
+.hrs{display:grid;gap:6px}
+.hr{display:grid;grid-template-columns:120px 90px 1fr 1fr;gap:10px;align-items:center}
+.hr b{font-weight:700}
+.hr label{display:flex;gap:6px;align-items:center;font-size:14px}
+.hr.off input[type=time]{opacity:.35;pointer-events:none}
+.hrs-prev{margin-top:12px;font-size:14px;padding:10px 12px;background:var(--g1)}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fgrid label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
+.fgrid .full{grid-column:1/-1}
+.savebar{position:sticky;bottom:0;display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px 0;background:linear-gradient(transparent,var(--g1) 30%)}
+.savebar .hint{margin:0}
+
 /* mobile */
 @media(max-width:900px){
   .app{grid-template-columns:1fr}
@@ -102,10 +141,18 @@ a{color:inherit;text-decoration:none}
   .dash{padding:20px 16px 40px}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid2{grid-template-columns:1fr}
+  .sl{grid-template-columns:1fr}
+  .sl-f{grid-template-columns:1fr}
+  .sl-f .lk{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .hr{grid-template-columns:1fr 1fr;row-gap:4px}
+  .hr b{grid-column:1/-1}
+  .site-head{flex-direction:column}
 }
 </style>
 </head>
 <body>
+<script src="admin-i18n.js"></script>
 
 <div id="login" class="login" hidden>
   <form id="lf">
@@ -116,6 +163,7 @@ a{color:inherit;text-decoration:none}
     <input type="password" id="pw" placeholder="รหัสผ่านแอดมิน" autocomplete="current-password" required>
     <label><input type="checkbox" id="remember" checked> จำการเข้าสู่ระบบในเครื่องนี้ (12 ชม.)</label>
     <button class="btn dark" id="lb">เข้าสู่ระบบ</button>
+    <div class="alang light" role="group" aria-label="ภาษา" translate="no"><button type="button" data-alang="lo">ລາວ</button><button type="button" data-alang="th">ไทย</button><button type="button" data-alang="en">EN</button></div>
   </form>
 </div>
 
@@ -131,10 +179,13 @@ a{color:inherit;text-decoration:none}
       <a href="#participants" data-p="participants"><span class="ic">👥</span>ผู้สมัคร / ตรวจสลิป<span class="bd" id="bdSlips" hidden></span></a>
       <a href="#checkin" data-p="checkin"><span class="ic">📷</span>Check-in</a>
       <a href="#results" data-p="results"><span class="ic">🏁</span>ผลการแข่งขัน</a>
+      <div class="nav-h">หน้าเว็บ</div>
+      <a href="#site" data-p="site"><span class="ic">🎨</span>ตั้งค่าหน้าเว็บ</a>
       <div class="nav-h">อื่นๆ</div>
       <a href="index.html" target="_blank" rel="noopener"><span class="ic">🌐</span>ดูหน้าเว็บ ↗</a>
     </nav>
     <div class="grow"></div>
+    <div class="alang" role="group" aria-label="ภาษา" translate="no"><button type="button" data-alang="lo">ລາວ</button><button type="button" data-alang="th">ไทย</button><button type="button" data-alang="en">EN</button></div>
     <nav class="nav"><button type="button" onclick="logout()"><span class="ic">⎋</span>ออกจากระบบ</button></nav>
   </aside>
 
@@ -166,6 +217,56 @@ a{color:inherit;text-decoration:none}
       </div>
     </div>
 
+    <div class="dash" id="site" hidden>
+      <div class="site-head"><div><h1>ตั้งค่าหน้าเว็บ</h1><div class="sub">โลโก้ สไลด์หน้าแรก เวลาเปิด-ปิด และข้อมูลติดต่อ — กดบันทึกแล้วหน้าเว็บเปลี่ยนทันที</div></div>
+        <a class="btn" href="index.html" target="_blank" rel="noopener">ดูหน้าเว็บ ↗</a></div>
+
+      <section class="card sc">
+        <h2>🏷️ โลโก้ร้าน</h2>
+        <div class="bd logo-row">
+          <div class="logo-prev" id="logoPrev"><span>7</span></div>
+          <div>
+            <label class="btn dark up"><input type="file" accept="image/png,image/jpeg,image/webp" id="logoFile" hidden>อัปโหลดโลโก้</label>
+            <button class="btn" type="button" id="logoDel">ใช้โลโก้เดิม (7)</button>
+            <p class="hint">แนะนำ PNG พื้นใส สี่เหลี่ยมจัตุรัสหรือแนวนอน · ไม่เกิน 5MB · ใช้เป็นไอคอนแท็บเบราว์เซอร์ด้วย</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card sc">
+        <h2>🖼️ สไลด์หน้าแรก<span class="sp"></span><label class="btn sm dark up"><input type="file" accept="image/png,image/jpeg,image/webp" id="slideNew" hidden multiple>+ เพิ่มสไลด์</label></h2>
+        <div class="bd">
+          <p class="hint" style="margin-top:0">รูปแนวนอน แนะนำ 1920×800 px · สูงสุด 8 สไลด์ · ถ้าไม่มีสไลด์ หน้าเว็บจะใช้สไลด์มาตรฐานของร้าน · ข้อความเว้นว่างได้ (ภาษาไทย/อังกฤษ ถ้าว่างจะใช้ภาษาลาว)</p>
+          <div id="slides"></div>
+        </div>
+      </section>
+
+      <section class="card sc">
+        <h2>🕘 เวลาเปิด-ปิด<span class="sp"></span><button class="btn sm" type="button" id="hrsCopy">ใช้เวลาของวันจันทร์กับทุกวัน</button></h2>
+        <div class="bd">
+          <div id="hrs" class="hrs"></div>
+          <div class="hrs-prev">แสดงบนเว็บ: <b id="hrsPrev" translate="no"></b></div>
+        </div>
+      </section>
+
+      <section class="card sc">
+        <h2>📞 ข้อมูลติดต่อ</h2>
+        <div class="bd fgrid">
+          <label>เบอร์โทร<input id="cPhone" placeholder="020 9884 4344"></label>
+          <label>WhatsApp<input id="cWa" placeholder="8562098844344" inputmode="numeric"></label>
+          <label>อีเมล<input id="cEmail" type="email" placeholder="shop@example.com"></label>
+          <label>ลิงก์ Google Maps<input id="cMap" placeholder="https://maps.app.goo.gl/…"></label>
+          <label>Facebook<input id="cFb" placeholder="https://facebook.com/…"></label>
+          <label>TikTok<input id="cTt" placeholder="https://tiktok.com/@…"></label>
+          <label class="full">ที่อยู่ (ລາວ)<input id="cAddrLo" placeholder="ບ້ານ ນາໄຊ, ເມືອງ ໄຊເສດຖາ, ນະຄອນຫຼວງວຽງຈັນ"></label>
+          <label>ที่อยู่ (ไทย)<input id="cAddrTh"></label>
+          <label>ที่อยู่ (English)<input id="cAddrEn"></label>
+        </div>
+      </section>
+
+      <div class="savebar"><span id="saveMsg" class="hint"></span><button class="btn dark" type="button" id="siteSave">💾 บันทึกการตั้งค่า</button></div>
+    </div>
+
     <iframe class="frame" id="frame" title="Admin" hidden allow="camera; clipboard-write; fullscreen"></iframe>
   </section>
 </div>
@@ -179,6 +280,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 const PAGES = {
   home:         { title: 'ภาพรวม' },
+  site:         { title: 'ตั้งค่าหน้าเว็บ' },
   orders:       { title: 'ออเดอร์ & งานซ่อม', file: 'admin-orders.html' },
   events:       { title: 'จัดการกิจกรรม', file: 'admin-events.html' },
   detail:       { title: 'แก้ไขกิจกรรม', file: 'admin-events-detail.html', parent: 'events' },
@@ -238,7 +340,9 @@ function route(){
   const { p, q } = parseHash();
   setActive(p);
   const fr = $('frame');
+  $('site').hidden = p !== 'site';
   if (p === 'home') { fr.hidden = true; $('dash').hidden = false; loadDash(); return; }
+  if (p === 'site') { fr.hidden = true; $('dash').hidden = true; loadSite(); return; }
   $('dash').hidden = true; fr.hidden = false;
   const want = PAGES[p].file + (q ? '?' + q : '');
   const cur = fr.dataset.at || '';
@@ -299,12 +403,12 @@ $('frame').addEventListener('load', () => {
 const OPEN = s => !['ສຳເລັດ', 'ຍົກເລີກ'].includes(s);
 const TYPE = { order: ['🛒', 'ออเดอร์'], booking: ['🔧', 'จองซ่อม'], film: ['🎨', 'ฟิล์ม'] };
 const EV_ST = { DRAFT: ['ร่าง', 'mute'], PUBLISHED: ['ประกาศแล้ว', 'mid'], REGISTRATION_OPEN: ['เปิดรับสมัคร', 'ok'], REGISTRATION_CLOSED: ['ปิดรับสมัคร', 'mid'], EVENT_FINISHED: ['จบแล้ว', 'mute'], CANCELLED: ['ยกเลิก', 'mute'] };
-const thDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }); };
+const thDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? 'เมื่อกี้' : m < 60 ? m + ' นาทีที่แล้ว' : m < 1440 ? Math.round(m / 60) + ' ชม.ที่แล้ว' : Math.round(m / 1440) + ' วันที่แล้ว'; };
 let dashBusy = false;
 async function loadDash(){
   if (dashBusy) return; dashBusy = true;
-  $('today').textContent = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  $('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const [inbox, sum] = await Promise.allSettled([post('adminList', { days: 60 }), post('evt.adminSummary', {})]);
   dashBusy = false;
   const auth = [inbox, sum].some(r => r.status === 'rejected' && /ADMIN_AUTH/.test(r.reason.message));
@@ -360,6 +464,152 @@ async function loadDash(){
 }
 function badge(id, n){ const el = $(id); el.hidden = !n; el.textContent = n; }
 function newEvent(){ go('detail'); }
+
+/* ── ตั้งค่าหน้าเว็บ ── */
+const DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+const LINKS = [['', '— ไม่มีลิงก์ —'], ['catalogue.html?cat=bikes', 'จักรยาน'], ['catalogue.html?cat=used', 'มือสอง'], ['catalogue.html?cat=parts', 'อะไหล่'], ['catalogue.html?cat=accessories', 'อุปกรณ์'],
+  ['catalogue.html?sale=1', 'Sale'], ['service.html#book', 'จองคิว Workshop'], ['film.html', 'ฟิล์มหุ้มสี'], ['events.html', 'กิจกรรม'], ['store.html', 'ที่ตั้งร้าน'], ['contact.html', 'ติดต่อ'], ['*', 'ลิงก์อื่น…']];
+let site = null, siteDirty = false;
+const blankHours = () => Array.from({ length: 7 }, () => ({ closed: false, open: '09:00', close: '18:00' }));
+async function loadSite(){
+  if (site) return renderSite();
+  $('slides').innerHTML = '<div class="sk" style="height:120px"></div>';
+  try {
+    const j = await (await fetch(`${API_URL}?action=getSiteConfig&secret=${API_SECRET}`)).json();
+    if (j.ok === false) throw new Error(j.error);
+    site = j.data || {};
+  } catch (e) { $('slides').innerHTML = `<div class="empty">โหลดการตั้งค่าไม่ได้: ${esc(e.message)}</div>`; return; }
+  site.slides = site.slides || []; site.hours = site.hours && site.hours.length === 7 ? site.hours : blankHours();
+  site.contact = Object.assign({ phone: '020 9884 4344', whatsapp: '8562098844344', email: 'Lock.xayasing2021@gmail.com', mapUrl: 'https://maps.app.goo.gl/NPF26zNDqQ4isNP28', facebook: '', tiktok: '',
+    address: { lo: 'ບ້ານ ນາໄຊ, ເມືອງ ໄຊເສດຖາ, ນະຄອນຫຼວງວຽງຈັນ', th: '', en: '' } }, site.contact || {});
+  renderSite(); fillContact();
+}
+function renderSite(){
+  const lp = $('logoPrev');
+  lp.className = 'logo-prev' + (site.logo ? ' img' : ''); lp.innerHTML = site.logo ? `<img src="${esc(site.logo)}" alt="logo">` : '<span>7</span>';
+  $('logoDel').hidden = !site.logo;
+  $('slides').innerHTML = site.slides.length ? site.slides.map((x, i) => {
+    const L = (k, l) => esc(((x[k] || {})[l]) || '');
+    const known = LINKS.some(([v]) => v === (x.link || '')), sel = known ? (x.link || '') : '*';
+    return `<div class="sl" data-i="${i}">
+      <div><div class="sl-img" style="background-image:url('${esc(x.image)}')"><span class="num">${i + 1}</span></div>
+        <div class="sl-act">
+          <label class="btn sm up"><input type="file" accept="image/png,image/jpeg,image/webp" data-rep="${i}" hidden>เปลี่ยนรูป</label>
+          <button class="btn sm" type="button" data-mv="-1" ${i ? '' : 'disabled'}>↑</button>
+          <button class="btn sm" type="button" data-mv="1" ${i < site.slides.length - 1 ? '' : 'disabled'}>↓</button>
+          <button class="btn sm" type="button" data-del style="color:var(--bad);border-color:var(--bad)">ลบ</button>
+        </div></div>
+      <div class="sl-f">
+        <div class="k">หัวข้อ</div><input data-f="title.lo" placeholder="ລາວ" value="${L('title', 'lo')}"><input data-f="title.th" placeholder="ไทย" value="${L('title', 'th')}"><input data-f="title.en" placeholder="English" value="${L('title', 'en')}">
+        <div class="k">ข้อความรอง</div><input data-f="text.lo" placeholder="ລາວ" value="${L('text', 'lo')}"><input data-f="text.th" placeholder="ไทย" value="${L('text', 'th')}"><input data-f="text.en" placeholder="English" value="${L('text', 'en')}">
+        <div class="k">ปุ่ม และลิงก์ (ไม่ใส่ข้อความปุ่ม = กดทั้งสไลด์ได้)</div><input data-f="button.lo" placeholder="ລາວ" value="${L('button', 'lo')}"><input data-f="button.th" placeholder="ไทย" value="${L('button', 'th')}"><input data-f="button.en" placeholder="English" value="${L('button', 'en')}">
+        <div class="lk"><select data-lsel>${LINKS.map(([v, t]) => `<option value="${esc(v)}" ${v === sel ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
+          <input data-f="link" placeholder="https://… หรือ events.html" value="${esc(x.link || '')}" ${sel === '*' ? '' : 'hidden'}></div>
+      </div></div>`;
+  }).join('') : '<div class="empty">ยังไม่มีสไลด์ — กด “+ เพิ่มสไลด์” เพื่ออัปโหลดรูป (ตอนนี้หน้าเว็บใช้สไลด์มาตรฐาน)</div>';
+  $('hrs').innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => { const h = site.hours[d]; return `<div class="hr ${h.closed ? 'off' : ''}" data-d="${d}">
+      <b>${DAYS[d]}</b><label><input type="checkbox" data-open ${h.closed ? '' : 'checked'}> เปิด</label>
+      <input type="time" lang="en-GB" data-t="open" value="${esc(h.open)}" aria-label="เปิด"><input type="time" lang="en-GB" data-t="close" value="${esc(h.close)}" aria-label="ปิด"></div>`; }).join('');
+  $('hrsPrev').textContent = hoursText();
+}
+function hoursText(){
+  const l = (window.admI18n && admI18n.lang) || 'th';
+  const D = { lo: ['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ'], th: DAYS, en: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] }[l];
+  const W = { lo: ['ເປີດທຸກມື້ ', 'ປິດ'], th: ['เปิดทุกวัน ', 'ปิด'], en: ['Open daily ', 'closed'] }[l];
+  const h = site.hours, key = x => x.closed ? 'x' : x.open + '–' + x.close;
+  if (h.every(x => key(x) === key(h[0])) && !h[0].closed) return W[0] + key(h[0]);
+  const g = []; [1, 2, 3, 4, 5, 6, 0].forEach(d => { const q = g[g.length - 1]; if (q && q.k === key(h[d])) q.d.push(d); else g.push({ k: key(h[d]), d: [d] }); });
+  return g.map(x => (x.d.length > 1 ? D[x.d[0]] + '–' + D[x.d[x.d.length - 1]] : D[x.d[0]]) + ' ' + (x.k === 'x' ? W[1] : x.k)).join(' · ');
+}
+document.addEventListener('adminlangchange', () => { if (site) $('hrsPrev').textContent = hoursText(); });
+function fillContact(){
+  const c = site.contact, a = c.address || {};
+  [['cPhone', c.phone], ['cWa', c.whatsapp], ['cEmail', c.email], ['cMap', c.mapUrl], ['cFb', c.facebook], ['cTt', c.tiktok], ['cAddrLo', a.lo], ['cAddrTh', a.th], ['cAddrEn', a.en]].forEach(([id, v]) => $(id).value = v || '');
+}
+function markDirty(){ siteDirty = true; $('saveMsg').textContent = 'มีการแก้ไขที่ยังไม่บันทึก'; }
+// ຍໍ່ຮູບກ່ອນອັບໂຫຼດ (ໂລໂກ້ ≤ 600px PNG, ສະໄລ້ ≤ 2400px JPEG)
+function shrink(file, max, keepPng){
+  return new Promise((ok, no) => {
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return no(new Error('รองรับเฉพาะ JPG / PNG / WebP'));
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(url);
+      const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      ok(keepPng && file.type === 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', .86)); };
+    img.onerror = () => no(new Error('อ่านรูปไม่ได้'));
+    img.src = url;
+  });
+}
+async function upload(file, kind){
+  const data = await shrink(file, kind === 'logo' ? 600 : 2400, kind === 'logo');
+  const r = await post('evt.uploadCover', { image: data, kind });
+  return r.url;
+}
+$('logoFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  $('logoPrev').innerHTML = '<div class="sk" style="width:100%;height:100%"></div>';
+  try { site.logo = await upload(f, 'logo'); markDirty(); toast('อัปโหลดโลโก้แล้ว — กดบันทึก'); } catch (x) { toast(x.message); }
+  renderSite();
+};
+$('logoDel').onclick = () => { site.logo = ''; markDirty(); renderSite(); };
+$('slideNew').onchange = async e => {
+  const files = [...e.target.files]; e.target.value = '';
+  for (const f of files) {
+    if (site.slides.length >= 8) { toast('สูงสุด 8 สไลด์'); break; }
+    toast('กำลังอัปโหลด ' + f.name + '…');
+    try { site.slides.push({ image: await upload(f, 'slide'), title: {}, text: {}, button: {}, link: '' }); markDirty(); renderSite(); }
+    catch (x) { toast(x.message); }
+  }
+  if (files.length) toast('เพิ่มสไลด์แล้ว — ใส่ข้อความแล้วกดบันทึก');
+};
+$('slides').addEventListener('input', e => {
+  const row = e.target.closest('.sl'), f = e.target.dataset.f; if (!row || !f) return;
+  const x = site.slides[+row.dataset.i], [k, l] = f.split('.');
+  if (l) { x[k] = x[k] || {}; x[k][l] = e.target.value; } else x[k] = e.target.value.trim();
+  markDirty();
+});
+$('slides').addEventListener('change', async e => {
+  const row = e.target.closest('.sl'); if (!row) return; const i = +row.dataset.i;
+  if (e.target.matches('[data-lsel]')) {
+    const v = e.target.value, inp = row.querySelector('[data-f="link"]');
+    inp.hidden = v !== '*'; if (v !== '*') { site.slides[i].link = v; inp.value = v; } else inp.focus();
+    markDirty();
+  }
+  if (e.target.dataset.rep !== undefined) {
+    const f = e.target.files[0]; if (!f) return;
+    try { site.slides[i].image = await upload(f, 'slide'); markDirty(); renderSite(); } catch (x) { toast(x.message); }
+  }
+});
+$('slides').addEventListener('click', e => {
+  const row = e.target.closest('.sl'); if (!row) return; const i = +row.dataset.i;
+  if (e.target.matches('[data-mv]')) { const j = i + +e.target.dataset.mv; [site.slides[i], site.slides[j]] = [site.slides[j], site.slides[i]]; markDirty(); renderSite(); }
+  if (e.target.matches('[data-del]') && confirm('ลบสไลด์ที่ ' + (i + 1) + '?')) { site.slides.splice(i, 1); markDirty(); renderSite(); }
+});
+$('hrs').addEventListener('input', e => {
+  const r = e.target.closest('.hr'); if (!r) return; const h = site.hours[+r.dataset.d];
+  if (e.target.matches('[data-open]')) { h.closed = !e.target.checked; r.classList.toggle('off', h.closed); }
+  if (e.target.dataset.t) h[e.target.dataset.t] = e.target.value;
+  $('hrsPrev').textContent = hoursText(); markDirty();
+});
+$('hrsCopy').onclick = () => { const m = site.hours[1]; site.hours = site.hours.map(() => ({ ...m })); renderSite(); markDirty(); };
+document.querySelectorAll('.fgrid input').forEach(i => i.addEventListener('input', markDirty));
+$('siteSave').onclick = async () => {
+  const b = $('siteSave');
+  for (const [d, h] of site.hours.entries()) if (!h.closed && (!h.open || !h.close || h.open >= h.close)) return toast('เวลาเปิด-ปิดวัน' + DAYS[d] + ' ไม่ถูกต้อง');
+  site.contact = { phone: $('cPhone').value.trim(), whatsapp: $('cWa').value.replace(/\D/g, ''), email: $('cEmail').value.trim(), mapUrl: $('cMap').value.trim(),
+    facebook: $('cFb').value.trim(), tiktok: $('cTt').value.trim(), address: { lo: $('cAddrLo').value.trim(), th: $('cAddrTh').value.trim(), en: $('cAddrEn').value.trim() } };
+  b.disabled = true; b.textContent = 'กำลังบันทึก…';
+  try {
+    const saved = await post('saveSiteConfig', { config: site });
+    site = Object.assign(saved, { slides: saved.slides || [], hours: saved.hours, contact: saved.contact });
+    try { localStorage.setItem('sd_site', JSON.stringify(saved)); localStorage.setItem('sd_site_t', String(Date.now())); } catch (_) {}
+    siteDirty = false; $('saveMsg').textContent = 'บันทึกแล้ว · ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    renderSite(); fillContact(); toast('บันทึกแล้ว ✓ หน้าเว็บอัปเดตแล้ว');
+  } catch (x) { toast(x.message); }
+  finally { b.disabled = false; b.textContent = '💾 บันทึกการตั้งค่า'; }
+};
+window.addEventListener('beforeunload', e => { if (siteDirty) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ── start ── */
 async function start(){
