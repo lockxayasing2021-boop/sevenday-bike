@@ -1,0 +1,35 @@
+# Sevenday Bike — ອັບເດດສິນຄ້າ + ຮູບ ເຂົ້າ GitHub Pages (ໃຫ້ໜ້າເວັບໂຫຼດໄວ)
+name: Sync catalog & images
+on:
+  schedule:
+    - cron: '*/15 * * * *'      # ທຸກ 15 ນາທີ
+  workflow_dispatch:             # ກົດ "Run workflow" ເອງໄດ້ / Apps Script ສັ່ງໄດ້
+permissions:
+  contents: write
+concurrency:
+  group: sync-catalog
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: npm install --prefix .github/sync --no-audit --no-fund
+      - name: Sync
+        env:
+          API_URL: https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec
+          API_SECRET: SDdMc3wNjJEevs60n2oMQeGnuI
+        run: node .github/sync/sync-catalog.mjs
+      - name: Commit
+        run: |
+          git add -A data img
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git config user.name "sevenday-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update catalog & images"
+          git push
