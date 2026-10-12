@@ -289,13 +289,34 @@ main.wrap{padding-top:8px}
 .crumbs{font-size:13px;color:var(--grey-600);padding:18px 0}
 .crumbs a:hover{text-decoration:underline}
 .pd{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;padding-bottom:56px}
-.gallery-main{aspect-ratio:1;background:var(--grey-100);display:grid;place-items:center;position:relative}
-.gallery-main img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
-.gallery-main svg{width:62%;color:var(--grey-600)}
-.thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
-.thumbs button{aspect-ratio:1;background:var(--grey-100);border:2px solid transparent}
+.gal{position:relative}
+.gtrack{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;aspect-ratio:1;background:var(--grey-100);scrollbar-width:none;overscroll-behavior-x:contain}
+.gtrack::-webkit-scrollbar{display:none}
+.gslide{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;display:grid;place-items:center;position:relative;overflow:hidden}
+.gslide>img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.gslide>svg{width:62%;color:var(--grey-600)}
+.gslide iframe{border:0;width:100%;height:100%;background:#000}
+.gslide.yt iframe{height:auto;aspect-ratio:16/9}
+.gslide.tt iframe{width:auto;max-width:100%;aspect-ratio:9/16;background:#fff}
+.gposter{position:absolute;inset:0;display:grid;place-items:center;background:#111 center/cover no-repeat;color:#fff;cursor:pointer;border:0;width:100%}
+.gposter.tt{background-color:#000}
+.gposter .pl{width:76px;height:76px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;border:2px solid #fff}
+.gposter .pl svg{width:30px;height:30px;margin-left:5px}
+.gposter small{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-weight:700;font-size:13px;text-shadow:0 1px 3px #000}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18);display:grid;place-items:center;font-size:22px;font-weight:700;z-index:2}
+.gnav:disabled{opacity:.35}.gnav.prev{left:12px}.gnav.next{right:12px}.gnav[hidden]{display:none}
+.gcount{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;font-weight:700;padding:3px 9px;border-radius:12px;z-index:2}
+.gdots{display:none;justify-content:center;gap:6px;margin-top:10px}
+.gdots i{width:7px;height:7px;border-radius:50%;background:var(--grey-300)}.gdots i.on{background:#000}
+.thumbs{display:flex;gap:10px;margin-top:10px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.thumbs button{flex:0 0 calc((100% - 40px)/5);aspect-ratio:1;background:var(--grey-100) center/cover no-repeat;border:2px solid transparent;position:relative;display:grid;place-items:center}
 .thumbs button.on{border-color:#000}
 .thumbs img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.thumbs .vid{background-color:#111;color:#fff}
+.thumbs .vid img{object-fit:cover;mix-blend-mode:normal}
+.thumbs .vid b{position:absolute;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;font-size:12px;border:1.5px solid #fff}
+.thumbs .vid em{font-style:normal;font-size:11px;font-weight:800}
+@media (max-width:860px){.gnav{display:none}.gdots{display:flex}.thumbs{display:none}.pd>div:first-child{margin:0 -20px}}
 .info{position:sticky;top:100px;align-self:start}
 .brand{font-weight:700;color:var(--grey-600)}
 .info h1{font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.01em;line-height:1.1;margin:4px 0 10px}
@@ -351,7 +372,12 @@ main.wrap{padding-top:8px}
   <nav class="crumbs"><a href="index.html">ໜ້າຫຼັກ</a> / <a href="catalogue.html" id="crumbCat">ສິນຄ້າ</a> / <span id="crumbName">...</span></nav>
   <div class="pd">
     <div>
-      <div class="gallery-main" id="mainImg"></div>
+      <div class="gal" id="gal">
+        <div class="gtrack" id="gtrack"></div>
+        <button class="gnav prev" id="gPrev" aria-label="ກ່ອນໜ້າ" hidden>‹</button><button class="gnav next" id="gNext" aria-label="ຕໍ່ໄປ" hidden>›</button>
+        <span class="gcount" id="gCount" hidden></span>
+      </div>
+      <div class="gdots" id="gDots"></div>
       <div class="thumbs" id="thumbs"></div>
     </div>
     <div class="info">
@@ -420,7 +446,7 @@ function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທ
 </script>
 <script>
 const sku = new URLSearchParams(location.search).get('sku');
-let P=null, V=[], sel={color:'',size:''};
+let P=null, V=[], M=[], gi=0, sel={color:'',size:''};
 
 async function load(){
   if(!sku){ return notFound('ບໍ່ໄດ້ເລືອກສິນຄ້າ'); }
@@ -429,11 +455,11 @@ async function load(){
     const j = await r.json();
     const raw = j.data?.product || j.data || j.product || j;
     if(!raw || !raw.sku) throw new Error(j.error||'not found');
-    P = mapP(raw); V = raw.variants||[];
+    P = mapP(raw); V = raw.variants||[]; M = (raw.media||[]).filter(m=>m&&m.url&&(m.type==='image'||m.embed));
   }catch(e){ return notFound('ບໍ່ພົບສິນຄ້ານີ້ ຫຼື ສິນຄ້າຖືກລຶບອອກແລ້ວ'); }
   window._catalog=[P];
   document.title = `${P.name} — Sevenday Bike`;
-  render(); loadRelated();
+  renderGallery(); render(); loadRelated();
 }
 function notFound(msg){
   document.getElementById('page').innerHTML = `<div class="notfound"><h1>${msg}</h1><p style="color:var(--grey-600);margin-bottom:24px">ລອງຄົ້ນຫາ ຫຼື ກັບໄປເບິ່ງສິນຄ້າທັງໝົດ</p><a class="btn btn-black" href="catalogue.html">ເບິ່ງສິນຄ້າທັງໝົດ</a></div>`;
@@ -443,9 +469,6 @@ function current(){ if(!sel.color&&!sel.size) return P; const v=V.find(x=>(!sel.
 
 function render(){
   const c=current();
-  const img = P.image ? `<img src="${P.image}" alt="${P.name}">` : `<svg viewBox="0 0 120 70"><use href="${iconFor(P.category+' '+P.name)}"/></svg>`;
-  document.getElementById('mainImg').innerHTML = img;
-  document.getElementById('thumbs').innerHTML = P.image ? `<button class="on"><img src="${P.image}" alt=""></button>` : '';
   document.getElementById('brand').textContent = P.brand;
   document.getElementById('name').textContent = P.name;
   document.getElementById('crumbName').textContent = P.name;
@@ -473,7 +496,61 @@ function render(){
   document.getElementById('desc').textContent = `${P.name} ຈາກ ${P.brand}. ສອບຖາມລາຍລະອຽດເພີ່ມເຕີມ ຫຼື ນັດມາລອງທີ່ຮ້ານໄດ້.`;
   document.getElementById('spec').innerHTML = [['ຍີ່ຫໍ້',P.brand],['ໝວດໝູ່',(SUBS[P.sub]&&SUBS[P.sub][1])||P.category],['ປະເພດ',P.category],['ລະຫັດສິນຄ້າ',P.sku],['ຫົວໜ່ວຍ',P.unit]].filter(r=>r[1]).map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
 }
-function pick(k,v){ sel[k]=sel[k]===v?'':v; render(); }
+function pick(k,v){
+  sel[k]=sel[k]===v?'':v; render();
+  if(k==='color'&&sel.color){ const i=M.findIndex(m=>m.color&&m.color.toLowerCase()===sel.color.toLowerCase()); if(i>=0) gGo(i); }
+}
+
+/* ---------- gallery: images + videos (MP4 on Drive, TikTok, YouTube) ---------- */
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>';
+function renderGallery(){
+  if(!M.length && P.image) M=[{type:'image', url:P.image}];
+  const tr=document.getElementById('gtrack');
+  if(!M.length){ tr.innerHTML=`<div class="gslide"><svg viewBox="0 0 120 70"><use href="${iconFor(P.category+' '+P.name)}"/></svg></div>`; return; }
+  tr.innerHTML = M.map((m,i)=>{
+    if(m.type==='image') return `<div class="gslide"><img src="${esc(m.url)}" alt="${esc(P.name)}" ${i?'loading="lazy"':''} draggable="false"></div>`;
+    const cls = m.type==='tiktok'?'tt':m.type==='youtube'?'yt':'mp';
+    const bg = m.thumb ? ` style="background-image:url('${esc(m.thumb)}')"` : '';
+    return `<div class="gslide ${cls}" data-i="${i}"><button class="gposter ${cls}"${bg} data-play="${i}" aria-label="ເບິ່ງວິດີໂອ"><span class="pl">${PLAY}</span><small>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':''}</small></button></div>`;
+  }).join('');
+  const many = M.length>1;
+  document.getElementById('thumbs').innerHTML = many ? M.map((m,i)=> m.type==='image'
+    ? `<button data-g="${i}" aria-label="${i+1}"><img src="${esc(m.thumb||m.url)}" alt="" loading="lazy"></button>`
+    : `<button data-g="${i}" class="vid" aria-label="${i+1}">${m.thumb?`<img src="${esc(m.thumb)}" alt="" loading="lazy">`:`<em>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':'MP4'}</em>`}<b>▶</b></button>`).join('') : '';
+  document.getElementById('gDots').innerHTML = many ? M.map(()=>'<i></i>').join('') : '';
+  document.getElementById('gPrev').hidden = document.getElementById('gNext').hidden = document.getElementById('gCount').hidden = !many;
+  gSync(0);
+}
+function gGo(i){ const tr=document.getElementById('gtrack'); i=Math.max(0,Math.min(M.length-1,i)); tr.scrollTo({left:i*tr.clientWidth}); gSync(i); }
+function gSync(i){
+  if(i!==gi){ const old=document.querySelector(`.gslide[data-i="${gi}"] iframe`); if(old) stopVideo(gi); }
+  gi=i;
+  document.querySelectorAll('#thumbs button').forEach((b,k)=>b.classList.toggle('on',k===i));
+  document.querySelectorAll('#gDots i').forEach((b,k)=>b.classList.toggle('on',k===i));
+  const t=document.querySelector(`#thumbs [data-g="${i}"]`); if(t) t.scrollIntoView({block:'nearest',inline:'nearest'});
+  document.getElementById('gCount').textContent = `${i+1} / ${M.length}`;
+  document.getElementById('gPrev').disabled = i===0; document.getElementById('gNext').disabled = i===M.length-1;
+}
+function playVideo(i){
+  const m=M[i], sl=document.querySelector(`.gslide[data-i="${i}"]`); if(!m||!sl) return;
+  let src=m.embed; if(m.type==='youtube') src+='?autoplay=1&rel=0&playsinline=1';
+  sl.innerHTML=`<iframe src="${esc(src)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="${esc(P.name)}"></iframe>`;
+}
+function stopVideo(i){            // leaving a video slide → stop playback, show the poster again
+  const m=M[i], sl=document.querySelector(`.gslide[data-i="${i}"]`); if(!m||!sl) return;
+  const cls=m.type==='tiktok'?'tt':m.type==='youtube'?'yt':'mp', bg=m.thumb?` style="background-image:url('${esc(m.thumb)}')"`:'';
+  sl.innerHTML=`<button class="gposter ${cls}"${bg} data-play="${i}" aria-label="ເບິ່ງວິດີໂອ"><span class="pl">${PLAY}</span><small>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':''}</small></button>`;
+}
+(function(){
+  const tr=document.getElementById('gtrack'); let t;
+  tr.addEventListener('scroll',()=>{ clearTimeout(t); t=setTimeout(()=>{ const i=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth)); if(i!==gi) gSync(i); },80); },{passive:true});
+  tr.addEventListener('click',e=>{ const b=e.target.closest('[data-play]'); if(b) playVideo(+b.dataset.play); });
+  document.getElementById('thumbs').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(b) gGo(+b.dataset.g); });
+  document.getElementById('gPrev').onclick=()=>gGo(gi-1); document.getElementById('gNext').onclick=()=>gGo(gi+1);
+  document.addEventListener('keydown',e=>{ if(!M.length||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return; if(e.key==='ArrowLeft') gGo(gi-1); if(e.key==='ArrowRight') gGo(gi+1); });
+  addEventListener('resize',()=>{ tr.style.scrollBehavior='auto'; tr.scrollLeft=gi*tr.clientWidth; tr.style.scrollBehavior=''; });
+})();
 function setQty(d){ const i=document.getElementById('qty'); i.value=Math.max(1,(parseInt(i.value)||1)+d); }
 function addCurrent(){
   const colors=V.some(v=>v.color), sizes=V.some(v=>v.size);
