@@ -314,10 +314,10 @@ main.wrap{padding-top:8px}
 .hero-s .facts div{background:#000;padding:18px}
 .hero-s .facts b{display:block;font-size:26px;font-weight:800}
 .hero-s .facts small{opacity:.7;font-size:13px}
-.pk{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pk{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .pkc{border:1px solid var(--grey-300);padding:28px;display:flex;flex-direction:column}
 .pkc.pop{border:2px solid #000;position:relative}
-.pkc.pop::before{content:'ນິຍົມທີ່ສຸດ';position:absolute;top:-13px;left:24px;background:#000;color:#fff;font-size:12px;font-weight:800;padding:4px 10px}
+.pkc.pop::before{content:attr(data-pop);position:absolute;top:-13px;left:24px;background:#000;color:#fff;font-size:12px;font-weight:800;padding:4px 10px}
 .pkc h3{font-size:22px;font-weight:800}
 .pkc .pr{font-size:30px;font-weight:800;margin:10px 0 2px}
 .pkc .tm{font-size:13px;color:var(--grey-600);margin-bottom:18px}
@@ -366,16 +366,16 @@ main.wrap{padding-top:8px}
 <section class="hero-s"><div class="wrap">
   <div><h1>Workshop ຂອງ Sevenday</h1><p>ຊ່າງປະຈຳຮ້ານ ສ້ອມ ແລະ ບຳລຸງຮັກສາລົດຖີບທຸກຍີ່ຫໍ້. ຈອງຄິວອອນລາຍ ຮູ້ລາຄາກ່ອນ ບໍ່ມີຄ່າໃຊ້ຈ່າຍແອບແຝງ.</p>
   <a class="btn btn-white" href="#book">ຈອງຄິວ Workshop</a></div>
-  <div class="facts"><div><b>3</b><small>ແພັກເກດ Service</small></div><div><b>ທຸກຍີ່ຫໍ້</b><small>ຮັບສ້ອມ</small></div><div><b>7 ມື້</b><small>ເປີດທຸກມື້</small></div></div>
+  <div class="facts"><div><b id="pkCount">3</b><small>ແພັກເກດ Service</small></div><div><b>ທຸກຍີ່ຫໍ້</b><small>ຮັບສ້ອມ</small></div><div><b>7 ມື້</b><small>ເປີດທຸກມື້</small></div></div>
 </div></section>
 
 <section class="section wrap">
   <div class="sec-head"><h2>ແພັກເກດ Service</h2></div>
-  <div class="pk">
+  <div class="pk" id="pkList">
     <div class="pkc" id="basic"><h3>Basic</h3><div class="pr">₭80,000</div><div class="tm">ໃຊ້ເວລາ ~1 ຊົ່ວໂມງ</div>
       <ul><li>ກວດ ແລະ ປັບເບຣກ</li><li>ປັບເກຍໃຫ້ປ່ຽນລື່ນ</li><li>ເຕີມລົມຢາງ ຕາມມາດຕະຖານ</li><li>ຫຼໍ່ລື່ນໂສ້</li><li>ກວດຄວາມແໜ້ນນັອດທັງຄັນ</li></ul>
       <a class="btn btn-line" href="#book" onclick="pickPk('Basic')">ຈອງ Basic</a></div>
-    <div class="pkc pop" id="standard"><h3>Standard</h3><div class="pr">₭200,000</div><div class="tm">ໃຊ້ເວລາ ~1 ມື້</div>
+    <div class="pkc pop" id="standard" data-pop="ນິຍົມທີ່ສຸດ"><h3>Standard</h3><div class="pr">₭200,000</div><div class="tm">ໃຊ້ເວລາ ~1 ມື້</div>
       <ul><li class="inh">ທຸກຢ່າງໃນ Basic</li><li>ລ້າງລະບົບຂັບ (ໂສ້ ເຟືອງ ຈານ)</li><li>ຕັ້ງສູນລໍ້ (ດັດລໍ້)</li><li>ກວດແບຣິ່ງ ດຸມ ຄໍ ກະໂຫຼກ</li><li>ລ້າງລົດຖີບທັງຄັນ</li></ul>
       <a class="btn btn-black" href="#book" onclick="pickPk('Standard')">ຈອງ Standard</a></div>
     <div class="pkc" id="ultimate"><h3>Ultimate</h3><div class="pr">₭500,000</div><div class="tm">ໃຊ້ເວລາ 2–3 ມື້</div>
@@ -387,7 +387,7 @@ main.wrap{padding-top:8px}
 
 <section class="section wrap">
   <div class="sec-head"><h2>ສ້ອມແຍກລາຍການ</h2></div>
-  <div class="rp">
+  <div class="rp" id="rpList">
     <div><b>ສ້ອມທົ່ວໄປ</b><small>ປະເຊື້ອຢາງ, ປ່ຽນຢາງໃນ</small><span>ຈາກ ₭30,000</span></div>
     <div><b>ລະບົບເບຣກ</b><small>ປ່ຽນຜ້າເບຣກ, ໄລ່ລົມເບຣກນ້ຳມັນ</small><span>ຈາກ ₭60,000</span></div>
     <div><b>ລະບົບຂັບ</b><small>ປ່ຽນໂສ້ ເຟືອງ ຕີນຜີ</small><span>ຈາກ ₭80,000</span></div>
@@ -415,7 +415,7 @@ main.wrap{padding-top:8px}
     <div class="alert" style="margin-top:20px"><b>ເວລາຮັບລົດ:</b> <span data-shop="hours"></span></div></div>
   <div id="bookBox">
   <form id="bf" onsubmit="book(event)" novalidate>
-    <div class="field"><label>ແພັກເກດ</label><div class="pkpick">
+    <div class="field"><label>ແພັກເກດ</label><div class="pkpick" id="pkPick">
       <label><input type="radio" name="pk" value="Basic">Basic<small>₭80,000</small></label>
       <label><input type="radio" name="pk" value="Standard" checked>Standard<small>₭200,000</small></label>
       <label><input type="radio" name="pk" value="Ultimate">Ultimate<small>₭500,000</small></label>
@@ -461,6 +461,7 @@ main.wrap{padding-top:8px}
 
 
 <script src="i18n.js"></script>
+<script src="site-defaults.js"></script>
 <script src="layout.js"></script>
 <script>
 
@@ -471,20 +472,45 @@ function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທ
 
 const $=id=>document.getElementById(id);
 const t=new Date(); t.setDate(t.getDate()+1); $('bDate').min=new Date().toISOString().slice(0,10); $('bDate').value=t.toISOString().slice(0,10);
-function pickPk(v){ document.querySelector(`[name=pk][value=${v}]`).checked=true; }
-const h=location.hash.replace('#',''); if(['basic','standard','ultimate'].includes(h)) pickPk(h[0].toUpperCase()+h.slice(1));
+/* ແພັກເກດ ແລະ ລາຄາ: ຈາກ Admin → ຕັ້ງຄ່າໜ້າເວັບ (ຖ້າຍັງບໍ່ຕັ້ງ ໃຊ້ site-defaults.js) */
+const POP = { lo: 'ນິຍົມທີ່ສຸດ', th: 'ยอดนิยม', en: 'Most popular' };
+const BOOK = { lo: 'ຈອງ ', th: 'จอง ', en: 'Book ' }, FROM = { lo: 'ຈາກ ', th: 'เริ่ม ', en: 'From ' };
+const svc = () => { const s = SD_SITE.services; return s && ((s.packages || []).length || (s.repairs || []).length) ? s : window.DEF_SERVICES; };
+const pEsc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const slug = n => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pk';
+function renderServices(){
+  const S = svc(), L = sdLang(), P = S.packages || [];
+  const cur = (document.querySelector('[name=pk]:checked') || {}).value;
+  $('pkCount').textContent = P.length;
+  $('pkList').innerHTML = P.map(p => {
+    const inh = it => /^(ທຸກຢ່າງໃນ|ทุกอย่างใน|Everything in)/.test(it.lo || it.th || it.en || '');
+    return `<div class="pkc ${p.popular ? 'pop' : ''}" id="${slug(p.name)}" data-pop="${POP[L]}"><h3 translate="no">${pEsc(p.name)}</h3><div class="pr" translate="no">${p.price_lak === '' ? '' : fmtLak(p.price_lak)}</div><div class="tm">${sdHtml(p.time)}</div>
+      <ul>${(p.items || []).map(it => `<li${inh(it) ? ' class="inh"' : ''}>${sdHtml(it)}</li>`).join('')}</ul>
+      <a class="btn ${p.popular ? 'btn-black' : 'btn-line'}" href="#book" data-pick="${pEsc(p.name)}"><span translate="no">${BOOK[L]}${pEsc(p.name)}</span></a></div>`;
+  }).join('');
+  $('rpList').innerHTML = (S.repairs || []).map(r => `<div><b>${sdHtml(r.name)}</b><small>${sdHtml(r.desc)}</small><span>${r.price_lak !== '' && r.price_lak != null
+      ? `<span translate="no">${FROM[L]}${fmtLak(r.price_lak)}</span>` : r.link ? `<a href="${pEsc(r.link)}" style="text-decoration:underline">${sdHtml(r.note)}</a>` : sdHtml(r.note)}</span></div>`).join('');
+  const sel = P.some(p => p.name === cur) ? cur : (P.find(p => p.popular) || P[0] || {}).name;
+  $('pkPick').innerHTML = P.map(p => `<label translate="no"><input type="radio" name="pk" value="${pEsc(p.name)}" data-price="${pEsc(p.price_lak)}" ${p.name === sel ? 'checked' : ''}>${pEsc(p.name)}<small>${p.price_lak === '' ? '' : fmtLak(p.price_lak)}</small></label>`).join('');
+}
+function pickPk(v){ const r = [...document.querySelectorAll('[name=pk]')].find(x => x.value.toLowerCase() === String(v).toLowerCase() || slug(x.value) === String(v).toLowerCase()); if (r) r.checked = true; }
+renderServices();
+document.addEventListener('click', e => { const a = e.target.closest('[data-pick]'); if (a) pickPk(a.dataset.pick); });
+['currencychange', 'langchange', 'siteconfig'].forEach(ev => document.addEventListener(ev, renderServices));
+const h=location.hash.replace('#',''); if(h && h !== 'book') pickPk(h);
 try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ $('bName').value=u.name||''; $('bPhone').value=u.phone||''; } }catch(_){}
 function err(id,b){ $(id).closest('.field').classList.toggle('invalid',b); return b; }
 async function book(e){
   e.preventDefault();
   if([err('bModel',!$('bModel').value.trim()),err('bDate',!$('bDate').value),err('bName',!$('bName').value.trim()),err('bPhone',$('bPhone').value.replace(/\D/g,'').length<8)].some(Boolean)){ document.querySelector('.invalid input')?.focus(); return; }
   const btn=$('bBtn'); btn.disabled=true; btn.textContent='ກຳລັງສົ່ງການຈອງ...'; $('bMsg').hidden=true;
-  const pk=document.querySelector('[name=pk]:checked').value, slot=document.querySelector('[name=slot]:checked').value;
+  const pkEl=document.querySelector('[name=pk]:checked'), pk=pkEl?pkEl.value:'', slot=document.querySelector('[name=slot]:checked').value;
+  const pkPrice=pkEl&&pkEl.dataset.price!==''&&pkEl.dataset.price!=null?'₭'+Math.round(+pkEl.dataset.price).toLocaleString('en-US'):'';
   try{
     const d=await apiPost('createRepair',{
       customer:{name:$('bName').value.trim(),phone:$('bPhone').value.trim()},
       bike:{brand:$('bBrand').value.trim(),model:$('bModel').value.trim()},
-      symptoms:`Service ${pk} | ນັດ ${$('bDate').value} ${slot}`+($('bSym').value.trim()?' | '+$('bSym').value.trim():''),
+      symptoms:`Service ${pk}${pkPrice?' ('+pkPrice+')':''} | ນັດ ${$('bDate').value} ${slot}`+($('bSym').value.trim()?' | '+$('bSym').value.trim():''),
       notes:'ຈອງຜ່ານເວັບໄຊ'
     });
     $('bookBox').innerHTML=`<div class="done"><b>ຈອງຄິວແລ້ວ</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service ${pk} · ${$('bDate').value} · ${slot}<br>ຮ້ານຈະໂທ ຫຼື WhatsApp ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`;

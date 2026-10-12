@@ -378,7 +378,7 @@ main.wrap{padding-top:8px}
       <h2>3. ພື້ນຜິວ</h2>
       <div class="fin" id="fin"></div>
       <h2>4. ແພັກເກດ</h2>
-      <div class="pkg">
+      <div class="pkg" id="fmPick">
         <label><span><input type="radio" name="pkg" value="Accent Wrap">Accent Wrap<small>ບາງສ່ວນ ເຊັ່ນ ທໍ່ເທິງ ຫຼື ໂຊັກ</small></span><b>ຈາກ ₭300,000</b></label>
         <label><span><input type="radio" name="pkg" value="Full Frame Wrap" checked>Full Frame Wrap<small>ທັງເຟຣມ + ໂຊັກ</small></span><b>ຈາກ ₭800,000</b></label>
         <label><span><input type="radio" name="pkg" value="Premium Wrap">Premium<small>ທັງຄັນ ລວມຂອບລໍ້ ຟິມພິເສດ</small></span><b>ຈາກ ₭1,500,000</b></label>
@@ -417,6 +417,7 @@ main.wrap{padding-top:8px}
 
 
 <script src="i18n.js"></script>
+<script src="site-defaults.js"></script>
 <script src="layout.js"></script>
 <script>
 
@@ -440,6 +441,17 @@ function paint(){
   $('capTxt').textContent=`ເຟຣມ ${pick.frame.n} · ໂຊັກ ${pick.fork.n} · ລໍ້ ${pick.wheels.n}`; $('capFin').textContent=fin;
 }
 paint();
+/* ແພັກເກດຟິມ ແລະ ລາຄາ: ຈາກ Admin → ຕັ້ງຄ່າໜ້າເວັບ */
+function renderFilm(){
+  const S = SD_SITE.services && (SD_SITE.services.film || []).length ? SD_SITE.services.film : (window.DEF_SERVICES || {}).film || [];
+  if (!S.length) return;
+  const cur = (document.querySelector('[name=pkg]:checked') || {}).value, F = { lo: 'ຈາກ ', th: 'เริ่ม ', en: 'From ' }[sdLang()];
+  const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const sel = S.some(f => f.name === cur) ? cur : (S[1] || S[0]).name;
+  $('fmPick').innerHTML = S.map(f => `<label><span><input type="radio" name="pkg" value="${e(f.name)}" ${f.name === sel ? 'checked' : ''}><span translate="no">${e(f.name)}</span><small>${sdHtml(f.desc)}</small></span><b translate="no">${f.price_lak === '' || f.price_lak == null ? '' : F + fmtLak(f.price_lak)}</b></label>`).join('');
+}
+renderFilm();
+['currencychange', 'langchange', 'siteconfig'].forEach(ev => document.addEventListener(ev, renderFilm));
 try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ $('fName').value=u.name||''; $('fPhone').value=u.phone||''; } }catch(_){}
 function err(id,b){ $(id).closest('.field').classList.toggle('invalid',b); return b; }
 async function send(e){

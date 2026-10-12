@@ -129,6 +129,23 @@ a{color:inherit;text-decoration:none}
 .savebar{position:sticky;bottom:0;display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px 0;background:linear-gradient(transparent,var(--g1) 30%)}
 .savebar .hint{margin:0}
 
+.pks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pkx{border:1px solid var(--g3);padding:12px;display:flex;flex-direction:column;gap:8px;background:#fff}
+.pkx.pop{border:2px solid #000}
+.pkx .r2{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px}
+.pkx label.k,.rpx label.k{font-size:12px;font-weight:800;color:var(--g6)}
+.pkx input,.pkx textarea,.rpx input,.rpx select{width:100%;border:1px solid var(--g3);padding:6px 8px;font:inherit;font-size:13px;background:#fff}
+.pkx input,.rpx input,.rpx select{height:34px}
+.pkx textarea{min-height:96px;resize:vertical;line-height:1.45}
+.pkx input:focus,.pkx textarea:focus,.rpx input:focus{outline:none;border-color:#000}
+.pkx .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pkx .act,.rpx .act{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pkx .chk{display:flex;gap:6px;align-items:center;font-size:13px;margin-right:auto}
+.sub-h{font-size:14px;font-weight:800;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.rpx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 110px;gap:6px 8px;padding:10px 0;border-top:1px solid var(--g2);align-items:end}
+.rpx .full{grid-column:1/-1}
+.rpx .wide{grid-column:span 3}
+.del{color:var(--bad)!important;border-color:var(--bad)!important}
 /* mobile */
 @media(max-width:900px){
   .app{grid-template-columns:1fr}
@@ -145,6 +162,9 @@ a{color:inherit;text-decoration:none}
   .sl-f{grid-template-columns:1fr}
   .sl-f .lk{grid-template-columns:1fr}
   .fgrid{grid-template-columns:1fr}
+  .pks{grid-template-columns:1fr}
+  .rpx{grid-template-columns:1fr}
+  .rpx .wide{grid-column:auto}
   .hr{grid-template-columns:1fr 1fr;row-gap:4px}
   .hr b{grid-column:1/-1}
   .site-head{flex-direction:column}
@@ -153,6 +173,7 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 <script src="admin-i18n.js"></script>
+<script src="site-defaults.js"></script>
 
 <div id="login" class="login" hidden>
   <form id="lf">
@@ -238,6 +259,18 @@ a{color:inherit;text-decoration:none}
         <div class="bd">
           <p class="hint" style="margin-top:0">รูปแนวนอน แนะนำ 1920×800 px · สูงสุด 8 สไลด์ · ถ้าไม่มีสไลด์ หน้าเว็บจะใช้สไลด์มาตรฐานของร้าน · ข้อความเว้นว่างได้ (ภาษาไทย/อังกฤษ ถ้าว่างจะใช้ภาษาลาว)</p>
           <div id="slides"></div>
+        </div>
+      </section>
+
+      <section class="card sc">
+        <h2>🔧 ราคา Service<span class="sp"></span><button class="btn sm" type="button" id="pkAdd">+ เพิ่มแพ็กเกจ</button></h2>
+        <div class="bd">
+          <p class="hint" style="margin-top:0">ราคาเป็นกีบ (₭) — หน้าเว็บแปลงเป็น ฿ / $ ให้อัตโนมัติ · รายการในแพ็กเกจ: 1 บรรทัด = 1 รายการ · ภาษาไทย/อังกฤษเว้นว่างได้ (จะใช้ภาษาลาว)</p>
+          <div id="pks" class="pks"></div>
+          <h3 class="sub-h">ซ่อมแยกรายการ <button class="btn sm" type="button" id="rpAdd">+ เพิ่มรายการ</button></h3>
+          <div id="rps"></div>
+          <h3 class="sub-h">แพ็กเกจฟิล์มหุ้มสี <button class="btn sm" type="button" id="fmAdd">+ เพิ่มแพ็กเกจฟิล์ม</button></h3>
+          <div id="fms"></div>
         </div>
       </section>
 
@@ -480,6 +513,8 @@ async function loadSite(){
     site = j.data || {};
   } catch (e) { $('slides').innerHTML = `<div class="empty">โหลดการตั้งค่าไม่ได้: ${esc(e.message)}</div>`; return; }
   site.slides = site.slides || []; site.hours = site.hours && site.hours.length === 7 ? site.hours : blankHours();
+  if (!site.services || !(site.services.packages || []).length && !(site.services.repairs || []).length) site.services = JSON.parse(JSON.stringify(DEF_SERVICES));
+  site.services.packages = site.services.packages || []; site.services.repairs = site.services.repairs || []; site.services.film = site.services.film || [];
   site.contact = Object.assign({ phone: '020 9884 4344', whatsapp: '8562098844344', email: 'Lock.xayasing2021@gmail.com', mapUrl: 'https://maps.app.goo.gl/NPF26zNDqQ4isNP28', facebook: '', tiktok: '',
     address: { lo: 'ບ້ານ ນາໄຊ, ເມືອງ ໄຊເສດຖາ, ນະຄອນຫຼວງວຽງຈັນ', th: '', en: '' } }, site.contact || {});
   renderSite(); fillContact();
@@ -511,6 +546,7 @@ function renderSite(){
       <b>${DAYS[d]}</b><label><input type="checkbox" data-open ${h.closed ? '' : 'checked'}> เปิด</label>
       <input type="time" lang="en-GB" data-t="open" value="${esc(h.open)}" aria-label="เปิด"><input type="time" lang="en-GB" data-t="close" value="${esc(h.close)}" aria-label="ปิด"></div>`; }).join('');
   $('hrsPrev').textContent = hoursText();
+  renderServices();
 }
 function hoursText(){
   const l = (window.admI18n && admI18n.lang) || 'th';
@@ -594,15 +630,66 @@ $('hrs').addEventListener('input', e => {
 });
 $('hrsCopy').onclick = () => { const m = site.hours[1]; site.hours = site.hours.map(() => ({ ...m })); renderSite(); markDirty(); };
 document.querySelectorAll('.fgrid input').forEach(i => i.addEventListener('input', markDirty));
+/* ── ລາຄາ Service (ຄ່າເລີ່ມຕົ້ນ = ທີ່ຢູ່ໃນ service.html / film.html ເດີມ) ── */
+const L3 = (lo, th, en) => ({ lo, th, en });
+const RLINKS = [['', '— ไม่มีลิงก์ —'], ['film.html', 'ฟิล์มหุ้มสี'], ['service.html#book', 'จองคิว Workshop'], ['contact.html', 'ติดต่อ'], ['catalogue.html?cat=parts', 'อะไหล่']];
+const ev3 = (o, k, ph) => ['lo', 'th', 'en'].map((l, i) => `<input data-k="${k}.${l}" placeholder="${[ph || 'ລາວ', 'ไทย', 'English'][i]}" value="${esc((o || {})[l] || '')}">`).join('');
+function renderServices(){
+  const S = site.services;
+  $('pks').innerHTML = S.packages.map((p, i) => `<div class="pkx ${p.popular ? 'pop' : ''}" data-i="${i}">
+      <div class="r2"><div><label class="k">ชื่อแพ็กเกจ</label><input data-k="name" value="${esc(p.name)}" placeholder="Basic"></div>
+        <div><label class="k">ราคา (₭)</label><input data-k="price_lak" type="number" min="0" step="1000" value="${esc(p.price_lak)}"></div></div>
+      <label class="k">ระยะเวลา</label><div class="tabs3">${ev3(p.time, 'time')}</div>
+      <label class="k">รายการ (1 บรรทัด = 1 รายการ)</label>
+      ${['lo', 'th', 'en'].map((l, j) => `<textarea data-items="${l}" placeholder="${['ລາວ', 'ไทย', 'English'][j]}">${esc((p.items || []).map(it => it[l] || '').join('\n').replace(/\n+$/, ''))}</textarea>`).join('')}
+      <div class="act"><label class="chk"><input type="checkbox" data-k="popular" ${p.popular ? 'checked' : ''}> แนะนำ (ไฮไลต์)</label>
+        <button class="btn sm" type="button" data-mv="-1" ${i ? '' : 'disabled'}>←</button><button class="btn sm" type="button" data-mv="1" ${i < S.packages.length - 1 ? '' : 'disabled'}>→</button>
+        <button class="btn sm del" type="button" data-del>ลบ</button></div></div>`).join('') || '<div class="empty">ยังไม่มีแพ็กเกจ</div>';
+  $('rps').innerHTML = S.repairs.map((r, i) => `<div class="rpx" data-i="${i}">
+      <label class="k full">รายการที่ ${i + 1} — ชื่อ / รายละเอียด</label>${ev3(r.name, 'name')}<input data-k="price_lak" type="number" min="0" step="1000" placeholder="เริ่ม ₭" value="${esc(r.price_lak)}">
+      ${ev3(r.desc, 'desc')}<select data-k="link">${RLINKS.map(([v, t]) => `<option value="${esc(v)}" ${v === (r.link || '') ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
+      ${ev3(r.note, 'note', 'ข้อความแทนราคา (ລາວ)')}<div class="act"><button class="btn sm" type="button" data-mv="-1" ${i ? '' : 'disabled'}>↑</button><button class="btn sm" type="button" data-mv="1" ${i < S.repairs.length - 1 ? '' : 'disabled'}>↓</button><button class="btn sm del" type="button" data-del>ลบ</button></div></div>`).join('') || '<div class="empty">ยังไม่มีรายการ</div>';
+  $('fms').innerHTML = S.film.map((f, i) => `<div class="rpx" data-i="${i}">
+      <input data-k="name" class="wide" placeholder="ชื่อแพ็กเกจ" value="${esc(f.name)}"><input data-k="price_lak" type="number" min="0" step="1000" placeholder="เริ่ม ₭" value="${esc(f.price_lak)}">
+      ${ev3(f.desc, 'desc')}<div class="act"><button class="btn sm del" type="button" data-del>ลบ</button></div></div>`).join('') || '<div class="empty">ยังไม่มีแพ็กเกจฟิล์ม</div>';
+}
+function svcBind(box, list){
+  $(box).addEventListener('input', e => {
+    const row = e.target.closest('[data-i]'); if (!row) return; const o = site.services[list][+row.dataset.i];
+    if (e.target.dataset.items) {
+      const l = e.target.dataset.items, lines = e.target.value.split('\n');
+      const n = Math.max(lines.length, o.items.length); const items = [];
+      for (let j = 0; j < n; j++) { const it = Object.assign({ lo: '', th: '', en: '' }, o.items[j]); it[l] = (lines[j] || '').trim(); items.push(it); }
+      o.items = items;
+    } else if (e.target.dataset.k) {
+      const [k, l] = e.target.dataset.k.split('.'), v = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      if (l) { o[k] = o[k] || {}; o[k][l] = v; } else o[k] = k === 'price_lak' ? (v === '' ? '' : Math.max(0, Math.round(+v))) : v;
+      if (k === 'popular') row.classList.toggle('pop', v);
+    }
+    markDirty();
+  });
+  $(box).addEventListener('click', e => {
+    const row = e.target.closest('[data-i]'); if (!row) return; const L = site.services[list], i = +row.dataset.i;
+    if (e.target.matches('[data-mv]')) { const j = i + +e.target.dataset.mv; [L[i], L[j]] = [L[j], L[i]]; markDirty(); renderServices(); }
+    if (e.target.matches('[data-del]') && confirm('ลบรายการนี้?')) { L.splice(i, 1); markDirty(); renderServices(); }
+  });
+}
+svcBind('pks', 'packages'); svcBind('rps', 'repairs'); svcBind('fms', 'film');
+$('rps').addEventListener('change', e => { if (e.target.tagName !== 'SELECT') return; const row = e.target.closest('[data-i]'); site.services.repairs[+row.dataset.i].link = e.target.value; markDirty(); });
+$('pkAdd').onclick = () => { if (site.services.packages.length >= 6) return toast('สูงสุด 6 แพ็กเกจ'); site.services.packages.push({ name: '', price_lak: '', popular: false, time: L3('', '', ''), items: [] }); markDirty(); renderServices(); };
+$('rpAdd').onclick = () => { if (site.services.repairs.length >= 16) return toast('สูงสุด 16 รายการ'); site.services.repairs.push({ name: L3('', '', ''), desc: L3('', '', ''), price_lak: '', note: L3('', '', ''), link: '' }); markDirty(); renderServices(); };
+$('fmAdd').onclick = () => { if (site.services.film.length >= 6) return toast('สูงสุด 6 แพ็กเกจ'); site.services.film.push({ name: '', price_lak: '', desc: L3('', '', '') }); markDirty(); renderServices(); };
+
 $('siteSave').onclick = async () => {
   const b = $('siteSave');
   for (const [d, h] of site.hours.entries()) if (!h.closed && (!h.open || !h.close || h.open >= h.close)) return toast('เวลาเปิด-ปิดวัน' + DAYS[d] + ' ไม่ถูกต้อง');
   site.contact = { phone: $('cPhone').value.trim(), whatsapp: $('cWa').value.replace(/\D/g, ''), email: $('cEmail').value.trim(), mapUrl: $('cMap').value.trim(),
     facebook: $('cFb').value.trim(), tiktok: $('cTt').value.trim(), address: { lo: $('cAddrLo').value.trim(), th: $('cAddrTh').value.trim(), en: $('cAddrEn').value.trim() } };
+  for (const p of site.services.packages) { p.items = (p.items || []).filter(it => it.lo || it.th || it.en); if (!p.name.trim()) return toast('ใส่ชื่อแพ็กเกจให้ครบ'); }
   b.disabled = true; b.textContent = 'กำลังบันทึก…';
   try {
     const saved = await post('saveSiteConfig', { config: site });
-    site = Object.assign(saved, { slides: saved.slides || [], hours: saved.hours, contact: saved.contact });
+    site = Object.assign(saved, { slides: saved.slides || [], hours: saved.hours, contact: saved.contact, services: saved.services || site.services });
     try { localStorage.setItem('sd_site', JSON.stringify(saved)); localStorage.setItem('sd_site_t', String(Date.now())); } catch (_) {}
     siteDirty = false; $('saveMsg').textContent = 'บันทึกแล้ว · ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     renderSite(); fillContact(); toast('บันทึกแล้ว ✓ หน้าเว็บอัปเดตแล้ว');

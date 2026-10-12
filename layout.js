@@ -236,6 +236,15 @@ function sdHoursText(lang){
   order.forEach(d => { const g = groups[groups.length - 1]; if (g && g.k === key(h[d])) g.days.push(d); else groups.push({ k: key(h[d]), days: [d] }); });
   return groups.map(g => (g.days.length > 1 ? D[g.days[0]] + '–' + D[g.days[g.days.length - 1]] : D[g.days[0]]) + ' ' + (g.k === 'x' ? L.closed : g.k)).join(' · ');
 }
+/* ລາຄາທີ່ຕັ້ງເປັນກີບ → ສະກຸນທີ່ເລືອກ */
+function fmtLak(lak){ if (lak === '' || lak == null || isNaN(lak)) return ''; return currency === 'LAK' ? '₭' + Math.round(+lak).toLocaleString('en-US') : fmtIn(+lak / THB_TO_LAK); }
+/* ຂໍ້ຄວາມ 3 ພາສາ → HTML: ຖ້າມີພາສາທີ່ເລືອກ ໃຊ້ເລີຍ (ບໍ່ແປຊ້ຳ), ຖ້າບໍ່ມີ ໃຊ້ລາວ ແລ້ວໃຫ້ຕົວແປອັດຕະໂນມັດຊ່ວຍ */
+function sdHtml(o){
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  if (!o) return ''; if (typeof o === 'string') return esc(o);
+  const l = sdLang(); if (o[l]) return l === 'lo' ? esc(o.lo) : `<span translate="no">${esc(o[l])}</span>`;
+  return esc(o.lo || o.en || o.th || '');
+}
 function sdText(o){ if (!o) return ''; if (typeof o === 'string') return o; return o[sdLang()] || o.lo || o.en || o.th || ''; }
 function applySite(){
   const c = SD_SITE.contact || {};
