@@ -158,6 +158,22 @@ a{color:inherit;text-decoration:none}
 .md-prods b{display:block;font-size:13px;font-weight:700;line-height:1.3}
 .md-prods small{font-size:11px;color:var(--g6)}
 .md-prods .cnt{margin-left:auto;font-size:11px;font-weight:800;background:#000;color:#fff;border-radius:999px;padding:1px 7px}
+.md-prods .vb{display:inline-block;margin-top:3px;font-size:10.5px;font-weight:800;background:#EDE7F6;color:#4527A0;border-radius:4px;padding:1px 6px}
+.md-filt{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;color:var(--g6);cursor:pointer}
+.md-filt input{width:auto;height:auto}
+.md-var{border:1px solid var(--g3);margin-bottom:14px}
+.md-var h3{font-size:14px;font-weight:800;padding:10px 12px;border-bottom:1px solid var(--g2);display:flex;gap:8px;align-items:center;background:var(--g1)}
+.md-var h3 small{font-weight:600;color:var(--g6)}
+.md-var .tw{overflow-x:auto}
+.md-var table{width:100%;border-collapse:collapse;font-size:13px}
+.md-var th{text-align:left;font-size:11px;color:var(--g6);font-weight:700;padding:7px 10px;border-bottom:1px solid var(--g2);white-space:nowrap}
+.md-var td{padding:7px 10px;border-bottom:1px solid var(--g1);vertical-align:middle}
+.md-var td.vsku{font-size:11.5px;color:var(--g6);word-break:break-all;min-width:160px}
+.md-var .sw{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.md-var .sw i{width:26px;height:26px;background:var(--g1) center/cover;border:1px solid var(--g3);display:inline-block}
+.md-var .pc{font-size:11.5px;font-weight:700;white-space:nowrap}.md-var .pc.no{color:var(--bad)}
+.md-var .out{color:var(--bad);font-weight:700}
+.md-var .up{white-space:nowrap}
 .md-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .md-link{display:flex;gap:6px;flex:1;min-width:260px}
 .md-link input{flex:1;height:32px;border:1px solid var(--g3);padding:0 10px;font:inherit;font-size:13px}
@@ -333,7 +349,7 @@ a{color:inherit;text-decoration:none}
       <div class="site-head"><div><h1>รูป / วิดีโอสินค้า</h1><div class="sub">เพิ่มรูปหลายรูป วิดีโอ MP4 และลิงก์ TikTok / YouTube ให้สินค้า — บันทึกแล้วหน้าเว็บเห็นทันที</div></div></div>
       <div class="md-grid">
         <section class="card md-list">
-          <div class="bd"><input id="mdQ" type="search" placeholder="ค้นหาชื่อสินค้า หรือ SKU" autocomplete="off"></div>
+          <div class="bd"><input id="mdQ" type="search" placeholder="ค้นหาชื่อสินค้า หรือ SKU" autocomplete="off"><label class="md-filt"><input type="checkbox" id="mdVOnly"> เฉพาะสินค้าที่มี Variant <b id="mdVCount"></b></label></div>
           <ul id="mdProducts" class="md-prods"><li class="empty">กำลังโหลด…</li></ul>
         </section>
         <section class="card md-edit">
@@ -347,6 +363,8 @@ a{color:inherit;text-decoration:none}
                 <form id="mdLinkF" class="md-link"><input id="mdLink" placeholder="วางลิงก์ TikTok หรือ YouTube"><button class="btn sm" type="submit">+ เพิ่มลิงก์</button></form>
               </div>
               <p class="hint">รูปแรก = รูปหลัก (ใช้ในหน้ารวมสินค้า) · วิดีโอ MP4 ไม่เกิน 30MB — หลังอัปโหลด Google Drive ใช้เวลา 1–5 นาทีก่อนเล่นได้ · เลือก “สี” เพื่อให้รูปเปลี่ยนตามสีที่ลูกค้าเลือก</p>
+              <div id="mdVar" class="md-var" hidden></div>
+              <input type="file" id="mdImgC" accept="image/png,image/jpeg,image/webp" multiple hidden>
               <div id="mdItems" class="md-items"></div>
               <div id="mdProg" class="hint" hidden></div>
             </div>
@@ -766,7 +784,8 @@ async function loadMedia(q){
   if (!mdAll) {
     try {
       const j = await (await fetch(`${API_URL}?action=getProducts&secret=${API_SECRET}&limit=1000`)).json();
-      const d = j.data || {}; mdAll = (d.products || d.data || []).map(p => ({ sku: String(p.sku), name: String(p.name || ''), image: p.image || '' }));
+      const d = j.data || {}; mdAll = (d.products || d.data || []).map(p => ({ sku: String(p.sku), name: String(p.name || ''), image: p.image || '', variants: p.variants || 0, colors: p.colors || [], vkeys: p.vkeys || '' }));
+      $('mdVCount').textContent = '(' + mdAll.filter(p => p.variants).length + ')';
     } catch (e) { $('mdProducts').innerHTML = `<li class="empty">โหลดสินค้าไม่ได้: ${esc(e.message)}</li>`; return; }
   }
   renderMdList();
@@ -775,11 +794,12 @@ async function loadMedia(q){
 }
 function renderMdList(){
   const t = $('mdQ').value.trim().toLowerCase();
-  const L = mdAll.filter(p => !t || (p.name + ' ' + p.sku).toLowerCase().includes(t)).slice(0, 200);
+  const vo = $('mdVOnly').checked;
+  const L = mdAll.filter(p => (!vo || p.variants) && (!t || (p.name + ' ' + p.sku + ' ' + p.vkeys).toLowerCase().includes(t))).slice(0, 200);
   $('mdProducts').innerHTML = L.length ? L.map(p => `<li data-sku="${esc(p.sku)}" class="${md && md.sku === p.sku ? 'on' : ''}">${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy">` : '<span class="ph">🚲</span>'}
-      <div><b translate="no">${esc(p.name)}</b><small translate="no">${esc(p.sku)}</small></div></li>`).join('') : '<li class="empty">ไม่พบสินค้า</li>';
+      <div><b translate="no">${esc(p.name)}</b><small translate="no">${esc(p.sku)}</small>${p.variants ? `<br><span class="vb">🎨 Variant ${p.variants}${p.colors.length ? ' · ' + p.colors.length + ' สี' : ''}</span>` : ''}</div></li>`).join('') : '<li class="empty">ไม่พบสินค้า</li>';
 }
-$('mdQ').addEventListener('input', renderMdList);
+$('mdQ').addEventListener('input', renderMdList); $('mdVOnly').addEventListener('change', renderMdList);
 $('mdProducts').addEventListener('click', e => { const li = e.target.closest('[data-sku]'); if (!li) return;
   if (mdDirty && !confirm('มีการแก้ไขที่ยังไม่บันทึก — ทิ้งการแก้ไข?')) return;
   history.replaceState(null, '', '#media?sku=' + encodeURIComponent(li.dataset.sku)); openMd(li.dataset.sku); });
@@ -791,7 +811,7 @@ async function openMd(sku){
       fetch(`${API_URL}?action=getProduct&sku=${encodeURIComponent(sku)}&secret=${API_SECRET}`).then(r => r.json()).then(j => j.data || {}),
       post('mediaList', { sku }),
     ]);
-    md = { sku, name: prod.name || sku, colors: [...new Set((prod.variants || []).map(v => v.color).filter(Boolean))],
+    md = { sku, name: prod.name || sku, variants: prod.variants || [], colors: [...new Set((prod.variants || []).map(v => v.color).filter(Boolean))],
       items: (list.media || []).map(x => ({ type: x.type, url: x.url, file_id: x.file_id || '', color: x.color || '', thumb: x.thumb || '' })) };
     if (!md.items.length && prod.image) md.pos = prod.image;
   } catch (e) { $('mdItems').innerHTML = `<div class="empty">โหลดไม่ได้: ${esc(e.message)}</div>`; return; }
@@ -799,7 +819,25 @@ async function openMd(sku){
   $('mdView').href = 'product.html?sku=' + encodeURIComponent(sku);
   renderMdList(); renderMd();
 }
+function renderVar(){
+  const V = md.variants || [], box = $('mdVar'); box.hidden = !V.length; if (!V.length) { box.innerHTML = ''; return; }
+  const photoOf = c => md.items.filter(x => x.type === 'image' && c && x.color === c);
+  box.innerHTML = `<h3>🎨 Variant <small>${V.length} รายการ · ข้อมูลจากชีต ProductVariants ใน POS</small></h3><div class="tw"><table>
+    <thead><tr><th>สี</th><th>ไซซ์</th><th>SKU / บาร์โค้ด</th><th>ราคา</th><th>สต็อก</th><th>รูปของสีนี้</th><th></th></tr></thead><tbody>
+    ${V.map(v => { const ph = photoOf(v.color), th = ph[0] ? mdThumb(ph[0]) : '';
+      return `<tr><td><span class="sw">${v.color ? `<i style="${th ? `background-image:url('${esc(th)}')` : ''}"></i><span translate="no">${esc(v.color)}</span>` : '—'}</span></td>
+        <td translate="no">${esc(v.size || '—')}</td>
+        <td class="vsku" translate="no">${esc(v.sku)}${v.barcode ? '<br>' + esc(v.barcode) : ''}</td>
+        <td>฿${Number(v.price_thb || 0).toLocaleString('en-US')}</td>
+        <td class="${v.stock > 0 ? '' : 'out'}">${v.stock}</td>
+        <td>${v.color ? `<span class="pc ${ph.length ? '' : 'no'}">${ph.length ? ph.length + ' รูป' : 'ยังไม่มีรูป'}</span>` : '—'}</td>
+        <td>${v.color ? `<button class="btn sm up" type="button" data-vup="${esc(v.color)}">+ รูปสีนี้</button>` : ''}</td></tr>`; }).join('')}
+    </tbody></table></div>`;
+}
+let mdUpColor = '';
+$('mdVar').addEventListener('click', e => { const b = e.target.closest('[data-vup]'); if (!b) return; mdUpColor = b.dataset.vup; $('mdImgC').click(); });
 function renderMd(){
+  renderVar();
   const I = md.items, firstImg = I.findIndex(x => x.type === 'image');
   const label = { image: 'รูป', video: 'MP4', tiktok: 'TikTok', youtube: 'YouTube' };
   $('mdItems').innerHTML = I.length ? I.map((x, i) => { const th = mdThumb(x);
@@ -816,19 +854,21 @@ $('mdItems').addEventListener('click', e => {
   if (e.target.matches('[data-mv]')) { const j = i + +e.target.dataset.mv; [md.items[i], md.items[j]] = [md.items[j], md.items[i]]; mdMark(); renderMd(); }
   if (e.target.matches('[data-del]') && confirm('ลบรายการนี้?')) { md.items.splice(i, 1); mdMark(); renderMd(); }
 });
-$('mdItems').addEventListener('change', e => { const it = e.target.closest('[data-i]'); if (it && e.target.matches('[data-color]')) { md.items[+it.dataset.i].color = e.target.value; mdMark(); } });
+$('mdItems').addEventListener('change', e => { const it = e.target.closest('[data-i]'); if (it && e.target.matches('[data-color]')) { md.items[+it.dataset.i].color = e.target.value; mdMark(); renderVar(); } });
 const readData = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error('อ่านไฟล์ไม่ได้')); r.readAsDataURL(f); });
 function mdProg(t){ $('mdProg').hidden = !t; $('mdProg').textContent = t || ''; }
-$('mdImg').onchange = async e => {
+$('mdImgC').onchange = e => mdUpload(e, mdUpColor);
+$('mdImg').onchange = e => mdUpload(e, '');
+async function mdUpload(e, color){
   const files = [...e.target.files]; e.target.value = '';
   for (const [k, f] of files.entries()) {
     if (md.items.length >= 30) { toast('สูงสุด 30 รายการ'); break; }
     mdProg(`กำลังอัปโหลดรูป ${k + 1}/${files.length}…`);
-    try { const d = await shrink(f, 1600, true); const r = await post('mediaUpload', { sku: md.sku, data: d }); md.items.push({ type: 'image', url: r.url, file_id: r.file_id, color: '' }); mdMark(); renderMd(); }
+    try { const d = await shrink(f, 1600, true); const r = await post('mediaUpload', { sku: md.sku, data: d }); md.items.push({ type: 'image', url: r.url, file_id: r.file_id, color: color || '' }); mdMark(); renderMd(); }
     catch (x) { toast(x.message); }
   }
   mdProg('');
-};
+}
 $('mdVid').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   if (f.size > 30 * 1024 * 1024) return toast('วิดีโอใหญ่เกิน 30MB — ตัดให้สั้นลง หรือลง TikTok/YouTube แล้วใช้ลิงก์');

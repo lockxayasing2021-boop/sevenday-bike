@@ -315,7 +315,7 @@ main.wrap{padding-top:8px}
 .thumbs .vid{background-color:#111;color:#fff}
 .thumbs .vid img{object-fit:cover;mix-blend-mode:normal}
 .thumbs .vid b{position:absolute;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;font-size:12px;border:1.5px solid #fff}
-.thumbs .vid em{font-style:normal;font-size:11px;font-weight:800}
+.thumbs .vid em{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-style:normal;font-size:10px;font-weight:800}
 @media (max-width:860px){.gnav{display:none}.gdots{display:flex}.thumbs{display:none}.pd>div:first-child{margin:0 -20px}}
 .info{position:sticky;top:100px;align-self:start}
 .brand{font-weight:700;color:var(--grey-600)}
@@ -331,6 +331,8 @@ main.wrap{padding-top:8px}
 .opts{display:flex;gap:8px;flex-wrap:wrap}
 .opts button{min-width:54px;height:46px;padding:0 14px;border:1px solid var(--grey-300);font-weight:700}
 .opts button.on{border:2px solid #000}
+.opts button.sw{display:inline-flex;align-items:center;gap:8px;padding:0 12px 0 4px}
+.opts button.sw img{width:36px;height:36px;object-fit:cover;background:var(--grey-100)}
 .opts button:disabled{color:var(--grey-300);text-decoration:line-through;cursor:not-allowed}
 .stock-line{display:flex;align-items:center;gap:8px;margin-top:22px;font-weight:700;font-size:14px}
 .dot{width:10px;height:10px;border-radius:50%;background:#000}
@@ -482,9 +484,11 @@ function render(){
   const colors=[...new Set(V.map(v=>v.color).filter(Boolean))], sizes=[...new Set(V.map(v=>v.size).filter(Boolean))];
   document.getElementById('colorOpt').hidden=!colors.length; document.getElementById('sizeOpt').hidden=!sizes.length;
   document.getElementById('colorSel').textContent=sel.color;
-  document.getElementById('colors').innerHTML=colors.map(x=>`<button class="${sel.color===x?'on':''}" onclick="pick('color','${x}')">${x}</button>`).join('');
+  const swatch=x=>{ const m=M.find(m=>m.type==='image'&&m.color&&m.color.toLowerCase()===x.toLowerCase()); return m?`<img src="${esc(m.thumb||m.url)}" alt="">`:''; };
+  document.getElementById('colors').innerHTML=colors.map(x=>{ const sw=swatch(x), any=V.some(v=>v.color===x&&v.stock>0);
+    return `<button class="${sel.color===x?'on':''} ${sw?'sw':''}" data-color="${esc(x)}" title="${any?'':'ໝົດ'}">${sw}${esc(x)}</button>`; }).join('');
   document.getElementById('sizes').innerHTML=sizes.map(x=>{ const ok=V.some(v=>v.size===x&&(!sel.color||v.color===sel.color)&&v.stock>0);
-    return `<button class="${sel.size===x?'on':''}" ${ok?'':'disabled'} onclick="pick('size','${x}')">${x}</button>`; }).join('');
+    return `<button class="${sel.size===x?'on':''}" ${ok?'':'disabled'} data-size="${esc(x)}">${esc(x)}</button>`; }).join('');
 
   const needPick = (colors.length&&!sel.color)||(sizes.length&&!sel.size);
   const st=document.getElementById('stock'), btn=document.getElementById('addBtn');
@@ -517,7 +521,7 @@ function renderGallery(){
   const many = M.length>1;
   document.getElementById('thumbs').innerHTML = many ? M.map((m,i)=> m.type==='image'
     ? `<button data-g="${i}" aria-label="${i+1}"><img src="${esc(m.thumb||m.url)}" alt="" loading="lazy"></button>`
-    : `<button data-g="${i}" class="vid" aria-label="${i+1}">${m.thumb?`<img src="${esc(m.thumb)}" alt="" loading="lazy">`:`<em>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':'MP4'}</em>`}<b>▶</b></button>`).join('') : '';
+    : `<button data-g="${i}" class="vid" aria-label="${i+1}">${m.thumb?`<img src="${esc(m.thumb)}" alt="" loading="lazy" onerror="this.remove()">`:''}${m.thumb&&m.type!=='video'?'':`<em>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':'MP4'}</em>`}<b>▶</b></button>`).join('') : '';
   document.getElementById('gDots').innerHTML = many ? M.map(()=>'<i></i>').join('') : '';
   document.getElementById('gPrev').hidden = document.getElementById('gNext').hidden = document.getElementById('gCount').hidden = !many;
   gSync(0);
@@ -542,6 +546,8 @@ function stopVideo(i){            // leaving a video slide → stop playback, sh
   const cls=m.type==='tiktok'?'tt':m.type==='youtube'?'yt':'mp', bg=m.thumb?` style="background-image:url('${esc(m.thumb)}')"`:'';
   sl.innerHTML=`<button class="gposter ${cls}"${bg} data-play="${i}" aria-label="ເບິ່ງວິດີໂອ"><span class="pl">${PLAY}</span><small>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':''}</small></button>`;
 }
+document.getElementById('colors').addEventListener('click',e=>{ const b=e.target.closest('[data-color]'); if(b) pick('color',b.dataset.color); });
+document.getElementById('sizes').addEventListener('click',e=>{ const b=e.target.closest('[data-size]'); if(b&&!b.disabled) pick('size',b.dataset.size); });
 (function(){
   const tr=document.getElementById('gtrack'); let t;
   tr.addEventListener('scroll',()=>{ clearTimeout(t); t=setTimeout(()=>{ const i=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth)); if(i!==gi) gSync(i); },80); },{passive:true});

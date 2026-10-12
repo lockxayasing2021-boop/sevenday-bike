@@ -343,7 +343,7 @@ function mapP(p){
   const name=String(p.name||'');
   return { sku:String(p.sku||''), name, brand:name.split(' ')[0], category:p.category||p.type||'',
     type:p.type||'', price:Number(p.price||p.price_thb||0), was:Number(p.was_price||0)||null,
-    stock:Number(p.stock||0), unit:p.unit||'', group:p.group||'', sub:p.sub||'', image:p.image||p.imageUrl||p.image_url||'', sizes:p.sizes||[] };
+    stock:Number(p.stock||0), unit:p.unit||'', group:p.group||'', sub:p.sub||'', image:p.image||p.imageUrl||p.image_url||'', sizes:p.sizes||[], colors:p.colors||[], variants:Number(p.variants||0) };
 }
 function isService(p){ if(p.group==='service') return true; const t=(p.category+' '+p.type).toLowerCase(); return /service|ບໍລິການ|บริการ|ຄ່າ|ค่า/.test(t); }
 function apiList(json){ const l=json.products||json.data?.products||json.data?.data||json.data||[]; return Array.isArray(l)?l:[]; }
@@ -353,11 +353,13 @@ function card(p){
   const badges=[off?`<span class="badge b-off">-${off}%</span>`:'',low?`<span class="badge b-low">ເຫຼືອ ${p.stock}</span>`:'',out?`<span class="badge b-out">ໝົດ</span>`:''].join('');
   const img=p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy">`:`<svg viewBox="0 0 120 70" aria-hidden="true"><use href="${iconFor(p.category+' '+p.name)}"/></svg>`;
   const href=`product.html?sku=${encodeURIComponent(p.sku)}`;
-  const sizes=(p.sizes||[]).length?`<div class="sizes">${p.sizes.map(s=>`<span>${s}</span>`).join('')}</div>`:'';
+  const sz=(p.sizes||[]).slice(0,6), col=(p.colors||[]).length;
+  const sizes=(sz.length||col)?`<div class="sizes">${col>1?`<span>${col} ສີ</span>`:''}${sz.map(s=>`<span>${s}</span>`).join('')}</div>`:'';
   return `<article class="card ${off?'on-sale':''}"><a class="card-img" href="${href}"><div class="badges">${badges}</div>${img}</a>
     <span class="card-brand">${p.brand||''}</span><a class="card-name" href="${href}">${p.name}</a>
     <div class="price"><span class="now">${fmt(p.price)}</span>${off?`<span class="was">${fmt(p.was)}</span>`:''}</div>${sizes}
-    <button class="add-btn" ${out?'disabled':''} onclick="quickAdd('${encodeURIComponent(p.sku)}')">${out?'ສິນຄ້າໝົດ':'ໃສ່ກະຕ່າ'}</button></article>`;
+    ${p.variants&&!out?`<button class="add-btn" onclick="location.href='${href}'">ເລືອກສີ / ຂະໜາດ</button>`
+      :`<button class="add-btn" ${out?'disabled':''} onclick="quickAdd('${encodeURIComponent(p.sku)}')">${out?'ສິນຄ້າໝົດ':'ໃສ່ກະຕ່າ'}</button>`}</article>`;
 }
 window._catalog = [];
 function addItem(p, qty){
