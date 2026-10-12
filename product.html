@@ -452,16 +452,31 @@ let P=null, V=[], M=[], gi=0, sel={color:'',size:''};
 
 async function load(){
   if(!sku){ return notFound('ບໍ່ໄດ້ເລືອກສິນຄ້າ'); }
+  // 1) ສະແດງຈາກສຳເນົາໃນເວັບທັນທີ (ຮູບ WebP ໂຫຼດໄວ)  2) ແລ້ວອັບເດດລາຄາ/ສະຕັອກສົດຈາກ POS
+  const cat = await sdCatalog();
+  const snap = cat && Array.isArray(cat.products) && cat.products.find(p=>String(p.sku).toLowerCase()===sku.toLowerCase());
+  if(snap){ show(JSON.parse(sdImgUrl(JSON.stringify(snap))), false); loadRelated(); }
   try{
     const r = await fetch(`${API_URL}?action=getProduct&sku=${encodeURIComponent(sku)}&secret=${API_SECRET}`);
     const j = await r.json();
     const raw = j.data?.product || j.data || j.product || j;
     if(!raw || !raw.sku) throw new Error(j.error||'not found');
-    P = mapP(raw); V = raw.variants||[]; M = (raw.media||[]).filter(m=>m&&m.url&&(m.type==='image'||m.embed));
-  }catch(e){ return notFound('ບໍ່ພົບສິນຄ້ານີ້ ຫຼື ສິນຄ້າຖືກລຶບອອກແລ້ວ'); }
-  window._catalog=[P];
+    show(raw, true);
+  }catch(e){
+    if(!snap) return notFound('ບໍ່ພົບສິນຄ້ານີ້ ຫຼື ສິນຄ້າຖືກລຶບອອກແລ້ວ');
+    LIVE = true; render();             // POS ບໍ່ຕອບ → ໃຊ້ຂໍ້ມູນສຳເນົາ
+  }
+  if(!snap) loadRelated();
+}
+let LIVE = false, mediaKey = null;
+function show(raw, live){
+  P = mapP(raw); V = Array.isArray(raw.variants) ? raw.variants : (raw.vlist||[]);
+  const m = (raw.media||[]).filter(m=>m&&m.url&&(m.type==='image'||m.embed)), mk = JSON.stringify(m)+'|'+P.image;
+  window._catalog=[P, ...(window._catalog||[]).filter(x=>x.sku!==P.sku)];
   document.title = `${P.name} — Sevenday Bike`;
-  renderGallery(); render(); loadRelated();
+  LIVE = live;
+  if(mk!==mediaKey){ mediaKey=mk; M=m; const keep=gi; renderGallery(); if(keep && keep<M.length) gGo(keep); }
+  render();
 }
 function notFound(msg){
   document.getElementById('page').innerHTML = `<div class="notfound"><h1>${msg}</h1><p style="color:var(--grey-600);margin-bottom:24px">ລອງຄົ້ນຫາ ຫຼື ກັບໄປເບິ່ງສິນຄ້າທັງໝົດ</p><a class="btn btn-black" href="catalogue.html">ເບິ່ງສິນຄ້າທັງໝົດ</a></div>`;
@@ -492,10 +507,11 @@ function render(){
 
   const needPick = (colors.length&&!sel.color)||(sizes.length&&!sel.size);
   const st=document.getElementById('stock'), btn=document.getElementById('addBtn');
-  if(needPick){ st.innerHTML='<span class="dot low"></span>ເລືອກ'+(colors.length&&!sel.color?'ສີ':'ຂະໜາດ')+'ກ່ອນ'; btn.disabled=false; }
+  if(needPick){ st.innerHTML='<span class="dot low"></span>ເລືອກ'+(colors.length&&!sel.color?'ສີ':'ຂະໜາດ')+'ກ່ອນ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   else if(c.stock<=0){ st.innerHTML='<span class="dot out"></span>ສິນຄ້າໝົດ — ສອບຖາມວັນເຂົ້າໃໝ່ໄດ້ທີ່ຮ້ານ'; btn.disabled=true; btn.textContent='ສິນຄ້າໝົດ'; }
   else if(c.stock<=2){ st.innerHTML=`<span class="dot low"></span>ເຫຼືອພຽງ ${c.stock} ${P.unit||'ຊິ້ນ'} ທີ່ຮ້ານ`; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   else { st.innerHTML=`<span class="dot"></span>ມີສິນຄ້າທີ່ຮ້ານ (${c.stock} ${P.unit||'ຊິ້ນ'})`; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
+  if(!LIVE){ btn.disabled=true; btn.textContent='ກຳລັງກວດສະຕັອກ…'; }
 
   document.getElementById('desc').textContent = `${P.name} ຈາກ ${P.brand}. ສອບຖາມລາຍລະອຽດເພີ່ມເຕີມ ຫຼື ນັດມາລອງທີ່ຮ້ານໄດ້.`;
   document.getElementById('spec').innerHTML = [['ຍີ່ຫໍ້',P.brand],['ໝວດໝູ່',(SUBS[P.sub]&&SUBS[P.sub][1])||P.category],['ປະເພດ',P.category],['ລະຫັດສິນຄ້າ',P.sku],['ຫົວໜ່ວຍ',P.unit]].filter(r=>r[1]).map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
@@ -561,7 +577,7 @@ function setQty(d){ const i=document.getElementById('qty'); i.value=Math.max(1,(
 function addCurrent(){
   const colors=V.some(v=>v.color), sizes=V.some(v=>v.size);
   if((colors&&!sel.color)||(sizes&&!sel.size)){ toast('ກະລຸນາເລືອກ'+(colors&&!sel.color?'ສີ':'ຂະໜາດ')+'ກ່ອນ'); return; }
-  const c=current(); if(c.stock<=0) return;
+  const c=current(); if(c.stock<=0||!LIVE) return;
   const q=Math.min(parseInt(document.getElementById('qty').value)||1, c.stock);
   addItem({...c, name: c.variant? `${P.name} (${c.variant})` : P.name}, q);
 }
@@ -569,7 +585,7 @@ async function loadRelated(){
   try{
     const r=await fetch(`${API_URL}?action=getProducts&secret=${API_SECRET}&limit=300`);
     const list=apiList(await r.json()).map(mapP).filter(p=>(P.sub?p.sub===P.sub:p.category===P.category)&&p.sku!==P.sku&&!isService(p)).slice(0,10);
-    window._catalog=[P,...list];
+    window._catalog=[P,...list];   // P ອາດຖືກອັບເດດແລ້ວ
     document.getElementById('related').innerHTML = list.length? list.map(card).join('') : '<p style="color:var(--grey-600)">ຍັງບໍ່ມີສິນຄ້າອື່ນໃນໝວດນີ້</p>';
   }catch(_){ document.getElementById('related').closest('section').remove(); }
 }

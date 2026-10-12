@@ -410,12 +410,14 @@ let ALL = [];
 
 const catParam = params.get('cat');
 
-async function load(){
-  document.getElementById('grid').innerHTML = Array.from({length:8},()=>`<article class="card skeleton"><div class="card-img"></div><span class="card-name">.</span><div class="price">.</div></article>`).join('');
+async function load(quiet){
+  if(!quiet) document.getElementById('grid').innerHTML = Array.from({length:8},()=>`<article class="card skeleton"><div class="card-img"></div><span class="card-name">.</span><div class="price">.</div></article>`).join('');
   try{
     const r = await fetch(`${API_URL}?action=getProducts&secret=${API_SECRET}&limit=1000`);
-    ALL = apiList(await r.json()).map(mapP).filter(p=>p.sku && !isService(p));
+    const L = apiList(await r.json()).map(mapP).filter(p=>p.sku && !isService(p));
+    if(L.length||!quiet) ALL = L;
   }catch(e){ console.warn(e); }
+  if(quiet){ if(ALL.length){ window._catalog=ALL; buildFacets(); render(); } return; }
   if(!ALL.length){ document.getElementById('grid').innerHTML=''; document.getElementById('count').textContent='ໂຫຼດສິນຄ້າບໍ່ໄດ້'; 
     document.getElementById('more').innerHTML='<div class="empty"><b>ເຊື່ອມຕໍ່ລະບົບສະຕັອກບໍ່ໄດ້</b>ກວດອິນເຕີເນັດ ແລ້ວ <a href="" style="text-decoration:underline">ໂຫຼດໜ້າໃໝ່</a></div>'; return; }
   window._catalog = ALL;
@@ -481,6 +483,7 @@ document.getElementById('fSale').onchange=e=>{ state.sale=e.target.checked; rend
 ['pMin','pMax'].forEach(id=>document.getElementById(id).oninput=()=>{ state.min=toTHB(document.getElementById('pMin').value); state.max=toTHB(document.getElementById('pMax').value); render(); });
 document.addEventListener('currencychange', render);
 load();
+document.addEventListener('productsfresh', ()=>load(true));   // ຂໍ້ມູນສົດຈາກ POS ມາຮອດ → ອັບເດດສະຕັອກ/ລາຄາ
 </script>
 </body>
 </html>

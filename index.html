@@ -532,8 +532,8 @@ const FALLBACK = [
   {sku:'demo-lock',name:'U-Lock Mini 13mm',brand:'Sevenday',category:'lock',price:850,stock:2},
 ].map(p=>({image:'',sizes:[],was:null,...p}));
 
-async function loadProducts(){
-  ['railFeatured','railLow','railAcc'].forEach(id=>document.getElementById(id).innerHTML = skeleton(5));
+async function loadProducts(quiet){
+  if(!quiet) ['railFeatured','railLow','railAcc'].forEach(id=>document.getElementById(id).innerHTML = skeleton(5));
   let all = [];
   try{
     const res  = await fetch(`${API_URL}?action=getProducts&secret=${API_SECRET}&limit=200`);
@@ -608,6 +608,7 @@ document.addEventListener('currencychange', renderRails);
 
 updateCartCount();
 loadProducts();
+document.addEventListener('productsfresh', ()=>loadProducts(true));
 </script>
 </body>
 </html>

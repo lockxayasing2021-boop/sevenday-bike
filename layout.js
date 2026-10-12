@@ -177,18 +177,52 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
   if (!document.querySelector('footer.footer')) document.body.insertAdjacentHTML('beforeend', BOTTOM);
 })();
 
-/* ── ຈຳຂໍ້ມູນສິນຄ້າໄວ້ໃນເບຣົາເຊີ 3 ນາທີ: ປ່ຽນໜ້າແລ້ວບໍ່ຕ້ອງລໍ API ໃໝ່ ── */
+/* ── ໂຫຼດໄວ: ສຳເນົາສິນຄ້າ + ຮູບ ຢູ່ໃນ GitHub Pages (data/catalog.json, img/p/*.webp)
+   GitHub Action ອັບເດດທຸກ 15 ນາທີ. ໜ້າເວັບສະແດງຈາກສຳເນົາທັນທີ ແລ້ວດຶງຂໍ້ມູນສົດຈາກ POS ຢູ່ເບື້ອງຫຼັງ.
+   ຮູບທີ່ຍັງບໍ່ທັນຢູ່ໃນສຳເນົາ (ຫາກໍອັບໂຫຼດ) ຍັງໃຊ້ລິ້ງ Google ຄືເກົ່າ. ── */
+let SD_IMGS = null;
+const SD_CAT = (function(){
+  try {
+    ['https://script.google.com', 'https://script.googleusercontent.com', 'https://lh3.googleusercontent.com'].forEach(h => {
+      const l = document.createElement('link'); l.rel = 'preconnect'; l.href = h; l.crossOrigin = ''; document.head.appendChild(l); });
+    return fetch('data/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null)
+      .then(c => { if (c && c.imgs) SD_IMGS = c.imgs; return c; }).catch(() => null);
+  } catch (_) { return Promise.resolve(null); }
+})();
+/* ລໍສຳເນົາສູງສຸດ 1.5 ວິນາທີ — ຊ້າກວ່ານັ້ນ ໃຊ້ API ຕາມປົກກະຕິ */
+function sdCatalog(){ return Promise.race([SD_CAT, new Promise(r => setTimeout(() => r(null), 1500))]); }
+/* ລິ້ງຮູບ Google Drive → ຮູບ WebP ໃນເວັບເອງ (ຖ້າມີແລ້ວ) */
+function sdImgUrl(s){
+  if (!SD_IMGS || !s) return s;
+  return String(s).replace(/https:\/\/lh3\.googleusercontent\.com\/d\/([\w-]{10,})(?:=w(\d+))?/g, (m, id, w) => {
+    const ss = SD_IMGS[id]; if (!ss || !ss.length) return m;
+    w = +w || 800;
+    const want = w <= 800 ? 600 : (w <= 1600 || !ss.includes(1920)) ? 1200 : 1920;
+    return 'img/p/' + id + '-' + (ss.includes(want) ? want : Math.max(...ss)) + '.webp';
+  });
+}
 (function(){
   const _f = window.fetch.bind(window), TTL = 180000;
+  const json = body => new Response(body, { headers: { 'Content-Type': 'application/json' } });
   window.fetch = async function(url, opt){
-    const u = String(url);
-    if (!/action=getProducts/.test(u) || (opt && opt.method === 'POST')) return _f(url, opt);
+    const u = String(url), act = (u.match(/[?&]action=([\w.]+)/) || [])[1];
+    if ((opt && opt.method === 'POST') || !/script\.google\.com/.test(u) || !/^(getProducts|getProduct|getSiteConfig)$/.test(act || '')) return _f(url, opt);
+    const cat = await sdCatalog();
+    if (act !== 'getProducts') { const r = await _f(url, opt); return new Response(sdImgUrl(await r.text()), { status: r.status, headers: { 'Content-Type': 'application/json' } }); }
     const key = 'sd_api_' + u.replace(/^.*\?/, '');
     try { const c = JSON.parse(sessionStorage.getItem(key) || 'null');
-      if (c && Date.now() - c.t < TTL) return new Response(c.body, { headers: { 'Content-Type': 'application/json' } }); } catch(_){}
-    const r = await _f(url, opt); const body = await r.clone().text();
-    try { if (r.ok && JSON.parse(body).ok === true) sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), body })); } catch(_){}
-    return r;
+      if (c && Date.now() - c.t < TTL) return json(sdImgUrl(c.body)); } catch(_){}
+    const live = _f(url, opt).then(async r => { const body = await r.text();
+      if (!r.ok || JSON.parse(body).ok !== true) throw new Error('API ' + r.status);
+      try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), body })); } catch(_){}
+      return body; });
+    // ໜ້າກະຕ່າ/ຈ່າຍເງິນ ຕ້ອງການລາຄາ-ສະຕັອກສົດສະເໝີ
+    if (cat && Array.isArray(cat.products) && cat.products.length && !/cart|checkout/.test(location.pathname)) {
+      const lim = +(u.match(/[?&]limit=(\d+)/) || [])[1] || 24;
+      live.then(() => document.dispatchEvent(new Event('productsfresh'))).catch(() => {});
+      return json(sdImgUrl(JSON.stringify({ ok: true, data: { data: cat.products.slice(0, lim), meta: { total: cat.products.length, snapshot: cat.t } } })));
+    }
+    return json(sdImgUrl(await live));
   };
 })();
 
@@ -271,6 +305,11 @@ function applySite(){
 function fillShop(){ document.querySelectorAll('[data-shop]').forEach(el=>{ const k=el.dataset.shop; if(el.tagName==='A'){ if(k==='phone') el.href='tel:+856'+SHOP.phone.replace(/\s/g,'').replace(/^0/,''); else if(k==='whatsapp') el.href='https://wa.me/'+SHOP.whatsapp; else if(k==='email') el.href='mailto:'+SHOP.email; else if(k==='mapUrl') el.href=SHOP.mapUrl; } if(k!=='mapUrl' && k!=='whatsapp' && !el.children.length){ if(k==='hours'||k==='address') el.setAttribute('translate','no'); el.textContent=k==='hours'?sdHoursText():SHOP[k]; } }); }
 (async function loadSite(){
   try{
+    const cat = await sdCatalog();
+    if (cat) {           // ສະແດງໂລໂກ້/ສະໄລ້ ຈາກສຳເນົາທັນທີ (ຮູບ WebP ໃນເວັບເອງ)
+      const base = Object.keys(SD_SITE).length ? SD_SITE : (cat.site || {}), c0 = JSON.parse(sdImgUrl(JSON.stringify(base)));
+      if (JSON.stringify(c0) !== JSON.stringify(SD_SITE)) { SD_SITE = c0; applySite(); document.dispatchEvent(new Event('siteconfig')); }
+    }
     const t = +localStorage.getItem('sd_site_t') || 0;
     if (Date.now() - t < 5 * 60e3) return;
     const j = await (await fetch(`${API_URL}?action=getSiteConfig&secret=${API_SECRET}`)).json();
@@ -351,7 +390,7 @@ function card(p){
   const out=p.stock<=0, low=!out&&p.stock<=2;
   const off=p.was&&p.was>p.price?Math.round((1-p.price/p.was)*100):0;
   const badges=[off?`<span class="badge b-off">-${off}%</span>`:'',low?`<span class="badge b-low">ເຫຼືອ ${p.stock}</span>`:'',out?`<span class="badge b-out">ໝົດ</span>`:''].join('');
-  const img=p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy">`:`<svg viewBox="0 0 120 70" aria-hidden="true"><use href="${iconFor(p.category+' '+p.name)}"/></svg>`;
+  const img=p.image?`<img src="${sdImgUrl(p.image)}" alt="${p.name}" loading="lazy" decoding="async">`:`<svg viewBox="0 0 120 70" aria-hidden="true"><use href="${iconFor(p.category+' '+p.name)}"/></svg>`;
   const href=`product.html?sku=${encodeURIComponent(p.sku)}`;
   const sz=(p.sizes||[]).slice(0,6), col=(p.colors||[]).length;
   const sizes=(sz.length||col)?`<div class="sizes">${col>1?`<span>${col} ສີ</span>`:''}${sz.map(s=>`<span>${s}</span>`).join('')}</div>`:'';
