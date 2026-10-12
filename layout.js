@@ -16,7 +16,10 @@
 html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans-serif}
 .logo-mark.has-img{background:none!important;width:auto!important;height:auto!important;padding:0;display:flex;align-items:center}
 .logo-mark.has-img img{display:block;height:42px;width:auto;max-width:150px;object-fit:contain}
-@media(max-width:900px){.logo-mark.has-img img{height:36px;max-width:110px}}`;
+@media(max-width:900px){.logo-mark.has-img img{height:36px;max-width:110px}}
+.social a{transition:background .15s,border-color .15s,color .15s}
+.social a:hover{border-color:var(--white);background:var(--white);color:var(--black)}
+.social a svg{display:block}`;
   const TOP = `<!-- SVG sprite -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -130,7 +133,7 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
       <div class="foot-brand">
         <a href="index.html" class="logo"><span class="logo-mark">7</span><span class="logo-text">Sevenday Bike</span></a>
         <p><span>ຮ້ານລົດຖີບ ແລະ Workshop ທີ່ນະຄອນຫຼວງວຽງຈັນ.</span> <span data-shop="hours"></span></p>
-        <div class="social"><a href="#" data-social="facebook" target="_blank" rel="noopener" aria-label="Facebook">f</a><a href="#" data-social="tiktok" target="_blank" rel="noopener" aria-label="TikTok">tt</a><a href="#" data-social="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp">wa</a></div>
+        <div class="social"><a href="#" data-social="facebook" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8.2h2.8l.4-3.2h-3.2V8.5c0-.9.3-1.6 1.6-1.6h1.7V4.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H7.3v3.2h2.8V22h3.4z"/></svg></a><a href="#" data-social="tiktok" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.6 2h-3.3v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.2a6.3 6.3 0 1 0 5.3 6.2V8.6a8 8 0 0 0 4.7 1.5V6.8a4.7 4.7 0 0 1-4.7-4.8z"/></svg></a><a href="#" data-social="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.4A9.9 9.9 0 1 0 12 2zm0 18.1c-1.5 0-3-.4-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.1zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.3-.6-.5-1-1.1-1.3-1.7-.1-.2 0-.4.1-.5l.4-.4.3-.4.1-.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.6.6-.9 1.3-.9 2.1.1.9.4 1.8 1 2.6 1.1 1.6 2.5 2.9 4.2 3.7.5.2 1 .4 1.4.5.6.2 1.2.2 1.7.1.6-.1 1.2-.5 1.5-1 .2-.3.2-.7.1-1-.1-.1-.3-.2-.5-.3z"/></svg></a></div>
       </div>
       <div><h4>ສິນຄ້າ</h4><ul><li><a href="catalogue.html?cat=bikes">ລົດຖີບ</a></li><li><a href="catalogue.html?cat=parts">ອາໄຫຼ່</a></li><li><a href="catalogue.html?cat=accessories">ອຸປະກອນ</a></li><li><a href="catalogue.html?cat=used">ມືສອງ</a></li><li><a href="catalogue.html?sale=1">Sale</a></li></ul></div>
       <div><h4>Workshop</h4><ul><li><a href="service.html">ແພັກເກດ Service</a></li><li><a href="service.html#book">ຈອງຄິວ</a></li><li><a href="film.html">ຟິມຫຸ້ມສີ</a></li></ul></div>
@@ -544,4 +547,3 @@ function setLang(l) {
   document.dispatchEvent(new Event('langchange'));
 }
 sdI18n.start();
-
