@@ -606,7 +606,7 @@ const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); ret
 /* ══ คิวซ่อม ══════════════════════════════════════════════════════════ */
 const QP = { am: 'เช้า', pm: 'บ่าย', ev: 'เย็น' }, QSRC = { 'เว็บไซต์': '🌐', 'แอดมิน': '📞', 'พนักงาน POS': '🧾', 'POS': '🏪' };
 const QDOWS = { th: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'], lo: ['ອາ.', 'ຈ.', 'ອ.', 'ພ.', 'ພຫ.', 'ສຸ.', 'ສ.'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
-const QDOW = new Proxy([], { get: (_, i) => (QDOWS[(window.admI18n && admI18n.lang) || 'th'] || QDOWS.th)[i] }), QMON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const QDOW = QDOWS.en, QMON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const qYmd = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
 const qAddD = (ymd, n) => { const d = new Date(ymd + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const qNice = ymd => { const d = new Date(ymd + 'T12:00:00Z'); return `${QDOW[d.getUTCDay()]} ${d.getUTCDate()} ${QMON[d.getUTCMonth()]}`; };
@@ -1127,5 +1127,6 @@ async function start(){
 setInterval(() => { if (token && !$('app').hidden) loadDash(); }, 120000);
 if (token) start(); else showLogin();
 </script>
+<script src="sd-datepicker.js"></script>
 </body>
 </html>

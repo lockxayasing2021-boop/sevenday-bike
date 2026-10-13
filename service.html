@@ -538,7 +538,7 @@ try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ $('bN
 function err(id,b){ $(id).closest('.field').classList.toggle('invalid',b); return b; }
 /* ── ຄິວວ່າງ: ດຶງຈາກລະບົບ (ຊີດ RepairQueue + ງານໃນ POS) ── */
 const PER_NAME = { am: { lo: 'ເຊົ້າ', th: 'เช้า', en: 'Morning' }, pm: { lo: 'ບ່າຍ', th: 'บ่าย', en: 'Afternoon' }, ev: { lo: 'ແລງ', th: 'เย็น', en: 'Evening' } };
-const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], EN_DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const pName = id => (PER_NAME[id] || {})[sdLang()] || (PER_NAME[id] || {}).lo || id;
 let QS = null, qDate = '', qPer = '', qFail = false;
 function dayState(d){
@@ -554,7 +554,7 @@ function renderQueue(){
   if (!qDate || !D.some(d => d.date === qDate && /ok|low/.test(dayState(d)))) { const f = D.find(d => /ok|low/.test(dayState(d))); qDate = f ? f.date : ''; qPer = ''; }
   $('qDays').innerHTML = D.map(d => { const st = dayState(d), [y, m, dd] = d.date.split('-'), dis = !/ok|low/.test(st);
     return `<button type="button" class="qday ${st} ${d.date === qDate ? 'on' : ''}" data-d="${d.date}" ${dis ? 'aria-disabled="true"' : ''} role="option" aria-selected="${d.date === qDate}">
-      <span class="w">${(SD_DAYS[sdLang()] || SD_DAYS.lo)[d.dow]}</span><span class="d">${+dd}</span><span class="m" translate="no">${MON[+m - 1]}</span>
+      <span class="w" translate="no">${EN_DOW[d.dow]}</span><span class="d">${+dd}</span><span class="m" translate="no">${MON[+m - 1]}</span>
       <span class="s"><i class="q-${st === 'closed' ? 'full' : st}"></i>${ST_TXT[st]}</span></button>`; }).join('');
   const day = D.find(d => d.date === qDate);
   if (!day) { $('qPers').innerHTML = ''; $('qNote').textContent = 'ບໍ່ມີຄິວວ່າງໃນຊ່ວງນີ້ — ໂທສອບຖາມຮ້ານໄດ້'; return; }
@@ -564,7 +564,7 @@ function renderQueue(){
     const ok = p.status === 'open', em = ok ? `<em class="${p.left <= 1 ? 'low' : 'ok'}">ເຫຼືອ ${p.left} ຄິວ</em>` : `<em class="no">${p.status === 'full' ? 'ເຕັມແລ້ວ' : p.status === 'past' ? 'ໝົດເວລາຈອງ' : 'ປິດ'}</em>`;
     return `<button type="button" class="qper ${p.id === qPer ? 'on' : ''}" data-p="${p.id}" ${ok ? '' : 'disabled'}><b>${pName(p.id)}</b><span translate="no">${p.start}–${p.end}</span>${em}</button>`; }).join('');
   const P = day.periods.find(p => p.id === qPer), [y, m, dd] = qDate.split('-');
-  $('qNote').innerHTML = P ? `ນັດ: <b translate="no">${(SD_DAYS[sdLang()] || SD_DAYS.lo)[day.dow]} ${+dd} ${MON[+m - 1]} ${y}</b> · <b>${pName(P.id)}</b> <span translate="no">${P.start}–${P.end}</span>` : 'ເລືອກຊ່ວງເວລາ';
+  $('qNote').innerHTML = P ? `ນັດ: <b translate="no">${EN_DOW[day.dow]}, ${+dd} ${MON[+m - 1]} ${y}</b> · <b>${pName(P.id)}</b> <span translate="no">${P.start}–${P.end}</span>` : 'ເລືອກຊ່ວງເວລາ';
   $('qField').classList.remove('invalid');
 }
 async function loadQueue(){
@@ -598,7 +598,7 @@ async function book(e){
       service: pk, notes:'ຈອງຜ່ານເວັບໄຊ',
       ...(qFail ? {} : { queue: { date: qDate, period: qPer } })
     });
-    const [y, m, dd] = date.split('-'), when = `${+dd} ${MON[+m - 1]} ${y}`;
+    const [y, m, dd] = date.split('-'), when = `${EN_DOW[new Date(date + 'T12:00:00Z').getUTCDay()]}, ${+dd} ${MON[+m - 1]} ${y}`;
     $('bookBox').innerHTML = qFail
       ? `<div class="done"><b>ຈອງຄິວແລ້ວ</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service ${pEsc(pk)} · <span translate="no">${when}</span> · ${pEsc(slot)}<br>ຮ້ານຈະໂທ ຫຼື WhatsApp ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`
       : `<div class="done"><b>ຢືນຢັນຄິວແລ້ວ ✓</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service <span translate="no">${pEsc(pk)}</span><br><b style="display:inline;font-size:18px"><span translate="no">${when}</span> · ${pName(qPer)} <span translate="no">${P.start}–${P.end}</span></b><br>ກະລຸນານຳລົດມາຕາມເວລານັດ · ຖ້າມາບໍ່ໄດ້ ແຈ້ງຮ້ານທາງ WhatsApp</p></div>`;
@@ -613,5 +613,6 @@ async function book(e){
 }
 
 </script>
+<script src="sd-datepicker.js"></script>
 </body>
 </html>
