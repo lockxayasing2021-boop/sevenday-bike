@@ -445,7 +445,7 @@ async function placeOrder(){
       items: cart.map(i=>({sku:i.sku,name:i.name,qty:i.qty,price_thb:Math.round(i.price*k)})),
       customer:{name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim()},
       payment_method:pay, delivery_method:del+($('addr').value.trim()?' — '+$('addr').value.trim():''),
-      currency, notes:[$('notes').value.trim(), coupon?'ລະຫັດສ່ວນຫຼຸດ: '+coupon:''].filter(Boolean).join(' | ')
+      currency, coupon: t.d ? coupon : '', notes:[$('notes').value.trim(), coupon?'ລະຫັດສ່ວນຫຼຸດ: '+coupon:''].filter(Boolean).join(' | ')
     });
     setCart([]); try{sessionStorage.removeItem('sd_coupon');}catch(_){}
     showDone(res.bill_id, pay, t.total);
