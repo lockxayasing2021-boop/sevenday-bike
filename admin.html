@@ -213,6 +213,53 @@ a{color:inherit;text-decoration:none}
   .md-grid{grid-template-columns:1fr}
   .md-prods{max-height:260px}
 }
+
+/* ── คิวซ่อม ── */
+.qbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.qbar .sp{flex:1}
+.qbar .rng{font-weight:800;font-size:15px;min-width:150px;text-align:center}
+.qwrap{overflow-x:auto;border:1px solid var(--g2);background:#fff}
+.qt{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixed}
+.qt th{font-size:12.5px;font-weight:800;padding:9px 6px;border-bottom:1px solid var(--g2);border-left:1px solid var(--g2);background:var(--g1);text-align:center}
+.qt th small{display:block;font-weight:600;color:var(--g6);font-size:11px}
+.qt th.today{background:#000;color:#fff}.qt th.today small{color:#ccc}
+.qt th.off{color:var(--g6);background:repeating-linear-gradient(45deg,var(--g1),var(--g1) 6px,#fff 6px,#fff 12px)}
+.qt td{border-left:1px solid var(--g2);border-bottom:1px solid var(--g2);vertical-align:top;padding:0;height:118px}
+.qt td.ph{width:96px;padding:10px 8px;font-size:12.5px;font-weight:800;background:var(--g1)}
+.qt td.ph small{display:block;font-weight:600;color:var(--g6)}
+.qc{display:flex;flex-direction:column;gap:4px;width:100%;height:100%;padding:7px;text-align:left;background:#fff;border:0;font:inherit;cursor:pointer}
+.qc:hover{background:#FAFAFA}.qc.sel{outline:2px solid #000;outline-offset:-2px}
+.qc .cnt{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800}
+.qc .bar{flex:1;height:5px;background:var(--g2);border-radius:3px;overflow:hidden}.qc .bar i{display:block;height:100%;background:var(--ok)}
+.qc.full .bar i{background:var(--bad)}.qc.low .bar i{background:#E8A33D}
+.qc.closed{background:repeating-linear-gradient(45deg,var(--g1),var(--g1) 6px,#fff 6px,#fff 12px);color:var(--g6)}
+.qc.past{opacity:.6}
+.qc .who{font-size:11.5px;line-height:1.3;padding:3px 5px;background:var(--g1);border-left:3px solid #2F6FE4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qc .who.s-มาแล้ว{border-color:var(--ok)}.qc .who.s-ไม่มา{border-color:var(--bad);text-decoration:line-through}.qc .who.s-ยกเลิก{display:none}
+.qc .who.pos{border-color:#8E6BD8}
+.qc .rs{font-size:11px;font-weight:700}
+.qdet{margin-top:14px}
+.qdet .bd{padding:14px 16px}
+.qent{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--g1)}
+.qent:last-child{border-bottom:0}
+.qent b{font-size:14px}.qent small{display:block;color:var(--g6);font-size:12.5px;line-height:1.45}
+.qent .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.qtag{display:inline-block;font-size:11px;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--g1);margin-left:4px;vertical-align:1px}
+.qtag.t-ยืนยันแล้ว{background:#E6EEFC;color:#1D4FB8}.qtag.t-มาแล้ว{background:#E3F4EA;color:var(--ok)}.qtag.t-ไม่มา{background:#FDECEC;color:var(--bad)}.qtag.t-ยกเลิก{color:var(--g6)}
+.qtag.job{background:#F1ECFB;color:#5B3BAF}
+.qctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:12px;margin-top:6px;border-top:1px dashed var(--g3);font-size:13px}
+.qctl input{height:32px;border:1px solid var(--g3);padding:0 8px;font:inherit;font-size:13px}
+.qform{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.qform label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:700;color:var(--g6)}
+.qform input,.qform select{height:38px;border:1px solid var(--g3);padding:0 10px;font:inherit;font-size:14px;color:#000;background:#fff}
+.qform .w2{grid-column:span 2}
+.qset{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.qset .pp{border:1px solid var(--g2);padding:12px;display:grid;gap:8px;font-size:13px}
+.qset .pp b{font-size:14px}
+.qset .pp div{display:flex;gap:6px;align-items:center}
+.qset input{height:34px;border:1px solid var(--g3);padding:0 8px;font:inherit;font-size:14px;width:100%}
+.qtoday li{cursor:pointer}
+@media (max-width:900px){.qform{grid-template-columns:1fr 1fr}.qset{grid-template-columns:1fr}.qent{grid-template-columns:1fr}.qent .acts{justify-content:flex-start}}
 </style>
 </head>
 <body>
@@ -239,6 +286,7 @@ a{color:inherit;text-decoration:none}
       <a href="#home" data-p="home"><span class="ic">🏠</span>ภาพรวม</a>
       <div class="nav-h">ร้าน</div>
       <a href="#orders" data-p="orders"><span class="ic">🛒</span>ออเดอร์ &amp; งานซ่อม<span class="bd" id="bdOrders" hidden></span></a>
+      <a href="#queue" data-p="queue"><span class="ic">🔧</span>คิวซ่อม<span class="bd" id="bdQueue" hidden></span></a>
       <div class="nav-h">กิจกรรม</div>
       <a href="#events" data-p="events"><span class="ic">📅</span>จัดการกิจกรรม</a>
       <a href="#participants" data-p="participants"><span class="ic">👥</span>ผู้สมัคร / ตรวจสลิป<span class="bd" id="bdSlips" hidden></span></a>
@@ -270,6 +318,10 @@ a{color:inherit;text-decoration:none}
         <button class="kpi" type="button" data-go="orders"><b id="kRepair">–</b><span>งานซ่อม / ฟิล์ม ค้าง</span></button>
         <button class="kpi" type="button" data-go="participants"><b id="kSlips">–</b><span>สลิปรอตรวจ</span></button>
         <button class="kpi" type="button" data-go="events"><b id="kEvents">–</b><span>กิจกรรมเปิดรับสมัคร</span></button>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <h2>🔧 คิวซ่อมวันนี้<span class="sp"></span><button class="btn sm" type="button" data-go="queue">ดูตารางคิว</button></h2>
+        <ul class="list qtoday" id="qTodayList"><li><div class="sk" style="height:36px;width:100%"></div></li></ul>
       </div>
       <div class="grid2">
         <div class="card">
@@ -374,6 +426,40 @@ a{color:inherit;text-decoration:none}
       </div>
     </div>
 
+
+    <div class="dash" id="queue" hidden>
+      <div class="site-head"><div><h1>คิวซ่อม</h1><div class="sub" id="qSub">ตารางคิวรับซ่อม / Service — ลูกค้าจองผ่านเว็บได้คิวทันที · งานที่รับหน้าร้านใน POS นับเป็นคิวอัตโนมัติ</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn dark" type="button" id="qAddBtn">+ เพิ่มคิว</button><button class="btn" type="button" id="qSetBtn">⚙️ ตั้งค่า</button></div></div>
+      <section class="card qdet" id="qAdd" hidden>
+        <h2>+ เพิ่มคิว (ลูกค้าโทร / Walk-in)<span class="sp"></span><button class="btn sm" type="button" data-qclose="qAdd">ปิด</button></h2>
+        <form class="bd" id="qAddF">
+          <div class="qform">
+            <label>ชื่อลูกค้า<input id="qaName" required autocomplete="off"></label>
+            <label>เบอร์โทร<input id="qaPhone" required inputmode="tel" autocomplete="off"></label>
+            <label>จักรยาน<input id="qaBike" placeholder="เช่น Trek Marlin 5"></label>
+            <label>บริการ<select id="qaSvc"></select></label>
+            <label>วันที่<input id="qaDate" type="date" required></label>
+            <label>ช่วงเวลา<select id="qaPer"></select></label>
+            <label class="w2">หมายเหตุ<input id="qaNote" placeholder="อาการ / สิ่งที่ต้องทำ"></label>
+          </div>
+          <div class="qctl" style="border:0;margin:0"><span id="qaInfo" class="hint"></span><span class="sp" style="flex:1"></span><button class="btn dark" id="qaSave">บันทึกคิว</button></div>
+        </form>
+      </section>
+      <section class="card qdet" id="qSet" hidden>
+        <h2>⚙️ ตั้งค่าคิว<span class="sp"></span><button class="btn sm" type="button" data-qclose="qSet">ปิด</button></h2>
+        <div class="bd">
+          <div class="qset" id="qPeriods"></div>
+          <div class="qctl"><label>เปิดให้จองล่วงหน้า <input id="qsDays" type="number" min="1" max="60" style="width:70px"> วัน</label>
+            <label>ปิดรับจองก่อนหมดช่วง <input id="qsLead" type="number" min="0" max="2880" step="15" style="width:80px"> นาที</label>
+            <span class="sp" style="flex:1"></span><button class="btn dark" type="button" id="qsSave">บันทึกการตั้งค่า</button></div>
+          <p class="hint" style="margin-top:8px">จำนวนรับ = จำนวนคันที่ช่างรับได้ในช่วงนั้น (ใส่ 0 = ไม่เปิดช่วงนี้) · วันหยุดและเวลาเปิด-ปิดร้านใช้จาก “ตั้งค่าหน้าเว็บ” · ปิดเฉพาะวัน / ช่วง หรือเปลี่ยนจำนวนรับเฉพาะวัน ให้กดที่ช่องในตาราง</p>
+        </div>
+      </section>
+      <div class="qbar"><button class="btn sm" type="button" id="qPrev">‹ ก่อนหน้า</button><button class="btn sm" type="button" id="qToday">วันนี้</button><button class="btn sm" type="button" id="qNext">ถัดไป ›</button>
+        <span class="rng" id="qRange" translate="no"></span><span class="sp"></span><span class="hint">🌐 เว็บ · 📞 แอดมิน · 🏪 POS</span></div>
+      <div class="qwrap"><table class="qt" id="qTable"><tbody><tr><td><div class="sk" style="height:300px"></div></td></tr></tbody></table></div>
+      <section class="card qdet" id="qCell" hidden></section>
+    </div>
     <iframe class="frame" id="frame" title="Admin" hidden allow="camera; clipboard-write; fullscreen"></iframe>
   </section>
 </div>
@@ -389,6 +475,7 @@ const PAGES = {
   home:         { title: 'ภาพรวม' },
   site:         { title: 'ตั้งค่าหน้าเว็บ' },
   media:        { title: 'รูป / วิดีโอสินค้า' },
+  queue:        { title: 'คิวซ่อม' },
   orders:       { title: 'ออเดอร์ & งานซ่อม', file: 'admin-orders.html' },
   events:       { title: 'จัดการกิจกรรม', file: 'admin-events.html' },
   detail:       { title: 'แก้ไขกิจกรรม', file: 'admin-events-detail.html', parent: 'events' },
@@ -448,7 +535,8 @@ function route(){
   const { p, q } = parseHash();
   setActive(p);
   const fr = $('frame');
-  $('site').hidden = p !== 'site'; $('media').hidden = p !== 'media';
+  $('site').hidden = p !== 'site'; $('media').hidden = p !== 'media'; $('queue').hidden = p !== 'queue';
+  if (p === 'queue') { fr.hidden = true; $('dash').hidden = true; loadQueue(q); return; }
   if (p === 'home') { fr.hidden = true; $('dash').hidden = false; loadDash(); return; }
   if (p === 'site') { fr.hidden = true; $('dash').hidden = true; loadSite(); return; }
   if (p === 'media') { fr.hidden = true; $('dash').hidden = true; loadMedia(q); return; }
@@ -514,11 +602,145 @@ const TYPE = { order: ['🛒', 'ออเดอร์'], booking: ['🔧', 'จ�
 const EV_ST = { DRAFT: ['ร่าง', 'mute'], PUBLISHED: ['ประกาศแล้ว', 'mid'], REGISTRATION_OPEN: ['เปิดรับสมัคร', 'ok'], REGISTRATION_CLOSED: ['ปิดรับสมัคร', 'mid'], EVENT_FINISHED: ['จบแล้ว', 'mute'], CANCELLED: ['ยกเลิก', 'mute'] };
 const thDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? 'เมื่อกี้' : m < 60 ? m + ' นาทีที่แล้ว' : m < 1440 ? Math.round(m / 60) + ' ชม.ที่แล้ว' : Math.round(m / 1440) + ' วันที่แล้ว'; };
+
+/* ══ คิวซ่อม ══════════════════════════════════════════════════════════ */
+const QP = { am: 'เช้า', pm: 'บ่าย', ev: 'เย็น' }, QSRC = { 'เว็บไซต์': '🌐', 'แอดมิน': '📞', 'POS': '🏪' };
+const QDOWS = { th: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'], lo: ['ອາ.', 'ຈ.', 'ອ.', 'ພ.', 'ພຫ.', 'ສຸ.', 'ສ.'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
+const QDOW = new Proxy([], { get: (_, i) => (QDOWS[(window.admI18n && admI18n.lang) || 'th'] || QDOWS.th)[i] }), QMON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const qYmd = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const qAddD = (ymd, n) => { const d = new Date(ymd + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const qNice = ymd => { const d = new Date(ymd + 'T12:00:00Z'); return `${QDOW[d.getUTCDay()]} ${d.getUTCDate()} ${QMON[d.getUTCMonth()]}`; };
+let Q = null, qFrom = '', qSel = null, qBusy = false;
+function qToday(){ return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Vientiane' }); }
+async function loadQueue(q){
+  const want = new URLSearchParams(q || '').get('from');
+  if (want) qFrom = want; if (!qFrom) qFrom = qToday();
+  if (qBusy) return; qBusy = true;
+  $('qRange').textContent = qNice(qFrom) + ' – ' + qNice(qAddD(qFrom, 6));
+  try { Q = await post('queueAdmin', { from: qFrom, days: 7 }); renderQ(); }
+  catch (x) { if (/ADMIN_AUTH/.test(x.message)) { store.del('sd_admin'); token = ''; return showLogin('หมดเวลาเข้าสู่ระบบ — กรุณาเข้าใหม่'); }
+    $('qTable').innerHTML = `<tbody><tr><td class="empty">โหลดคิวไม่ได้: ${esc(x.message)}</td></tr></tbody>`; }
+  finally { qBusy = false; }
+}
+const qEntries = (d, p) => (Q.entries || []).filter(e => e.date === d && e.period === p);
+function renderQ(){
+  const C = Q.config, today = qToday();
+  $('qSub').textContent = 'ช่วงเวลา: ' + C.periods.filter(p => p.cap > 0).map(p => `${QP[p.id]} ${p.start}–${p.end} รับ ${p.cap} คัน`).join(' · ');
+  const head = '<tr><th style="width:96px"></th>' + Q.days.map(d => `<th class="${d.date === today ? 'today' : ''} ${d.closed ? 'off' : ''}" translate="no">${qNice(d.date)}<small>${d.closed ? (d.reason && d.reason !== 'hours' ? esc(d.reason) : 'ปิด') : d.periods.reduce((a, p) => a + (p.status === 'closed' ? 0 : p.used), 0) + ' คัน'}</small></th>`).join('') + '</tr>';
+  const rows = Q.periods.map(pp => '<tr><td class="ph">' + QP[pp.id] + `<small translate="no">${pp.start}–${pp.end}</small></td>` + Q.days.map(d => {
+    const p = d.periods.find(x => x.id === pp.id), E = qEntries(d.date, pp.id).filter(e => e.status !== 'ยกเลิก');
+    const cls = p.status === 'closed' ? 'closed' : p.status === 'past' ? 'past' : p.used >= p.cap ? 'full' : p.left <= 1 ? 'low' : '';
+    const sel = qSel && qSel.d === d.date && qSel.p === pp.id ? ' sel' : '';
+    const pct = p.cap ? Math.min(100, Math.round(p.used / p.cap * 100)) : 0;
+    return `<td><button type="button" class="qc ${cls}${sel}" data-d="${d.date}" data-p="${pp.id}">
+      ${p.status === 'closed' && !E.length ? `<span class="rs">${d.closed ? '' : 'ปิด'} ${esc(p.reason || '')}</span>` : `<span class="cnt">${p.used}/${p.cap}<span class="bar"><i style="width:${pct}%"></i></span></span>`}
+      ${E.slice(0, 4).map(e => `<span class="who s-${esc(e.status)} ${e.source === 'POS' ? 'pos' : ''}" translate="no">${QSRC[e.source] || ''} ${esc(e.name || '-')}${e.bike ? ' · ' + esc(e.bike) : ''}</span>`).join('')}
+      ${E.length > 4 ? `<span class="rs">+${E.length - 4}</span>` : ''}</button></td>`; }).join('') + '</tr>').join('');
+  $('qTable').innerHTML = `<thead>${head}</thead><tbody>${rows}</tbody>`;
+  const nToday = (Q.entries || []).filter(e => e.date === today && e.status === 'ยืนยันแล้ว').length; badge('bdQueue', nToday);
+  if (qSel) renderCell();
+}
+function renderCell(){
+  const box = $('qCell'), d = Q.days.find(x => x.date === qSel.d);
+  if (!d) { box.hidden = true; return; }
+  const p = d.periods.find(x => x.id === qSel.p), E = qEntries(qSel.d, qSel.p), blk = (Q.config.blocks || {})[qSel.d + '|' + qSel.p] || {}, dayBlk = (Q.config.blocks || {})[qSel.d] || {};
+  box.hidden = false;
+  box.innerHTML = `<h2><span translate="no">${qNice(qSel.d)}</span> · ${QP[qSel.p]} <span translate="no" style="font-weight:600;color:var(--g6)">${p.start}–${p.end}</span> · ${p.used}/${p.cap} คัน<span class="sp"></span>
+      <button class="btn sm dark" type="button" data-qadd>+ เพิ่มคิวช่วงนี้</button><button class="btn sm" type="button" data-qclose="qCell">ปิด</button></h2>
+    <div class="bd">${E.length ? E.map(e => {
+      const dg = String(e.phone || '').replace(/\D/g, ''), wa = /^0/.test(dg) ? '856' + dg.slice(1) : /^(20|30)\d{7,8}$/.test(dg) ? '856' + dg : dg, pos = e.source === 'POS';
+      return `<div class="qent"><div><b translate="no">${QSRC[e.source] || ''} ${esc(e.name || '-')}</b>${pos ? '<span class="qtag">รับหน้าร้าน ' + esc(e.time || '') + '</span>' : `<span class="qtag t-${esc(e.status)}">${esc(e.status)}</span>`}${e.job_status ? `<span class="qtag job">POS: ${esc(e.job_status)}</span>` : ''}
+        <small translate="no">${esc(e.phone || '')} · ${esc(e.bike || '-')}${e.service ? ' · ' + esc(e.service) : ''}${e.job_id ? ' · ' + esc(e.job_id) : ''}</small>${e.note ? `<small>${esc(e.note)}</small>` : ''}</div>
+        <div class="acts">${wa ? `<a class="btn sm" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ''}${pos ? '' : `
+          ${e.status !== 'มาแล้ว' ? `<button class="btn sm" type="button" data-qs="มาแล้ว" data-id="${esc(e.id)}">✓ มาแล้ว</button>` : ''}
+          ${e.status === 'ยืนยันแล้ว' ? `<button class="btn sm" type="button" data-qs="ไม่มา" data-id="${esc(e.id)}">ไม่มา</button>` : ''}
+          ${e.status !== 'ยกเลิก' ? `<button class="btn sm" type="button" data-qmv="${esc(e.id)}">ย้าย</button><button class="btn sm del" type="button" data-qs="ยกเลิก" data-id="${esc(e.id)}">ยกเลิก</button>` : `<button class="btn sm" type="button" data-qs="ยืนยันแล้ว" data-id="${esc(e.id)}">คืนคิว</button>`}`}</div></div>`; }).join('') : '<div class="empty">ยังไม่มีคิวในช่วงนี้</div>'}
+      <div class="qctl">
+        ${blk.closed ? `<button class="btn sm" type="button" data-qblk="open">เปิดช่วงนี้</button>` : `<button class="btn sm" type="button" data-qblk="close">ปิดช่วงนี้</button>`}
+        ${dayBlk.closed ? `<button class="btn sm" type="button" data-qblk="dayopen">เปิดทั้งวัน</button>` : `<button class="btn sm" type="button" data-qblk="dayclose">ปิดทั้งวัน</button>`}
+        <label>เหตุผล <input id="qcReason" value="${esc(blk.reason || dayBlk.reason || '')}" placeholder="เช่น วันหยุด, ช่างลา" style="width:160px"></label>
+        <label>รับวันนี้ช่วงนี้ <input id="qcCap" type="number" min="0" max="20" value="${blk.cap !== undefined ? blk.cap : ''}" placeholder="${(Q.config.periods.find(x => x.id === qSel.p) || {}).cap}" style="width:64px"> คัน</label>
+        <button class="btn sm" type="button" data-qblk="cap">บันทึกจำนวน</button>
+      </div></div>`;
+}
+$('qTable').addEventListener('click', e => { const c = e.target.closest('.qc'); if (!c) return; qSel = { d: c.dataset.d, p: c.dataset.p }; renderQ(); $('qCell').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+document.addEventListener('adminlangchange', () => { if (Q && !$('queue').hidden) { renderQ(); $('qRange').textContent = qNice(qFrom) + ' – ' + qNice(qAddD(qFrom, 6)); } });
+$('qPrev').onclick = () => { qFrom = qAddD(qFrom, -7); loadQueue(); };
+$('qNext').onclick = () => { qFrom = qAddD(qFrom, 7); loadQueue(); };
+$('qToday').onclick = () => { qFrom = qToday(); loadQueue(); };
+document.addEventListener('click', e => { const c = e.target.closest('[data-qclose]'); if (c) { $(c.dataset.qclose).hidden = true; if (c.dataset.qclose === 'qCell') { qSel = null; renderQ(); } } });
+async function qDo(fn, okMsg){ try { await fn(); if (okMsg) toast(okMsg); await loadQueue(); } catch (x) { toast(/QUEUE_FULL/.test(x.message) ? 'ช่วงนั้นเต็มหรือปิดอยู่' : x.message); } }
+$('qCell').addEventListener('click', async e => {
+  const s = e.target.closest('[data-qs]'), mv = e.target.closest('[data-qmv]'), bl = e.target.closest('[data-qblk]'), ad = e.target.closest('[data-qadd]');
+  if (s) { if (s.dataset.qs === 'ยกเลิก' && !confirm('ยกเลิกคิวนี้?')) return; return qDo(() => post('queueSave', { id: s.dataset.id, status: s.dataset.qs }), 'บันทึกแล้ว'); }
+  if (mv) {
+    const to = prompt('ย้ายไปวันที่ (YYYY-MM-DD) และช่วง (เช้า / บ่าย / เย็น)\nเช่น ' + qAddD(qSel.d, 1) + ' บ่าย', qSel.d + ' ' + QP[qSel.p]); if (!to) return;
+    const m = to.trim().match(/^(\d{4}-\d{2}-\d{2})\s*(เช้า|บ่าย|เย็น|am|pm|ev)?/i); if (!m) return toast('รูปแบบไม่ถูกต้อง');
+    const per = { 'เช้า': 'am', 'บ่าย': 'pm', 'เย็น': 'ev' }[m[2]] || (m[2] || qSel.p).toLowerCase();
+    return qDo(async () => { try { await post('queueSave', { id: mv.dataset.qmv, date: m[1], period: per }); }
+      catch (x) { if (/QUEUE_FULL/.test(x.message) && confirm('ช่วงนั้นเต็มหรือปิดอยู่ — ย้ายไปเลย (รับเกินจำนวน)?')) await post('queueSave', { id: mv.dataset.qmv, date: m[1], period: per, force: true }); else throw x; }
+      qSel = { d: m[1], p: per }; }, 'ย้ายคิวแล้ว');
+  }
+  if (bl) {
+    const reason = $('qcReason').value.trim(), k = bl.dataset.qblk;
+    if (k === 'close') return qDo(() => post('queueBlock', { date: qSel.d, period: qSel.p, closed: true, reason }), 'ปิดช่วงนี้แล้ว');
+    if (k === 'open') return qDo(() => post('queueBlock', { date: qSel.d, period: qSel.p }), 'เปิดช่วงนี้แล้ว');
+    if (k === 'dayclose') return qDo(() => post('queueBlock', { date: qSel.d, closed: true, reason }), 'ปิดทั้งวันแล้ว');
+    if (k === 'dayopen') return qDo(() => post('queueBlock', { date: qSel.d }), 'เปิดทั้งวันแล้ว');
+    if (k === 'cap') return qDo(() => post('queueBlock', { date: qSel.d, period: qSel.p, cap: $('qcCap').value, reason }), 'บันทึกจำนวนแล้ว');
+  }
+  if (ad) openAdd(qSel.d, qSel.p);
+});
+function qPerOptions(sel){ return (Q ? Q.config.periods : [{ id: 'am' }, { id: 'pm' }, { id: 'ev' }]).map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${QP[p.id]}${p.start ? ' ' + p.start + '–' + p.end : ''}</option>`).join(''); }
+function openAdd(d, p){
+  $('qAdd').hidden = false; $('qSet').hidden = true;
+  const S = (typeof site !== 'undefined' && site && site.services && (site.services.packages || []).length ? site.services : window.DEF_SERVICES) || { packages: [] };
+  $('qaSvc').innerHTML = (S.packages || []).map(x => `<option>${esc(x.name)}</option>`).join('') + '<option>ซ่อมทั่วไป</option><option>ติดฟิล์ม</option>';
+  $('qaDate').value = d || qToday(); $('qaPer').innerHTML = qPerOptions(p || 'am'); $('qaInfo').textContent = '';
+  $('qAdd').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); setTimeout(() => $('qaName').focus(), 200);
+}
+$('qAddBtn').onclick = () => openAdd(qSel && qSel.d, qSel && qSel.p);
+$('qAddF').onsubmit = async e => {
+  e.preventDefault(); const b = $('qaSave'); b.disabled = true;
+  const data = { op: 'add', customer: { name: $('qaName').value.trim(), phone: $('qaPhone').value.trim() }, bike: $('qaBike').value.trim(), service: $('qaSvc').value, note: $('qaNote').value.trim(), date: $('qaDate').value, period: $('qaPer').value };
+  try {
+    let r; try { r = await post('queueSave', data); }
+    catch (x) { if (/QUEUE_(FULL|CLOSED)/.test(x.message) && confirm('ช่วงนี้เต็มหรือปิดอยู่ — เพิ่มคิวเกินจำนวนเลยไหม?')) r = await post('queueSave', { ...data, force: true }); else throw x; }
+    toast('เพิ่มคิวแล้ว · ' + r.job_id); $('qAddF').reset(); $('qAdd').hidden = true;
+    qSel = { d: data.date, p: data.period }; qFrom = qFrom && data.date >= qFrom && data.date <= qAddD(qFrom, 6) ? qFrom : data.date; await loadQueue();
+  } catch (x) { toast(x.message); }
+  finally { b.disabled = false; }
+};
+$('qSetBtn').onclick = () => {
+  if (!Q) return; $('qSet').hidden = false; $('qAdd').hidden = true; const C = Q.config;
+  $('qPeriods').innerHTML = C.periods.map(p => `<div class="pp" data-id="${p.id}"><b>${QP[p.id]}</b>
+    <div><input type="time" data-k="start" value="${p.start}"> – <input type="time" data-k="end" value="${p.end}"></div>
+    <div>รับ <input type="number" data-k="cap" min="0" max="20" value="${p.cap}" style="width:70px"> คัน</div></div>`).join('');
+  $('qsDays').value = C.days_ahead; $('qsLead').value = C.lead_min;
+};
+$('qsSave').onclick = () => qDo(async () => {
+  const periods = [...document.querySelectorAll('#qPeriods .pp')].map(el => ({ id: el.dataset.id, start: el.querySelector('[data-k=start]').value, end: el.querySelector('[data-k=end]').value, cap: el.querySelector('[data-k=cap]').value }));
+  await post('queueConfig', { config: { periods, days_ahead: $('qsDays').value, lead_min: $('qsLead').value } }); $('qSet').hidden = true;
+}, 'บันทึกการตั้งค่าแล้ว');
+/* ภาพรวม: คิววันนี้ */
+async function dashQueue(){
+  try {
+    const t = qToday(), d = await post('queueAdmin', { from: t, days: 1 });
+    const E = (d.entries || []).filter(e => e.status !== 'ยกเลิก').sort((a, b) => 'am pm ev'.indexOf(a.period) - 'am pm ev'.indexOf(b.period));
+    badge('bdQueue', E.filter(e => e.status === 'ยืนยันแล้ว').length);
+    $('qTodayList').innerHTML = E.length ? E.map(e => `<li data-go="queue"><span style="font-size:20px">${QSRC[e.source] || '🔧'}</span>
+      <div class="t"><b translate="no">${esc(e.name || '-')} · ${esc(e.bike || '-')}</b><small>${QP[e.period] || ''} ${e.service ? '· ' + esc(e.service) : ''}${e.job_status ? ' · POS: ' + esc(e.job_status) : ''}</small></div>
+      <span class="pill ${e.status === 'มาแล้ว' ? 'ok' : e.status === 'ไม่มา' ? 'new' : 'mid'}">${esc(e.source === 'POS' ? 'หน้าร้าน' : e.status)}</span></li>`).join('')
+      : '<li class="empty" style="cursor:default">วันนี้ยังไม่มีคิว</li>';
+  } catch (x) { $('qTodayList').innerHTML = `<li class="empty" style="cursor:default">โหลดคิวไม่ได้: ${esc(x.message)}</li>`; }
+}
+
 let dashBusy = false;
 async function loadDash(){
   if (dashBusy) return; dashBusy = true;
   $('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const [inbox, sum] = await Promise.allSettled([post('adminList', { days: 60 }), post('evt.adminSummary', {})]);
+  dashQueue();
   dashBusy = false;
   const auth = [inbox, sum].some(r => r.status === 'rejected' && /ADMIN_AUTH/.test(r.reason.message));
   if (auth) { store.del('sd_admin'); token = ''; return showLogin('หมดเวลาเข้าสู่ระบบ — กรุณาเข้าใหม่'); }

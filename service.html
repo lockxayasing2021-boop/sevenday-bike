@@ -348,6 +348,35 @@ main.wrap{padding-top:8px}
 .slots label:has(input:checked){background:#000;color:#fff;border-color:#000}
 .slots input{position:absolute;opacity:0}
 .book .btn{border-radius:0;height:54px}
+/* ── ປະຕິທິນຄິວ ── */
+.book>*,.book form,.book .field{min-width:0}
+.qhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.qhead label{margin:0}
+.qleg{display:flex;gap:12px;font-size:12px;color:var(--grey-600);flex-wrap:wrap}
+.qleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
+.q-ok{background:#1E9E5A}.q-low{background:#E8A33D}.q-full{background:#C9CDD2}
+.qdays{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.qday{flex:0 0 74px;scroll-snap-align:start;border:1px solid var(--grey-300);background:#fff;padding:9px 4px 8px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit}
+.qday .w{font-size:12px;color:var(--grey-600);font-weight:700}
+.qday .d{font-size:20px;font-weight:800;line-height:1.1}
+.qday .m{font-size:11px;color:var(--grey-600);font-weight:600}
+.qday .s{font-size:10.5px;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:4px}
+.qday .s i{width:7px;height:7px;border-radius:50%}
+.qday.on{border:2px solid #000;padding:8px 3px 7px}
+.qday.full,.qday.closed{background:var(--grey-100);cursor:not-allowed}
+.qday.full .d,.qday.closed .d{color:var(--grey-600)}
+.qpers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.qper{border:1px solid var(--grey-300);background:#fff;padding:11px 8px;text-align:center;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:2px}
+.qper b{font-size:15px}.qper span{font-size:12.5px;color:var(--grey-600)}
+.qper em{font-style:normal;font-size:12px;font-weight:800;margin-top:2px}
+.qper em.ok{color:#1E7A47}.qper em.low{color:#A86A10}.qper em.no{color:var(--grey-600)}
+.qper.on{background:#000;color:#fff;border-color:#000}.qper.on span,.qper.on em{color:#fff}
+.qper:disabled{background:var(--grey-100);cursor:not-allowed;color:var(--grey-600)}
+.qper:disabled b{text-decoration:line-through;text-decoration-thickness:1px}
+.qnote{font-size:13px;color:var(--grey-600);margin-top:6px;min-height:18px}
+.qsk{height:78px;flex:0 0 74px;background:linear-gradient(90deg,var(--grey-100),#fafafa,var(--grey-100));background-size:200% 100%;animation:qsk 1.2s infinite}
+@keyframes qsk{to{background-position:-200% 0}}
+.qfallback[hidden]{display:none}
 .done{background:var(--grey-100);padding:36px;text-align:center}
 .done b{display:block;font-size:26px;font-weight:800;margin-bottom:6px}
 .done .id{display:inline-block;border:2px solid #000;padding:8px 14px;font-weight:800;margin:12px 0}
@@ -424,8 +453,15 @@ main.wrap{padding-top:8px}
       <div class="field"><label for="bBrand">ຍີ່ຫໍ້ລົດຖີບ</label><input id="bBrand" placeholder="ເຊັ່ນ Trek, Giant"></div>
       <div class="field"><label for="bModel">ລຸ້ນ / ປະເພດ</label><input id="bModel" placeholder="ເຊັ່ນ Marlin 5, ພູເຂົາ" required><span class="err">ໃສ່ລຸ້ນ ຫຼື ປະເພດລົດຖີບ</span></div>
     </div>
-    <div class="row2">
-      <div class="field"><label for="bDate">ວັນທີສະດວກ</label><input id="bDate" type="date" required><span class="err">ເລືອກວັນທີ</span></div>
+    <div class="field" id="qField">
+      <div class="qhead"><label>ເລືອກວັນ ແລະ ເວລາ</label><div class="qleg"><span><i class="q-ok"></i>ວ່າງ</span><span><i class="q-low"></i>ເຫຼືອໜ້ອຍ</span><span><i class="q-full"></i>ເຕັມ / ປິດ</span></div></div>
+      <div class="qdays" id="qDays" role="listbox" aria-label="ວັນທີ"><div class="qsk"></div><div class="qsk"></div><div class="qsk"></div><div class="qsk"></div><div class="qsk"></div><div class="qsk"></div><div class="qsk"></div></div>
+      <div class="qpers" id="qPers"></div>
+      <div class="qnote" id="qNote"></div>
+      <span class="err">ເລືອກວັນ ແລະ ເວລາທີ່ຍັງວ່າງ</span>
+    </div>
+    <div class="row2 qfallback" id="qFallback" hidden>
+      <div class="field"><label for="bDate">ວັນທີສະດວກ</label><input id="bDate" type="date"><span class="err">ເລືອກວັນທີ</span></div>
       <div class="field"><label>ເວລາ</label><div class="slots"><label><input type="radio" name="slot" value="ເຊົ້າ 09:00–12:00" checked>ເຊົ້າ</label><label><input type="radio" name="slot" value="ບ່າຍ 13:00–15:00">ບ່າຍ</label><label><input type="radio" name="slot" value="ແລງ 15:00–18:00">ແລງ</label></div></div>
     </div>
     <div class="field"><label for="bSym">ອາການ ຫຼື ສິ່ງທີ່ຢາກໃຫ້ກວດ (ບໍ່ບັງຄັບ)</label><textarea id="bSym" placeholder="ເຊັ່ນ ເບຣກບໍ່ຄ່ອຍຢຸດ, ເກຍກະໂດດ"></textarea></div>
@@ -471,7 +507,7 @@ function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທ
 <script>
 
 const $=id=>document.getElementById(id);
-const t=new Date(); t.setDate(t.getDate()+1); $('bDate').min=new Date().toISOString().slice(0,10); $('bDate').value=t.toISOString().slice(0,10);
+const t=new Date(); t.setDate(t.getDate()+1); $('bDate').min=new Date().toISOString().slice(0,10); $('bDate').value=t.toISOString().slice(0,10);   // ໃຊ້ເມື່ອລະບົບຄິວໃຊ້ບໍ່ໄດ້
 /* ແພັກເກດ ແລະ ລາຄາ: ຈາກ Admin → ຕັ້ງຄ່າໜ້າເວັບ (ຖ້າຍັງບໍ່ຕັ້ງ ໃຊ້ site-defaults.js) */
 const POP = { lo: 'ນິຍົມທີ່ສຸດ', th: 'ยอดนิยม', en: 'Most popular' };
 const BOOK = { lo: 'ຈອງ ', th: 'จอง ', en: 'Book ' }, FROM = { lo: 'ຈາກ ', th: 'เริ่ม ', en: 'From ' };
@@ -500,21 +536,80 @@ document.addEventListener('click', e => { const a = e.target.closest('[data-pick
 const h=location.hash.replace('#',''); if(h && h !== 'book') pickPk(h);
 try{ const u=JSON.parse(sessionStorage.getItem('sd_user')||'null'); if(u){ $('bName').value=u.name||''; $('bPhone').value=u.phone||''; } }catch(_){}
 function err(id,b){ $(id).closest('.field').classList.toggle('invalid',b); return b; }
+/* ── ຄິວວ່າງ: ດຶງຈາກລະບົບ (ຊີດ RepairQueue + ງານໃນ POS) ── */
+const PER_NAME = { am: { lo: 'ເຊົ້າ', th: 'เช้า', en: 'Morning' }, pm: { lo: 'ບ່າຍ', th: 'บ่าย', en: 'Afternoon' }, ev: { lo: 'ແລງ', th: 'เย็น', en: 'Evening' } };
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const pName = id => (PER_NAME[id] || {})[sdLang()] || (PER_NAME[id] || {}).lo || id;
+let QS = null, qDate = '', qPer = '', qFail = false;
+function dayState(d){
+  if (d.closed || d.periods.every(p => p.status === 'closed')) return 'closed';
+  const open = d.periods.filter(p => p.status === 'open');
+  if (!open.length) return d.periods.some(p => p.status === 'full') ? 'full' : 'closed';
+  return open.reduce((a, p) => a + p.left, 0) <= 1 ? 'low' : 'ok';
+}
+const ST_TXT = { ok: 'ວ່າງ', low: 'ເຫຼືອໜ້ອຍ', full: 'ເຕັມ', closed: 'ປິດ' };
+function renderQueue(){
+  if (!QS) return;
+  const D = QS.days;
+  if (!qDate || !D.some(d => d.date === qDate && /ok|low/.test(dayState(d)))) { const f = D.find(d => /ok|low/.test(dayState(d))); qDate = f ? f.date : ''; qPer = ''; }
+  $('qDays').innerHTML = D.map(d => { const st = dayState(d), [y, m, dd] = d.date.split('-'), dis = !/ok|low/.test(st);
+    return `<button type="button" class="qday ${st} ${d.date === qDate ? 'on' : ''}" data-d="${d.date}" ${dis ? 'aria-disabled="true"' : ''} role="option" aria-selected="${d.date === qDate}">
+      <span class="w">${(SD_DAYS[sdLang()] || SD_DAYS.lo)[d.dow]}</span><span class="d">${+dd}</span><span class="m" translate="no">${MON[+m - 1]}</span>
+      <span class="s"><i class="q-${st === 'closed' ? 'full' : st}"></i>${ST_TXT[st]}</span></button>`; }).join('');
+  const day = D.find(d => d.date === qDate);
+  if (!day) { $('qPers').innerHTML = ''; $('qNote').textContent = 'ບໍ່ມີຄິວວ່າງໃນຊ່ວງນີ້ — ໂທສອບຖາມຮ້ານໄດ້'; return; }
+  if (qPer && !day.periods.some(p => p.id === qPer && p.status === 'open')) qPer = '';
+  if (!qPer) { const f = day.periods.find(p => p.status === 'open'); qPer = f ? f.id : ''; }
+  $('qPers').innerHTML = day.periods.filter(p => !(p.status === 'closed' && p.cap === 0)).map(p => {
+    const ok = p.status === 'open', em = ok ? `<em class="${p.left <= 1 ? 'low' : 'ok'}">ເຫຼືອ ${p.left} ຄິວ</em>` : `<em class="no">${p.status === 'full' ? 'ເຕັມແລ້ວ' : p.status === 'past' ? 'ໝົດເວລາຈອງ' : 'ປິດ'}</em>`;
+    return `<button type="button" class="qper ${p.id === qPer ? 'on' : ''}" data-p="${p.id}" ${ok ? '' : 'disabled'}><b>${pName(p.id)}</b><span translate="no">${p.start}–${p.end}</span>${em}</button>`; }).join('');
+  const P = day.periods.find(p => p.id === qPer), [y, m, dd] = qDate.split('-');
+  $('qNote').innerHTML = P ? `ນັດ: <b translate="no">${(SD_DAYS[sdLang()] || SD_DAYS.lo)[day.dow]} ${+dd} ${MON[+m - 1]} ${y}</b> · <b>${pName(P.id)}</b> <span translate="no">${P.start}–${P.end}</span>` : 'ເລືອກຊ່ວງເວລາ';
+  $('qField').classList.remove('invalid');
+}
+async function loadQueue(){
+  try {
+    const r = await fetch(`${API_URL}?action=getRepairSlots&secret=${API_SECRET}`), j = await r.json();
+    if (!j.ok || !j.data || !Array.isArray(j.data.days)) throw new Error(j.error || 'no data');
+    QS = j.data; qFail = false; renderQueue();
+  } catch (e) {                   // ລະບົບຄິວໃຊ້ບໍ່ໄດ້ → ແບບຟອມເກົ່າ (ຮ້ານຢືນຢັນເອງ)
+    qFail = true; $('qField').hidden = true; $('qFallback').hidden = false; $('bDate').required = true;
+  }
+}
+$('qDays').addEventListener('click', e => { const b = e.target.closest('.qday'); if (!b || b.getAttribute('aria-disabled')) return; qDate = b.dataset.d; qPer = ''; renderQueue(); });
+$('qPers').addEventListener('click', e => { const b = e.target.closest('.qper'); if (!b || b.disabled) return; qPer = b.dataset.p; renderQueue(); });
+document.addEventListener('langchange', renderQueue);
+loadQueue();
+
 async function book(e){
   e.preventDefault();
-  if([err('bModel',!$('bModel').value.trim()),err('bDate',!$('bDate').value),err('bName',!$('bName').value.trim()),err('bPhone',$('bPhone').value.replace(/\D/g,'').length<8)].some(Boolean)){ document.querySelector('.invalid input')?.focus(); return; }
+  const qBad = !qFail && (!qDate || !qPer); $('qField').classList.toggle('invalid', qBad);
+  if([err('bModel',!$('bModel').value.trim()),qFail&&err('bDate',!$('bDate').value),err('bName',!$('bName').value.trim()),err('bPhone',$('bPhone').value.replace(/\D/g,'').length<8),qBad].some(Boolean)){ (document.querySelector('.invalid input')||$('qField')).focus?.(); document.querySelector('.invalid')?.scrollIntoView({block:'center',behavior:'smooth'}); return; }
   const btn=$('bBtn'); btn.disabled=true; btn.textContent='ກຳລັງສົ່ງການຈອງ...'; $('bMsg').hidden=true;
-  const pkEl=document.querySelector('[name=pk]:checked'), pk=pkEl?pkEl.value:'', slot=document.querySelector('[name=slot]:checked').value;
+  const pkEl=document.querySelector('[name=pk]:checked'), pk=pkEl?pkEl.value:'';
+  const P = !qFail && QS ? QS.days.find(d => d.date === qDate).periods.find(p => p.id === qPer) : null;
+  const date = qFail ? $('bDate').value : qDate, slot = qFail ? document.querySelector('[name=slot]:checked').value : `${PER_NAME[qPer].lo} ${P.start}–${P.end}`;
   const pkPrice=pkEl&&pkEl.dataset.price!==''&&pkEl.dataset.price!=null?'₭'+Math.round(+pkEl.dataset.price).toLocaleString('en-US'):'';
   try{
     const d=await apiPost('createRepair',{
       customer:{name:$('bName').value.trim(),phone:$('bPhone').value.trim()},
       bike:{brand:$('bBrand').value.trim(),model:$('bModel').value.trim()},
-      symptoms:`Service ${pk}${pkPrice?' ('+pkPrice+')':''} | ນັດ ${$('bDate').value} ${slot}`+($('bSym').value.trim()?' | '+$('bSym').value.trim():''),
-      notes:'ຈອງຜ່ານເວັບໄຊ'
+      symptoms:`Service ${pk}${pkPrice?' ('+pkPrice+')':''} | ນັດ ${date} ${slot}`+($('bSym').value.trim()?' | '+$('bSym').value.trim():''),
+      service: pk, notes:'ຈອງຜ່ານເວັບໄຊ',
+      ...(qFail ? {} : { queue: { date: qDate, period: qPer } })
     });
-    $('bookBox').innerHTML=`<div class="done"><b>ຈອງຄິວແລ້ວ</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service ${pk} · ${$('bDate').value} · ${slot}<br>ຮ້ານຈະໂທ ຫຼື WhatsApp ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`;
-  }catch(ex){ $('bMsg').hidden=false; $('bMsg').innerHTML=`ສົ່ງການຈອງບໍ່ສຳເລັດ (${ex.message}). ລອງອີກຄັ້ງ ຫຼື ໂທ <a data-shop="phone" style="text-decoration:underline"></a>`; fillShop(); btn.disabled=false; btn.textContent='ຢືນຢັນການຈອງ'; }
+    const [y, m, dd] = date.split('-'), when = `${+dd} ${MON[+m - 1]} ${y}`;
+    $('bookBox').innerHTML = qFail
+      ? `<div class="done"><b>ຈອງຄິວແລ້ວ</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service ${pEsc(pk)} · <span translate="no">${when}</span> · ${pEsc(slot)}<br>ຮ້ານຈະໂທ ຫຼື WhatsApp ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`
+      : `<div class="done"><b>ຢືນຢັນຄິວແລ້ວ ✓</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service <span translate="no">${pEsc(pk)}</span><br><b style="display:inline;font-size:18px"><span translate="no">${when}</span> · ${pName(qPer)} <span translate="no">${P.start}–${P.end}</span></b><br>ກະລຸນານຳລົດມາຕາມເວລານັດ · ຖ້າມາບໍ່ໄດ້ ແຈ້ງຮ້ານທາງ WhatsApp</p></div>`;
+    $('bookBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }catch(ex){
+    const full = /QUEUE_(FULL|CLOSED)/.test(ex.message);
+    $('bMsg').hidden=false;
+    $('bMsg').innerHTML = full ? 'ຂໍອະໄພ — ຊ່ວງເວລານີ້ຫາກໍເຕັມ. ກະລຸນາເລືອກເວລາອື່ນ' : `ສົ່ງການຈອງບໍ່ສຳເລັດ (${pEsc(ex.message)}). ລອງອີກຄັ້ງ ຫຼື ໂທ <a data-shop="phone" style="text-decoration:underline"></a>`;
+    fillShop(); btn.disabled=false; btn.textContent='ຢືນຢັນການຈອງ';
+    if (full) { qPer = ''; loadQueue(); }
+  }
 }
 
 </script>
