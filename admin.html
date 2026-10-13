@@ -456,7 +456,7 @@ a{color:inherit;text-decoration:none}
         </div>
       </section>
       <div class="qbar"><button class="btn sm" type="button" id="qPrev">‹ ก่อนหน้า</button><button class="btn sm" type="button" id="qToday">วันนี้</button><button class="btn sm" type="button" id="qNext">ถัดไป ›</button>
-        <span class="rng" id="qRange" translate="no"></span><span class="sp"></span><span class="hint">🌐 เว็บ · 📞 แอดมิน · 🏪 POS</span></div>
+        <span class="rng" id="qRange" translate="no"></span><span class="sp"></span><span class="hint">🌐 เว็บ · 📞 แอดมิน · 🧾 พนักงาน POS · 🏪 รับหน้าร้าน</span></div>
       <div class="qwrap"><table class="qt" id="qTable"><tbody><tr><td><div class="sk" style="height:300px"></div></td></tr></tbody></table></div>
       <section class="card qdet" id="qCell" hidden></section>
     </div>
@@ -604,7 +604,7 @@ const thDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 1
 const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? 'เมื่อกี้' : m < 60 ? m + ' นาทีที่แล้ว' : m < 1440 ? Math.round(m / 60) + ' ชม.ที่แล้ว' : Math.round(m / 1440) + ' วันที่แล้ว'; };
 
 /* ══ คิวซ่อม ══════════════════════════════════════════════════════════ */
-const QP = { am: 'เช้า', pm: 'บ่าย', ev: 'เย็น' }, QSRC = { 'เว็บไซต์': '🌐', 'แอดมิน': '📞', 'POS': '🏪' };
+const QP = { am: 'เช้า', pm: 'บ่าย', ev: 'เย็น' }, QSRC = { 'เว็บไซต์': '🌐', 'แอดมิน': '📞', 'พนักงาน POS': '🧾', 'POS': '🏪' };
 const QDOWS = { th: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'], lo: ['ອາ.', 'ຈ.', 'ອ.', 'ພ.', 'ພຫ.', 'ສຸ.', 'ສ.'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
 const QDOW = new Proxy([], { get: (_, i) => (QDOWS[(window.admI18n && admI18n.lang) || 'th'] || QDOWS.th)[i] }), QMON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const qYmd = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
