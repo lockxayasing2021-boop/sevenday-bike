@@ -374,6 +374,7 @@ main.wrap{padding-top:8px}
 .qper:disabled{background:var(--grey-100);cursor:not-allowed;color:var(--grey-600)}
 .qper:disabled b{text-decoration:line-through;text-decoration-thickness:1px}
 .qnote{font-size:13px;color:var(--grey-600);margin-top:6px;min-height:18px}
+.qready{display:inline-block;margin-top:4px;color:#1E7A47;font-weight:600}
 .qsk{height:78px;flex:0 0 74px;background:linear-gradient(90deg,var(--grey-100),#fafafa,var(--grey-100));background-size:200% 100%;animation:qsk 1.2s infinite}
 @keyframes qsk{to{background-position:-200% 0}}
 .qfallback[hidden]{display:none}
@@ -544,10 +545,11 @@ let QS = null, qDate = '', qPer = '', qFail = false;
 function dayState(d){
   if (d.closed || d.periods.every(p => p.status === 'closed')) return 'closed';
   const open = d.periods.filter(p => p.status === 'open');
-  if (!open.length) return d.periods.some(p => p.status === 'full') ? 'full' : 'closed';
+  if (!open.length) return d.periods.some(p => p.status === 'full' || p.status === 'busy') ? 'full' : 'closed';
   return open.reduce((a, p) => a + p.left, 0) <= 1 ? 'low' : 'ok';
 }
 const ST_TXT = { ok: 'ວ່າງ', low: 'ເຫຼືອໜ້ອຍ', full: 'ເຕັມ', closed: 'ປິດ' };
+const readyTxt = r => { const x = new Date(r.date + 'T12:00:00Z'); return `${EN_DOW[x.getUTCDay()]}, ${x.getUTCDate()} ${MON[x.getUTCMonth()]} ${r.time}`; };
 function renderQueue(){
   if (!QS) return;
   const D = QS.days;
@@ -561,15 +563,17 @@ function renderQueue(){
   if (qPer && !day.periods.some(p => p.id === qPer && p.status === 'open')) qPer = '';
   if (!qPer) { const f = day.periods.find(p => p.status === 'open'); qPer = f ? f.id : ''; }
   $('qPers').innerHTML = day.periods.filter(p => !(p.status === 'closed' && p.cap === 0)).map(p => {
-    const ok = p.status === 'open', em = ok ? `<em class="${p.left <= 1 ? 'low' : 'ok'}">ເຫຼືອ ${p.left} ຄິວ</em>` : `<em class="no">${p.status === 'full' ? 'ເຕັມແລ້ວ' : p.status === 'past' ? 'ໝົດເວລາຈອງ' : 'ປິດ'}</em>`;
+    const ok = p.status === 'open', em = ok ? `<em class="${p.left <= 1 ? 'low' : 'ok'}">ເຫຼືອ ${p.left} ຄິວ</em>` : `<em class="no">${p.status === 'full' ? 'ເຕັມແລ້ວ' : p.status === 'busy' ? 'ຊ່າງບໍ່ວ່າງ' : p.status === 'past' ? 'ໝົດເວລາຈອງ' : 'ປິດ'}</em>`;
     return `<button type="button" class="qper ${p.id === qPer ? 'on' : ''}" data-p="${p.id}" ${ok ? '' : 'disabled'}><b>${pName(p.id)}</b><span translate="no">${p.start}–${p.end}</span>${em}</button>`; }).join('');
   const P = day.periods.find(p => p.id === qPer), [y, m, dd] = qDate.split('-');
-  $('qNote').innerHTML = P ? `ນັດ: <b translate="no">${EN_DOW[day.dow]}, ${+dd} ${MON[+m - 1]} ${y}</b> · <b>${pName(P.id)}</b> <span translate="no">${P.start}–${P.end}</span>` : 'ເລືອກຊ່ວງເວລາ';
+  $('qNote').innerHTML = P ? `ນັດ: <b translate="no">${EN_DOW[day.dow]}, ${+dd} ${MON[+m - 1]} ${y}</b> · <b>${pName(P.id)}</b> <span translate="no">${P.start}–${P.end}</span>`
+    + (P.ready ? `<br><span class="qready">ພ້ອມຮັບລົດ <b translate="no">~ ${readyTxt(P.ready)}</b></span>` : '') : 'ເລືອກຊ່ວງເວລາ';
   $('qField').classList.remove('invalid');
 }
 async function loadQueue(){
   try {
-    const r = await fetch(`${API_URL}?action=getRepairSlots&secret=${API_SECRET}`), j = await r.json();
+    const pk = (document.querySelector('[name=pk]:checked') || {}).value || '';
+    const r = await fetch(`${API_URL}?action=getRepairSlots&secret=${API_SECRET}&service=${encodeURIComponent(pk)}`), j = await r.json();
     if (!j.ok || !j.data || !Array.isArray(j.data.days)) throw new Error(j.error || 'no data');
     QS = j.data; qFail = false; renderQueue();
   } catch (e) {                   // ລະບົບຄິວໃຊ້ບໍ່ໄດ້ → ແບບຟອມເກົ່າ (ຮ້ານຢືນຢັນເອງ)
@@ -580,6 +584,8 @@ $('qDays').addEventListener('click', e => { const b = e.target.closest('.qday');
 $('qPers').addEventListener('click', e => { const b = e.target.closest('.qper'); if (!b || b.disabled) return; qPer = b.dataset.p; renderQueue(); });
 document.addEventListener('langchange', renderQueue);
 loadQueue();
+// ແພັກເກດໃຊ້ເວລາຕ່າງກັນ (Basic 1 ຊມ. … Ultimate 2–3 ມື້) → ຄິດວັນວ່າງໃໝ່ເມື່ອປ່ຽນແພັກເກດ
+document.addEventListener('change', e => { if (e.target.name === 'pk' && !qFail) { $('qPers').innerHTML = ''; $('qNote').textContent = '…'; loadQueue(); } });
 
 async function book(e){
   e.preventDefault();
@@ -601,10 +607,10 @@ async function book(e){
     const [y, m, dd] = date.split('-'), when = `${EN_DOW[new Date(date + 'T12:00:00Z').getUTCDay()]}, ${+dd} ${MON[+m - 1]} ${y}`;
     $('bookBox').innerHTML = qFail
       ? `<div class="done"><b>ຈອງຄິວແລ້ວ</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service ${pEsc(pk)} · <span translate="no">${when}</span> · ${pEsc(slot)}<br>ຮ້ານຈະໂທ ຫຼື WhatsApp ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ</p></div>`
-      : `<div class="done"><b>ຢືນຢັນຄິວແລ້ວ ✓</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service <span translate="no">${pEsc(pk)}</span><br><b style="display:inline;font-size:18px"><span translate="no">${when}</span> · ${pName(qPer)} <span translate="no">${P.start}–${P.end}</span></b><br>ກະລຸນານຳລົດມາຕາມເວລານັດ · ຖ້າມາບໍ່ໄດ້ ແຈ້ງຮ້ານທາງ WhatsApp</p></div>`;
+      : `<div class="done"><b>ຢືນຢັນຄິວແລ້ວ ✓</b><p>ເລກທີ່ການຈອງ</p><div class="id">${d.job_id||'—'}</div><p>Service <span translate="no">${pEsc(pk)}</span><br><b style="display:inline;font-size:18px"><span translate="no">${when}</span> · ${pName(qPer)} <span translate="no">${P.start}–${P.end}</span></b>${d.queue && d.queue.ready ? `<br>ພ້ອມຮັບລົດ <b translate="no">~ ${readyTxt(d.queue.ready)}</b>` : ''}<br>ກະລຸນານຳລົດມາຕາມເວລານັດ · ຖ້າມາບໍ່ໄດ້ ແຈ້ງຮ້ານທາງ WhatsApp</p></div>`;
     $('bookBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }catch(ex){
-    const full = /QUEUE_(FULL|CLOSED)/.test(ex.message);
+    const full = /QUEUE_(FULL|CLOSED|BUSY)/.test(ex.message);
     $('bMsg').hidden=false;
     $('bMsg').innerHTML = full ? 'ຂໍອະໄພ — ຊ່ວງເວລານີ້ຫາກໍເຕັມ. ກະລຸນາເລືອກເວລາອື່ນ' : `ສົ່ງການຈອງບໍ່ສຳເລັດ (${pEsc(ex.message)}). ລອງອີກຄັ້ງ ຫຼື ໂທ <a data-shop="phone" style="text-decoration:underline"></a>`;
     fillShop(); btn.disabled=false; btn.textContent='ຢືນຢັນການຈອງ';
