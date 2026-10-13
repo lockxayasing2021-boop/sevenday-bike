@@ -259,6 +259,10 @@ a{color:inherit;text-decoration:none}
 .qset .pp div{display:flex;gap:6px;align-items:center}
 .qset input{height:34px;border:1px solid var(--g3);padding:0 8px;font:inherit;font-size:14px;width:100%}
 .qtoday li{cursor:pointer}
+.skusel{width:100%;height:36px;border:1px solid var(--g3);padding:0 8px;font:inherit;font-size:13px;background:#fff}
+.rpx .full{grid-column:1/-1}
+.posprice{display:flex;flex-direction:column;justify-content:center;min-height:38px;padding:0 10px;background:#EEF7F0;border:1px solid #BFE3CB}
+.posprice b{font-size:15px}.posprice small{font-size:11.5px;color:var(--g6)}
 .qoff .qod{display:inline-flex;gap:4px;align-items:center;border:1px solid var(--g3);padding:4px 8px;margin-right:4px;font-size:13px;cursor:pointer}
 .qwork{display:block;height:4px;background:var(--g2);border-radius:2px;overflow:hidden;margin:5px 6px 0}.qwork i{display:block;height:100%;background:var(--ok)}
 .qwork.low i{background:#E8A33D}.qwork.full i{background:var(--bad)}
@@ -837,6 +841,7 @@ async function loadSite(){
     if (j.ok === false) throw new Error(j.error);
     site = j.data || {};
   } catch (e) { $('slides').innerHTML = `<div class="empty">โหลดการตั้งค่าไม่ได้: ${esc(e.message)}</div>`; return; }
+  loadPosServices();
   site.slides = site.slides || []; site.hours = site.hours && site.hours.length === 7 ? site.hours : blankHours();
   if (!site.services || !(site.services.packages || []).length && !(site.services.repairs || []).length) site.services = JSON.parse(JSON.stringify(DEF_SERVICES));
   site.services.packages = site.services.packages || []; site.services.repairs = site.services.repairs || []; site.services.film = site.services.film || [];
@@ -959,11 +964,30 @@ document.querySelectorAll('.fgrid input').forEach(i => i.addEventListener('input
 const L3 = (lo, th, en) => ({ lo, th, en });
 const RLINKS = [['', '— ไม่มีลิงก์ —'], ['film.html', 'ฟิล์มหุ้มสี'], ['service.html#book', 'จองคิว Workshop'], ['contact.html', 'ติดต่อ'], ['catalogue.html?cat=parts', 'อะไหล่']];
 const ev3 = (o, k, ph) => ['lo', 'th', 'en'].map((l, i) => `<input data-k="${k}.${l}" placeholder="${[ph || 'ລາວ', 'ไทย', 'English'][i]}" value="${esc((o || {})[l] || '')}">`).join('');
+/* ── บริการใน POS: แพ็กเกจ/รายการที่เลือก SKU จะใช้ราคาจาก POS (บาท → กีบ ปัดเป็นพัน) ── */
+let POS_SVC = null;
+async function loadPosServices(){
+  try { const j = await (await fetch(`${API_URL}?action=getServices&secret=${API_SECRET}`)).json(); POS_SVC = (j.data && j.data.services) || []; }
+  catch (_) { POS_SVC = []; }
+  if (site) renderServices();
+}
+const posSvc = sku => (POS_SVC || []).find(x => x.sku.toLowerCase() === String(sku || '').trim().toLowerCase());
+function skuSel(o){
+  const cur = String(o.sku || ''), has = posSvc(cur);
+  const opts = (POS_SVC || []).map(x => `<option value="${esc(x.sku)}" ${x.sku === cur ? 'selected' : ''}>${esc(x.sku)} · ${esc(x.name)} · ฿${Number(x.price_thb).toLocaleString('en-US')}</option>`).join('');
+  return `<select data-k="sku" class="skusel" translate="no"><option value="">— ไม่ผูกกับ POS (ใส่ราคาเอง) —</option>${cur && !has ? `<option value="${esc(cur)}" selected>${esc(cur)} (ไม่พบใน POS)</option>` : ''}${opts}</select>`;
+}
+function priceBox(o, ph){
+  const x = posSvc(o.sku);
+  if (x) return `<div class="posprice" translate="no"><b>₭${Number(x.price_lak).toLocaleString('en-US')}</b><small>฿${Number(x.price_thb).toLocaleString('en-US')} · <span translate="yes">ราคาจาก POS</span></small></div>`;
+  return `<input data-k="price_lak" type="number" min="0" step="1000" ${ph ? `placeholder="${ph}"` : ''} value="${esc(o.price_lak)}">`;
+}
 function renderServices(){
   const S = site.services;
   $('pks').innerHTML = S.packages.map((p, i) => `<div class="pkx ${p.popular ? 'pop' : ''}" data-i="${i}">
       <div class="r2"><div><label class="k">ชื่อแพ็กเกจ</label><input data-k="name" value="${esc(p.name)}" placeholder="Basic"></div>
-        <div><label class="k">ราคา (₭)</label><input data-k="price_lak" type="number" min="0" step="1000" value="${esc(p.price_lak)}"></div></div>
+        <div><label class="k">ราคา (₭)</label>${priceBox(p)}</div></div>
+      <label class="k">บริการใน POS (ราคาและการเก็บเงิน)</label>${skuSel(p)}
       <label class="k">ระยะเวลา</label><div class="tabs3">${ev3(p.time, 'time')}</div>
       <label class="k">รายการ (1 บรรทัด = 1 รายการ)</label>
       ${['lo', 'th', 'en'].map((l, j) => `<textarea data-items="${l}" placeholder="${['ລາວ', 'ไทย', 'English'][j]}">${esc((p.items || []).map(it => it[l] || '').join('\n').replace(/\n+$/, ''))}</textarea>`).join('')}
@@ -971,11 +995,13 @@ function renderServices(){
         <button class="btn sm" type="button" data-mv="-1" ${i ? '' : 'disabled'}>←</button><button class="btn sm" type="button" data-mv="1" ${i < S.packages.length - 1 ? '' : 'disabled'}>→</button>
         <button class="btn sm del" type="button" data-del>ลบ</button></div></div>`).join('') || '<div class="empty">ยังไม่มีแพ็กเกจ</div>';
   $('rps').innerHTML = S.repairs.map((r, i) => `<div class="rpx" data-i="${i}">
-      <label class="k full">รายการที่ ${i + 1} — ชื่อ / รายละเอียด</label>${ev3(r.name, 'name')}<input data-k="price_lak" type="number" min="0" step="1000" placeholder="เริ่ม ₭" value="${esc(r.price_lak)}">
+      <label class="k full">รายการที่ ${i + 1} — ชื่อ / รายละเอียด</label>${ev3(r.name, 'name')}${priceBox(r, 'เริ่ม ₭')}
+      <div class="full">${skuSel(r)}</div>
       ${ev3(r.desc, 'desc')}<select data-k="link">${RLINKS.map(([v, t]) => `<option value="${esc(v)}" ${v === (r.link || '') ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
       ${ev3(r.note, 'note', 'ข้อความแทนราคา (ລາວ)')}<div class="act"><button class="btn sm" type="button" data-mv="-1" ${i ? '' : 'disabled'}>↑</button><button class="btn sm" type="button" data-mv="1" ${i < S.repairs.length - 1 ? '' : 'disabled'}>↓</button><button class="btn sm del" type="button" data-del>ลบ</button></div></div>`).join('') || '<div class="empty">ยังไม่มีรายการ</div>';
   $('fms').innerHTML = S.film.map((f, i) => `<div class="rpx" data-i="${i}">
-      <input data-k="name" class="wide" placeholder="ชื่อแพ็กเกจ" value="${esc(f.name)}"><input data-k="price_lak" type="number" min="0" step="1000" placeholder="เริ่ม ₭" value="${esc(f.price_lak)}">
+      <input data-k="name" class="wide" placeholder="ชื่อแพ็กเกจ" value="${esc(f.name)}">${priceBox(f, 'เริ่ม ₭')}
+      <div class="full">${skuSel(f)}</div>
       ${ev3(f.desc, 'desc')}<div class="act"><button class="btn sm del" type="button" data-del>ลบ</button></div></div>`).join('') || '<div class="empty">ยังไม่มีแพ็กเกจฟิล์ม</div>';
 }
 function svcBind(box, list){
@@ -1000,6 +1026,12 @@ function svcBind(box, list){
   });
 }
 svcBind('pks', 'packages'); svcBind('rps', 'repairs'); svcBind('fms', 'film');
+['pks', 'rps', 'fms'].forEach((box, k) => $(box).addEventListener('change', e => {
+  if (!e.target.matches('select[data-k="sku"]')) return;
+  const row = e.target.closest('[data-i]'), o = site.services[['packages', 'repairs', 'film'][k]][+row.dataset.i], x = posSvc(e.target.value);
+  o.sku = e.target.value; if (x) o.price_lak = x.price_lak;
+  markDirty(); renderServices();
+}));
 $('rps').addEventListener('change', e => { if (e.target.tagName !== 'SELECT') return; const row = e.target.closest('[data-i]'); site.services.repairs[+row.dataset.i].link = e.target.value; markDirty(); });
 $('pkAdd').onclick = () => { if (site.services.packages.length >= 6) return toast('สูงสุด 6 แพ็กเกจ'); site.services.packages.push({ name: '', price_lak: '', popular: false, time: L3('', '', ''), items: [] }); markDirty(); renderServices(); };
 $('rpAdd').onclick = () => { if (site.services.repairs.length >= 16) return toast('สูงสุด 16 รายการ'); site.services.repairs.push({ name: L3('', '', ''), desc: L3('', '', ''), price_lak: '', note: L3('', '', ''), link: '' }); markDirty(); renderServices(); };
