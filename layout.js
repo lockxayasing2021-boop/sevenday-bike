@@ -101,6 +101,13 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
         <div><h4>ເຄື່ອງນຸ່ງ</h4><ul><li><a href="catalogue.html?cat=apparel">ເສື້ອ ຖົງມື ເກີບ</a></li></ul></div>
       </div></div>
     </li>
+    <li class="nav-item"><a href="catalogue.html?cat=outdoor">Outdoor/Lifestyle</a>
+      <div class="mega"><div class="wrap mega-inner">
+        <div><h4>ກາງແຈ້ງ</h4><ul><li><a href="catalogue.html?cat=camping">ແຄມປິ້ງ & ເດີນປ່າ</a></li></ul></div>
+        <div><h4>Lifestyle</h4><ul><li><a href="catalogue.html?cat=lifestyle-wear">ເສື້ອຜ້າ Lifestyle</a></li><li><a href="catalogue.html?cat=lifestyle-gear">ກະເປົາ ແກ້ວ & ຂອງໃຊ້</a></li></ul></div>
+        <div><h4>ອື່ນໆ</h4><ul><li><a href="catalogue.html?cat=outdoor-other">Outdoor ອື່ນໆ</a></li><li><a href="catalogue.html?cat=outdoor">Outdoor/Lifestyle ທັງໝົດ</a></li></ul></div>
+      </div></div>
+    </li>
     <li class="nav-item"><a href="service.html">Workshop</a>
       <div class="mega"><div class="wrap mega-inner">
         <div><h4>ແພັກເກດ Service</h4><ul><li><a href="service.html#basic">Basic</a></li><li><a href="service.html#standard">Standard</a></li><li><a href="service.html#ultimate">Ultimate</a></li></ul></div>
@@ -135,7 +142,7 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
         <p><span>ຮ້ານລົດຖີບ ແລະ Workshop ທີ່ນະຄອນຫຼວງວຽງຈັນ.</span> <span data-shop="hours"></span></p>
         <div class="social"><a href="#" data-social="facebook" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8.2h2.8l.4-3.2h-3.2V8.5c0-.9.3-1.6 1.6-1.6h1.7V4.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H7.3v3.2h2.8V22h3.4z"/></svg></a><a href="#" data-social="tiktok" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.6 2h-3.3v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.2a6.3 6.3 0 1 0 5.3 6.2V8.6a8 8 0 0 0 4.7 1.5V6.8a4.7 4.7 0 0 1-4.7-4.8z"/></svg></a><a href="#" data-social="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.4A9.9 9.9 0 1 0 12 2zm0 18.1c-1.5 0-3-.4-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.1zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.3-.6-.5-1-1.1-1.3-1.7-.1-.2 0-.4.1-.5l.4-.4.3-.4.1-.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.6.6-.9 1.3-.9 2.1.1.9.4 1.8 1 2.6 1.1 1.6 2.5 2.9 4.2 3.7.5.2 1 .4 1.4.5.6.2 1.2.2 1.7.1.6-.1 1.2-.5 1.5-1 .2-.3.2-.7.1-1-.1-.1-.3-.2-.5-.3z"/></svg></a></div>
       </div>
-      <div><h4>ສິນຄ້າ</h4><ul><li><a href="catalogue.html?cat=bikes">ລົດຖີບ</a></li><li><a href="catalogue.html?cat=parts">ອາໄຫຼ່</a></li><li><a href="catalogue.html?cat=accessories">ອຸປະກອນ</a></li><li><a href="catalogue.html?cat=used">ມືສອງ</a></li><li><a href="catalogue.html?sale=1">Sale</a></li></ul></div>
+      <div><h4>ສິນຄ້າ</h4><ul><li><a href="catalogue.html?cat=bikes">ລົດຖີບ</a></li><li><a href="catalogue.html?cat=parts">ອາໄຫຼ່</a></li><li><a href="catalogue.html?cat=accessories">ອຸປະກອນ</a></li><li><a href="catalogue.html?cat=outdoor">Outdoor/Lifestyle</a></li><li><a href="catalogue.html?cat=used">ມືສອງ</a></li><li><a href="catalogue.html?sale=1">Sale</a></li></ul></div>
       <div><h4>Workshop</h4><ul><li><a href="service.html">ແພັກເກດ Service</a></li><li><a href="service.html#book">ຈອງຄິວ</a></li><li><a href="film.html">ຟິມຫຸ້ມສີ</a></li></ul></div>
       <div><h4>ກິດຈະກຳ</h4><ul><li><a href="events.html">ກິດຈະກຳທັງໝົດ</a></li><li><a href="my-registrations.html">ການສະໝັກຂອງຂ້ອຍ</a></li><li><a href="events-results.html">ຜົນການແຂ່ງຂັນ</a></li></ul></div>
       <div><h4>ບັນຊີ</h4><ul><li><a href="login.html">ເຂົ້າສູ່ລະບົບ</a></li><li><a href="account.html">ປະຫວັດການສັ່ງຊື້</a></li><li><a href="account.html">ແຕ້ມສະສົມ</a></li><li><a href="cart.html">ກະຕ່າ</a></li></ul></div>
@@ -161,6 +168,7 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
     <details><summary>ອາໄຫຼ່</summary><ul><li><a href="catalogue.html?cat=drivetrain">ລະບົບຂັບ & ເກຍ</a></li><li><a href="catalogue.html?cat=brake">ເບຣກ</a></li><li><a href="catalogue.html?cat=wheel">ລໍ້ & ຢາງ</a></li><li><a href="catalogue.html?cat=cockpit">ແຮນ ເບາະ ບັນໄດ</a></li><li><a href="catalogue.html?cat=frame">ເຟຣມ & ໂຊັກ</a></li><li><a href="catalogue.html?cat=parts-other">ອາໄຫຼ່ອື່ນໆ</a></li><li><a href="catalogue.html?cat=parts">ທັງໝົດ</a></li></ul></details>
     <details><summary>ອຸປະກອນ</summary><ul><li><a href="catalogue.html?cat=lights">ໄຟ</a></li><li><a href="catalogue.html?cat=locks">ກະແຈລັອກ</a></li><li><a href="catalogue.html?cat=tools">ສູບລົມ ເຄື່ອງມື ນ້ຳມັນ</a></li><li><a href="catalogue.html?cat=travel">ກະເປົາ ກະຕິກ ຂາຈັບ</a></li><li><a href="catalogue.html?cat=acc-other">ອຸປະກອນອື່ນໆ</a></li><li><a href="catalogue.html?cat=accessories">ທັງໝົດ</a></li></ul></details>
     <details><summary>ເຄື່ອງນຸ່ງ</summary><ul><li><a href="catalogue.html?cat=helmet">ໝວກກັນກະທົບ</a></li><li><a href="catalogue.html?cat=apparel">ເສື້ອ ຖົງມື ເກີບ</a></li></ul></details>
+    <details><summary>Outdoor/Lifestyle</summary><ul><li><a href="catalogue.html?cat=camping">ແຄມປິ້ງ & ເດີນປ່າ</a></li><li><a href="catalogue.html?cat=lifestyle-wear">ເສື້ອຜ້າ Lifestyle</a></li><li><a href="catalogue.html?cat=lifestyle-gear">ກະເປົາ ແກ້ວ & ຂອງໃຊ້</a></li><li><a href="catalogue.html?cat=outdoor-other">Outdoor ອື່ນໆ</a></li><li><a href="catalogue.html?cat=outdoor">ທັງໝົດ</a></li></ul></details>
     <a class="d-link" href="service.html">Workshop</a>
     <a class="d-link" href="catalogue.html?cat=used">ມືສອງ</a>
     <a class="d-link" href="events.html">ກິດຈະກຳ</a>
@@ -226,8 +234,8 @@ function sdImgUrl(s){
   };
 })();
 
-const SUBS = {"mtb": ["bikes", "ພູເຂົາ"], "road": ["bikes", "ເສືອໝອບ"], "city": ["bikes", "ທົ່ວໄປ / City"], "kids": ["bikes", "ເດັກ"], "ebike": ["bikes", "ໄຟຟ້າ"], "used": ["used", "ມືສອງ"], "drivetrain": ["parts", "ລະບົບຂັບ & ເກຍ"], "brake": ["parts", "ເບຣກ"], "wheel": ["parts", "ລໍ້ & ຢາງ"], "cockpit": ["parts", "ແຮນ ເບາະ ບັນໄດ"], "frame": ["parts", "ເຟຣມ & ໂຊັກ"], "parts-other": ["parts", "ອາໄຫຼ່ອື່ນໆ"], "lights": ["accessories", "ໄຟ"], "locks": ["accessories", "ກະແຈລັອກ"], "tools": ["accessories", "ສູບລົມ ເຄື່ອງມື ນ້ຳມັນ"], "travel": ["accessories", "ກະເປົາ ກະຕິກ ຂາຈັບ"], "acc-other": ["accessories", "ອຸປະກອນອື່ນໆ"], "helmet": ["gear", "ໝວກກັນກະທົບ"], "apparel": ["gear", "ເສື້ອ ຖົງມື ເກີບ"]};
-const GROUPS = {"bikes":"ລົດຖີບ","parts":"ອາໄຫຼ່","accessories":"ອຸປະກອນ","gear":"ເຄື່ອງນຸ່ງ","used":"ມືສອງ"};
+const SUBS = {"mtb": ["bikes", "ພູເຂົາ"], "road": ["bikes", "ເສືອໝອບ"], "city": ["bikes", "ທົ່ວໄປ / City"], "kids": ["bikes", "ເດັກ"], "ebike": ["bikes", "ໄຟຟ້າ"], "used": ["used", "ມືສອງ"], "drivetrain": ["parts", "ລະບົບຂັບ & ເກຍ"], "brake": ["parts", "ເບຣກ"], "wheel": ["parts", "ລໍ້ & ຢາງ"], "cockpit": ["parts", "ແຮນ ເບາະ ບັນໄດ"], "frame": ["parts", "ເຟຣມ & ໂຊັກ"], "parts-other": ["parts", "ອາໄຫຼ່ອື່ນໆ"], "lights": ["accessories", "ໄຟ"], "locks": ["accessories", "ກະແຈລັອກ"], "tools": ["accessories", "ສູບລົມ ເຄື່ອງມື ນ້ຳມັນ"], "travel": ["accessories", "ກະເປົາ ກະຕິກ ຂາຈັບ"], "acc-other": ["accessories", "ອຸປະກອນອື່ນໆ"], "helmet": ["gear", "ໝວກກັນກະທົບ"], "apparel": ["gear", "ເສື້ອ ຖົງມື ເກີບ"], "camping": ["outdoor", "ແຄມປິ້ງ & ເດີນປ່າ"], "lifestyle-wear": ["outdoor", "ເສື້ອຜ້າ Lifestyle"], "lifestyle-gear": ["outdoor", "ກະເປົາ ແກ້ວ & ຂອງໃຊ້"], "outdoor-other": ["outdoor", "Outdoor ອື່ນໆ"]};
+const GROUPS = {"bikes":"ລົດຖີບ","parts":"ອາໄຫຼ່","accessories":"ອຸປະກອນ","gear":"ເຄື່ອງນຸ່ງ","outdoor":"Outdoor/Lifestyle","used":"ມືສອງ"};
 const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 

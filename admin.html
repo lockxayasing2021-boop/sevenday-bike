@@ -829,7 +829,7 @@ function newEvent(){ go('detail'); }
 
 /* ── ตั้งค่าหน้าเว็บ ── */
 const DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
-const LINKS = [['', '— ไม่มีลิงก์ —'], ['catalogue.html?cat=bikes', 'จักรยาน'], ['catalogue.html?cat=used', 'มือสอง'], ['catalogue.html?cat=parts', 'อะไหล่'], ['catalogue.html?cat=accessories', 'อุปกรณ์'],
+const LINKS = [['', '— ไม่มีลิงก์ —'], ['catalogue.html?cat=bikes', 'จักรยาน'], ['catalogue.html?cat=used', 'มือสอง'], ['catalogue.html?cat=parts', 'อะไหล่'], ['catalogue.html?cat=accessories', 'อุปกรณ์'], ['catalogue.html?cat=outdoor', 'Outdoor/Lifestyle'],
   ['catalogue.html?sale=1', 'Sale'], ['service.html#book', 'จองคิว Workshop'], ['film.html', 'ฟิล์มหุ้มสี'], ['events.html', 'กิจกรรม'], ['store.html', 'ที่ตั้งร้าน'], ['contact.html', 'ติดต่อ'], ['*', 'ลิงก์อื่น…']];
 let site = null, siteDirty = false;
 const blankHours = () => Array.from({ length: 7 }, () => ({ closed: false, open: '09:00', close: '18:00' }));

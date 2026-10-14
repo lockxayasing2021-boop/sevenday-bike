@@ -425,6 +425,7 @@ async function load(quiet){
     if(GROUPS[catParam]) state.group=catParam; else if(SUBS[catParam]){ state.group=SUBS[catParam][0]; state.cats.add(catParam); }
     const lbl = SUBS[catParam] ? (GROUPS[SUBS[catParam][0]]&&SUBS[catParam][0]!=='used'?GROUPS[SUBS[catParam][0]]+' › ':'')+SUBS[catParam][1] : (GROUPS[catParam]||catParam);
     document.getElementById('title').textContent = lbl; document.getElementById('crumbCat').textContent = lbl;
+    if(state.group==='outdoor'){ const art=document.querySelector('.phero-art'); if(art) art.innerHTML='<g fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 62 L44 12 L78 62 Z"/><path d="M44 12 L44 62"/><path d="M34 62 L44 42 L54 62"/><path d="M2 62h116"/><circle cx="100" cy="18" r="7"/><path d="M84 62 L96 42 L108 62"/><path d="M96 42 L96 62"/></g>'; }
   }
   if(state.q){ document.getElementById('title').textContent = `ຜົນຄົ້ນຫາ "${state.q}"`; document.getElementById('crumbCat').textContent='ຄົ້ນຫາ'; }
   if(state.sale){ document.getElementById('fSale').checked=true; document.getElementById('title').textContent='Sale'; }
