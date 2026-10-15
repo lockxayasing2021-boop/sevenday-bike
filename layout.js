@@ -339,7 +339,7 @@ try{ const r = JSON.parse(localStorage.getItem('sd_rates') || 'null'); if (r){ i
 (async function loadRates(){
   try{
     const c = JSON.parse(localStorage.getItem('sd_rates') || 'null');
-    if (c && Date.now() - c.t < 6 * 3600e3) return;
+    if (c && Date.now() - c.t < 10 * 60e3) return;
     const j = await (await fetch(`${API_URL}?action=getSettings&secret=${API_SECRET}`)).json();
     const d = (j && j.data) || j || {}; const lak = +d.lak_to_thb, usd = +d.usd_to_thb;
     if (!(lak > 0)) return;

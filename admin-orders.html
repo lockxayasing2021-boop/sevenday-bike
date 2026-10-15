@@ -98,7 +98,9 @@ textarea{width:100%;min-height:70px;border:1px solid var(--g3);padding:10px;font
 <div id="app"></div>
 <div class="toast" id="toast" role="status"></div>
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec', API_SECRET='SDdMc3wNjJEevs60n2oMQeGnuI', THB_TO_LAK=698;
+const API_URL='https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec', API_SECRET='SDdMc3wNjJEevs60n2oMQeGnuI';
+let THB_TO_LAK=698;   // ອັດຕາຈາກ POS (ຕັ້ງຄ່າ → ອັດຕາແລກປ່ຽນ) — ໂຫຼດລຸ່ມນີ້
+fetch(`${API_URL}?action=getSettings&secret=${API_SECRET}`).then(r=>r.json()).then(j=>{ const v=+((j&&j.data)||{}).lak_to_thb; if(v>0&&v!==THB_TO_LAK){ THB_TO_LAK=v; try{ renderList(); if(sel) renderDetail(items.find(i=>i.id===sel)); }catch(_){} } }).catch(()=>{});
 const SHOP_NAME='Sevenday Bike';
 const FLOW={
   order:['ໃໝ່','ຢືນຢັນແລ້ວ','ຊຳລະແລ້ວ','ພ້ອມຮັບ','ສຳເລັດ'],
