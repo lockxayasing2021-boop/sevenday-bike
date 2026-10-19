@@ -16,6 +16,7 @@
 html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans-serif}
 .logo-mark.has-img{background:none!important;width:auto!important;height:auto!important;padding:0;display:flex;align-items:center}
 .logo-mark.has-img img{display:block;height:42px;width:auto;max-width:150px;object-fit:contain}
+.footer .logo-mark.has-img img{filter:invert(1)}
 @media(max-width:900px){.logo-mark.has-img img{height:36px;max-width:110px}}
 .social a{transition:background .15s,border-color .15s,color .15s}
 .social a:hover{border-color:var(--white);background:var(--white);color:var(--black)}
