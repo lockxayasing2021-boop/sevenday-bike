@@ -435,7 +435,7 @@ async function placeOrder(){
     const r=await fetch(`${API_URL}?action=checkStock&secret=${API_SECRET}&skus=${cart.map(i=>encodeURIComponent(i.sku)).join(',')}`);
     const j=await r.json(); const list=j.stock||j.data?.stock||j.data||[]; const m={}; (Array.isArray(list)?list:[]).forEach(s=>m[s.sku]=Number(s.stock));
     const short=cart.filter(i=>m[i.sku]!=null && m[i.sku]<i.qty);
-    if(short.length){ msg.hidden=false; msg.innerHTML='ສິນຄ້າບໍ່ພໍ: '+short.map(i=>`<b>${i.name}</b> (ເຫຼືອ ${m[i.sku]})`).join(', ')+' — <a href="cart.html" style="text-decoration:underline">ປັບຈຳນວນໃນກະຕ່າ</a>'; btn.disabled=false; btn.textContent='ຢືນຢັນຄຳສັ່ງຊື້'; return; }
+    if(short.length){ msg.hidden=false; msg.innerHTML='ສິນຄ້າບໍ່ພໍ: '+short.map(i=>`<b>${i.name}</b>`).join(', ')+' — <a href="cart.html" style="text-decoration:underline">ປັບຈຳນວນໃນກະຕ່າ</a>'; btn.disabled=false; btn.textContent='ຢືນຢັນຄຳສັ່ງຊື້'; return; }
   }catch(_){}
   btn.textContent='ກຳລັງບັນທຶກຄຳສັ່ງຊື້...';
   const t=totals(), del=document.querySelector('[name=del]:checked').value, pay=document.querySelector('[name=pay]:checked').value;

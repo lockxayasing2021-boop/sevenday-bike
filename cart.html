@@ -384,7 +384,7 @@ function render(){
   }
   const sub=cart.reduce((s,i)=>s+i.price*i.qty,0), disc=coupon&&COUPONS[coupon]?Math.round(sub*COUPONS[coupon]):0;
   root.innerHTML=`<div class="cart"><div>${cart.map((i,k)=>{
-      const st=stockMap[i.sku]; const warn = st!=null && st<i.qty ? `<div class="warn">⚠ ທີ່ຮ້ານເຫຼືອ ${st} — ກະລຸນາປັບຈຳນວນ</div>` : '';
+      const st=stockMap[i.sku]; const warn = st!=null && st<i.qty ? `<div class="warn">⚠ ຈຳນວນທີ່ຮ້ານມີບໍ່ພໍ — ກະລຸນາຫຼຸດຈຳນວນ</div>` : '';
       return `<div class="line">
         <a class="thumb" href="product.html?sku=${encodeURIComponent(i.sku)}">${i.image?`<img src="${i.image}" alt="">`:`<svg viewBox="0 0 120 70"><use href="${iconFor((i.category||'')+' '+i.name)}"/></svg>`}</a>
         <div><h3><a href="product.html?sku=${encodeURIComponent(i.sku)}">${i.name}</a></h3><div class="meta">ລະຫັດ ${i.sku} · ${fmt(i.price)} / ຊິ້ນ</div>

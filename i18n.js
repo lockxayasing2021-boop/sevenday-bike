@@ -415,6 +415,7 @@ window.SD_DICT = (function(){ const R = {
 "ມີບັນຊີ Sevenday?":["มีบัญชี Sevenday?","Have a Sevenday account?"],
 "ມີບັນຊີ?":["มีบัญชี?","Have an account?"],
 "ມີບັນຊີແລ້ວ?":["มีบัญชีแล้ว?","Have an account?"],
+"ມີສິນຄ້າທີ່ຮ້ານ":["มีสินค้าที่ร้าน","In stock at the shop"],
 "ມີສິນຄ້າທີ່ຮ້ານ (":["มีสินค้าที่ร้าน (","In stock at the shop ("],
 "ມີສິນຄ້າທີ່ຮ້ານ ({0} {0})":["มีสินค้าที่ร้าน ({0} {0})","In stock at the shop ({0} {0})"],
 "ມີສິນຄ້າທີ່ຮ້ານ ({0})":["มีสินค้าที่ร้าน ({0})","In stock at the shop ({0})"],
@@ -838,7 +839,9 @@ window.SD_DICT = (function(){ const R = {
 "ໂອນ BCEL One":["โอน BCEL One","BCEL One transfer"],
 "ໂອນ BCEL One ຫຼື ຈ່າຍທີ່ຮ້ານ":["โอน BCEL One หรือจ่ายที่ร้าน","BCEL One transfer or pay in store"],
 "ໂອນ ຫຼື ຈ່າຍທີ່ຮ້ານ":["โอนหรือจ่ายที่ร้าน","Transfer or pay in store"],
+"ໃກ້ໝົດ":["ใกล้หมด","Almost gone"],
 "ໃກ້ໝົດ ຮີບຈອງ":["ใกล้หมด รีบจอง","Almost gone — grab yours"],
+"ໃກ້ໝົດ — ມີຈຳນວນຈຳກັດທີ່ຮ້ານ":["ใกล้หมด — มีจำนวนจำกัดที่ร้าน","Almost gone — limited stock at the shop"],
 "ໃຊ້":["ใช้","Apply"],
 "ໃຊ້ລະຫັດສ່ວນຫຼຸດແລ້ວ":["ใช้รหัสส่วนลดแล้ว","Discount code applied"],
 "ໃຊ້ເລກລົງທະບຽນ":["ใช้เลขลงทะเบียน","Use registration number"],
@@ -901,6 +904,7 @@ window.SD_DICT = (function(){ const R = {
 "— ສະໝັກກ່ອນ {0} ຈ່າຍລາຄາພິເສດ":["— สมัครก่อน {0} จ่ายราคาพิเศษ","— register by {0} for a special price"],
 "— ຮ້ານຈະຕິດຕໍ່ແຈ້ງລາຄາພາຍໃນ 2 ຊົ່ວໂມງ":["— ร้านจะติดต่อแจ้งราคาภายใน 2 ชั่วโมง","— the shop will contact you with a price within 2 hours"],
 "— ແນບສະລິບໄດ້ໃນໜ້າ QR":["— แนบสลิปได้ในหน้า QR","— you can attach the slip on the QR page"],
+"⚠ ຈຳນວນທີ່ຮ້ານມີບໍ່ພໍ — ກະລຸນາຫຼຸດຈຳນວນ":["⚠ สินค้าที่ร้านมีไม่พอ — กรุณาลดจำนวน","⚠ Not enough in stock — please lower the quantity"],
 "⚠ ທີ່ຮ້ານເຫຼືອ":["⚠ ที่ร้านเหลือ","⚠ Only"],
 "⚠ ທີ່ຮ້ານເຫຼືອ {0} — ກະລຸນາປັບຈຳນວນ":["⚠ ที่ร้านเหลือ {0} — กรุณาปรับจำนวน","⚠ Only {0} left in store — please adjust the quantity"]
 }; const D = {}; for (const k in R) D[k] = { th: R[k][0], en: R[k][1] }; return D; })();

@@ -481,7 +481,7 @@ function card(p){
   const off = p.was && p.was > p.price ? Math.round((1 - p.price/p.was)*100) : 0;
   const badges = [
     off ? `<span class="badge b-off">-${off}%</span>` : '',
-    low ? `<span class="badge b-low">ເຫຼືອ ${p.stock}</span>` : '',
+    low ? `<span class="badge b-low">ໃກ້ໝົດ</span>` : '',
     out ? `<span class="badge b-out">ໝົດ</span>` : '',
   ].join('');
   const img = p.image

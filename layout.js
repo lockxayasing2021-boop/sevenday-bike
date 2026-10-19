@@ -397,7 +397,7 @@ function apiList(json){ const l=json.products||json.data?.products||json.data?.d
 function card(p){
   const out=p.stock<=0, low=!out&&p.stock<=2;
   const off=p.was&&p.was>p.price?Math.round((1-p.price/p.was)*100):0;
-  const badges=[off?`<span class="badge b-off">-${off}%</span>`:'',low?`<span class="badge b-low">ເຫຼືອ ${p.stock}</span>`:'',out?`<span class="badge b-out">ໝົດ</span>`:''].join('');
+  const badges=[off?`<span class="badge b-off">-${off}%</span>`:'',low?`<span class="badge b-low">ໃກ້ໝົດ</span>`:'',out?`<span class="badge b-out">ໝົດ</span>`:''].join('');
   const img=p.image?`<img src="${sdImgUrl(p.image)}" alt="${p.name}" loading="lazy" decoding="async">`:`<svg viewBox="0 0 120 70" aria-hidden="true"><use href="${iconFor(p.category+' '+p.name)}"/></svg>`;
   const href=`product.html?sku=${encodeURIComponent(p.sku)}`;
   const sz=(p.sizes||[]).slice(0,6), col=(p.colors||[]).length;

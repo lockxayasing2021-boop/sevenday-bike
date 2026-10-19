@@ -509,8 +509,8 @@ function render(){
   const st=document.getElementById('stock'), btn=document.getElementById('addBtn');
   if(needPick){ st.innerHTML='<span class="dot low"></span>ເລືອກ'+(colors.length&&!sel.color?'ສີ':'ຂະໜາດ')+'ກ່ອນ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   else if(c.stock<=0){ st.innerHTML='<span class="dot out"></span>ສິນຄ້າໝົດ — ສອບຖາມວັນເຂົ້າໃໝ່ໄດ້ທີ່ຮ້ານ'; btn.disabled=true; btn.textContent='ສິນຄ້າໝົດ'; }
-  else if(c.stock<=2){ st.innerHTML=`<span class="dot low"></span>ເຫຼືອພຽງ ${c.stock} ${P.unit||'ຊິ້ນ'} ທີ່ຮ້ານ`; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
-  else { st.innerHTML=`<span class="dot"></span>ມີສິນຄ້າທີ່ຮ້ານ (${c.stock} ${P.unit||'ຊິ້ນ'})`; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
+  else if(c.stock<=2){ st.innerHTML='<span class="dot low"></span>ໃກ້ໝົດ — ມີຈຳນວນຈຳກັດທີ່ຮ້ານ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
+  else { st.innerHTML='<span class="dot"></span>ມີສິນຄ້າທີ່ຮ້ານ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   if(!LIVE){ btn.disabled=true; btn.textContent='ກຳລັງກວດສະຕັອກ…'; }
 
   document.getElementById('desc').textContent = `${P.name} ຈາກ ${P.brand}. ສອບຖາມລາຍລະອຽດເພີ່ມເຕີມ ຫຼື ນັດມາລອງທີ່ຮ້ານໄດ້.`;
