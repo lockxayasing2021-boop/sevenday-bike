@@ -892,7 +892,10 @@ function fillContact(){
   const c = site.contact, a = c.address || {};
   [['cPhone', c.phone], ['cWa', c.whatsapp], ['cEmail', c.email], ['cMap', c.mapUrl], ['cFb', c.facebook], ['cTt', c.tiktok], ['cAddrLo', a.lo], ['cAddrTh', a.th], ['cAddrEn', a.en]].forEach(([id, v]) => $(id).value = v || '');
 }
-function markDirty(){ siteDirty = true; $('saveMsg').textContent = 'มีการแก้ไขที่ยังไม่บันทึก'; }
+/* ບັນທຶກອັດຕະໂນມັດ: ອັບໂຫຼດໂລໂກ້/ສະໄລ້ ຫຼື ແກ້ຂໍ້ຄວາມ → ບັນທຶກເອງຫຼັງ 1.5 ວິ (ເມື່ອກ່ອນຕ້ອງກົດ "ບັນທຶກ" ເອງ ຖ້າລືມ ຮູບທີ່ອັບໂຫຼດຈະຫາຍ) */
+let _editSeq = 0, _saving = false, _saveAgain = false, _autoT = null;
+function autoSave(ms){ clearTimeout(_autoT); _autoT = setTimeout(() => saveSite(true), ms || 0); }
+function markDirty(){ siteDirty = true; _editSeq++; $('saveMsg').textContent = 'กำลังบันทึกอัตโนมัติ…'; autoSave(1500); }
 // ຍໍ່ຮູບກ່ອນອັບໂຫຼດ (ໂລໂກ້ ≤ 600px PNG, ສະໄລ້ ≤ 2400px JPEG)
 function shrink(file, max, keepPng){
   return new Promise((ok, no) => {
@@ -915,7 +918,7 @@ async function upload(file, kind){
 $('logoFile').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   $('logoPrev').innerHTML = '<div class="sk" style="width:100%;height:100%"></div>';
-  try { site.logo = await upload(f, 'logo'); markDirty(); toast('อัปโหลดโลโก้แล้ว — กดบันทึก'); } catch (x) { toast(x.message); }
+  try { site.logo = await upload(f, 'logo'); markDirty(); toast('อัปโหลดโลโก้แล้ว — กำลังบันทึก…'); } catch (x) { toast(x.message); }
   renderSite();
 };
 $('logoDel').onclick = () => { site.logo = ''; markDirty(); renderSite(); };
@@ -927,7 +930,7 @@ $('slideNew').onchange = async e => {
     try { site.slides.push({ image: await upload(f, 'slide'), title: {}, text: {}, button: {}, link: '' }); markDirty(); renderSite(); }
     catch (x) { toast(x.message); }
   }
-  if (files.length) toast('เพิ่มสไลด์แล้ว — ใส่ข้อความแล้วกดบันทึก');
+  if (files.length) toast('เพิ่มสไลด์แล้ว — บันทึกอัตโนมัติ');
 };
 $('slides').addEventListener('input', e => {
   const row = e.target.closest('.sl'), f = e.target.dataset.f; if (!row || !f) return;
@@ -1037,22 +1040,35 @@ $('pkAdd').onclick = () => { if (site.services.packages.length >= 6) return toas
 $('rpAdd').onclick = () => { if (site.services.repairs.length >= 16) return toast('สูงสุด 16 รายการ'); site.services.repairs.push({ name: L3('', '', ''), desc: L3('', '', ''), price_lak: '', note: L3('', '', ''), link: '' }); markDirty(); renderServices(); };
 $('fmAdd').onclick = () => { if (site.services.film.length >= 6) return toast('สูงสุด 6 แพ็กเกจ'); site.services.film.push({ name: '', price_lak: '', desc: L3('', '', '') }); markDirty(); renderServices(); };
 
-$('siteSave').onclick = async () => {
-  const b = $('siteSave');
-  for (const [d, h] of site.hours.entries()) if (!h.closed && (!h.open || !h.close || h.open >= h.close)) return toast('เวลาเปิด-ปิดวัน' + DAYS[d] + ' ไม่ถูกต้อง');
+async function saveSite(quiet){
+  if (!site) return;
+  if (_saving) { _saveAgain = quiet ? (_saveAgain || 'auto') : 'manual'; return; }
+  clearTimeout(_autoT);
+  const b = $('siteSave'), fail = m => { if (quiet) $('saveMsg').textContent = '⚠ ยังไม่ได้บันทึก: ' + m; else toast(m); };
+  for (const [d, h] of site.hours.entries()) if (!h.closed && (!h.open || !h.close || h.open >= h.close)) return fail('เวลาเปิด-ปิดวัน' + DAYS[d] + ' ไม่ถูกต้อง');
   site.contact = { phone: $('cPhone').value.trim(), whatsapp: $('cWa').value.replace(/\D/g, ''), email: $('cEmail').value.trim(), mapUrl: $('cMap').value.trim(),
     facebook: $('cFb').value.trim(), tiktok: $('cTt').value.trim(), address: { lo: $('cAddrLo').value.trim(), th: $('cAddrTh').value.trim(), en: $('cAddrEn').value.trim() } };
-  for (const p of site.services.packages) { p.items = (p.items || []).filter(it => it.lo || it.th || it.en); if (!p.name.trim()) return toast('ใส่ชื่อแพ็กเกจให้ครบ'); }
-  b.disabled = true; b.textContent = 'กำลังบันทึก…';
+  for (const p of site.services.packages) { p.items = (p.items || []).filter(it => it.lo || it.th || it.en); if (!p.name.trim()) return fail('ใส่ชื่อแพ็กเกจให้ครบ'); }
+  const seq = _editSeq;
+  _saving = true; b.disabled = true; b.textContent = 'กำลังบันทึก…'; $('saveMsg').textContent = 'กำลังบันทึก…';
   try {
     const saved = await post('saveSiteConfig', { config: site });
-    site = Object.assign(saved, { slides: saved.slides || [], hours: saved.hours, contact: saved.contact, services: saved.services || site.services });
     try { localStorage.setItem('sd_site', JSON.stringify(saved)); localStorage.setItem('sd_site_t', String(Date.now())); } catch (_) {}
-    siteDirty = false; $('saveMsg').textContent = 'บันทึกแล้ว · ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    renderSite(); fillContact(); toast('บันทึกแล้ว ✓ หน้าเว็บอัปเดตแล้ว');
-  } catch (x) { toast(x.message); }
-  finally { b.disabled = false; b.textContent = '💾 บันทึกการตั้งค่า'; }
-};
+    if (!quiet && seq === _editSeq) {   // ກົດບັນທຶກເອງ: ໂຫຼດຄ່າທີ່ເຊີບເວີເກັບໄວ້ມາສະແດງ (ບັນທຶກອັດຕະໂນມັດ ບໍ່ສະແດງຄືນ ເພື່ອບໍ່ໃຫ້ຂັດຈັງຫວະພິມ)
+      site = Object.assign(saved, { slides: saved.slides || [], hours: saved.hours, contact: saved.contact, services: saved.services || site.services });
+      renderSite(); fillContact();
+    }
+    if (seq === _editSeq) siteDirty = false;
+    $('saveMsg').textContent = '✓ บันทึกแล้ว · ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ' — หน้าเว็บอัปเดตแล้ว';
+    if (!quiet) toast('บันทึกแล้ว ✓ หน้าเว็บอัปเดตแล้ว');
+  } catch (x) { fail(x.message); }
+  finally {
+    _saving = false; b.disabled = false; b.textContent = '💾 บันทึกการตั้งค่า';
+    const again = _saveAgain; _saveAgain = false;
+    if (again === 'manual') saveSite(false); else if (again || (siteDirty && seq !== _editSeq)) autoSave(300);
+  }
+}
+$('siteSave').onclick = () => saveSite(false);
 window.addEventListener('beforeunload', e => { if (siteDirty) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ── ຮູບ / ວິດີໂອສິນຄ້າ ── */
