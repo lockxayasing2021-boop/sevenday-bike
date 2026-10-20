@@ -94,6 +94,7 @@ a{color:inherit;text-decoration:none}
 .alang button{flex:1;padding:7px 0;font-size:13px;font-weight:700;color:#bbb}
 .alang button.on{background:#fff;color:#000}
 .alang.light{border-color:var(--g3);margin:16px 0 0}
+.alang.acur{margin-top:0}
 .alang.light button{color:var(--g6)}
 .alang.light button.on{background:#000;color:#fff}
 /* site settings */
@@ -314,6 +315,7 @@ a{color:inherit;text-decoration:none}
     </nav>
     <div class="grow"></div>
     <div class="alang" role="group" aria-label="ภาษา" translate="no"><button type="button" data-alang="lo">ລາວ</button><button type="button" data-alang="th">ไทย</button><button type="button" data-alang="en">EN</button></div>
+    <div class="alang acur" role="group" aria-label="สกุลเงิน" translate="no"><button type="button" data-acur="THB">฿ THB</button><button type="button" data-acur="LAK">₭ LAK</button><button type="button" data-acur="USD">$ USD</button></div>
     <nav class="nav"><button type="button" onclick="logout()"><span class="ic">⎋</span>ออกจากระบบ</button></nav>
   </aside>
 
@@ -810,7 +812,7 @@ async function loadDash(){
         <div class="ev-h"><b>${esc(e.event_name)}</b><span class="pill ${st[1]}">${esc(st[0])}</span><small>${esc(thDate(e.event_date))}</small></div>
         <div class="ev-n"><span>สมัคร <b>${e.registered}${e.capacity ? '/' + e.capacity : ''}</b></span><span>ชำระแล้ว <b>${e.paid}</b></span>
           <span class="${e.slips ? 'warn' : ''}">สลิปรอตรวจ <b>${e.slips}</b></span><span>Check-in <b>${e.checked_in}</b></span>
-          <span>รายรับ <b>₭${Math.round(e.revenue_lak).toLocaleString('en-US')}</b></span></div>
+          <span>รายรับ <b>${admCur.moneyLak(e.revenue_lak)}</b></span></div>
         <div class="ev-a">
           <button class="btn sm ${e.slips ? 'dark' : ''}" type="button" data-go="participants" data-q="${q}">👥 ผู้สมัคร${e.slips ? ' · ตรวจสลิป ' + e.slips : ''}</button>
           <button class="btn sm ${dayOf ? 'dark' : ''}" type="button" data-go="checkin" data-q="${q}">📷 Check-in</button>
@@ -888,6 +890,12 @@ function hoursText(){
   return g.map(x => (x.d.length > 1 ? D[x.d[0]] + '–' + D[x.d[x.d.length - 1]] : D[x.d[0]]) + ' ' + (x.k === 'x' ? W[1] : x.k)).join(' · ');
 }
 document.addEventListener('adminlangchange', () => { if (site) $('hrsPrev').textContent = hoursText(); });
+// ສະກຸນເງິນ (฿ / ₭ / $) ປ່ຽນ → ສະແດງຍອດໃໝ່ໃນໜ້າທີ່ເປີດຢູ່
+document.addEventListener('admincurrencychange', () => {
+  try { if (!$('dash').hidden) loadDash(); } catch (_) {}
+  try { if (site && !$('site').hidden) renderServices(); } catch (_) {}
+  try { if (typeof md !== 'undefined' && md && !$('media').hidden) renderVar(); } catch (_) {}
+});
 function fillContact(){
   const c = site.contact, a = c.address || {};
   [['cPhone', c.phone], ['cWa', c.whatsapp], ['cEmail', c.email], ['cMap', c.mapUrl], ['cFb', c.facebook], ['cTt', c.tiktok], ['cAddrLo', a.lo], ['cAddrTh', a.th], ['cAddrEn', a.en]].forEach(([id, v]) => $(id).value = v || '');
@@ -977,12 +985,13 @@ async function loadPosServices(){
 const posSvc = sku => (POS_SVC || []).find(x => x.sku.toLowerCase() === String(sku || '').trim().toLowerCase());
 function skuSel(o){
   const cur = String(o.sku || ''), has = posSvc(cur);
-  const opts = (POS_SVC || []).map(x => `<option value="${esc(x.sku)}" ${x.sku === cur ? 'selected' : ''}>${esc(x.sku)} · ${esc(x.name)} · ฿${Number(x.price_thb).toLocaleString('en-US')}</option>`).join('');
+  const opts = (POS_SVC || []).map(x => `<option value="${esc(x.sku)}" ${x.sku === cur ? 'selected' : ''}>${esc(x.sku)} · ${esc(x.name)} · ${admCur.money(x.price_thb)}</option>`).join('');
   return `<select data-k="sku" class="skusel" translate="no"><option value="">— ไม่ผูกกับ POS (ใส่ราคาเอง) —</option>${cur && !has ? `<option value="${esc(cur)}" selected>${esc(cur)} (ไม่พบใน POS)</option>` : ''}${opts}</select>`;
 }
 function priceBox(o, ph){
   const x = posSvc(o.sku);
-  if (x) return `<div class="posprice" translate="no"><b>₭${Number(x.price_lak).toLocaleString('en-US')}</b><small>฿${Number(x.price_thb).toLocaleString('en-US')} · <span translate="yes">ราคาจาก POS</span></small></div>`;
+  if (x) { const f = c => c === 'LAK' && x.price_lak ? '₭' + Number(x.price_lak).toLocaleString('en-US') : admCur.money(x.price_thb, c), C = admCur.cur;
+    return `<div class="posprice" translate="no"><b>${f(C)}</b><small>${['THB', 'LAK', 'USD'].filter(c => c !== C).map(f).join(' · ')} · <span translate="yes">ราคาจาก POS</span></small></div>`; }
   return `<input data-k="price_lak" type="number" min="0" step="1000" ${ph ? `placeholder="${ph}"` : ''} value="${esc(o.price_lak)}">`;
 }
 function renderServices(){
@@ -1125,7 +1134,7 @@ function renderVar(){
       return `<tr><td><span class="sw">${v.color ? `<i style="${th ? `background-image:url('${esc(th)}')` : ''}"></i><span translate="no">${esc(v.color)}</span>` : '—'}</span></td>
         <td translate="no">${esc(v.size || '—')}</td>
         <td class="vsku" translate="no">${esc(v.sku)}${v.barcode ? '<br>' + esc(v.barcode) : ''}</td>
-        <td>฿${Number(v.price_thb || 0).toLocaleString('en-US')}</td>
+        <td>${admCur.money(v.price_thb || 0)}</td>
         <td class="${v.stock > 0 ? '' : 'out'}">${v.stock}</td>
         <td>${v.color ? `<span class="pc ${ph.length ? '' : 'no'}">${ph.length ? ph.length + ' รูป' : 'ยังไม่มีรูป'}</span>` : '—'}</td>
         <td>${v.color ? `<button class="btn sm up" type="button" data-vup="${esc(v.color)}">+ รูปสีนี้</button>` : ''}</td></tr>`; }).join('')}

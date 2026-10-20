@@ -205,7 +205,7 @@ td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
       <table>
         <thead><tr>
           <th>BIB</th><th>ຊື່</th><th>ລຸ້ນ</th><th class="col-hide">ເສື້ອ</th>
-          <th class="col-hide">ເບີໂທ</th><th class="col-hide" style="text-align:right">ຍອດ (₭)</th>
+          <th class="col-hide">ເບີໂທ</th><th class="col-hide" style="text-align:right">ຍອດ</th>
           <th>ຊຳລະ</th><th>Check-in</th>
         </tr></thead>
         <tbody id="tbody"><tr><td colspan="8" class="empty">ກຳລັງໂຫຼດ…</td></tr></tbody>
@@ -349,7 +349,7 @@ function render(){
       <td>${esc(p.category_name)}</td>
       <td class="col-hide">${esc(p.jersey_size||'-')}</td>
       <td class="col-hide">${esc(p.phone)}</td>
-      <td class="col-hide num">${fmtK(p.total)}</td>
+      <td class="col-hide num">${admCur.moneyLak(p.total)}</td>
       <td>${payPill(p)}</td>
       <td>${ciPill(p)}</td>
     </tr>`).join('') : '<tr><td colspan="8" class="empty">ບໍ່ມີລາຍການ</td></tr>';
@@ -402,7 +402,7 @@ function openDrawer(id){
         <dl class="kv">
           <dt>ການຊຳລະ</dt><dd>${payPill(p)}</dd>
           <dt>Check-in</dt><dd>${p.checkin_status==='CHECKED_IN' ? `${esc(fmtDT(p.checkin_time))} · ${esc(p.checked_by||'')}` : 'ຍັງບໍ່'}</dd>
-          <dt>ຍອດ</dt><dd>₭ ${fmtK(p.total)}${Number(p.discount)?` <span class="pill" style="background:#FFF1C2;color:#7A5A00">Early Bird −${fmtK(p.discount)}</span>`:''}</dd>
+          <dt>ຍອດ</dt><dd>${admCur.moneyLak(p.total)}${admCur.cur!=='LAK'?` <small style="color:var(--g6)">(₭${fmtK(p.total)})</small>`:''}${Number(p.discount)?` <span class="pill" style="background:#FFF1C2;color:#7A5A00">Early Bird −${admCur.moneyLak(p.discount)}</span>`:''}</dd>
           <dt>ລົງທະບຽນ</dt><dd>${esc(fmtDT(p.reg_date))}</dd>
         </dl>
       </div>
@@ -410,7 +410,7 @@ function openDrawer(id){
       ${pay ? `<div class="sec">
         <h3>ການແຈ້ງຊຳລະລ່າສຸດ</h3>
         <dl class="kv">
-          <dt>ຈຳນວນ</dt><dd>₭ ${fmtK(pay.amount)} ${Number(pay.amount)!==Number(p.total)?'<span class="pill bad">ບໍ່ກົງຍອດ</span>':''}</dd>
+          <dt>ຈຳນວນ</dt><dd>${admCur.moneyLak(pay.amount)}${admCur.cur!=='LAK'?` <small style="color:var(--g6)">(₭${fmtK(pay.amount)})</small>`:''} ${Number(pay.amount)!==Number(p.total)?'<span class="pill bad">ບໍ່ກົງຍອດ</span>':''}</dd>
           <dt>ວິທີ / ອ້າງອີງ</dt><dd>${esc(pay.method)} · ${esc(pay.reference||'-')}</dd>
           <dt>ວັນທີ</dt><dd>${esc(fmtDT(pay.date))}</dd>
           <dt>ສະລິບ</dt><dd>${proof ? `<a href="${esc(proof)}" target="_blank" rel="noopener" style="text-decoration:underline">ເປີດເບິ່ງສະລິບ</a>` : '-'}</dd>
@@ -551,6 +551,8 @@ async function exportPdf(){
 }
 
 if (token) boot(); else $('loginScreen').hidden = false;
+
+document.addEventListener('admincurrencychange',()=>{ try{ render(); if(selId) openDrawer(selId); }catch(_){} });
 </script>
 </body>
 </html>

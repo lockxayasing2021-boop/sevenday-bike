@@ -905,3 +905,51 @@ const ADM_DICT = {
   window.admI18n = { tr, setLang, get lang() { return lang; } };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
+/* ── ສະກຸນເງິນໃນໜ້າແອັດມິນ: ຫຼັກ = ບາດ (THB) · ກົດປຸ່ມ ฿ / ₭ / $ ເພື່ອເບິ່ງສະກຸນອື່ນ ──
+   ອັດຕາແລກປ່ຽນດຶງຈາກ POS (ຕັ້ງຄ່າ → ອັດຕາແລກປ່ຽນ) · ຈຳໄວ້ 10 ນາທີ */
+(function () {
+  const CURS = ['THB', 'LAK', 'USD'];
+  let cur = 'THB', R = { lak: 698, usd: 0.031 };
+  try { const c = localStorage.getItem('sd_admin_cur'); if (CURS.includes(c)) cur = c; } catch (_) {}
+  try { const r = JSON.parse(localStorage.getItem('sd_admin_rates') || 'null'); if (r && r.lak > 0) { R.lak = +r.lak; if (r.usd > 0) R.usd = +r.usd; } } catch (_) {}
+  const n0 = v => Math.round(v).toLocaleString('en-US');
+  function fmt(thb, c) {
+    c = c || cur; thb = Number(thb) || 0;
+    if (c === 'LAK') return '₭' + n0(thb * R.lak);
+    if (c === 'USD') return '$' + (thb * R.usd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return '฿' + n0(thb);
+  }
+  const money = (thb, c) => fmt(thb, c);                         // ຍອດທີ່ເກັບເປັນບາດ
+  const moneyLak = (lak, c) => fmt((Number(lak) || 0) / R.lak, c); // ຍອດທີ່ເກັບເປັນກີບ (ເຊັ່ນ ຄ່າສະໝັກກິດຈະກຳ)
+  function mark() { document.querySelectorAll('[data-acur]').forEach(b => b.classList.toggle('on', b.dataset.acur === cur)); }
+  function fire() { document.dispatchEvent(new Event('admincurrencychange')); }
+  function setCur(c, quiet) {
+    if (!CURS.includes(c)) return;
+    cur = c; try { localStorage.setItem('sd_admin_cur', c); } catch (_) {}
+    mark();
+    document.querySelectorAll('iframe').forEach(f => { try { f.contentWindow.admCur && f.contentWindow.admCur.setCur(c, true); } catch (_) {} });
+    fire();
+  }
+  async function loadRates() {
+    try {
+      const t = JSON.parse(localStorage.getItem('sd_admin_rates') || 'null');
+      if (t && Date.now() - t.t < 10 * 60e3) return;
+    } catch (_) {}
+    try {
+      if (typeof API_URL === 'undefined') return;
+      const j = await (await fetch(`${API_URL}?action=getSettings&secret=${API_SECRET}`)).json();
+      const d = (j && j.data) || {}, lak = +d.lak_to_thb, usd = +d.usd_to_thb;
+      if (!(lak > 0)) return;
+      const changed = lak !== R.lak || (usd > 0 && usd !== R.usd);
+      R.lak = lak; if (usd > 0) R.usd = usd;
+      try { localStorage.setItem('sd_admin_rates', JSON.stringify({ lak, usd: R.usd, t: Date.now() })); } catch (_) {}
+      if (changed) fire();
+    } catch (_) {}
+  }
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-acur]'); if (b) setCur(b.dataset.acur); });
+  window.addEventListener('storage', e => { if (e.key === 'sd_admin_cur' && CURS.includes(e.newValue) && e.newValue !== cur) { cur = e.newValue; mark(); fire(); } });
+  window.addEventListener('storage', e => { if (e.key !== 'sd_admin_rates') return; try { const r = JSON.parse(e.newValue || 'null'); if (r && r.lak > 0) { R.lak = +r.lak; if (r.usd > 0) R.usd = +r.usd; fire(); } } catch (_) {} });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { mark(); loadRates(); }); else { mark(); setTimeout(loadRates, 0); }
+  window.admCur = { money, moneyLak, fmt, setCur, get cur() { return cur; }, get rates() { return { ...R }; } };
+})();

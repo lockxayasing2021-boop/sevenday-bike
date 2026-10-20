@@ -417,6 +417,7 @@ async function selectEvent(id) {
 }
 
 function renderDetail(ev) {
+  _lastEv = ev;
   const dc = document.getElementById('detailContent');
   const STATUS_FLOW = ['DRAFT','PUBLISHED','REGISTRATION_OPEN','REGISTRATION_CLOSED','EVENT_FINISHED'];
   const curIdx = STATUS_FLOW.indexOf(ev.status);
@@ -432,7 +433,7 @@ function renderDetail(ev) {
               <tr>
                 <td><b>${c.category_name}</b><br><span style="color:var(--g6);font-size:11px">${c.category_code}</span></td>
                 <td>${c.distance || '—'}</td>
-                <td>₭${fmtNum(c.price_lak)}</td>
+                <td>${admCur.moneyLak(c.price_lak)}${admCur.cur!=='LAK'?` <small style="color:#888">(₭${fmtNum(c.price_lak)})</small>`:''}</td>
                 <td style="font-weight:700">${c.registered_count}</td>
                 <td>${c.capacity || '∞'}</td>
                 <td><span class="badge ${c.status === 'ACTIVE' ? 'REGISTRATION_OPEN' : 'CANCELLED'}">${c.status}</span></td>
@@ -535,5 +536,7 @@ if (token) {
 } else {
   showLogin();
 }
+
+let _lastEv=null; document.addEventListener('admincurrencychange',()=>{ try{ if(_lastEv) renderDetail(_lastEv); }catch(_){} });
 </script>
 </html>

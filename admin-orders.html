@@ -116,7 +116,7 @@ async function post(action,data){
   const j=await r.json(); if(j.ok===false) throw new Error(j.error||'API error'); return j.data;
 }
 function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600); }
-const money=t=>'₭'+Math.round(t*THB_TO_LAK).toLocaleString()+'  ·  ฿'+Math.round(t).toLocaleString();
+const money=t=>admCur.money(t)+'  ·  '+admCur.money(t, admCur.cur==='THB'?'LAK':'THB');   // ສະກຸນຫຼັກຕາມປຸ່ມ ฿/₭/$ ໃນແອັດມິນ
 const when=d=>{ const x=new Date(d); return isNaN(x)?'':x.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
 const ago=d=>{ const m=Math.round((Date.now()-new Date(d))/60000); return m<1?'ຫາກໍ່':m<60?m+' ນາທີກ່ອນ':m<1440?Math.round(m/60)+' ຊມ. ກ່ອນ':Math.round(m/1440)+' ມື້ກ່ອນ'; };
 const stCls=s=>s==='ໃໝ່'?'new':s==='ສຳເລັດ'?'done':s==='ຍົກເລີກ'?'cancel':'';
@@ -171,7 +171,7 @@ function renderList(){
   $('list').innerHTML=L.length?L.map(i=>`<button class="row ${sel===i.id?'sel':''}" onclick="openItem('${i.id}')">
       <span class="ty">${TYPE[i.type]?.[0]||'•'}</span>
       <span><b>${esc(i.name)||'-'}</b> <span class="st ${stCls(i.status)}">${esc(i.status)}</span><span class="sub">${esc(i.id)} · ${esc(i.details.split('\n').join(', '))}</span></span>
-      <span class="r">${i.total?`<span class="amt">₭${Math.round(i.total*THB_TO_LAK).toLocaleString()}</span>`:''}<small style="color:var(--g6)">${ago(i.date)}</small></span></button>`).join('')
+      <span class="r">${i.total?`<span class="amt">${admCur.money(i.total)}</span>`:''}<small style="color:var(--g6)">${ago(i.date)}</small></span></button>`).join('')
     :`<div class="empty">${items.length?'ບໍ່ມີລາຍການທີ່ກົງກັບຕົວກອງ':'ຍັງບໍ່ມີລາຍການຈາກເວັບ — ຄຳສັ່ງຊື້ ແລະ ການຈອງໃໝ່ຈະຂຶ້ນບ່ອນນີ້'}</div>`;
 }
 function openItem(id){ sel=id; renderList(); renderDetail(items.find(i=>i.id===id)); $('detail').classList.add('open'); }
@@ -198,7 +198,7 @@ function renderDetail(i){
     <div class="sec"><h3>ລູກຄ້າ</h3><dl class="kv"><dt>ຊື່</dt><dd>${esc(i.name)}</dd><dt>ເບີໂທ</dt><dd>${esc(i.phone)}</dd>${i.email?`<dt>ອີເມວ</dt><dd>${esc(i.email)}</dd>`:''}</dl>
       <div class="acts" style="margin-top:12px"><a class="btn dark" target="_blank" rel="noopener" href="${wa(i.phone,msgFor(i,next||i.status))}">WhatsApp${next?' (ຂໍ້ຄວາມ "'+next+'")':''}</a><a class="btn" href="tel:${esc(i.phone)}">ໂທ</a></div></div>
     <div class="sec"><h3>${i.type==='order'?'ລາຍການສິນຄ້າ':'ລາຍລະອຽດ'}</h3><div class="items">${esc(i.details)}</div>
-      ${i.total?`<div class="total"><span>ລວມ</span><span>₭${Math.round(i.total*THB_TO_LAK).toLocaleString()}</span></div><small style="color:var(--g6)">฿${Math.round(i.total).toLocaleString()}</small>`:''}
+      ${i.total?`<div class="total"><span>ລວມ</span><span>${admCur.money(i.total)}</span></div><small style="color:var(--g6)">${['THB','LAK','USD'].filter(c=>c!==admCur.cur).map(c=>admCur.money(i.total,c)).join(' · ')}</small>`:''}
       <dl class="kv" style="margin-top:12px">${i.payment?`<dt>ການຊຳລະ</dt><dd>${esc(i.payment)}</dd>`:''}${i.delivery?`<dt>ການຮັບ</dt><dd>${esc(i.delivery)}</dd>`:''}${i.notes?`<dt>ໝາຍເຫດ</dt><dd>${esc(i.notes)}</dd>`:''}</dl></div>
     <div class="sec"><h3>ອັບເດດສະຖານະ</h3><div class="flow">${flow.map((s,k)=>`<button class="${k===idx?'cur':k<idx?'past':''}" ${i.status==='ຍົກເລີກ'?'disabled':''} onclick="setStatus('${i.id}','${s}')"><span>${k<idx?'✓ ':''}${s}</span>${k===idx+1?'<span>ຂັ້ນຕໍ່ໄປ →</span>':''}</button>`).join('')}
       ${i.status!=='ຍົກເລີກ'?`<button class="cancel" onclick="setStatus('${i.id}','ຍົກເລີກ')">ຍົກເລີກ${i.type==='order'?' (ລຶບບິນອອກຈາກ Sales ແລະ ຫັກແຕ້ມຄືນ)':''}</button>`:'<p style="color:var(--g6);font-size:14px">ລາຍການນີ້ຖືກຍົກເລີກແລ້ວ</p>'}</div></div>
@@ -215,6 +215,8 @@ async function saveNote(id){ const v=$('an').value; try{ await post('adminUpdate
 
 function boot(){ shell(); load(); clearInterval(window._iv); window._iv=setInterval(()=>{ if(!document.hidden) load(); },60000); }
 token ? boot() : showLogin();
+
+document.addEventListener('admincurrencychange',()=>{ try{ renderStats(); renderList(); if(sel) renderDetail(items.find(i=>i.id===sel)); }catch(_){} });
 </script>
 </body>
 </html>
