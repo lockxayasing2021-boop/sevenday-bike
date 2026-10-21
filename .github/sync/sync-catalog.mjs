@@ -5,6 +5,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { AwsClient } from 'aws4fetch';
 
 const ROOT = process.env.SITE_ROOT || process.cwd();
 const API = process.env.API_URL, SECRET = process.env.API_SECRET;
@@ -12,6 +13,11 @@ const IMG_BASE = process.env.IMG_BASE || 'https://lh3.googleusercontent.com/d/';
 const OUT_JSON = path.join(ROOT, 'data/catalog.json'), IMG_DIR = path.join(ROOT, 'img/p');
 const SIZES = [600, 1200], BIG = 1920, CONC = 4, MAX_NEW = Number(process.env.MAX_NEW || 400);
 const log = (...a) => console.log(...a);
+// Cloudflare R2: ຮູບ WebP ຂອງໜ້າເວັບເກັບທີ່ R2 (ຟຣີ 10GB) — ຕັ້ງ Secrets ໃນ GitHub: R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL
+const E = process.env, R2 = E.R2_ENDPOINT && E.R2_ACCESS_KEY_ID && E.R2_SECRET_ACCESS_KEY && E.R2_BUCKET && E.R2_PUBLIC_URL
+  ? { url: E.R2_ENDPOINT.replace(/\/$/, '') + '/' + E.R2_BUCKET, pub: E.R2_PUBLIC_URL.replace(/\/$/, ''),
+      c: new AwsClient({ accessKeyId: E.R2_ACCESS_KEY_ID, secretAccessKey: E.R2_SECRET_ACCESS_KEY, service: 's3', region: 'auto' }) } : null;
+const R2_LIST = path.join(ROOT, 'data/r2-uploaded.json');
 
 async function getJSON(url, tries = 3) {
   for (let i = 1; ; i++) {
@@ -88,7 +94,31 @@ let removed = 0;
 for (const f of await fs.readdir(IMG_DIR)) if (!keep.has(f)) { await fs.unlink(path.join(IMG_DIR, f)); removed++; }
 
 const imgsSorted = Object.fromEntries(Object.keys(imgs).sort().map(k => [k, imgs[k]]));
-const out = { t: data.t, imgs: imgsSorted, products: data.products, site: data.site || {} };
+// ອັບໂຫລດຮູບ WebP ທີ່ຍັງບໍ່ມີໃນ R2 (ຈົດລາຍຊື່ໄວ້ໃນ data/r2-uploaded.json — ບໍ່ອັບຊ້ຳ)
+let imgBase = 'img/p/';
+if (R2) {
+  let sent = {}; try { sent = JSON.parse(await fs.readFile(R2_LIST, 'utf8')); } catch (_) {}
+  const want2 = [...keep].filter(f => !sent[f]);
+  let up = 0, bad = 0;
+  const q2 = want2.slice();
+  async function upWorker() {
+    for (let f; (f = q2.shift());) {
+      try {
+        const r = await R2.c.fetch(R2.url + '/p/' + f, { method: 'PUT', body: await fs.readFile(path.join(IMG_DIR, f)),
+          headers: { 'content-type': 'image/webp', 'cache-control': 'public, max-age=31536000, immutable' } });
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + (await r.text()).slice(0, 120));
+        sent[f] = 1; up++;
+      } catch (e) { bad++; log('  ✗ R2 ' + f + ': ' + e.message); }
+    }
+  }
+  await Promise.all(Array.from({ length: 6 }, upWorker));
+  for (const f of Object.keys(sent)) if (!keep.has(f)) delete sent[f];
+  await fs.mkdir(path.dirname(R2_LIST), { recursive: true });
+  await fs.writeFile(R2_LIST, JSON.stringify(Object.fromEntries(Object.keys(sent).sort().map(k => [k, 1]))));
+  log(`R2: uploaded ${up}, failed ${bad}, total ${Object.keys(sent).length}/${keep.size}`);
+  if ([...keep].every(f => sent[f])) imgBase = R2.pub + '/p/';
+}
+const out = { t: data.t, imgs: imgsSorted, img_base: imgBase, products: data.products, site: data.site || {} };
 let prev = null; try { prev = JSON.parse(await fs.readFile(OUT_JSON, 'utf8')); } catch (_) {}
 if (!prev || stable(prev) !== stable(out)) {
   await fs.mkdir(path.dirname(OUT_JSON), { recursive: true });

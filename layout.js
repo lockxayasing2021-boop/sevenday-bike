@@ -189,13 +189,13 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
 /* ── ໂຫຼດໄວ: ສຳເນົາສິນຄ້າ + ຮູບ ຢູ່ໃນ GitHub Pages (data/catalog.json, img/p/*.webp)
    GitHub Action ອັບເດດທຸກ 15 ນາທີ. ໜ້າເວັບສະແດງຈາກສຳເນົາທັນທີ ແລ້ວດຶງຂໍ້ມູນສົດຈາກ POS ຢູ່ເບື້ອງຫຼັງ.
    ຮູບທີ່ຍັງບໍ່ທັນຢູ່ໃນສຳເນົາ (ຫາກໍອັບໂຫຼດ) ຍັງໃຊ້ລິ້ງ Google ຄືເກົ່າ. ── */
-let SD_IMGS = null;
+let SD_IMGS = null, SD_IMG_BASE = 'img/p/';   // ຮູບ WebP: Cloudflare R2 (img_base ໃນ catalog.json) ຫຼື GitHub (img/p/)
 const SD_CAT = (function(){
   try {
     ['https://script.google.com', 'https://script.googleusercontent.com', 'https://lh3.googleusercontent.com'].forEach(h => {
       const l = document.createElement('link'); l.rel = 'preconnect'; l.href = h; l.crossOrigin = ''; document.head.appendChild(l); });
     return fetch('data/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null)
-      .then(c => { if (c && c.imgs) SD_IMGS = c.imgs; return c; }).catch(() => null);
+      .then(c => { if (c && c.imgs) SD_IMGS = c.imgs; if (c && c.img_base) SD_IMG_BASE = c.img_base; return c; }).catch(() => null);
   } catch (_) { return Promise.resolve(null); }
 })();
 /* ລໍສຳເນົາສູງສຸດ 1.5 ວິນາທີ — ຊ້າກວ່ານັ້ນ ໃຊ້ API ຕາມປົກກະຕິ */
@@ -207,7 +207,7 @@ function sdImgUrl(s){
     const ss = SD_IMGS[id]; if (!ss || !ss.length) return m;
     w = +w || 800;
     const want = w <= 800 ? 600 : (w <= 1600 || !ss.includes(1920)) ? 1200 : 1920;
-    return 'img/p/' + id + '-' + (ss.includes(want) ? want : Math.max(...ss)) + '.webp';
+    return SD_IMG_BASE + id + '-' + (ss.includes(want) ? want : Math.max(...ss)) + '.webp';
   });
 }
 (function(){
