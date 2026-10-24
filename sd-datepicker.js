@@ -60,10 +60,13 @@
     if (el.disabled || el.readOnly) return;
     close(); addCss();
     var kind = el._sdpKind, t = todayParts();
-    var base = parse(VALUE.get.call(el)) || clampToRange(el, t);
+    // date of birth: open around 30 years ago instead of this month
+    var dob = /birth|dob/i.test((el.id || '') + ' ' + (el.name || '')), t0 = dob ? { y: t.y - 30, m: 0, d: 1 } : t;
+    var base = parse(VALUE.get.call(el)) || clampToRange(el, t0);
     cur = { el: el, proxy: el._sdpProxy, kind: kind, y: base.y, m: base.m, time: (parse(VALUE.get.call(el)) || {}).t || '09:00' };
     pop = document.createElement('div'); pop.className = 'sdp-pop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('translate', 'no'); pop.setAttribute('data-no-tr', '');
-    pop.addEventListener('mousedown', function (e) { e.preventDefault(); });   // keep focus, no blur-close
+    // keep focus on the field when clicking days/buttons — but NOT on <select>, or the Month/Year dropdowns can't open
+    pop.addEventListener('mousedown', function (e) { if (!e.target.closest('select')) e.preventDefault(); });
     pop.addEventListener('click', onClick); pop.addEventListener('change', onChange);
     document.body.appendChild(pop);
     cur.proxy.setAttribute('aria-expanded', 'true');
