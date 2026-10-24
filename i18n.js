@@ -906,5 +906,11 @@ window.SD_DICT = (function(){ const R = {
 "— ແນບສະລິບໄດ້ໃນໜ້າ QR":["— แนบสลิปได้ในหน้า QR","— you can attach the slip on the QR page"],
 "⚠ ຈຳນວນທີ່ຮ້ານມີບໍ່ພໍ — ກະລຸນາຫຼຸດຈຳນວນ":["⚠ สินค้าที่ร้านมีไม่พอ — กรุณาลดจำนวน","⚠ Not enough in stock — please lower the quantity"],
 "⚠ ທີ່ຮ້ານເຫຼືອ":["⚠ ที่ร้านเหลือ","⚠ Only"],
-"⚠ ທີ່ຮ້ານເຫຼືອ {0} — ກະລຸນາປັບຈຳນວນ":["⚠ ที่ร้านเหลือ {0} — กรุณาปรับจำนวน","⚠ Only {0} left in store — please adjust the quantity"]
+"⚠ ທີ່ຮ້ານເຫຼືອ {0} — ກະລຸນາປັບຈຳນວນ":["⚠ ที่ร้านเหลือ {0} — กรุณาปรับจำนวน","⚠ Only {0} left in store — please adjust the quantity"],
+"ສະໝັກແລ້ວ {0} ຄົນ":["สมัครแล้ว {0} คน","{0} registered"],
+"ສະໝັກແລ້ວ":["สมัครแล้ว","Registered"],
+"/ {0} ຄົນ":["/ {0} คน","/ {0}"],
+"ສະແກນ QR ຫຼື ໂອນເຂົ້າ Phongsavanh Bank":["สแกน QR หรือโอนเข้า Phongsavanh Bank","Scan the QR or transfer to Phongsavanh Bank"],
+"ຮັບຈຳນວນ {0}ຄົນ":["รับจำนวน {0} คน","Limited to {0} riders"],
+"ຮັບຈຳນວນ {0} ຄົນ":["รับจำนวน {0} คน","Limited to {0} riders"]
 }; const D = {}; for (const k in R) D[k] = { th: R[k][0], en: R[k][1] }; return D; })();
