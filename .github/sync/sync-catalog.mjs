@@ -99,7 +99,7 @@ let imgBase = 'img/p/';
 if (R2) {
   let sent = {}; try { sent = JSON.parse(await fs.readFile(R2_LIST, 'utf8')); } catch (_) {}
   const want2 = [...keep].filter(f => !sent[f]);
-  let up = 0, bad = 0;
+  let up = 0, bad = 0; const errs = [];
   const q2 = want2.slice();
   async function upWorker() {
     for (let f; (f = q2.shift());) {
@@ -108,7 +108,7 @@ if (R2) {
           headers: { 'content-type': 'image/webp', 'cache-control': 'public, max-age=31536000, immutable' } });
         if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + (await r.text()).slice(0, 120));
         sent[f] = 1; up++;
-      } catch (e) { bad++; log('  ✗ R2 ' + f + ': ' + e.message); }
+      } catch (e) { bad++; if (errs.length < 3) errs.push(e.message.slice(0, 300)); log('  ✗ R2 ' + f + ': ' + e.message); }
     }
   }
   await Promise.all(Array.from({ length: 6 }, upWorker));
@@ -116,6 +116,11 @@ if (R2) {
   await fs.mkdir(path.dirname(R2_LIST), { recursive: true });
   await fs.writeFile(R2_LIST, JSON.stringify(Object.fromEntries(Object.keys(sent).sort().map(k => [k, 1]))));
   log(`R2: uploaded ${up}, failed ${bad}, total ${Object.keys(sent).length}/${keep.size}`);
+  // ສະຖານະ R2 (ບໍ່ມີລະຫັດລັບ) — ໃຫ້ກວດໄດ້ໂດຍບໍ່ຕ້ອງເປີດ log ຂອງ GitHub
+  const host = (() => { try { return new URL(E.R2_ENDPOINT).host.replace(/^[0-9a-f]{8}/, '********'); } catch (_) { return 'invalid R2_ENDPOINT'; } })();
+  await fs.writeFile(path.join(ROOT, 'data/r2-status.json'), JSON.stringify({ t: new Date().toISOString(), endpoint_host: host,
+    endpoint_has_path: /^https?:\/\/[^/]+\/./.test(E.R2_ENDPOINT || ''), bucket: E.R2_BUCKET, public_url: E.R2_PUBLIC_URL,
+    uploaded: up, failed: bad, total: Object.keys(sent).length, want: keep.size, errors: errs }, null, 1));
   if ([...keep].every(f => sent[f])) imgBase = R2.pub + '/p/';
 }
 const out = { t: data.t, imgs: imgsSorted, img_base: imgBase, products: data.products, site: data.site || {} };
