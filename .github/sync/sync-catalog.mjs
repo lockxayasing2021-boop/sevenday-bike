@@ -14,7 +14,7 @@ const OUT_JSON = path.join(ROOT, 'data/catalog.json'), IMG_DIR = path.join(ROOT,
 const SIZES = [600, 1200], BIG = 1920, CONC = 4, MAX_NEW = Number(process.env.MAX_NEW || 400);
 const log = (...a) => console.log(...a);
 // Cloudflare R2: ຮູບ WebP ຂອງໜ້າເວັບເກັບທີ່ R2 (ຟຣີ 10GB) — ຕັ້ງ Secrets ໃນ GitHub: R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL
-const E = process.env, R2 = E.R2_ENDPOINT && E.R2_ACCESS_KEY_ID && E.R2_SECRET_ACCESS_KEY && E.R2_BUCKET && E.R2_PUBLIC_URL
+const E = Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k, /^R2_/.test(k) ? String(v).trim() : v])), R2 = E.R2_ENDPOINT && E.R2_ACCESS_KEY_ID && E.R2_SECRET_ACCESS_KEY && E.R2_BUCKET && E.R2_PUBLIC_URL
   ? { url: E.R2_ENDPOINT.replace(/\/$/, '') + '/' + E.R2_BUCKET, pub: E.R2_PUBLIC_URL.replace(/\/$/, ''),
       c: new AwsClient({ accessKeyId: E.R2_ACCESS_KEY_ID, secretAccessKey: E.R2_SECRET_ACCESS_KEY, service: 's3', region: 'auto' }) } : null;
 const R2_LIST = path.join(ROOT, 'data/r2-uploaded.json');
