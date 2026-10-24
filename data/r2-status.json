@@ -1,0 +1,16 @@
+{
+ "t": "2026-10-24T16:08:59.266Z",
+ "endpoint_host": "********f98becefc676855011fc164c.r2.cloudflarestorage.com",
+ "endpoint_has_path": false,
+ "bucket": "sevenday-media",
+ "public_url": "https://img.sevendaybike.com",
+ "uploaded": 0,
+ "failed": 386,
+ "total": 0,
+ "want": 386,
+ "errors": [
+  "HTTP 403 <?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>SignatureDoesNotMatch</Code><Message>The request signature we calcula",
+  "HTTP 403 <?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>SignatureDoesNotMatch</Code><Message>The request signature we calcula",
+  "HTTP 403 <?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>SignatureDoesNotMatch</Code><Message>The request signature we calcula"
+ ]
+}
