@@ -260,7 +260,7 @@ input,select{font:inherit}
 
 <script>
 const enDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? String(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
-const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_URL    = 'https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/web-api';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 
 let token = (sessionStorage.getItem('sd_admin')||localStorage.getItem('sd_admin')||'');

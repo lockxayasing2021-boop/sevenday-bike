@@ -22,7 +22,7 @@ jobs:
         run: npm install --prefix .github/sync --no-audit --no-fund
       - name: Sync
         env:
-          API_URL: https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec
+          API_URL: https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/web-api
           API_SECRET: SDdMc3wNjJEevs60n2oMQeGnuI
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}

@@ -87,7 +87,7 @@
 </main>
 
 <script>
-const EVT_API = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const EVT_API = 'https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/web-api';
 const EVT_KEY = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 async function evtGet(params){
   const r = await fetch(EVT_API + '?' + new URLSearchParams({ secret: EVT_KEY, ...params }));

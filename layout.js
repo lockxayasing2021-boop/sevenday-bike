@@ -215,7 +215,7 @@ function sdImgUrl(s){
   const json = body => new Response(body, { headers: { 'Content-Type': 'application/json' } });
   window.fetch = async function(url, opt){
     const u = String(url), act = (u.match(/[?&]action=([\w.]+)/) || [])[1];
-    if ((opt && opt.method === 'POST') || !/script\.google\.com/.test(u) || !/^(getProducts|getProduct|getSiteConfig)$/.test(act || '')) return _f(url, opt);
+    if ((opt && opt.method === 'POST') || !/(script\.google\.com|xukczixtojfmqhxepxwi\.supabase\.co)/.test(u) || !/^(getProducts|getProduct|getSiteConfig)$/.test(act || '')) return _f(url, opt);
     const cat = await sdCatalog();
     if (act !== 'getProducts') { const r = await _f(url, opt); return new Response(sdImgUrl(await r.text()), { status: r.status, headers: { 'Content-Type': 'application/json' } }); }
     const key = 'sd_api_' + u.replace(/^.*\?/, '');
@@ -237,7 +237,7 @@ function sdImgUrl(s){
 
 const SUBS = {"mtb": ["bikes", "ພູເຂົາ"], "road": ["bikes", "ເສືອໝອບ"], "city": ["bikes", "ທົ່ວໄປ / City"], "kids": ["bikes", "ເດັກ"], "ebike": ["bikes", "ໄຟຟ້າ"], "used": ["used", "ມືສອງ"], "drivetrain": ["parts", "ລະບົບຂັບ & ເກຍ"], "brake": ["parts", "ເບຣກ"], "wheel": ["parts", "ລໍ້ & ຢາງ"], "cockpit": ["parts", "ແຮນ ເບາະ ບັນໄດ"], "frame": ["parts", "ເຟຣມ & ໂຊັກ"], "parts-other": ["parts", "ອາໄຫຼ່ອື່ນໆ"], "lights": ["accessories", "ໄຟ"], "locks": ["accessories", "ກະແຈລັອກ"], "tools": ["accessories", "ສູບລົມ ເຄື່ອງມື ນ້ຳມັນ"], "travel": ["accessories", "ກະເປົາ ກະຕິກ ຂາຈັບ"], "acc-other": ["accessories", "ອຸປະກອນອື່ນໆ"], "helmet": ["gear", "ໝວກກັນກະທົບ"], "apparel": ["gear", "ເສື້ອ ຖົງມື ເກີບ"], "camping": ["outdoor", "ແຄມປິ້ງ & ເດີນປ່າ"], "lifestyle-wear": ["outdoor", "ເສື້ອຜ້າ Lifestyle"], "lifestyle-gear": ["outdoor", "ກະເປົາ ແກ້ວ & ຂອງໃຊ້"], "outdoor-other": ["outdoor", "Outdoor ອື່ນໆ"]};
 const GROUPS = {"bikes":"ລົດຖີບ","parts":"ອາໄຫຼ່","accessories":"ອຸປະກອນ","gear":"ເຄື່ອງນຸ່ງ","outdoor":"Outdoor/Lifestyle","used":"ມືສອງ"};
-const API_URL    = 'https://script.google.com/macros/s/AKfycbyOcu6vlWUnvzRb4GTjEpxz5Amre1KhTYa7wU9PPjVlBd79B8XMzeJER_h-OLrHnxBboA/exec';
+const API_URL    = 'https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/web-api';
 const API_SECRET = 'SDdMc3wNjJEevs60n2oMQeGnuI';
 
 /* ── ຂໍ້ມູນຮ້ານ: ແກ້ໄຂບ່ອນນີ້ບ່ອນດຽວ ທຸກໜ້າຈະປ່ຽນຕາມ ── */
