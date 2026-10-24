@@ -38,6 +38,11 @@
 .ev-price small{display:block;font-size:12px!important;color:var(--grey-600);font-weight:600}
 .ev-price b{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
 .ev-left{font-size:12px;color:var(--grey-600);text-align:right}
+.ev-count{margin:12px 18px 0;padding-top:12px;border-top:1px solid var(--grey-100);font-size:14px}
+.ev-count b{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
+.ev-count small{color:var(--grey-600);font-size:13px!important}
+.ev-bar{height:6px;background:var(--grey-100);border-radius:999px;margin-top:8px;overflow:hidden}
+.ev-bar i{display:block;height:100%;background:var(--black);border-radius:999px}
 .ev-card .btn{height:44px;margin:0 18px 18px}
 .ev-card .btn-line{border:2px solid var(--black)}
 
@@ -99,6 +104,14 @@ function renderTabs(){
   document.querySelectorAll('.ev-tab').forEach(b => b.onclick = () => { type = b.dataset.t; renderTabs(); renderGrid(); });
 }
 
+// ຈຳນວນຄົນສະໝັກແລ້ວ (ອັບເດດທຸກຄັ້ງທີ່ມີຄົນສະໝັກ / ຍົກເລີກ)
+function evCount(e){
+  const n = Number(e.registered) || 0, cap = Number(e.capacity) || 0;
+  const pct = cap ? Math.min(100, Math.round(n / cap * 100)) : 0;
+  return `<div class="ev-count"><small>ສະໝັກແລ້ວ</small> <b>${n.toLocaleString('en-US')}</b>${cap ? ` <small>/ ${cap.toLocaleString('en-US')} ຄົນ</small>` : ' <small>ຄົນ</small>'}
+    ${cap ? `<div class="ev-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${cap}" aria-valuenow="${n}"><i style="width:${pct}%"></i></div>` : ''}</div>`;
+}
+
 function evCard(e){
   const finished = e.status === 'EVENT_FINISHED';
   const state = finished ? 'CLOSED' : e.registration_state;
@@ -124,6 +137,7 @@ function evCard(e){
         ${canReg && e.registration_close ? `<span>ປິດຮັບສະໝັກ ${evtEsc(evtDate(e.registration_close))}</span>` : ''}
       </div>
     </div>
+    ${evCount(e)}
     <div class="ev-foot">
       <div class="ev-price">${price ? `<small>ຄ່າສະໝັກ</small><b>${price}</b>` : ''}</div>
       ${canReg && e.remaining !== null ? `<div class="ev-left">ເຫຼືອ ${e.remaining} ບ່ອນ</div>` : ''}

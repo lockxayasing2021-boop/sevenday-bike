@@ -253,7 +253,7 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
     const rules = [c.distance, c.gender_rule === 'MALE' ? 'ຊາຍ' : c.gender_rule === 'FEMALE' ? 'ຍິງ' : '', c.min_age ? `ອາຍຸ ${c.min_age}+` : '', c.max_age ? `ບໍ່ເກີນ ${c.max_age} ປີ` : ''].filter(Boolean).join(' · ');
     return `<label class="er-cat ${full ? 'off' : ''}">
       <input type="radio" name="cat" value="${evtEsc(c.category_id)}" ${full ? 'disabled' : ''} ${pick === c.category_id ? 'checked' : ''}>
-      <span><b>${evtEsc(c.category_name)}</b><small>${evtEsc(rules)}${c.description ? ' — ' + evtEsc(c.description) : ''}${full ? ' · ເຕັມແລ້ວ' : c.remaining !== null ? ` · ເຫຼືອ ${c.remaining} ບ່ອນ` : ''}</small>${c.early_bird ? `<small class="er-eb">Early Bird · ຮອດ ${evtEsc(evtDate(c.early_bird.until))}${c.early_bird.remaining !== null ? ` · ເຫຼືອ ${c.early_bird.remaining} ສິດ` : ''}</small>` : ''}</span>
+      <span><b>${evtEsc(c.category_name)}</b><small>${evtEsc(rules)}${c.description ? ' — ' + evtEsc(c.description) : ''}${c.registered_count ? ` · ສະໝັກແລ້ວ ${c.registered_count} ຄົນ` : ''}${full ? ' · ເຕັມແລ້ວ' : c.remaining !== null ? ` · ເຫຼືອ ${c.remaining} ບ່ອນ` : ''}</small>${c.early_bird ? `<small class="er-eb">Early Bird · ຮອດ ${evtEsc(evtDate(c.early_bird.until))}${c.early_bird.remaining !== null ? ` · ເຫຼືອ ${c.early_bird.remaining} ສິດ` : ''}</small>` : ''}</span>
       <span class="pr">${c.early_bird ? `<s>${evtKip(c.price_lak)}</s>` : ''}${priceOf(c) ? evtKip(priceOf(c)) : 'ຟຣີ'}</span></label>`;
   }).join('') : '<div class="msg">ງານນີ້ຍັງບໍ່ມີລຸ້ນໃຫ້ສະໝັກ</div>';
   const ebs = cats.filter(c => c.early_bird).map(c => c.early_bird.until).sort();
