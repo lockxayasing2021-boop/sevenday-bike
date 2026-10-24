@@ -43,7 +43,7 @@
 .note{padding:12px 14px;border-left:4px solid #9A5B00;background:#FFF6E5;font-size:14px;margin-bottom:12px}
 .note.bad{border-color:#B3141A;background:#FDECEC}
 .rq-pay{display:grid;grid-template-columns:180px minmax(0,1fr);gap:18px;align-items:start}
-.rq-pay img{width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;border:1px solid var(--grey-300);background:#fff}
+.rq-pay img{width:100%;height:auto;aspect-ratio:882/1023;object-fit:contain;border:1px solid var(--grey-300);background:#fff}
 .amt{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums}
 .acct{background:var(--grey-100);padding:10px 12px;margin:8px 0 14px;font-size:14px}
 .copy{margin-left:6px;font-size:12px;font-weight:700;text-decoration:underline}
@@ -193,7 +193,7 @@ function payBox(r){
     <h2>ຊຳລະຄ່າສະໝັກ</h2>
     ${rejected ? `<div class="note bad">ສະລິບກ່ອນໜ້ານີ້ກວດບໍ່ຜ່ານ${lp && lp.note ? ': ' + evtEsc(lp.note) : ''}. ກະລຸນາແນບສະລິບໃໝ່.</div>` : ''}
     <div class="rq-pay">
-      <img src="events-assets/qr-event.png" width="612" height="612" alt="QR OnePay ຂອງຮ້ານ Sevenday Bike" width="560" height="557">
+      <img src="events-assets/qr-event.png?v=2" width="882" height="1023" alt="LAO QR — SEVENDAY BIKE">
       <div>
         <div style="font-size:14px;color:var(--grey-600)">ຍອດທີ່ຕ້ອງໂອນ</div>
         <div class="amt">${evtKip(r.total)}</div>
