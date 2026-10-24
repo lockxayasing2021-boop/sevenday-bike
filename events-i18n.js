@@ -33,5 +33,10 @@
   var D = window.SD_DICT || (window.SD_DICT = {}), F = window.SD_FRAGS || (window.SD_FRAGS = {});
   F.th = F.th || {}; F.en = F.en || {};
   Object.keys(PHRASES).forEach(function (k) { D[k] = { th: PHRASES[k][0], en: PHRASES[k][1] }; });
-  Object.keys(PARTS).forEach(function (k) { F.th[k] = PARTS[k][0]; F.en[k] = PARTS[k][1]; });
+  // ຄຳປະສົມ ເຊັ່ນ "ທົ່ວໄປຍິງ" ອາດພິມເປັນ "ທົ່ວໄປ ຍິງ" → ເພີ່ມແບບມີຍະຫວ່າງໃຫ້ອັດຕະໂນມັດ
+  var SPLIT = /^(ເຍົາວະຊົນ|ທົ່ວໄປ|ເສືອ)(.+)$/;
+  Object.keys(PARTS).forEach(function (k) {
+    var keys = [k], m = k.match(SPLIT); if (m) keys.push(m[1] + ' ' + m[2]);
+    keys.forEach(function (x) { F.th[x] = PARTS[k][0]; F.en[x] = PARTS[k][1]; });
+  });
 })();

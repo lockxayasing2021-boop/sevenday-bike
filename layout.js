@@ -443,7 +443,14 @@ if (!SD_LANGS.includes(SD_LANG)) SD_LANG = 'lo';
 
 const sdI18n = (function () {
   const LAO = /[຀-໿]/;
-  const norm = s => String(s).replace(/ໍາ/g, 'ຳ').replace(/\s+/g, ' ').trim();
+  // ຂຽນລາວໄດ້ຫຼາຍແບບແຕ່ເບິ່ງຄືກັນ → ປັບໃຫ້ເປັນແບບດຽວກ່ອນທຽບກັບຄຳແປ
+  // (ຫມ/ໝ, ຫນ/ໜ, ຫລ/ຫຼ, ໍາ/ຳ, ວັນນະຍຸດກ່ອນ/ຫຼັງສະຫຼະເທິງ, ຕົວອັກສອນເບິ່ງບໍ່ເຫັນ, ຍະຫວ່າງ)
+  const norm = s => String(s).normalize('NFC')
+    .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+    .replace(/\u0EAB\u0EA1/g, '\u0EDD').replace(/\u0EAB\u0E99/g, '\u0EDC').replace(/\u0EAB\u0EA5/g, '\u0EAB\u0EBC')
+    .replace(/\u0ECD\u0EB2/g, '\u0EB3')
+    .replace(/([\u0EC8-\u0ECB])([\u0EB1\u0EB4-\u0EB7\u0EBB\u0ECD])/g, '$2$1')
+    .replace(/\s+/g, ' ').trim();
   const SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
   const ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
   const tNodes = new WeakMap();   // text node → { src, out }
@@ -464,7 +471,7 @@ const sdI18n = (function () {
       });
       p.sort((a, b) => b.n - a.n);
       maps[l] = m; pats[l] = p;
-      frags[l] = Object.entries((window.SD_FRAGS || {})[l] || {}).sort((a, b) => b[0].length - a[0].length);
+      frags[l] = Object.entries((window.SD_FRAGS || {})[l] || {}).map(([a, b]) => [norm(a), b]).sort((a, b) => b[0].length - a[0].length);
     });
   }
 
