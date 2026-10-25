@@ -280,6 +280,7 @@ a{color:inherit;text-decoration:none}
 <body>
 <script src="admin-i18n.js"></script>
 <script src="site-defaults.js"></script>
+<script src="svc-2026.js"></script>
 
 <div id="login" class="login" hidden>
   <form id="lf">
@@ -376,7 +377,7 @@ a{color:inherit;text-decoration:none}
       </section>
 
       <section class="card sc">
-        <h2>🔧 ราคา Service<span class="sp"></span><button class="btn sm" type="button" id="pkAdd">+ เพิ่มแพ็กเกจ</button></h2>
+        <h2>🔧 ราคา Service<span class="sp"></span><button class="btn sm" type="button" id="svc2026" title="แทนที่แพ็กเกจและรายการซ่อม ด้วยเมนูใหม่ที่ผูกราคากับ POS">⚡ ใช้เมนู 2026</button> <button class="btn sm" type="button" id="pkAdd">+ เพิ่มแพ็กเกจ</button></h2>
         <div class="bd">
           <p class="hint" style="margin-top:0">ราคาเป็นกีบ (₭) — หน้าเว็บแปลงเป็น ฿ / $ ให้อัตโนมัติ · รายการในแพ็กเกจ: 1 บรรทัด = 1 รายการ · ภาษาไทย/อังกฤษเว้นว่างได้ (จะใช้ภาษาลาว)</p>
           <div id="pks" class="pks"></div>
@@ -1045,6 +1046,13 @@ svcBind('pks', 'packages'); svcBind('rps', 'repairs'); svcBind('fms', 'film');
   markDirty(); renderServices();
 }));
 $('rps').addEventListener('change', e => { if (e.target.tagName !== 'SELECT') return; const row = e.target.closest('[data-i]'); site.services.repairs[+row.dataset.i].link = e.target.value; markDirty(); });
+$('svc2026').onclick = () => {   // ເມນູ Service 2026: ແພັກເກດ + ສ້ອມແຍກ ຜູກ SKU ກັບ POS (ຟິມ ບໍ່ປ່ຽນ)
+  if (!site || !window.SD_SERVICES_2026) return;
+  if (!confirm('แทนที่แพ็กเกจและรายการซ่อมทั้งหมด ด้วยเมนูงานซ่อม 2026 (ราคาดึงจาก POS) แล้วบันทึกเลย?')) return;
+  const N = JSON.parse(JSON.stringify(window.SD_SERVICES_2026));
+  site.services.packages = N.packages; site.services.repairs = N.repairs;
+  markDirty(); renderServices(); saveSite(false);
+};
 $('pkAdd').onclick = () => { if (site.services.packages.length >= 6) return toast('สูงสุด 6 แพ็กเกจ'); site.services.packages.push({ name: '', price_lak: '', popular: false, time: L3('', '', ''), items: [] }); markDirty(); renderServices(); };
 $('rpAdd').onclick = () => { if (site.services.repairs.length >= 16) return toast('สูงสุด 16 รายการ'); site.services.repairs.push({ name: L3('', '', ''), desc: L3('', '', ''), price_lak: '', note: L3('', '', ''), link: '' }); markDirty(); renderServices(); };
 $('fmAdd').onclick = () => { if (site.services.film.length >= 6) return toast('สูงสุด 6 แพ็กเกจ'); site.services.film.push({ name: '', price_lak: '', desc: L3('', '', '') }); markDirty(); renderServices(); };
