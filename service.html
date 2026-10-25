@@ -338,6 +338,15 @@ main.wrap{padding-top:8px}
 .steps small{color:var(--grey-600)}
 .book{display:grid;grid-template-columns:1fr 1.3fr;gap:48px;padding:56px 0 72px;align-items:start}
 .book form{display:flex;flex-direction:column;gap:14px}
+.bcls-wrap{margin:-8px 0 20px}.bcls-t{font-size:14px;color:var(--grey-600);margin-bottom:8px}
+.bcls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bcls button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border:1px solid var(--grey-300);background:var(--white);color:inherit;text-align:left;cursor:pointer;font:inherit}
+.bcls button b{font-size:15px}.bcls button small{font-size:12px;color:var(--grey-600);line-height:1.35}
+.bcls button.on{background:var(--black);color:var(--white);border-color:var(--black)}.bcls button.on small{color:inherit;opacity:.75}
+.bcls button:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+.pkc .na{font-size:15px;font-weight:700;color:var(--grey-600)}.pkc.off{opacity:.55}.pkc.off .btn{pointer-events:none}
+.pkpick label.off{opacity:.45;pointer-events:none}
+@media (max-width:600px){.bcls button small{display:none}.bcls button{padding:10px}}
 .pkpick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .pkpick label{border:1px solid var(--grey-300);padding:12px;cursor:pointer;text-align:center;font-weight:700;font-size:14px}
 .pkpick label:has(input:checked){border:2px solid #000;padding:11px}
@@ -401,6 +410,7 @@ main.wrap{padding-top:8px}
 
 <section class="section wrap">
   <div class="sec-head"><h2>ແພັກເກດ Service</h2></div>
+  <div class="bcls-wrap" id="bClsTopW" hidden><div class="bcls-t">ເລືອກປະເພດລົດຂອງທ່ານ — ລາຄາຈະປ່ຽນຕາມ</div><div class="bcls" id="bClsTop"></div></div>
   <div class="pk" id="pkList">
     <div class="pkc" id="basic"><h3>Basic</h3><div class="pr">₭80,000</div><div class="tm">ໃຊ້ເວລາ ~1 ຊົ່ວໂມງ</div>
       <ul><li>ກວດ ແລະ ປັບເບຣກ</li><li>ປັບເກຍໃຫ້ປ່ຽນລື່ນ</li><li>ເຕີມລົມຢາງ ຕາມມາດຕະຖານ</li><li>ຫຼໍ່ລື່ນໂສ້</li><li>ກວດຄວາມແໜ້ນນັອດທັງຄັນ</li></ul>
@@ -445,6 +455,7 @@ main.wrap{padding-top:8px}
     <div class="alert" style="margin-top:20px"><b>ເວລາຮັບລົດ:</b> <span data-shop="hours"></span></div></div>
   <div id="bookBox">
   <form id="bf" onsubmit="book(event)" novalidate>
+    <div class="field" id="bClsBookF" hidden><label>ປະເພດລົດ</label><div class="bcls" id="bClsBook"></div></div>
     <div class="field"><label>ແພັກເກດ</label><div class="pkpick" id="pkPick">
       <label><input type="radio" name="pk" value="Basic">Basic<small>₭80,000</small></label>
       <label><input type="radio" name="pk" value="Standard" checked>Standard<small>₭200,000</small></label>
@@ -514,24 +525,59 @@ const POP = { lo: 'ນິຍົມທີ່ສຸດ', th: 'ยอดนิย�
 const BOOK = { lo: 'ຈອງ ', th: 'จอง ', en: 'Book ' }, FROM = { lo: 'ຈາກ ', th: 'เริ่ม ', en: 'From ' };
 const svc = () => { const s = SD_SITE.services; return s && ((s.packages || []).length || (s.repairs || []).length) ? s : window.DEF_SERVICES; };
 const pEsc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/* ── ປະເພດລົດ A / B / C: ລາຄາແພັກເກດດຶງຈາກ POS ຕາມ SKU (SV-xxx-B → SV-xxx-A / SV-xxx-C) ── */
+const CLS = [
+  { k: 'A', n: { lo: 'ລົດເດັກ / ກະຕ່າ', th: 'รถเด็ก / ตะกร้า', en: 'Kids / city bike' }, d: { lo: 'ລາຄາລົດບໍ່ເກີນ ~3,000 ບາດ', th: 'ราคารถไม่เกิน ~3,000 บาท', en: 'Bike worth up to ~3,000 THB' } },
+  { k: 'B', n: { lo: 'ລົດທົ່ວໄປ', th: 'รถทั่วไป', en: 'General bike' }, d: { lo: 'MTB / ໄຮບຣິດ ລຸ້ນເລີ່ມຕົ້ນ', th: 'MTB / ไฮบริด รุ่นเริ่มต้น', en: 'Entry MTB / hybrid' } },
+  { k: 'C', n: { lo: 'ລົດສະປອດ', th: 'รถสปอร์ต', en: 'Sport bike' }, d: { lo: 'ດິສເບຣກ / ຄາບອນ / ເກຍໄຟຟ້າ', th: 'ดิสก์เบรก / คาร์บอน / เกียร์ไฟฟ้า', en: 'Disc / carbon / electronic' } }];
+const NA = { lo: 'ບໍ່ມີສຳລັບລົດປະເພດນີ້', th: 'ไม่มีสำหรับรถประเภทนี้', en: 'Not offered for this bike type' };
+const NM = { 'ກວດເຊັກທົ່ວໄປ': { th: 'ตรวจเช็คทั่วไป', en: 'General check' } };
+const pkName = n => (NM[n] || {})[sdLang()] || n;
+let bCls = 'B', SVCMAP = null;
+try { bCls = sessionStorage.getItem('sd_bcls') || 'B'; } catch (_) {}
+async function loadSvcPrices(){
+  try { const j = await (await fetch(`${API_URL}?action=getServices&secret=${API_SECRET}`)).json();
+    if (!j.ok) return; SVCMAP = {}; ((j.data && j.data.services) || []).forEach(x => { SVCMAP[String(x.sku).toUpperCase()] = x; }); renderServices();
+  } catch (_) {}
+}
+const hasCls = P => !!SVCMAP && P.some(p => /-B$/i.test(p.sku || '') && SVCMAP[String(p.sku).toUpperCase()]);
+function clsPrice(p){            // { price, from, none }
+  if (!SVCMAP || !/-B$/i.test(p.sku || '')) return { price: p.price_lak };
+  const pre = String(p.sku).toUpperCase().replace(/-B$/, '-' + bCls);
+  if (SVCMAP[pre]) return { price: SVCMAP[pre].price_lak };
+  const L = Object.keys(SVCMAP).filter(k => k.startsWith(pre)).map(k => SVCMAP[k].price_lak);
+  return L.length ? { price: Math.min(...L), from: L.length > 1 } : { none: true };
+}
+const CLS_LINE = /^(ລົດເດັກ\/ກະຕ່າ ຖືກກວ່າ|ລົດສະປອດ \/ ດິສເບຣກ \/ ໂຊັກ)/;
+function renderCls(){
+  const L = sdLang(), html = CLS.map(c => `<button type="button" class="${c.k === bCls ? 'on' : ''}" data-cls="${c.k}" aria-pressed="${c.k === bCls}"><b>${c.k} · ${pEsc(c.n[L] || c.n.lo)}</b><small>${pEsc(c.d[L] || c.d.lo)}</small></button>`).join('');
+  $('bClsTop').innerHTML = html; $('bClsBook').innerHTML = html;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-cls]'); if (!b) return; bCls = b.dataset.cls; try { sessionStorage.setItem('sd_bcls', bCls); } catch (_) {} renderServices(); });
 const slug = n => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pk';
 function renderServices(){
-  const S = svc(), L = sdLang(), P = S.packages || [];
+  const S = svc(), L = sdLang(), P = S.packages || [], CL = hasCls(P);
   const cur = (document.querySelector('[name=pk]:checked') || {}).value;
+  $('bClsTopW').hidden = !CL; $('bClsBookF').hidden = !CL; if (CL) renderCls();
   $('pkCount').textContent = P.length;
+  const price = p => CL ? clsPrice(p) : { price: p.price_lak };
+  const prTxt = c => c.none ? `<span class="na">${NA[L]}</span>` : c.price === '' || c.price == null ? '' : (c.from ? FROM[L] : '') + fmtLak(c.price);
   $('pkList').innerHTML = P.map(p => {
-    const inh = it => /^(ທຸກຢ່າງໃນ|ทุกอย่างใน|Everything in)/.test(it.lo || it.th || it.en || '');
-    return `<div class="pkc ${p.popular ? 'pop' : ''}" id="${slug(p.name)}" data-pop="${POP[L]}"><h3 translate="no">${pEsc(p.name)}</h3><div class="pr" translate="no">${p.price_lak === '' ? '' : fmtLak(p.price_lak)}</div><div class="tm">${sdHtml(p.time)}</div>
-      <ul>${(p.items || []).map(it => `<li${inh(it) ? ' class="inh"' : ''}>${sdHtml(it)}</li>`).join('')}</ul>
-      <a class="btn ${p.popular ? 'btn-black' : 'btn-line'}" href="#book" data-pick="${pEsc(p.name)}"><span translate="no">${BOOK[L]}${pEsc(p.name)}</span></a></div>`;
+    const inh = it => /^(ທຸກຢ່າງໃນ|ทุกอย่างใน|Everything in)/.test(it.lo || it.th || it.en || ''), c = price(p);
+    const items = (p.items || []).filter(it => !(CL && CLS_LINE.test(it.lo || '')));
+    return `<div class="pkc ${p.popular ? 'pop' : ''} ${c.none ? 'off' : ''}" id="${slug(p.name)}" data-pop="${POP[L]}"><h3 translate="no">${pEsc(pkName(p.name))}</h3><div class="pr" translate="no">${prTxt(c)}</div><div class="tm">${sdHtml(p.time)}</div>
+      <ul>${items.map(it => `<li${inh(it) ? ' class="inh"' : ''}>${sdHtml(it)}</li>`).join('')}</ul>
+      <a class="btn ${p.popular ? 'btn-black' : 'btn-line'}" href="#book" data-pick="${pEsc(p.name)}"><span translate="no">${BOOK[L]}${pEsc(pkName(p.name))}</span></a></div>`;
   }).join('');
   $('rpList').innerHTML = (S.repairs || []).map(r => `<div><b>${sdHtml(r.name)}</b><small>${sdHtml(r.desc)}</small><span>${r.price_lak !== '' && r.price_lak != null
       ? `<span translate="no">${FROM[L]}${fmtLak(r.price_lak)}</span>` : r.link ? `<a href="${pEsc(r.link)}" style="text-decoration:underline">${sdHtml(r.note)}</a>` : sdHtml(r.note)}</span></div>`).join('');
-  const sel = P.some(p => p.name === cur) ? cur : (P.find(p => p.popular) || P[0] || {}).name;
-  $('pkPick').innerHTML = P.map(p => `<label translate="no"><input type="radio" name="pk" value="${pEsc(p.name)}" data-price="${pEsc(p.price_lak)}" ${p.name === sel ? 'checked' : ''}>${pEsc(p.name)}<small>${p.price_lak === '' ? '' : fmtLak(p.price_lak)}</small></label>`).join('');
+  const ok = p => !price(p).none;
+  const sel = P.some(p => p.name === cur && ok(p)) ? cur : (P.find(p => p.popular && ok(p)) || P.find(ok) || {}).name;
+  $('pkPick').innerHTML = P.map(p => { const c = price(p);
+    return `<label translate="no" class="${c.none ? 'off' : ''}"><input type="radio" name="pk" value="${pEsc(p.name)}" data-price="${c.none ? '' : pEsc(c.price)}" data-from="${c.from ? 1 : ''}" ${c.none ? 'disabled' : ''} ${p.name === sel ? 'checked' : ''}>${pEsc(pkName(p.name))}<small>${c.none ? '—' : prTxt(c)}</small></label>`; }).join('');
 }
 function pickPk(v){ const r = [...document.querySelectorAll('[name=pk]')].find(x => x.value.toLowerCase() === String(v).toLowerCase() || slug(x.value) === String(v).toLowerCase()); if (r) r.checked = true; }
-renderServices();
+renderServices(); loadSvcPrices();
 document.addEventListener('click', e => { const a = e.target.closest('[data-pick]'); if (a) pickPk(a.dataset.pick); });
 ['currencychange', 'langchange', 'siteconfig'].forEach(ev => document.addEventListener(ev, renderServices));
 const h=location.hash.replace('#',''); if(h && h !== 'book') pickPk(h);
@@ -595,12 +641,13 @@ async function book(e){
   const pkEl=document.querySelector('[name=pk]:checked'), pk=pkEl?pkEl.value:'';
   const P = !qFail && QS ? QS.days.find(d => d.date === qDate).periods.find(p => p.id === qPer) : null;
   const date = qFail ? $('bDate').value : qDate, slot = qFail ? document.querySelector('[name=slot]:checked').value : `${PER_NAME[qPer].lo} ${P.start}–${P.end}`;
-  const pkPrice=pkEl&&pkEl.dataset.price!==''&&pkEl.dataset.price!=null?'₭'+Math.round(+pkEl.dataset.price).toLocaleString('en-US'):'';
+  const pkPrice=pkEl&&pkEl.dataset.price!==''&&pkEl.dataset.price!=null?(pkEl.dataset.from?'ຈາກ ':'')+'₭'+Math.round(+pkEl.dataset.price).toLocaleString('en-US'):'';
+  const clsTxt = !$('bClsBookF').hidden ? ` | ປະເພດລົດ: ${bCls} ${(CLS.find(c => c.k === bCls) || CLS[1]).n.lo}` : '';
   try{
     const d=await apiPost('createRepair',{
       customer:{name:$('bName').value.trim(),phone:$('bPhone').value.trim()},
       bike:{brand:$('bBrand').value.trim(),model:$('bModel').value.trim()},
-      symptoms:`Service ${pk}${pkPrice?' ('+pkPrice+')':''} | ນັດ ${date} ${slot}`+($('bSym').value.trim()?' | '+$('bSym').value.trim():''),
+      symptoms:`Service ${pk}${pkPrice?' ('+pkPrice+')':''}${clsTxt} | ນັດ ${date} ${slot}`+($('bSym').value.trim()?' | '+$('bSym').value.trim():''),
       service: pk, notes:'ຈອງຜ່ານເວັບໄຊ',
       ...(qFail ? {} : { queue: { date: qDate, period: qPer } })
     });
