@@ -314,6 +314,8 @@ function render(){
   $('tabs').innerHTML = cats.map(c => `<button class="tab" type="button" data-c="${esc(c.category_id)}" aria-pressed="${c.category_id === cat}">${esc(c.category_name)} · ${res.filter(r => r.category_id === c.category_id).length}</button>`).join('');
   $('tabs').querySelectorAll('.tab').forEach(b => b.onclick = () => { cat = b.dataset.c; render(); });
   const list = res.filter(r => r.category_id === cat);
+  const cn = (cats.find(c => c.category_id === cat) || {}).category_name;
+  $('bib').placeholder = cn ? 'BIB · ' + cn : 'BIB'; $('bib').title = 'BIB นับแยกตามรุ่น — บันทึกเข้ารุ่นที่เลือกอยู่ด้านบน';
   const lead = list.find(r => r.status === 'FINISHED');
   const leadS = lead ? secs(lead.elapsed_time) : 0;
   $('tbody').innerHTML = list.length ? list.map(r => {
@@ -338,9 +340,9 @@ function render(){
       <td class="bib" style="width:60px">${esc(m.bib_number || '—')}</td>
       <td>${esc(m.first_name)} ${esc(m.last_name)}<br><small>${esc(m.category_name)}</small></td>
       <td>${m.checked_in ? '<span class="pill warn">Check-in แล้ว</span>' : '<span class="pill mute">ไม่ได้ Check-in</span>'}</td>
-      <td style="text-align:right"><button class="btn sm" type="button" data-dns="${esc(m.bib_number)}" data-st="${m.checked_in ? 'DNF' : 'DNS'}">${m.checked_in ? 'DNF' : 'DNS'}</button></td>
+      <td style="text-align:right"><button class="btn sm" type="button" data-dns="${esc(m.bib_number)}" data-dcat="${esc(m.category_id)}" data-st="${m.checked_in ? 'DNF' : 'DNS'}">${m.checked_in ? 'DNF' : 'DNS'}</button></td>
     </tr>`).join('') : '<tr><td class="empty">ทุกคนมีผลแล้ว</td></tr>';
-  $('missing').querySelectorAll('[data-dns]').forEach(b => b.onclick = () => enqueue([{ bib_number: b.dataset.dns, status: b.dataset.st }]));
+  $('missing').querySelectorAll('[data-dns]').forEach(b => b.onclick = () => enqueue([{ bib_number: b.dataset.dns, category_id: b.dataset.dcat, status: b.dataset.st }]));
 }
 
 // ── time helpers ──
@@ -362,10 +364,12 @@ function setMode(m){
 setMode(store.get('sd_res_mode') || 'clock');
 
 // ── entry ──
-function lookupBib(b){
-  const r = (data.results || []).find(x => String(x.bib_number) === String(b));
+// BIB นับแยกตามรุ่น (ทุกรุ่นเริ่ม 01) → ค้นหา/บันทึกภายในรุ่นที่เลือกอยู่ (แท็บด้านบน)
+const sameBib = (x, b, c) => (!c || x.category_id === c) && String(x.bib_number).replace(/^0+(?=\d)/, '') === String(b).trim().replace(/^0+(?=\d)/, '');
+function lookupBib(b, c = cat){
+  const r = (data.results || []).find(x => sameBib(x, b, c));
   if (r) return { name: `${r.first_name} ${r.last_name}`, cat: r.category_name, had: r.status === 'FINISHED' ? r.elapsed_time : r.status };
-  const m = (data.missing || []).find(x => String(x.bib_number) === String(b));
+  const m = (data.missing || []).find(x => sameBib(x, b, c));
   return m ? { name: `${m.first_name} ${m.last_name}`, cat: m.category_name } : null;
 }
 $('bib').addEventListener('input', () => {
@@ -378,7 +382,7 @@ $('entryForm').addEventListener('submit', e => {
   e.preventDefault();
   const bib = $('bib').value.trim(), st = $('status').value;
   if (!bib) return $('bib').focus();
-  const item = { bib_number: bib, status: st };
+  const item = { bib_number: bib, category_id: cat, status: st };
   if (st === 'FINISHED') {
     const t = normTime($('time').value);
     if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) { toast('ใส่เวลาให้ถูก เช่น 09:12:45'); return $('time').focus(); }
@@ -389,11 +393,11 @@ $('entryForm').addEventListener('submit', e => {
 function saveNow(){
   const bib = $('bib').value.trim(); if (!bib) { toast('ใส่ BIB ก่อน'); return $('bib').focus(); }
   const d = new Date(), t = [d.getHours(), d.getMinutes(), d.getSeconds()].map(x => String(x).padStart(2, '0')).join(':');
-  enqueue([{ bib_number: bib, status: 'FINISHED', finish_time: t }]); clearEntry();
+  enqueue([{ bib_number: bib, category_id: cat, status: 'FINISHED', finish_time: t }]); clearEntry();
 }
 function clearEntry(){ $('bib').value = ''; $('time').value = ''; $('status').value = 'FINISHED'; $('who').textContent = ''; $('bib').focus(); }
 function editBib(b){
-  const r = (data.results || []).find(x => String(x.bib_number) === String(b)); if (!r) return;
+  const r = (data.results || []).find(x => sameBib(x, b, cat)); if (!r) return;
   setMode('elapsed'); $('bib').value = r.bib_number; $('status').value = r.status; $('time').value = r.status === 'FINISHED' ? r.elapsed_time : '';
   $('bib').dispatchEvent(new Event('input')); $('time').focus(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -408,8 +412,8 @@ function saveBulk(){
     const [bib, val] = l.split(/[\s,;\t]+/);
     if (!bib || !val) return bad.push(l);
     const st = val.toUpperCase();
-    if (['DNF','DNS','DSQ'].includes(st)) items.push({ bib_number: bib, status: st });
-    else { const t = normTime(val); if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) return bad.push(l); items.push({ bib_number: bib, status: 'FINISHED', [mode === 'clock' ? 'finish_time' : 'elapsed_time']: t }); }
+    if (['DNF','DNS','DSQ'].includes(st)) items.push({ bib_number: bib, category_id: cat, status: st });
+    else { const t = normTime(val); if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) return bad.push(l); items.push({ bib_number: bib, category_id: cat, status: 'FINISHED', [mode === 'clock' ? 'finish_time' : 'elapsed_time']: t }); }
   });
   if (bad.length) return toast('อ่านไม่ได้ ' + bad.length + ' บรรทัด: ' + bad.slice(0, 3).join(' | '));
   if (!items.length) return;
@@ -447,7 +451,7 @@ async function run(){
       const warnBy = Object.fromEntries((r.warnings || []).map(e => [e.ref, e.warning]));
       job.items.forEach((it, i) => {
         const el = $(job.ids[i]); if (!el) return;
-        const ref = 'BIB ' + it.bib_number, e = errBy[ref], w = warnBy[ref], who = lookupBib(it.bib_number);
+        const ref = 'BIB ' + it.bib_number, e = errBy[ref], w = warnBy[ref], who = lookupBib(it.bib_number, it.category_id);
         el.className = 'fi ' + (e ? 'err' : w ? 'warn' : '');
         el.querySelector('.msg').textContent = `${it.finish_time || it.elapsed_time || it.status} · ${e || (who ? who.name : 'บันทึกแล้ว') + (w ? ' — ' + w : '')}`;
         el.lastElementChild.textContent = e ? '✕' : '✓';

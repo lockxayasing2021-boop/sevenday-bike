@@ -466,6 +466,14 @@ function showResult(r){
     el.innerHTML = `<div class="bib">!</div><div class="st">ເກີດຂໍ້ຜິດພາດ</div><div class="mt">${esc(r.message)}</div>`;
     return;
   }
+  if (r.status === 'AMBIGUOUS') {   // BIB เลขเดียวกันมีหลายรุ่น (แต่ละรุ่นเริ่ม 01) → เลือกรุ่นก่อน
+    el.className = 'result ALREADY';
+    el.innerHTML = `<div class="bib"><small>BIB</small>${esc(r.bib_number || '—')}</div>
+      <div class="st">ເລກນີ້ມີຫຼາຍລຸ້ນ — ເລືອກລຸ້ນ</div>
+      <div class="mt" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${(r.candidates || []).map(c =>
+        `<button class="btn" type="button" onclick="doCheckIn({ registration_id: '${esc(c.registration_id)}' })">${esc(c.category_name || '—')} · BIB ${esc(c.bib_number)} · ${esc([c.first_name, c.last_name].filter(Boolean).join(' '))}</button>`).join('')}</div>`;
+    return;
+  }
   const s = STATUS[r.status] || STATUS.NOT_FOUND;
   const p = r.participant || {};
   const name = [p.first_name, p.last_name].filter(Boolean).join(' ');
@@ -485,7 +493,7 @@ function showResult(r){
 // Beep + vibrate. Audio is allowed because the camera was started by a tap.
 let actx = null;
 function feedback(status){
-  const ok = status === 'OK', warn = status === 'ALREADY';
+  const ok = status === 'OK', warn = status === 'ALREADY' || status === 'AMBIGUOUS';
   try { navigator.vibrate && navigator.vibrate(ok ? 80 : [120, 80, 120]); } catch(_) {}
   try {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
