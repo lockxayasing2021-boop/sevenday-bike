@@ -432,6 +432,7 @@ const STATUS = {
   CANCELLED:   { cls:'BAD',     t:'ການລົງທະບຽນຖືກຍົກເລີກ' },
   WRONG_EVENT: { cls:'BAD',     t:'QR ນີ້ເປັນຂອງງານອື່ນ' },
   NOT_FOUND:   { cls:'BAD',     t:'ບໍ່ພົບການລົງທະບຽນ' },
+  MULTI:       { cls:'ALREADY', t:'BIB ນີ້ມີຫຼາຍລຸ້ນ — ເລືອກຄົນ' },
 };
 
 async function doCheckIn(payload){
@@ -471,6 +472,7 @@ function showResult(r){
   const name = [p.first_name, p.last_name].filter(Boolean).join(' ');
   let extra = '';
   if (r.status === 'ALREADY') extra = `<div class="mt">ເວລາ <b>${esc(fmtTime(r.checkin_time))}</b>${r.checked_by ? ' · ໂດຍ ' + esc(r.checked_by) : ''}</div>`;
+  if (r.status === 'MULTI') extra = `<div class="mt">${(r.matches || []).map(m => `<button class="btn sm primary" type="button" style="margin:4px" onclick="doCheckIn({ registration_id: '${esc(m.registration_id)}' })">${esc(m.category_name)} · ${esc(m.first_name)} ${esc(m.last_name)}</button>`).join('')}</div>`;
   if (r.status === 'UNPAID') extra = `<div class="mt">ສະຖານະຊຳລະ: <b>${esc(r.payment_status || '-')}</b> — ສົ່ງໄປໂຕະການເງິນ</div>`;
   el.className = 'result ' + s.cls;
   el.innerHTML = `

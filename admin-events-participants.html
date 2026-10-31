@@ -187,6 +187,7 @@ td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
         <select id="evSel"><option>ກຳລັງໂຫຼດ…</option></select>
       </div>
       <div class="exports" aria-label="Export">
+        <button class="btn" type="button" onclick="renumberBibs()" title="ໃຫ້ BIB ແຕ່ລະລຸ້ນເລີ່ມ 01 ຂອງໃຜມັນ">🔢 ຈັດ BIB ຕາມລຸ້ນ</button>
         <button class="btn" type="button" onclick="exportXlsx()">Excel</button>
         <button class="btn" type="button" onclick="exportCsv()">CSV</button>
         <button class="btn" type="button" onclick="exportPdf()">PDF ລາຍຊື່</button>
@@ -430,7 +431,7 @@ function openDrawer(id){
           <input id="bibIn" inputmode="numeric" pattern="[0-9]*" value="${esc(p.bib_number||'')}" style="height:38px;border:1px solid var(--g3);padding:0 10px;width:110px;background:var(--white);color:var(--ink);font-weight:800" aria-label="BIB">
           <button class="btn" type="submit">ບັນທຶກ BIB</button>
         </form>
-        <p class="note" style="margin-top:6px">ລະບົບກວດບໍ່ໃຫ້ BIB ຊ້ຳໃນງານດຽວກັນ</p>
+        <p class="note" style="margin-top:6px">BIB ແຕ່ລະລຸ້ນເລີ່ມ 01 · ລະບົບກວດບໍ່ໃຫ້ BIB ຊ້ຳໃນລຸ້ນດຽວກັນ</p>
       </div>` : ''}
 
       <form class="sec" id="editForm">
@@ -505,6 +506,12 @@ async function audit(format, rows){
 }
 function rowsFor(list){ return list.map(p => COLS.map(([,k]) => (k==='total'||k==='discount') ? Number(p[k])||0 : (p[k] ?? ''))); }
 
+async function renumberBibs(){
+  if (!eventId) return;
+  if (!confirm('ຈັດເລກ BIB ໃໝ່: ແຕ່ລະລຸ້ນເລີ່ມ 01, 02, 03 … (ຮັກສາລຳດັບເດີມ)\nຖ້າພິມ BIB ແຈກໄປແລ້ວ ເລກຈະປ່ຽນ — ດຳເນີນການຕໍ່?')) return;
+  try { const r = await post('evt.renumberBibs', { event_id: eventId }); toast('ຈັດ BIB ແລ້ວ · ປ່ຽນ ' + r.changed + ' ຄົນ'); loadParticipants(); }
+  catch (err) { toast(err.message); }
+}
 async function exportXlsx(){
   const list = visible(); if (!list.length) return toast('ບໍ່ມີຂໍ້ມູນໃຫ້ Export');
   if (!window.XLSX) return toast('ໂຫຼດ Excel library ບໍ່ສຳເລັດ — ລອງ CSV');

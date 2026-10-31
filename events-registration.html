@@ -179,7 +179,7 @@ function resBlock(r){
   const x = r.result; if (!x) return '';
   const fin = x.status === 'FINISHED';
   const lbl = { DNF:'ບໍ່ຈົບ (DNF)', DNS:'ບໍ່ອອກຕົວ (DNS)', DSQ:'ຕັດສິດ (DSQ)' };
-  const link = 'events-results.html?event_id=' + encodeURIComponent(r.event_id || (r.event || {}).event_id || '') + (r.bib_number ? '&bib=' + encodeURIComponent(r.bib_number) : '');
+  const link = 'events-results.html?event_id=' + encodeURIComponent(r.event_id || (r.event || {}).event_id || '') + (r.bib_number ? '&bib=' + encodeURIComponent(r.bib_number) + (r.category_id ? '&cat=' + encodeURIComponent(r.category_id) : '') : '');
   return `<div class="rq-res">
     <div><small>ຜົນການແຂ່ງຂັນ</small><b>${fin ? evtEsc(x.elapsed_time) : evtEsc(lbl[x.status] || x.status)}</b></div>
     ${fin && x.category_rank ? `<div><small>ອັນດັບໃນລຸ້ນ</small><b>#${evtEsc(x.category_rank)}</b></div>` : ''}

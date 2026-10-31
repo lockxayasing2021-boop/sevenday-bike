@@ -107,7 +107,8 @@ const GENDER = { male:'ຊາຍ', female:'ຍິງ' };
 
 const qs = new URLSearchParams(location.search);
 const eventId = qs.get('event_id') || '';
-const myBib = qs.get('bib') || '';
+const myBib = qs.get('bib') || '', myCat = qs.get('cat') || '';
+const bibN = v => parseInt(String(v == null ? '' : v).replace(/\D/g, ''), 10) || 0;
 let data = null, cat = '', gender = '', search = '';
 
 const secs = t => { const p = String(t || '').split(':').map(Number); if (p.some(isNaN) || !p.length) return null; return p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : p[0]*60 + (p[1] || 0); };
@@ -162,7 +163,7 @@ function renderTable(){
           const fin = r.status === 'FINISHED', s = fin ? secs(r.elapsed_time) : null;
           const gap = fin && lead !== undefined && s !== null && s > lead ? '+' + hms(s - lead) : '';
           const rk = fin ? r.category_rank : '';
-          const me = myBib && String(r.bib_number) === myBib;
+          const me = myBib && bibN(r.bib_number) === bibN(myBib) && (!myCat || String(r.category_id) === myCat);
           return `<tr class="${me ? 'me' : ''}">
             <td class="rs-rank ${rk && rk <= 3 ? 'p' + rk : ''}">${fin ? evtEsc(rk) : '–'}</td>
             <td class="rs-bib">${evtEsc(r.bib_number)}</td>
