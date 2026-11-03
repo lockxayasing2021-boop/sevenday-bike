@@ -289,6 +289,7 @@ const FILTERS = [
   ['PENDING','ລໍກວດສະລິບ', p => !isCancelled(p) && p.payment_status==='PENDING_VERIFICATION', 'var(--warn)'],
   ['UNPAID','ຍັງບໍ່ຈ່າຍ', p => !isCancelled(p) && !['PAID','PENDING_VERIFICATION'].includes(p.payment_status), 'var(--bad)'],
   ['PAID','ຊຳລະແລ້ວ', p => !isCancelled(p) && p.payment_status==='PAID', 'var(--ok)'],
+  ['CHANGE','ຂໍປ່ຽນລຸ້ນ', p => !isCancelled(p) && p.change_request && p.change_request.status==='PENDING', '#6A3DE8'],
   ['NOBIB','ບໍ່ມີ BIB', p => !isCancelled(p) && p.payment_status==='PAID' && !p.bib_number, 'var(--accent)'],
   ['IN','Check-in ແລ້ວ', p => p.checkin_status==='CHECKED_IN', 'var(--ok)'],
   ['CANCELLED','ຍົກເລີກ', isCancelled, 'var(--g6)'],
@@ -347,7 +348,7 @@ function render(){
     <tr data-id="${esc(p.registration_id)}" class="${p.registration_id===selId?'sel':''}" tabindex="0">
       <td class="bib">${esc(p.bib_number||'—')}</td>
       <td class="nm"><b>${esc(p.first_name)} ${esc(p.last_name)}</b><small>${esc(p.reg_number)}${p.nickname?' · '+esc(p.nickname):''}</small></td>
-      <td>${esc(p.category_name)}</td>
+      <td>${esc(p.category_name)}${chgPending(p) ? `<div><span class="pill" style="color:#6A3DE8">↪ ຂໍໄປ ${esc(p.change_request.to_category_name)}</span></div>` : ''}</td>
       <td class="col-hide">${esc(p.jersey_size||'-')}</td>
       <td class="col-hide">${esc(p.phone)}</td>
       <td class="col-hide num">${admCur.moneyLak(p.total)}</td>
@@ -407,6 +408,8 @@ function openDrawer(id){
           <dt>ລົງທະບຽນ</dt><dd>${esc(fmtDT(p.reg_date))}</dd>
         </dl>
       </div>
+
+      ${chgSection(p, cancelled)}
 
       ${pay ? `<div class="sec">
         <h3>ການແຈ້ງຊຳລະລ່າສຸດ</h3>
@@ -469,6 +472,37 @@ function openDrawer(id){
 async function act(fn, okMsg){
   try { await fn(); toast(okMsg); const keep = selId; await loadParticipants(); if (keep) openDrawer(keep); }
   catch(err){ toast(err.message); }
+}
+// ── ຄຳຂໍປ່ຽນລຸ້ນຈາກຜູ້ສະໝັກ: ອະນຸມັດ = ຍ້າຍລຸ້ນ + BIB ໃໝ່ຕາມລຸ້ນ (ຖ້າມີ BIB) · ສ່ວນຕ່າງລາຄາເກັບ/ຄືນເອງ ──
+const chgPending = p => !!(p.change_request && p.change_request.status === 'PENDING');
+function chgSection(p, cancelled){
+  const x = p.change_request; if (!x) return '';
+  const d = Number(x.price_diff) || 0, diff = d > 0 ? `<b style="color:var(--bad)">ເກັບເພີ່ມ ${admCur.moneyLak(d)}</b>` : d < 0 ? `<b style="color:var(--ok)">ຄືນ ${admCur.moneyLak(-d)}</b>` : 'ລາຄາເທົ່າເດີມ';
+  const lbl = { APPROVED: '<span class="pill ok">ອະນຸມັດແລ້ວ</span>', REJECTED: '<span class="pill bad">ປະຕິເສດແລ້ວ</span>', WITHDRAWN: '<span class="pill mute">ຜູ້ສະໝັກຖອນຄຳຂໍ</span>' };
+  if (x.status !== 'PENDING') return `<div class="sec"><h3>ຄຳຂໍປ່ຽນລຸ້ນ</h3><dl class="kv"><dt>ຜົນ</dt><dd>${lbl[x.status] || esc(x.status)} → ${esc(x.to_category_name)}</dd>${x.admin_note ? `<dt>ໝາຍເຫດ</dt><dd>${esc(x.admin_note)}</dd>` : ''}</dl></div>`;
+  const full = cats.find(c => String(c.category_id) === String(x.to_category_id));
+  return `<div class="sec" style="border-left:4px solid #6A3DE8;padding-left:12px">
+    <h3>↪ ຄຳຂໍປ່ຽນລຸ້ນ (ລໍອະນຸມັດ)</h3>
+    <dl class="kv">
+      <dt>ຈາກ → ເປັນ</dt><dd>${esc(p.category_name)} → <b>${esc(x.to_category_name)}</b>${full && full.remaining === 0 ? ' <span class="pill bad">ເຕັມແລ້ວ</span>' : full && full.remaining != null ? ` <small style="color:var(--g6)">(ເຫຼືອ ${full.remaining} ບ່ອນ)</small>` : ''}</dd>
+      <dt>ສ່ວນຕ່າງລາຄາ</dt><dd>${diff}</dd>
+      <dt>ເຫດຜົນ</dt><dd>${esc(x.reason || '-')}</dd>
+      <dt>ຂໍເມື່ອ</dt><dd>${esc(fmtDT(x.requested_at))}</dd>
+      ${p.bib_number ? `<dt>BIB</dt><dd>${esc(p.bib_number)} → ເລກໃໝ່ຕາມລຸ້ນ ${esc(x.to_category_name)}</dd>` : ''}
+    </dl>
+    ${cancelled ? '' : `<div class="field" style="margin-top:10px"><label for="chgNote">ໝາຍເຫດເຖິງຜູ້ສະໝັກ (ເຊັ່ນ ເກັບເງິນເພີ່ມທີ່ໜ້າງານ)</label><input id="chgNote" maxlength="300"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn ok" type="button" onclick="decideChg(true)">ອະນຸມັດປ່ຽນລຸ້ນ</button>
+      <button class="btn danger" type="button" onclick="decideChg(false)">ປະຕິເສດ</button>
+    </div>`}
+  </div>`;
+}
+function decideChg(approve){
+  const p = all.find(x => x.registration_id === selId); if (!p) return;
+  const note = ($('chgNote') || {}).value || '';
+  if (!approve && !note.trim()) { toast('ໃສ່ເຫດຜົນທີ່ປະຕິເສດກ່ອນ'); $('chgNote').focus(); return; }
+  if (approve && !confirm('ອະນຸມັດປ່ຽນ ' + p.first_name + ' ເປັນລຸ້ນ ' + p.change_request.to_category_name + '?' + (p.bib_number ? '\nBIB ຈະປ່ຽນເປັນເລກໃໝ່ຂອງລຸ້ນນັ້ນ' : ''))) return;
+  act(() => post('evt.decideCategoryChange', { registration_id: selId, approve, note }), approve ? 'ອະນຸມັດປ່ຽນລຸ້ນແລ້ວ · ແຈ້ງຜູ້ສະໝັກທາງອີເມວ' : 'ປະຕິເສດແລ້ວ');
 }
 function verify(payId, decision){
   const note = ($('payNote')||{}).value || '';

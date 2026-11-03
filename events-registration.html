@@ -55,6 +55,8 @@
 .f label{font-size:14px;font-weight:700}
 .f input{height:46px;border:1.5px solid var(--grey-300);border-radius:8px;padding:0 12px;font:inherit;font-size:16px;background:var(--white);color:var(--ink)}
 .f input:focus{outline:none;border-color:var(--black)}
+.f select{height:46px;border:1.5px solid var(--grey-300);border-radius:8px;padding:0 10px;font:inherit;font-size:16px;background:var(--white);color:var(--ink);width:100%}
+.f select:focus{outline:none;border-color:var(--black)}
 .msg{padding:12px 14px;border-left:4px solid #B3141A;background:#FDECEC;color:#8A1014;margin:12px 0;font-size:14px}
 .find h1{font-size:26px;font-weight:900;margin-bottom:6px}
 .find p{color:var(--grey-600);margin-bottom:12px}
@@ -166,6 +168,7 @@ function render(){
 
     ${!cancelled && String(r.payment_status).toUpperCase() === 'PENDING_VERIFICATION' ? `<div class="box"><div class="note" style="margin:0">ໄດ້ຮັບສະລິບແລ້ວ ${lp && lp.date ? '(' + evtDate(lp.date) + ')' : ''} — ທີມງານຈະກວດ ແລະ ອອກເລກ BIB ໃຫ້ ພາຍໃນ 1 ວັນ.</div></div>` : ''}
     ${r.can_pay ? payBox(r) : ''}
+    ${chgBox(r)}
 
     <div class="acts">
       ${cancelled ? '' : '<button class="btn btn-black" type="button" onclick="saveQr()">ບັນທຶກຮູບ QR</button><button class="btn btn-line" type="button" onclick="window.print()">ພິມ / ບັນທຶກ PDF</button>'}
@@ -173,6 +176,46 @@ function render(){
     </div>`;
   if (!cancelled && window.QRCode) new QRCode($('qr'), { text: r.qr_token, width: 440, height: 440, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
   if (r.can_pay) bindSlip();
+}
+
+// ── ຂໍປ່ຽນລຸ້ນ: ຜູ້ສະໝັກຂໍ → ທີມງານອະນຸມັດ (ລຸ້ນ ແລະ BIB ປ່ຽນຫຼັງອະນຸມັດ) ──
+function chgBox(r){
+  const x = r.change_request, opts = r.change_options || [], st = x ? x.status : '';
+  const diffTxt = d => d > 0 ? `ຈ່າຍເພີ່ມ ${evtKip(d)}` : d < 0 ? `ໄດ້ຄືນ ${evtKip(-d)}` : 'ລາຄາເທົ່າເດີມ';
+  if (st === 'PENDING') return `<section class="box" id="chgBox">
+    <h2>ຄຳຂໍປ່ຽນລຸ້ນ</h2>
+    <div class="note" style="margin:0 0 12px"><b>ລໍທີມງານອະນຸມັດ</b> — ຂໍປ່ຽນຈາກ <b>${evtEsc(x.from_category_name)}</b> ເປັນ <b>${evtEsc(x.to_category_name)}</b> (${diffTxt(x.price_diff)})${x.reason ? '<br>ເຫດຜົນ: ' + evtEsc(x.reason) : ''}<br>ລຸ້ນ ແລະ ເລກ BIB ຈະປ່ຽນຫຼັງອະນຸມັດ · ແຈ້ງຜົນທາງອີເມວ</div>
+    <div id="chgErr" class="msg" hidden role="alert"></div>
+    <div class="acts" style="margin-top:0"><button class="btn btn-line" type="button" id="chgWd" onclick="withdrawChg()">ຖອນຄຳຂໍ</button></div>
+  </section>`;
+  const last = st === 'APPROVED' ? `<div class="note" style="margin:0 0 12px">✅ ປ່ຽນລຸ້ນເປັນ <b>${evtEsc(x.to_category_name)}</b> ແລ້ວ${x.admin_note ? ' — ' + evtEsc(x.admin_note) : ''}</div>`
+    : st === 'REJECTED' ? `<div class="note bad" style="margin:0 0 12px">ຄຳຂໍປ່ຽນເປັນ <b>${evtEsc(x.to_category_name)}</b> ບໍ່ໄດ້ຮັບອະນຸມັດ${x.admin_note ? ': ' + evtEsc(x.admin_note) : ''}</div>` : '';
+  if (!opts.length) return last ? `<section class="box"><h2>ປ່ຽນລຸ້ນ</h2>${last}</section>` : '';
+  return `<section class="box" id="chgBox">
+    <h2>ຕ້ອງການປ່ຽນລຸ້ນ?</h2>
+    ${last}
+    <p style="font-size:14px;color:var(--grey-600);margin:0 0 12px">ເລືອກລຸ້ນໃໝ່ ແລ້ວສົ່ງຄຳຂໍ — ທີມງານຈະກວດ ແລະ ອະນຸມັດ. ລຸ້ນປັດຈຸບັນ: <b>${evtEsc((r.category || {}).category_name)}</b></p>
+    <div class="f"><label for="chgTo">ລຸ້ນທີ່ຕ້ອງການ</label>
+      <select id="chgTo"><option value="">— ເລືອກລຸ້ນ —</option>${opts.map(o => `<option value="${evtEsc(o.category_id)}"${o.full || o.not_allowed ? ' disabled' : ''}>${evtEsc(o.category_name)}${o.distance ? ' · ' + evtEsc(o.distance) : ''} — ${o.full ? 'ເຕັມແລ້ວ' : o.not_allowed ? evtEsc(o.not_allowed) : diffTxt(o.price_diff)}</option>`).join('')}</select></div>
+    <div class="f"><label for="chgWhy">ເຫດຜົນ (ບໍ່ບັງຄັບ)</label><input id="chgWhy" maxlength="300" placeholder="ເຊັ່ນ ຢາກລອງໄລຍະໄກຂຶ້ນ"></div>
+    <div id="chgErr" class="msg" hidden role="alert"></div>
+    <div class="acts" style="margin-top:12px"><button class="btn btn-black" type="button" id="chgSend" onclick="sendChg()">ສົ່ງຄຳຂໍປ່ຽນລຸ້ນ</button></div>
+  </section>`;
+}
+async function sendChg(){
+  const to = $('chgTo').value, err = $('chgErr'), btn = $('chgSend');
+  if (!to) { err.textContent = 'ກະລຸນາເລືອກລຸ້ນທີ່ຕ້ອງການ'; err.hidden = false; return; }
+  const o = (reg.change_options || []).find(x => x.category_id === to) || {};
+  if (o.price_diff > 0 && !confirm('ລຸ້ນ ' + o.category_name + ' ລາຄາສູງກວ່າ — ຈ່າຍເພີ່ມ ' + evtKip(o.price_diff) + ' (ທີມງານຈະຕິດຕໍ່ຫຼັງອະນຸມັດ). ສົ່ງຄຳຂໍ?')) return;
+  btn.disabled = true; err.hidden = true;
+  try { await evtPost('evt.requestCategoryChange', { qr_token: token, category_id: to, reason: $('chgWhy').value.trim() }); await load(); }
+  catch (e) { err.textContent = e.message; err.hidden = false; btn.disabled = false; }
+}
+async function withdrawChg(){
+  if (!confirm('ຖອນຄຳຂໍປ່ຽນລຸ້ນ?')) return;
+  const btn = $('chgWd'); btn.disabled = true;
+  try { await evtPost('evt.withdrawCategoryChange', { qr_token: token }); await load(); }
+  catch (e) { $('chgErr').textContent = e.message; $('chgErr').hidden = false; btn.disabled = false; }
 }
 
 function resBlock(r){
