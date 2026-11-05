@@ -1,8 +1,9 @@
 // @ts-nocheck
 // Sevenday web-api — Supabase Edge Function (built from edge/web-api/build.mjs; comments stripped)
 // 2026-10-31: BIB per category (each category starts at 01) + evt.renumberBibs
+// 2026-11-05: SESSION_KEY → Edge secret WEB_SESSION_KEY · ລະຫັດຜ່ານ PBKDF2 (ຂອງເກົ່າ sha256 ຍັງໃຊ້ໄດ້ ແລະ ອັບເກຣດຕອນລັອກອິນ)
 // 2026-11-03: ຂໍປ່ຽນລຸ້ນ (ຜູ້ສະໝັກຂໍ → ແອັດມິນອະນຸມັດ): evt.requestCategoryChange / withdrawCategoryChange / decideCategoryChange
-import { createHash, createHmac, randomUUID } from "node:crypto";
+import { createHash, createHmac, randomUUID, pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { Buffer } from "node:buffer";
 import { AwsClient } from "npm:aws4fetch@1.0.20";
 const ENV = (k) => {
@@ -299,7 +300,7 @@ function makeEnv(ctx) {
       return "Supabase";
     }
   };
-  const PROP_ENV = { SUPABASE_WEB_KEY: () => ENV("WEB_API_KEY"), GH_TOKEN: () => ENV("GH_TOKEN"), WEB_DATA_SOURCE: () => "supabase", EVT_DATA_SOURCE: () => null };
+  const PROP_ENV = { SESSION_KEY: () => ENV("WEB_SESSION_KEY") || (ctx.kv["p:SESSION_KEY"] == null ? null : String(ctx.kv["p:SESSION_KEY"])), SUPABASE_WEB_KEY: () => ENV("WEB_API_KEY"), GH_TOKEN: () => ENV("GH_TOKEN"), WEB_DATA_SOURCE: () => "supabase", EVT_DATA_SOURCE: () => null };
   const props = {
     getProperty(k) {
       if (PROP_ENV[k]) return PROP_ENV[k]();
@@ -1428,6 +1429,7 @@ function makeApp(ctx) {
         _failed("admin");
         return { ok: false, error: "ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ" };
       }
+      if (_needsRehash(stored)) PropertiesService.getScriptProperties().setProperty("ADMIN_PW", _hashPw(String(body.password || "")));
       return { ok: true, token: _adminToken() };
     }
     function adminList(body) {
@@ -2360,18 +2362,34 @@ function makeApp(ctx) {
     function _sha(str) {
       return _hex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, str, Utilities.Charset.UTF_8));
     }
-    function _hashPw(pw, salt) {
-      salt = salt || Utilities.getUuid().replace(/-/g, "").slice(0, 16);
+    var PBKDF2_ITER = 100000;
+    function _legacySha(pw, salt) {
       var h = pw;
       for (var i = 0; i < 200; i++) h = _sha(salt + h);
       return "sha256$" + salt + "$" + h;
     }
+    function _pbkdf2(pw, salt, iter) {
+      return "pbkdf2$" + iter + "$" + salt + "$" + pbkdf2Sync(String(pw), salt, iter, 32, "sha256").toString("hex");
+    }
+    function _hashPw(pw, salt) {
+      return _pbkdf2(pw, salt || randomUUID().replace(/-/g, "").slice(0, 16), PBKDF2_ITER);
+    }
+    function _same(a, b) {
+      var x = Buffer.from(String(a)), y = Buffer.from(String(b));
+      return x.length === y.length && timingSafeEqual(x, y);
+    }
+    function _isHashed(stored) {
+      stored = String(stored || "");
+      return stored.indexOf("pbkdf2$") === 0 || stored.indexOf("sha256$") === 0;
+    }
+    function _needsRehash(stored) {
+      return String(stored || "").indexOf("pbkdf2$" + PBKDF2_ITER + "$") !== 0;
+    }
     function _checkPw(pw, stored) {
       stored = String(stored || "");
-      if (stored.indexOf("sha256$") === 0) {
-        var parts = stored.split("$");
-        return _hashPw(pw, parts[1]) === stored;
-      }
+      var parts = stored.split("$");
+      if (parts[0] === "pbkdf2" && parts.length === 4) return _same(_pbkdf2(pw, parts[2], Number(parts[1]) || PBKDF2_ITER), stored);
+      if (parts[0] === "sha256" && parts.length === 3) return _same(_legacySha(pw, parts[1]), stored);
       return stored !== "" && stored.trim() === pw;
     }
     function _sessionKey() {
@@ -2431,7 +2449,7 @@ function makeApp(ctx) {
           _failed(email);
           return { ok: false, error: "ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ" };
         }
-        if (String(U.pw || "").indexOf("sha256$") !== 0) {
+        if (_needsRehash(U.pw)) {
           try {
             await SB_WEB_.rpc("web_customer_set_pw", { p_id: U.customer_id, p_hash: _hashPw(password) });
           } catch (e) {
@@ -2452,7 +2470,7 @@ function makeApp(ctx) {
         return { ok: false, error: "ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ" };
       }
       var row = R.rows[idx];
-      if (String(row[6] || "").indexOf("sha256$") !== 0) {
+      if (_needsRehash(row[6])) {
         R.sheet.getRange(idx + 2, 7).setValue(_hashPw(password));
       }
       return _publicUser(row);
@@ -2461,7 +2479,7 @@ function makeApp(ctx) {
       var R = _rows(SN.CUSTOMERS), n = 0;
       R.rows.forEach(function(r, i) {
         var v = String(r[6] || "");
-        if (v && v.indexOf("sha256$") !== 0) {
+        if (v && !_isHashed(v)) {
           R.sheet.getRange(i + 2, 7).setValue(_hashPw(v.trim()));
           n++;
         }
@@ -3140,6 +3158,7 @@ function makeApp(ctx) {
       hashPw: function(p) {
         return _hashPw(p);
       },
+
       syncCategories,
       hashAllPasswords,
       clearCache: clearProductCache,
