@@ -3283,7 +3283,8 @@ function makeApp(ctx) {
         "jersey_size",
         "medical_note",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "team_name"
       ],
       REGISTRATIONS: [
         "registration_id",
@@ -3948,6 +3949,7 @@ function makeApp(ctx) {
           first_name: part[2],
           last_name: part[3],
           nickname: part[4],
+          team_name: part[19] || "",
           gender: part[5],
           phone: String(part[8] || ""),
           email: part[9],
@@ -4334,16 +4336,18 @@ function makeApp(ctx) {
           [16, String(p.jersey_size || "").trim().toUpperCase()],
           [17, String(p.medical_note || "").trim().slice(0, 300)]
         ];
+        var teamName = String(p.team_name || "").trim().slice(0, 60);
         if (partId) {
           fields.forEach(function(f) {
             if (f[1] !== "" && f[1] !== null) P.sheet.getRange(partRow, f[0]).setValue(f[1]);
           });
+          if (teamName) P.sheet.getRange(partRow, 20).setValue(teamName);
           P.sheet.getRange(partRow, 19).setValue(now);
         } else {
           partId = _partId();
           P.sheet.appendRow([partId, custId, fn, ln].concat(fields.map(function(f) {
             return f[1];
-          }), [now, now]));
+          }), [now, now, teamName]));
         }
         var seq = evCount + 1, regId = _regId(ev[1], seq), regNum = _regNumber(ev[1], seq), qr = _qrToken();
         var pn = _priceNow(cat, _earlyUsed(R.rows));
@@ -4796,7 +4800,8 @@ function makeApp(ctx) {
         bike_model: 14,
         bike_wheel_size: 15,
         jersey_size: 16,
-        medical_note: 17
+        medical_note: 17,
+        team_name: 20
       };
       var psh = _ensureSheet(SN.PARTICIPANTS), pf = _findRow(psh, 0, reg[3]);
       if (!pf) throw new Error("Participant not found");
@@ -4806,6 +4811,7 @@ function makeApp(ctx) {
         var v = String(f[k] == null ? "" : f[k]).trim().slice(0, 200);
         if (k === "date_of_birth" && v) v = new Date(v);
         var old = pf.data[COLS[k] - 1];
+        if (old == null) old = "";
         var oldS = old instanceof Date ? old.toISOString().slice(0, 10) : String(old);
         var newS = v instanceof Date ? v.toISOString().slice(0, 10) : v;
         if (oldS === newS) return;
@@ -4887,6 +4893,7 @@ function makeApp(ctx) {
           first_name: part[2] || "",
           last_name: part[3] || "",
           nickname: part[4] || "",
+          team_name: part[19] || "",
           gender: part[5] || "",
           phone: part[8] || "",
           email: part[9] || "",
