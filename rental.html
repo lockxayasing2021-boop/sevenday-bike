@@ -383,6 +383,9 @@ const TX = {
   eTime: { lo: 'ວັນເວລາບໍ່ຖືກຕ້ອງ (ຢ່າງໜ້ອຍ 1 ຊົ່ວໂມງ, ບໍ່ເກີນ 30 ມື້, ບໍ່ຍ້ອນຫຼັງ)', th: 'วันเวลาไม่ถูกต้อง (อย่างน้อย 1 ชั่วโมง ไม่เกิน 30 วัน ไม่ย้อนหลัง)', en: 'Invalid dates (min 1 hour, max 30 days, not in the past)' },
   eUnav: { lo: 'ມີຊິ້ນທີ່ເພິ່ງຖືກຈອງໄປ — ກະລຸນາເລືອກໃໝ່', th: 'มีบางชิ้นเพิ่งถูกจองไป — กรุณาเลือกใหม่', en: 'Something was just taken — please choose again' },
   eLimit: { lo: 'ສົ່ງຄຳຂໍຫຼາຍເກີນໄປ — ລອງໃໝ່ພາຍຫຼັງ ຫຼື ທັກ WhatsApp', th: 'ส่งคำขอบ่อยเกินไป — ลองใหม่ภายหลัง หรือทัก WhatsApp', en: 'Too many requests — try later or message us on WhatsApp' },
+  pkg: { lo: 'ແພັກເກັດເຊົ່າ', th: 'แพ็กเกจเช่า', en: 'Rental package' }, pkgNone: { lo: 'ກຳນົດວັນເວລາເອງ', th: 'กำหนดวันเวลาเอง', en: 'Choose my own dates' },
+  pkgNoPrice: { lo: 'ບໍ່ມີແພັກເກັດນີ້', th: 'ไม่มีแพ็กเกจนี้', en: 'Package not offered' }, pkgEnd: { lo: 'ຄືນຂອງ (ຄຳນວນໃຫ້)', th: 'คืนของ (คำนวณให้)', en: 'Return (calculated)' },
+  ePkg: { lo: 'ແພັກເກັດນີ້ບໍ່ເປີດແລ້ວ — ກະລຸນາເລືອກໃໝ່', th: 'แพ็กเกจนี้ปิดแล้ว — กรุณาเลือกใหม่', en: 'This package is no longer offered — please choose again' },
   eErr: { lo: 'ສົ່ງບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ທັກ WhatsApp', th: 'ส่งไม่สำเร็จ — ลองใหม่ หรือทัก WhatsApp', en: 'Could not send — try again or message us on WhatsApp' },
 };
 const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
@@ -392,13 +395,18 @@ const pad = n => String(n).padStart(2, '0');
 const locStr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 const nextHour = (add) => { const d = new Date(Date.now() + add * 3600000); d.setMinutes(0, 0, 0); return d; };
 
-const S = { start: locStr(nextHour(2)), end: locStr(nextHour(26)), items: [], sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
+const S = { start: locStr(nextHour(2)), end: locStr(nextHour(26)), items: [], pkgs: [], pkg: '', sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
 try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
 if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
 
-const win = () => { const a = new Date(S.start), b = new Date(S.end); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && b - a <= 30 * 86400000 && a.getTime() > Date.now() - 900000) ? [a, b] : null; };
+const curPkg = () => S.pkgs.find(k => k.code === S.pkg) || null;
+const endOf = () => { const k = curPkg(), a = new Date(S.start); return k && !isNaN(a) ? locStr(new Date(a.getTime() + k.hours * 3600000)) : S.end; };
+const win = () => { const k = curPkg(), a = new Date(S.start), b = new Date(k ? endOf() : S.end); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && (k || b - a <= 30 * 86400000) && a.getTime() > Date.now() - 900000) ? [a, b] : null; };
+const pkgName = k => (k.name || {})[sdLang()] || (k.name || {}).lo || k.code;
+const priceOf = i => { const k = curPkg(); return k ? (i.packagePrices || {})[k.code] : null; };
 function est() {
   const w = win(); if (!w) return 0; const ms = w[1] - w[0];
+  if (curPkg()) return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => s + Number(priceOf(i) || 0), 0);
   return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => {
     const hr = ms < 86400000 && i.priceHour != null; const u = hr ? 3600000 : 86400000;
     return s + Math.max(1, Math.ceil(ms / u)) * Number(hr ? i.priceHour : i.priceDay);
@@ -410,8 +418,9 @@ async function loadCatalog() {
   if (w) u += '&start=' + encodeURIComponent(w[0].toISOString()) + '&end=' + encodeURIComponent(w[1].toISOString());
   try {
     const j = await (await fetch(u)).json();
-    S.enabled = j.enabled !== false; S.items = j.items || [];
-    S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free)));
+    S.enabled = j.enabled !== false; S.items = j.items || []; S.pkgs = j.packages || [];
+    if (S.pkg && !curPkg()) S.pkg = '';
+    S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free && (!curPkg() || priceOf(i) != null))));
   } catch (_) { S.items = []; S.msg = tx('eErr'); }
   S.loaded = true; draw();
 }
@@ -428,13 +437,14 @@ function draw() {
   }
   if (!S.enabled) { root.innerHTML = '<div class="rw-note">' + esc(tx('disabled')) + '</div>'; return; }
   const list = !S.loaded ? '<div class="rw-empty">' + esc(tx('loading')) + '</div>' : !S.items.length ? '<div class="rw-empty">' + esc(tx('none')) + '</div>' :
-    '<div class="rw-items">' + S.items.map(i => '<label class="rw-item' + (i.free ? '' : ' off') + '"><input type="checkbox" data-id="' + esc(i.id) + '"' + (S.sel.has(i.id) ? ' checked' : '') + (i.free ? '' : ' disabled') + '>' +
+    '<div class="rw-items">' + S.items.map(i => (ok => '<label class="rw-item' + (ok ? '' : ' off') + '"><input type="checkbox" data-id="' + esc(i.id) + '"' + (S.sel.has(i.id) ? ' checked' : '') + (ok ? '' : ' disabled') + '>' +
       (i.photoUrl && /^https:\/\//.test(i.photoUrl) ? '<img class="ph" loading="lazy" alt="' + esc(i.name) + '" src="' + esc(i.photoUrl) + '">' : '') +
-      '<span class="nm"><b>' + esc(i.name) + '</b><small>' + esc([i.brand, i.size].filter(Boolean).join(' · ')) + (i.free ? '' : ' ' + esc(tx('busy'))) + '</small></span>' +
-      '<span class="pr">' + esc(fmt(i.priceDay)) + ' ' + esc(tx('perDay')) + (i.priceHour != null ? '<small>' + esc(fmt(i.priceHour)) + ' ' + esc(tx('perHour')) + '</small>' : '') + '</span></label>').join('') + '</div>';
+      '<span class="nm"><b>' + esc(i.name) + '</b><small>' + esc([i.brand, i.size].filter(Boolean).join(' · ')) + (i.free ? (curPkg() && priceOf(i) == null ? ' ' + esc(tx('pkgNoPrice')) : '') : ' ' + esc(tx('busy'))) + '</small></span>' +
+      '<span class="pr">' + (curPkg() ? esc(priceOf(i) != null ? fmt(priceOf(i)) : '—') : esc(fmt(i.priceDay)) + ' ' + esc(tx('perDay')) + (i.priceHour != null ? '<small>' + esc(fmt(i.priceHour)) + ' ' + esc(tx('perHour')) + '</small>' : '')) + '</span></label>')(i.free && (!curPkg() || priceOf(i) != null))).join('') + '</div>';
   root.innerHTML =
-    '<section><h2><i>1</i>' + esc(tx('s1')) + '</h2><div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><input type="datetime-local" id="rwStart" value="' + esc(S.start) + '"></div>' +
-    '<div class="field"><label>' + esc(tx('to')) + '</label><input type="datetime-local" id="rwEnd" value="' + esc(S.end) + '"></div></div></section>' +
+    '<section><h2><i>1</i>' + esc(tx('s1')) + '</h2>' +
+    (S.pkgs.length ? '<div class="field"><label>' + esc(tx('pkg')) + '</label><select id="rwPkg"><option value="">' + esc(tx('pkgNone')) + '</option>' + S.pkgs.map(k => '<option value="' + esc(k.code) + '"' + (S.pkg === k.code ? ' selected' : '') + '>' + esc(pkgName(k)) + '</option>').join('') + '</select></div>' : '') + '<div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><input type="datetime-local" id="rwStart" value="' + esc(S.start) + '"></div>' +
+    '<div class="field"><label>' + esc(curPkg() ? tx('pkgEnd') : tx('to')) + '</label><input type="datetime-local" id="rwEnd" value="' + esc(endOf()) + '"' + (curPkg() ? ' disabled' : '') + '></div></div></section>' +
     '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' +
     '<form id="rwForm" novalidate><h2><i>3</i>' + esc(tx('s3')) + '</h2><div style="display:grid;gap:14px">' +
     '<div class="row2"><div class="field"><label>' + esc(tx('name')) + '</label><input id="rwName" maxlength="80" autocomplete="name" value="' + esc(S.name) + '"></div>' +
@@ -445,7 +455,8 @@ function draw() {
     '<div class="rw-sum"><span>' + esc(tx('est')) + '</span><span id="rwEst">' + esc(fmt(est())) + '</span></div>' +
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
-  $('rwStart').onchange = $('rwEnd').onchange = () => { S.start = $('rwStart').value; S.end = $('rwEnd').value; S.msg = ''; loadCatalog(); };
+  $('rwStart').onchange = $('rwEnd').onchange = () => { S.start = $('rwStart').value; if (!curPkg()) S.end = $('rwEnd').value; S.msg = ''; loadCatalog(); };
+  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; S.msg = ''; loadCatalog(); };
   root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = fmt(est()); });
   ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; });
   $('rwForm').onsubmit = submit;
@@ -462,13 +473,13 @@ async function submit(ev) {
   S.busy = true; S.msg = ''; draw();
   try {
     const r = await fetch(RW_API + '?op=request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
-      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), assetIds: Array.from(S.sel), note: S.note.trim(),
+      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), packageCode: S.pkg || undefined, assetIds: Array.from(S.sel), note: S.note.trim(),
       requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
     const j = await r.json().catch(() => ({}));
     S.busy = false;
     if (j.ok) { S.done = j.id; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); return; }
-    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', ITEMS: 'eItems', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
-    S.msg = tx(map[j.code] || 'eErr'); draw(); if (j.code === 'UNAVAILABLE') loadCatalog();
+    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', ITEMS: 'eItems', PACKAGE: 'ePkg', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
+    S.msg = tx(map[j.code] || 'eErr'); draw(); if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE') loadCatalog();
   } catch (_) { S.busy = false; S.msg = tx('eErr'); draw(); }
 }
 document.addEventListener('langchange', draw);
