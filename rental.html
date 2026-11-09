@@ -331,6 +331,7 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-item{display:flex;gap:14px;align-items:center;border:1px solid var(--grey-300);padding:14px 16px;cursor:pointer;background:#fff}
 .rw-item:has(input:checked){border:2px solid #000;padding:13px 15px}
 .rw-item input{width:20px;height:20px;accent-color:#000;flex-shrink:0}
+.rw-item .ph{width:84px;height:64px;object-fit:cover;flex-shrink:0;background:var(--grey-100);border:1px solid var(--grey-300)}
 .rw-item .nm{flex:1;min-width:0}.rw-item .nm b{display:block;font-weight:800}.rw-item .nm small{color:var(--grey-600)}
 .rw-item .pr{text-align:right;font-weight:800;white-space:nowrap}.rw-item .pr small{display:block;font-weight:500;color:var(--grey-600)}
 .rw-item.off{opacity:.45;cursor:not-allowed;background:var(--grey-100)}
@@ -342,7 +343,7 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-msg.on{display:block}
 .hp{position:absolute;left:-9999px;height:0;width:0;overflow:hidden}
 .rw-empty{color:var(--grey-600);padding:18px;border:1px dashed var(--grey-300);text-align:center}
-@media (max-width:860px){.rw-item{flex-wrap:wrap}.rw-item .pr{width:100%;text-align:left}}
+@media (max-width:860px){.rw-item .ph{width:64px;height:52px}.rw-item{flex-wrap:wrap}.rw-item .pr{width:100%;text-align:left}}
 </style>
 </head>
 <body>
@@ -428,6 +429,7 @@ function draw() {
   if (!S.enabled) { root.innerHTML = '<div class="rw-note">' + esc(tx('disabled')) + '</div>'; return; }
   const list = !S.loaded ? '<div class="rw-empty">' + esc(tx('loading')) + '</div>' : !S.items.length ? '<div class="rw-empty">' + esc(tx('none')) + '</div>' :
     '<div class="rw-items">' + S.items.map(i => '<label class="rw-item' + (i.free ? '' : ' off') + '"><input type="checkbox" data-id="' + esc(i.id) + '"' + (S.sel.has(i.id) ? ' checked' : '') + (i.free ? '' : ' disabled') + '>' +
+      (i.photoUrl && /^https:\/\//.test(i.photoUrl) ? '<img class="ph" loading="lazy" alt="' + esc(i.name) + '" src="' + esc(i.photoUrl) + '">' : '') +
       '<span class="nm"><b>' + esc(i.name) + '</b><small>' + esc([i.brand, i.size].filter(Boolean).join(' · ')) + (i.free ? '' : ' ' + esc(tx('busy'))) + '</small></span>' +
       '<span class="pr">' + esc(fmt(i.priceDay)) + ' ' + esc(tx('perDay')) + (i.priceHour != null ? '<small>' + esc(fmt(i.priceHour)) + ' ' + esc(tx('perHour')) + '</small>' : '') + '</span></label>').join('') + '</div>';
   root.innerHTML =
