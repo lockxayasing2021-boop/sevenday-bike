@@ -336,7 +336,7 @@ function visible(){
   const cat = $('catSel').value;
   return all.filter(p => f(p)
     && (!cat || String(p.category_id)===cat)
-    && (!q || [p.first_name+' '+p.last_name, p.nickname, p.bib_number, p.phone, p.reg_number, p.email].join(' ').toLowerCase().includes(q)));
+    && (!q || [p.first_name+' '+p.last_name, p.nickname, p.team_name, p.bib_number, p.phone, p.reg_number, p.email].join(' ').toLowerCase().includes(q)));
 }
 function render(){
   $('chips').innerHTML = FILTERS.map(([k,l,fn,c]) =>
@@ -347,7 +347,7 @@ function render(){
   $('tbody').innerHTML = list.length ? list.map(p => `
     <tr data-id="${esc(p.registration_id)}" class="${p.registration_id===selId?'sel':''}" tabindex="0">
       <td class="bib">${esc(p.bib_number||'—')}</td>
-      <td class="nm"><b>${esc(p.first_name)} ${esc(p.last_name)}</b><small>${esc(p.reg_number)}${p.nickname?' · '+esc(p.nickname):''}</small></td>
+      <td class="nm"><b>${esc(p.first_name)} ${esc(p.last_name)}</b><small>${esc(p.reg_number)}${p.nickname?' · '+esc(p.nickname):''}${p.team_name?' · <span>ທີມ</span> '+esc(p.team_name):''}</small></td>
       <td>${esc(p.category_name)}${chgPending(p) ? `<div><span class="pill" style="color:#6A3DE8">↪ ຂໍໄປ ${esc(p.change_request.to_category_name)}</span></div>` : ''}</td>
       <td class="col-hide">${esc(p.jersey_size||'-')}</td>
       <td class="col-hide">${esc(p.phone)}</td>
@@ -391,7 +391,7 @@ function openDrawer(id){
   document.querySelectorAll('tr[data-id]').forEach(t => t.classList.toggle('sel', t.dataset.id===id));
   const pay = p.payment, cancelled = isCancelled(p);
   const proof = pay && pay.proof_image_id ? (String(pay.proof_image_id).startsWith('http') ? pay.proof_image_id : 'https://drive.google.com/file/d/' + encodeURIComponent(pay.proof_image_id) + '/view') : '';
-  const f = (k,l,type='text',full) => `<div class="field${full?' full':''}"><label for="f_${k}">${l}</label><input id="f_${k}" name="${k}" type="${type}" value="${esc(p[k]||'')}"></div>`;
+  const f = (k,l,type='text',full,ph) => `<div class="field${full?' full':''}"><label for="f_${k}">${l}</label><input id="f_${k}" name="${k}" type="${type}" value="${esc(p[k]||'')}"${ph?` placeholder="${ph}"`:''}></div>`;
   $('drawer').innerHTML = `
     <div class="dh">
       <div class="bibbox"><small>BIB</small>${esc(p.bib_number||'—')}</div>
@@ -441,7 +441,7 @@ function openDrawer(id){
         <h3>ຂໍ້ມູນຜູ້ແຂ່ງ <button class="btn sm primary" type="submit">ບັນທຶກ</button></h3>
         <div class="grid2">
           ${f('first_name','ຊື່')}${f('last_name','ນາມສະກຸນ')}
-          ${f('nickname','ຊື່ຫຼິ້ນ')}
+          ${f('nickname','ຊື່ຫຼິ້ນ')}${f('team_name','ຊື່ທີມ','text',false,'ບໍ່ບັງຄັບ')}
           <div class="field"><label for="f_gender">ເພດ</label><select id="f_gender" name="gender">${['','male','female','other'].map(g=>`<option ${String(p.gender).toLowerCase()===g?'selected':''} value="${g}">${{'':'-',male:'ຊາຍ',female:'ຍິງ',other:'ອື່ນໆ'}[g]}</option>`).join('')}</select></div>
           ${f('date_of_birth','ວັນເກີດ','date')}${f('nationality','ສັນຊາດ')}
           ${f('phone','ເບີໂທ','tel')}${f('email','Email','email')}
@@ -526,7 +526,7 @@ function cancelReg(){ act(() => post('evt.cancelRegistration', { registration_id
 
 // ── export ──
 const COLS = [
-  ['BIB','bib_number'],['ເລກລົງທະບຽນ','reg_number'],['ຊື່','first_name'],['ນາມສະກຸນ','last_name'],['ຊື່ຫຼິ້ນ','nickname'],
+  ['BIB','bib_number'],['ເລກລົງທະບຽນ','reg_number'],['ຊື່','first_name'],['ນາມສະກຸນ','last_name'],['ຊື່ຫຼິ້ນ','nickname'],['ຊື່ທີມ','team_name'],
   ['ເພດ','gender'],['ວັນເກີດ','date_of_birth'],['ສັນຊາດ','nationality'],['ລຸ້ນ','category_name'],['ໄລຍະ','distance'],
   ['ເບີໂທ','phone'],['Email','email'],['ຂະໜາດເສື້ອ','jersey_size'],['ຍີ່ຫໍ້ລົດ','bike_brand'],['ລຸ້ນລົດ','bike_model'],['ຂະໜາດລໍ້','bike_wheel_size'],
   ['ຜູ້ຕິດຕໍ່ສຸກເສີນ','emergency_name'],['ເບີສຸກເສີນ','emergency_phone'],['ສຸຂະພາບ','medical_note'],

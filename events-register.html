@@ -141,6 +141,7 @@
         <div class="f"><label for="first_name">ຊື່ <i>*</i></label><input id="first_name" name="first_name" autocomplete="given-name" required><span class="err">ໃສ່ຊື່</span></div>
         <div class="f"><label for="last_name">ນາມສະກຸນ <i>*</i></label><input id="last_name" name="last_name" autocomplete="family-name" required><span class="err">ໃສ່ນາມສະກຸນ</span></div>
         <div class="f"><label for="nickname">ຊື່ຫຼິ້ນ</label><input id="nickname" name="nickname"></div>
+        <div class="f"><label for="team_name">ຊື່ທີມ</label><input id="team_name" name="team_name" maxlength="60" placeholder="ບໍ່ບັງຄັບ" autocomplete="organization"></div>
         <div class="f"><label for="gender">ເພດ <i>*</i></label>
           <select id="gender" name="gender" required><option value="">ເລືອກ</option><option value="male">ຊາຍ</option><option value="female">ຍິງ</option></select><span class="err">ເລືອກເພດ</span></div>
         <div class="f"><label for="date_of_birth">ວັນເດືອນປີເກີດ <i>*</i></label><input id="date_of_birth" name="date_of_birth" type="date" autocomplete="bday" required><span class="err">ໃສ່ວັນເກີດ</span></div>
@@ -285,7 +286,7 @@ function render(){
 
 function vals(){
   const o = {};
-  ['first_name','last_name','nickname','gender','date_of_birth','nationality','phone','email','emergency_name','emergency_phone','bike_brand','bike_model','bike_wheel_size','medical_note']
+  ['first_name','last_name','nickname','team_name','gender','date_of_birth','nationality','phone','email','emergency_name','emergency_phone','bike_brand','bike_model','bike_wheel_size','medical_note']
     .forEach(k => o[k] = $(k).value.trim());
   const js = document.querySelector('input[name=jersey_size]:checked'); o.jersey_size = js ? js.value : '';
   return o;
@@ -327,6 +328,7 @@ function summary(){
   const rows = [
     ['ລຸ້ນ', c.category_name + (c.distance ? ' · ' + c.distance : '')],
     ['ຊື່', `${v.first_name} ${v.last_name}${v.nickname ? ' (' + v.nickname + ')' : ''}`],
+    ...(v.team_name ? [['ທີມ', v.team_name]] : []),
     ['ເພດ / ວັນເກີດ', `${v.gender === 'male' ? 'ຊາຍ' : 'ຍິງ'} · ${v.date_of_birth}`],
     ['ເບີໂທ', v.phone], ['ອີເມວ', v.email || '-'],
     ['ສຸກເສີນ', `${v.emergency_name} · ${v.emergency_phone}`],
