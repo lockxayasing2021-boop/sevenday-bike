@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ເຊົ່າລົດຖີບ — Sevenday Bike</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --black:#000;--ink:#1C1C1C;--grey-900:#2B2B2B;--grey-600:#6E6E6E;--grey-300:#D4D4D4;
+  --grey-100:#F3F3F3;--white:#FFF;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  --wrap:1320px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--white);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ── Announcement ── */
+.announce{background:var(--black);color:var(--white);font-size:13px;text-align:center;padding:8px 20px}
+.announce a{text-decoration:underline;text-underline-offset:3px}
+
+/* ── Header ── */
+.header{background:var(--white);border-bottom:1px solid var(--grey-300);position:sticky;top:0;z-index:50}
+.header-row{display:flex;align-items:center;gap:24px;height:76px}
+.menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:42px;height:42px;background:var(--black);color:var(--white);display:grid;place-items:center;font-weight:900;font-size:20px;letter-spacing:-1px}
+.logo-text{font-weight:900;font-size:22px;letter-spacing:-.5px;line-height:1}
+.logo-text small{display:block;font-size:11px;font-weight:500;color:var(--grey-600);letter-spacing:0;margin-top:3px}
+.search{flex:1;display:flex;max-width:640px;border:2px solid var(--black);border-radius:999px;overflow:hidden;height:46px}
+.search input{flex:1;border:none;padding:0 20px;font:inherit;font-size:15px;outline:none;min-width:0}
+.search button{width:56px;background:var(--black);color:var(--white);display:grid;place-items:center}
+.hdr-links{display:flex;align-items:center;gap:4px;margin-left:auto}
+.hdr-link{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;position:relative}
+.hdr-link:hover{background:var(--grey-100)}
+.hdr-link svg{width:24px;height:24px}
+.cart-count{position:absolute;top:0;right:4px;background:var(--black);color:var(--white);font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+.cur-toggle{display:flex;border:1px solid var(--grey-300);border-radius:999px;overflow:hidden;font-size:12px;font-weight:700;margin-right:6px}
+.cur-toggle button{padding:6px 10px}
+.cur-toggle button.on{background:var(--black);color:var(--white)}
+
+/* ── Mega nav ── */
+.nav{background:var(--black);color:var(--white);position:relative}
+.nav-list{display:flex;list-style:none;height:50px}
+.nav-item{position:static}
+.nav-item>a{display:flex;align-items:center;height:100%;padding:0 16px;font-weight:700;font-size:14px;white-space:nowrap}
+.nav-item>a:hover,.nav-item:focus-within>a{background:var(--grey-900)}
+.nav-item.sale>a{background:var(--white);color:var(--black);margin-left:auto}
+.nav-list .push{margin-left:auto}
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--white);color:var(--ink);border-bottom:1px solid var(--grey-300);box-shadow:0 18px 30px -18px rgba(0,0,0,.35);display:none}
+.nav-item:hover .mega,.nav-item:focus-within .mega{display:block}
+.mega-inner{display:grid;grid-template-columns:repeat(4,1fr) 1.3fr;gap:32px;padding:28px 20px 36px}
+.mega h4{font-size:15px;font-weight:800;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--black)}
+.mega ul{list-style:none}
+.mega li a{display:block;padding:5px 0;font-size:14px;color:var(--grey-900)}
+.mega li a:hover{text-decoration:underline}
+.mega-feature{background:var(--black);color:var(--white);padding:24px;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px}
+.mega-feature b{font-size:22px;font-weight:900;line-height:1.15;margin-bottom:12px}
+.mega-feature span{font-size:13px;text-decoration:underline}
+
+/* ── Collect strip ── */
+.collect{background:var(--grey-100);font-size:13px}
+.collect .wrap{display:flex;align-items:center;gap:10px;height:42px}
+.collect strong{font-weight:700}
+.collect a{margin-left:auto;text-decoration:underline;font-weight:600}
+
+/* ── Hero carousel ── */
+.hero{position:relative;overflow:hidden;background:var(--black)}
+.hero-track{display:flex;transition:transform .6s cubic-bezier(.7,0,.3,1)}
+.slide{min-width:100%;height:440px;display:grid;grid-template-columns:1fr 1fr;align-items:center}
+.slide-text{padding:0 0 0 max(20px,calc((100vw - var(--wrap))/2 + 20px))}
+.slide h2{font-size:clamp(34px,4.6vw,64px);font-weight:900;line-height:1.02;letter-spacing:-1.5px;margin-bottom:16px}
+.slide p{font-size:17px;max-width:440px;margin-bottom:28px;opacity:.85}
+.slide-art{height:100%;display:grid;place-items:center}
+.slide-art svg{width:min(520px,90%);height:auto}
+.s-dark{background:var(--black);color:var(--white)}
+.s-grey{background:var(--grey-100);color:var(--black)}
+.s-mid{background:#3A3A3A;color:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 28px;border-radius:999px;font-weight:700;font-size:15px;transition:background .2s,color .2s}
+.btn-white{background:var(--white);color:var(--black)}
+.btn-white:hover{background:var(--grey-300)}
+.btn-black{background:var(--black);color:var(--white)}
+.btn-black:hover{background:var(--grey-900)}
+.btn-line{border:2px solid currentColor}
+.hero-dots{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.hero-dots button{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4);border:1px solid rgba(0,0,0,.2)}
+.hero-dots button.on{background:var(--white);width:28px;border-radius:5px}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:var(--white);color:var(--black);display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.hero-arrow.prev{left:16px}.hero-arrow.next{right:16px}
+
+/* ── Sections ── */
+.section{padding:56px 0 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.sec-head h2{font-size:clamp(24px,2.6vw,32px);font-weight:900;letter-spacing:-.6px;line-height:1.1}
+.sec-head a{font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
+
+/* Categories */
+.cats{display:grid;grid-template-columns:repeat(9,1fr);gap:16px}
+.cat{text-align:center}
+.cat-circle{aspect-ratio:1;border-radius:50%;background:var(--grey-100);display:grid;place-items:center;margin-bottom:10px;transition:background .2s}
+.cat:hover .cat-circle{background:var(--grey-300)}
+.cat-circle svg{width:56%;height:auto}
+.cat span{font-weight:700;font-size:14px;line-height:1.25;display:block}
+
+/* Promo tiles */
+.promo-sm{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile{position:relative;aspect-ratio:4/3;padding:22px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.tile b{font-size:22px;font-weight:900;line-height:1.1;letter-spacing:-.4px;position:relative;z-index:1}
+.tile span{font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:3px;position:relative;z-index:1}
+.tile .big{font-size:44px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.tile svg.bg{position:absolute;right:-10%;bottom:-12%;width:70%;opacity:.18}
+.t-black{background:var(--black);color:var(--white)}
+.t-grey{background:var(--grey-100)}
+.t-line{border:2px solid var(--black)}
+.t-mid{background:#3A3A3A;color:var(--white)}
+.promo-lg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.promo-lg .tile{aspect-ratio:16/8;padding:32px}
+.promo-lg .tile b{font-size:clamp(24px,2.8vw,36px)}
+
+/* Product rail */
+.rail-wrap{position:relative}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 64px)/5);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.rail::-webkit-scrollbar{display:none}
+.rail-btn{position:absolute;top:34%;width:42px;height:42px;border-radius:50%;background:var(--white);border:1px solid var(--grey-300);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:2}
+.rail-btn.prev{left:-14px}.rail-btn.next{right:-14px}
+.card{scroll-snap-align:start;display:flex;flex-direction:column;position:relative}
+.card-img{aspect-ratio:1;background:var(--grey-100);display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
+.card-img img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;transition:transform .3s}
+.card:hover .card-img img{transform:scale(1.04)}
+.card-img svg{width:70%;color:var(--grey-600)}
+.badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;z-index:1}
+.badge{font-size:12px;font-weight:800;padding:4px 8px;line-height:1.2}
+.b-off{background:var(--black);color:var(--white)}
+.b-low{background:var(--white);color:var(--black);border:1px solid var(--black)}
+.b-new{background:var(--grey-300);color:var(--black)}
+.b-out{background:var(--grey-600);color:var(--white)}
+.card-brand{font-size:13px;color:var(--grey-600);font-weight:600}
+.card-name{font-weight:700;font-size:15px;line-height:1.3;margin:2px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px}
+.card-name:hover{text-decoration:underline}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price .now{font-size:18px;font-weight:900}
+.price .was{font-size:13px;color:var(--grey-600);text-decoration:line-through}
+.card.on-sale .price .now{background:var(--black);color:var(--white);padding:0 6px}
+.sizes{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.sizes span{font-size:11px;font-weight:700;border:1px solid var(--grey-300);padding:3px 7px}
+.add-btn{margin-top:12px;height:40px;border:2px solid var(--black);border-radius:999px;font-weight:700;font-size:14px;transition:background .2s,color .2s}
+.add-btn:hover{background:var(--black);color:var(--white)}
+.add-btn:disabled{border-color:var(--grey-300);color:var(--grey-600);cursor:not-allowed;background:none}
+.skeleton .card-img{animation:pulse 1.2s infinite}
+.skeleton .card-name,.skeleton .price{background:var(--grey-100);color:transparent;min-height:16px}
+@keyframes pulse{50%{opacity:.5}}
+
+/* Brands */
+.brands{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--grey-300);border-left:1px solid var(--grey-300)}
+.brands a{height:96px;display:grid;place-items:center;border-right:1px solid var(--grey-300);border-bottom:1px solid var(--grey-300);font-weight:900;font-size:20px;letter-spacing:-.5px;color:var(--grey-600);transition:color .2s,background .2s}
+.brands a:hover{color:var(--black);background:var(--grey-100)}
+
+/* Workshop band */
+.workshop{background:var(--black);color:var(--white);margin-top:56px}
+.workshop .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;padding-top:56px;padding-bottom:56px;align-items:center}
+.workshop h2{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.05;margin-bottom:14px}
+.workshop p{opacity:.8;max-width:480px;margin-bottom:24px}
+.pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grey-900);border:1px solid var(--grey-900)}
+.pkg{background:var(--black);padding:22px 18px}
+.pkg b{display:block;font-size:17px;font-weight:800;margin-bottom:4px}
+.pkg .p{font-size:22px;font-weight:900;margin:8px 0}
+.pkg small{display:block;font-size:12px;opacity:.65;line-height:1.45}
+
+/* USP */
+.usp{border-top:1px solid var(--grey-300);border-bottom:1px solid var(--grey-300);margin-top:56px}
+.usp .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.usp a{display:flex;gap:14px;align-items:center;padding:26px 16px}
+.usp a+a{border-left:1px solid var(--grey-300)}
+.usp svg{width:34px;height:34px;flex-shrink:0}
+.usp b{display:block;font-size:15px;font-weight:800}
+.usp small{color:var(--grey-600);font-size:13px}
+
+/* SEO / FAQ */
+.about-shop{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.about-shop p{color:var(--grey-900);margin-bottom:12px;max-width:62ch}
+.faq details{border-bottom:1px solid var(--grey-300)}
+.faq summary{font-weight:700;padding:16px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::after{content:'+';font-size:22px;line-height:1}
+.faq details[open] summary::after{content:'–'}
+.faq details p{padding-bottom:16px;color:var(--grey-900)}
+
+/* Newsletter */
+.news{background:var(--grey-100);margin-top:56px}
+.news .wrap{display:flex;align-items:center;justify-content:space-between;gap:32px;padding-top:36px;padding-bottom:36px;flex-wrap:wrap}
+.news h3{font-size:24px;font-weight:900;letter-spacing:-.4px}
+.news small{color:var(--grey-600)}
+.news form{display:flex;flex:1;max-width:520px;min-width:260px}
+.news input{flex:1;height:50px;border:2px solid var(--black);border-right:none;padding:0 18px;font:inherit;min-width:0}
+.news button{height:50px;padding:0 26px;background:var(--black);color:var(--white);font-weight:700}
+
+/* Footer */
+.footer{background:var(--black);color:#BDBDBD;font-size:14px}
+.foot-grid{display:grid;grid-template-columns:1.4fr repeat(5,1fr);gap:32px;padding:56px 0 40px}
+.footer h4{color:var(--white);font-size:15px;font-weight:800;margin-bottom:14px}
+.footer ul{list-style:none}
+.footer li{margin-bottom:9px}
+.footer a:hover{color:var(--white);text-decoration:underline}
+.foot-brand p{margin:14px 0;max-width:300px;line-height:1.6}
+.foot-brand .logo-mark{background:var(--white);color:var(--black)}
+.foot-brand .logo-text{color:var(--white)}
+.social{display:flex;gap:10px}
+.social a{width:38px;height:38px;border:1px solid #444;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--white)}
+.foot-bottom{border-top:1px solid #333;padding:22px 0;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px}
+.pay{display:flex;gap:8px;flex-wrap:wrap}
+.pay span{border:1px solid #444;padding:4px 10px;font-weight:700;font-size:12px;color:var(--white)}
+
+/* Drawer (mobile) */
+.drawer{position:fixed;inset:0;z-index:100;display:none}
+.drawer.open{display:block}
+.drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.drawer-panel{position:absolute;top:0;left:0;bottom:0;width:min(360px,88vw);background:var(--white);overflow-y:auto;padding-bottom:40px}
+.drawer-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--black);color:var(--white);font-weight:800}
+.drawer details{border-bottom:1px solid var(--grey-300)}
+.drawer summary,.drawer .d-link{display:flex;justify-content:space-between;padding:16px 20px;font-weight:700;list-style:none;cursor:pointer}
+.drawer summary::after{content:'+'}
+.drawer details[open] summary::after{content:'–'}
+.drawer details ul{list-style:none;padding:0 20px 12px 32px}
+.drawer details li a{display:block;padding:7px 0;color:var(--grey-900)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,120px);background:var(--black);color:var(--white);padding:14px 22px;font-weight:600;z-index:200;transition:transform .3s,visibility .3s;display:flex;gap:14px;align-items:center;visibility:hidden}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.toast a{text-decoration:underline}
+
+/* ── Responsive ── */
+@media (max-width:1100px){
+  .rail{grid-auto-columns:calc((100% - 48px)/4)}
+  .cats{grid-template-columns:repeat(9,120px);overflow-x:auto;scrollbar-width:none}
+  .mega-inner{grid-template-columns:repeat(3,1fr)}
+  .mega-feature{display:none}
+  .foot-grid{grid-template-columns:repeat(3,1fr)}
+  .foot-brand{grid-column:1/-1}
+}
+@media (max-width:860px){
+  .nav,.hdr-link.hide-m,.cur-toggle{display:none}
+  .menu-btn{display:flex}
+  .header-row{flex-wrap:wrap;height:auto;padding:10px 0;gap:10px 14px}
+  .search{order:5;max-width:none;flex-basis:100%;height:42px}
+  .logo-text small{display:none}
+  .logo-text{font-size:17px}
+  .logo-mark{width:36px;height:36px;font-size:17px}
+  .hdr-link{padding:4px 6px;font-size:11px}
+  .header-row{flex-wrap:wrap}
+  .hdr-links{flex-shrink:0}
+  .cats{grid-template-columns:repeat(9,96px)}
+  .slide{grid-template-columns:1fr;height:auto;padding:40px 0 56px}
+  .slide-text{padding:0 20px}
+  .slide-art{display:none}
+  .hero-arrow{display:none}
+  .rail{grid-auto-columns:calc((100% - 16px)/2.2)}
+  .rail-btn{display:none}
+  .promo-sm{grid-template-columns:1fr 1fr}
+  .promo-lg{grid-template-columns:1fr}
+  .brands{grid-template-columns:repeat(3,1fr)}
+  .workshop .wrap{grid-template-columns:1fr}
+  .pkgs{grid-template-columns:1fr}
+  .usp .wrap{grid-template-columns:1fr 1fr}
+  .usp a+a{border-left:none}
+  .about-shop{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .collect a{display:none}
+}
+
+
+/* ── Page hero (ແບບດຽວກັບ hero ໜ້າໂຮມ) ── */
+.phero{background:var(--black);color:var(--white);overflow:hidden}
+.phero.g{background:var(--grey-100);color:var(--black)}
+.phero-in{display:grid;grid-template-columns:1.4fr 1fr;align-items:center;gap:24px;min-height:240px;padding-top:36px;padding-bottom:36px}
+.phero .crumbs-h{font-size:13px;opacity:.75;margin-bottom:14px}
+.phero .crumbs-h a{text-decoration:underline;text-underline-offset:3px}
+.phero h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;line-height:1.02;letter-spacing:-1.5px}
+.phero p{font-size:17px;opacity:.85;margin-top:14px;max-width:520px}
+.phero-art{justify-self:end;width:min(360px,100%);height:auto;opacity:.95}
+.phero .btn{margin-top:22px}
+@media (max-width:860px){.phero-in{grid-template-columns:1fr;min-height:0;padding-top:28px;padding-bottom:28px}.phero-art{display:none}}
+main.wrap{padding-top:8px}
+
+.crumbs{font-size:13px;color:var(--grey-600);padding:18px 0 6px}
+.crumbs a:hover{text-decoration:underline}
+.page-title{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.05}
+.page-sub{color:var(--grey-600);margin:8px 0 0;max-width:62ch}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:14px}
+.field input,.field select,.field textarea{height:48px;border:1px solid var(--grey-300);padding:0 14px;font:inherit;background:#fff;border-radius:0}
+.field textarea{height:96px;padding:12px 14px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#000;box-shadow:0 0 0 1px #000}
+.field .err{font-size:13px;font-weight:600;display:none}
+.field.invalid input,.field.invalid select{border-color:#000;border-width:2px}
+.field.invalid .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.choice{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--grey-300);padding:16px;cursor:pointer}
+.choice:has(input:checked){border:2px solid #000;padding:15px}
+.choice input{width:20px;height:20px;accent-color:#000;margin-top:2px}
+.choice b{display:block}.choice small{color:var(--grey-600)}
+.alert{background:var(--grey-100);border-left:4px solid #000;padding:14px 16px;font-size:14px}
+@media (max-width:860px){.row2{grid-template-columns:1fr}}
+
+.ct{display:grid;grid-template-columns:1fr 1.3fr;gap:48px;padding:24px 0 72px;align-items:start}
+.ways{display:flex;flex-direction:column;border-top:2px solid #000}
+.ways a,.ways div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 0;border-bottom:1px solid var(--grey-300)}
+.ways b{display:block;font-size:17px;font-weight:800}.ways small{color:var(--grey-600)}
+.ways a:hover b{text-decoration:underline}
+.ways .arr{font-size:22px}
+form.cf{display:flex;flex-direction:column;gap:14px;background:var(--grey-100);padding:28px}
+form.cf h2{font-size:22px;font-weight:800}
+form.cf .btn{border-radius:0;height:52px}
+.topics{display:flex;gap:8px;flex-wrap:wrap}
+.topics label{border:1px solid var(--grey-300);background:#fff;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
+.topics label:has(input:checked){background:#000;color:#fff;border-color:#000}
+.topics input{position:absolute;opacity:0}
+@media (max-width:860px){.ct{grid-template-columns:1fr}}
+
+
+/* ── ໜ້າເຊົ່າ ── */
+.rw{padding:8px 0 72px;display:grid;gap:28px;max-width:860px}
+.rw h2{font-size:20px;font-weight:800;margin-bottom:12px;display:flex;gap:10px;align-items:center}
+.rw h2 i{font-style:normal;background:#000;color:#fff;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:14px}
+.rw-items{display:grid;gap:10px}
+.rw-item{display:flex;gap:14px;align-items:center;border:1px solid var(--grey-300);padding:14px 16px;cursor:pointer;background:#fff}
+.rw-item:has(input:checked){border:2px solid #000;padding:13px 15px}
+.rw-item input{width:20px;height:20px;accent-color:#000;flex-shrink:0}
+.rw-item .nm{flex:1;min-width:0}.rw-item .nm b{display:block;font-weight:800}.rw-item .nm small{color:var(--grey-600)}
+.rw-item .pr{text-align:right;font-weight:800;white-space:nowrap}.rw-item .pr small{display:block;font-weight:500;color:var(--grey-600)}
+.rw-item.off{opacity:.45;cursor:not-allowed;background:var(--grey-100)}
+.rw-note{background:var(--grey-100);border-left:4px solid #000;padding:14px 16px;font-size:14px}
+.rw-sum{display:flex;justify-content:space-between;font-weight:800;font-size:17px;padding:12px 0;border-top:2px solid #000}
+.rw-ok{border:2px solid #000;padding:28px;display:grid;gap:10px}
+.rw-ok .no{font-size:28px;font-weight:900;letter-spacing:-.5px}
+.rw-msg{font-weight:700;padding:12px 14px;border:2px solid #000;background:#fff;display:none}
+.rw-msg.on{display:block}
+.hp{position:absolute;left:-9999px;height:0;width:0;overflow:hidden}
+.rw-empty{color:var(--grey-600);padding:18px;border:1px dashed var(--grey-300);text-align:center}
+@media (max-width:860px){.rw-item{flex-wrap:wrap}.rw-item .pr{width:100%;text-align:left}}
+</style>
+</head>
+<body>
+
+<section class="phero "><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / <span id="rwCrumb"></span></nav><h1 id="rwH1"></h1><p id="rwSub"></p></div><svg class="phero-art" viewBox="0 0 80 70" aria-hidden="true" style="color:#fff"><use href="#i-wrench"/></svg></div></section>
+<main class="wrap"><div class="rw" id="rw"></div></main>
+
+<script src="i18n.js"></script>
+<script src="layout.js"></script>
+<script>
+const RW_API = 'https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/rental-web';
+/* ຂໍ້ຄວາມໜ້ານີ້ (ລາວ / ໄທ / English) — ໃຊ້ຕາມພາສາທີ່ເລືອກ ແລະ ແປງໃໝ່ເມື່ອປ່ຽນພາສາ */
+const TX = {
+  crumb: { lo: 'ເຊົ່າລົດຖີບ', th: 'เช่าจักรยาน', en: 'Bike rental' },
+  h1: { lo: 'ເຊົ່າລົດຖີບ & ອຸປະກອນ', th: 'เช่าจักรยานและอุปกรณ์', en: 'Rent a bike & gear' },
+  sub: { lo: 'ເລືອກວັນເວລາ ແລ້ວສົ່ງຄຳຂໍ — ພະນັກງານຈະຕິດຕໍ່ຢືນຢັນ', th: 'เลือกวันเวลา แล้วส่งคำขอ — พนักงานจะติดต่อกลับเพื่อยืนยัน', en: 'Pick your dates and send a request — our staff will contact you to confirm' },
+  s1: { lo: 'ເລືອກວັນ ແລະ ເວລາ', th: 'เลือกวันและเวลา', en: 'Choose dates & time' },
+  from: { lo: 'ເລີ່ມເຊົ່າ', th: 'เริ่มเช่า', en: 'Pick-up' }, to: { lo: 'ຄືນຂອງ', th: 'คืนของ', en: 'Return' },
+  s2: { lo: 'ເລືອກຂອງທີ່ຈະເຊົ່າ', th: 'เลือกของที่จะเช่า', en: 'Choose what to rent' },
+  s3: { lo: 'ຂໍ້ມູນຕິດຕໍ່', th: 'ข้อมูลติดต่อ', en: 'Your contact details' },
+  name: { lo: 'ຊື່', th: 'ชื่อ', en: 'Name' }, phone: { lo: 'ເບີໂທ / WhatsApp', th: 'เบอร์โทร / WhatsApp', en: 'Phone / WhatsApp' }, note: { lo: 'ໝາຍເຫດ (ບໍ່ບັງຄັບ)', th: 'หมายเหตุ (ไม่บังคับ)', en: 'Notes (optional)' },
+  perDay: { lo: '/ ມື້', th: '/ วัน', en: '/ day' }, perHour: { lo: '/ ຊົ່ວໂມງ', th: '/ ชั่วโมง', en: '/ hour' },
+  busy: { lo: 'ບໍ່ວ່າງໃນຊ່ວງນີ້', th: 'ไม่ว่างในช่วงนี้', en: 'Not available for these dates' },
+  none: { lo: 'ຍັງບໍ່ມີລາຍການໃຫ້ເຊົ່າ', th: 'ยังไม่มีรายการให้เช่า', en: 'Nothing available to rent yet' },
+  loading: { lo: 'ກຳລັງໂຫຼດ…', th: 'กำลังโหลด…', en: 'Loading…' },
+  est: { lo: 'ຄ່າເຊົ່າໂດຍປະມານ', th: 'ค่าเช่าโดยประมาณ', en: 'Estimated rent' },
+  notice: { lo: 'ນີ້ແມ່ນການສົ່ງຄຳຂໍ — ຍັງບໍ່ແມ່ນການຈອງ ແລະ ບໍ່ຕ້ອງຈ່າຍເງິນຕອນນີ້. ພະນັກງານຈະຕິດຕໍ່ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ (ໃນເວລາເປີດຮ້ານ). ຕອນມາຮັບຂອງ ກະລຸນານຳບັດປະຊາຊົນ ຫຼື ພາສປອດ ມາ ແລະ ຈ່າຍຄ່າເຊົ່າ + ເງິນມັດຈຳ.',
+    th: 'นี่คือการส่งคำขอ — ยังไม่ใช่การจอง และยังไม่ต้องชำระเงิน พนักงานจะติดต่อยืนยันภายใน 2 ชั่วโมง (ในเวลาเปิดร้าน) ตอนมารับของโปรดนำบัตรประชาชนหรือพาสปอร์ตมา พร้อมชำระค่าเช่า + เงินมัดจำ',
+    en: 'This is a request, not a booking yet, and nothing is charged now. Our staff will contact you within 2 hours (during opening hours). Please bring your ID card or passport at pick-up, along with payment for the rent and a deposit.' },
+  send: { lo: 'ສົ່ງຄຳຂໍ', th: 'ส่งคำขอ', en: 'Send request' }, sending: { lo: 'ກຳລັງສົ່ງ…', th: 'กำลังส่ง…', en: 'Sending…' },
+  okT: { lo: 'ໄດ້ຮັບຄຳຂໍແລ້ວ', th: 'ได้รับคำขอแล้ว', en: 'Request received' },
+  okP: { lo: 'ເລກຄຳຂໍຂອງທ່ານ — ພະນັກງານຈະຕິດຕໍ່ກັບທາງໂທລະສັບ / WhatsApp. ຍັງບໍ່ໄດ້ຈອງຂອງໄວ້ຈົນກວ່າພະນັກງານຈະຢືນຢັນ.', th: 'เลขคำขอของคุณ — พนักงานจะติดต่อกลับทางโทรศัพท์ / WhatsApp ของยังไม่ถูกกันไว้จนกว่าพนักงานจะยืนยัน', en: 'Your request number — we will contact you by phone / WhatsApp. Nothing is held until our staff confirms.' },
+  wa: { lo: 'ທັກ WhatsApp ຮ້ານ', th: 'ทัก WhatsApp ร้าน', en: 'Message us on WhatsApp' }, again: { lo: 'ສົ່ງຄຳຂໍໃໝ່', th: 'ส่งคำขอใหม่', en: 'New request' },
+  disabled: { lo: 'ຕອນນີ້ຍັງບໍ່ເປີດຮັບຄຳຂໍເຊົ່າອອນລາຍ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'ขณะนี้ยังไม่เปิดรับคำขอเช่าออนไลน์ — กรุณาติดต่อร้าน', en: 'Online rental requests are closed right now — please contact the shop' },
+  eName: { lo: 'ກະລຸນາໃສ່ຊື່', th: 'กรุณากรอกชื่อ', en: 'Please enter your name' }, ePhone: { lo: 'ເບີໂທບໍ່ຖືກຕ້ອງ', th: 'เบอร์โทรไม่ถูกต้อง', en: 'Invalid phone number' },
+  eItems: { lo: 'ກະລຸນາເລືອກຂອງຢ່າງໜ້ອຍ 1 ຊິ້ນ (ສູງສຸດ 4)', th: 'กรุณาเลือกของอย่างน้อย 1 ชิ้น (สูงสุด 4)', en: 'Please select 1–4 items' },
+  eTime: { lo: 'ວັນເວລາບໍ່ຖືກຕ້ອງ (ຢ່າງໜ້ອຍ 1 ຊົ່ວໂມງ, ບໍ່ເກີນ 30 ມື້, ບໍ່ຍ້ອນຫຼັງ)', th: 'วันเวลาไม่ถูกต้อง (อย่างน้อย 1 ชั่วโมง ไม่เกิน 30 วัน ไม่ย้อนหลัง)', en: 'Invalid dates (min 1 hour, max 30 days, not in the past)' },
+  eUnav: { lo: 'ມີຊິ້ນທີ່ເພິ່ງຖືກຈອງໄປ — ກະລຸນາເລືອກໃໝ່', th: 'มีบางชิ้นเพิ่งถูกจองไป — กรุณาเลือกใหม่', en: 'Something was just taken — please choose again' },
+  eLimit: { lo: 'ສົ່ງຄຳຂໍຫຼາຍເກີນໄປ — ລອງໃໝ່ພາຍຫຼັງ ຫຼື ທັກ WhatsApp', th: 'ส่งคำขอบ่อยเกินไป — ลองใหม่ภายหลัง หรือทัก WhatsApp', en: 'Too many requests — try later or message us on WhatsApp' },
+  eErr: { lo: 'ສົ່ງບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ທັກ WhatsApp', th: 'ส่งไม่สำเร็จ — ลองใหม่ หรือทัก WhatsApp', en: 'Could not send — try again or message us on WhatsApp' },
+};
+const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
+const $ = id => document.getElementById(id);
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const locStr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+const nextHour = (add) => { const d = new Date(Date.now() + add * 3600000); d.setMinutes(0, 0, 0); return d; };
+
+const S = { start: locStr(nextHour(2)), end: locStr(nextHour(26)), items: [], sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
+try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
+if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
+
+const win = () => { const a = new Date(S.start), b = new Date(S.end); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && b - a <= 30 * 86400000 && a.getTime() > Date.now() - 900000) ? [a, b] : null; };
+function est() {
+  const w = win(); if (!w) return 0; const ms = w[1] - w[0];
+  return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => {
+    const hr = ms < 86400000 && i.priceHour != null; const u = hr ? 3600000 : 86400000;
+    return s + Math.max(1, Math.ceil(ms / u)) * Number(hr ? i.priceHour : i.priceDay);
+  }, 0);
+}
+
+async function loadCatalog() {
+  const w = win(); let u = RW_API + '?op=catalog';
+  if (w) u += '&start=' + encodeURIComponent(w[0].toISOString()) + '&end=' + encodeURIComponent(w[1].toISOString());
+  try {
+    const j = await (await fetch(u)).json();
+    S.enabled = j.enabled !== false; S.items = j.items || [];
+    S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free)));
+  } catch (_) { S.items = []; S.msg = tx('eErr'); }
+  S.loaded = true; draw();
+}
+
+function draw() {
+  $('rwCrumb').textContent = tx('crumb'); $('rwH1').textContent = tx('h1'); $('rwSub').textContent = tx('sub');
+  const root = $('rw');
+  if (S.done) {
+    root.innerHTML = '<div class="rw-ok"><h2>' + esc(tx('okT')) + '</h2><div class="no">' + esc(S.done) + '</div><p>' + esc(tx('okP')) + '</p>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-black" target="_blank" rel="noopener" href="https://wa.me/' + esc(SHOP.whatsapp) + '?text=' + encodeURIComponent(S.done) + '">' + esc(tx('wa')) + '</a>' +
+      '<button class="btn btn-line" type="button" id="rwAgain">' + esc(tx('again')) + '</button></div></div>';
+    $('rwAgain').onclick = () => { S.done = null; S.sel = new Set(); S.rid = ''; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())); draw(); };
+    return;
+  }
+  if (!S.enabled) { root.innerHTML = '<div class="rw-note">' + esc(tx('disabled')) + '</div>'; return; }
+  const list = !S.loaded ? '<div class="rw-empty">' + esc(tx('loading')) + '</div>' : !S.items.length ? '<div class="rw-empty">' + esc(tx('none')) + '</div>' :
+    '<div class="rw-items">' + S.items.map(i => '<label class="rw-item' + (i.free ? '' : ' off') + '"><input type="checkbox" data-id="' + esc(i.id) + '"' + (S.sel.has(i.id) ? ' checked' : '') + (i.free ? '' : ' disabled') + '>' +
+      '<span class="nm"><b>' + esc(i.name) + '</b><small>' + esc([i.brand, i.size].filter(Boolean).join(' · ')) + (i.free ? '' : ' ' + esc(tx('busy'))) + '</small></span>' +
+      '<span class="pr">' + esc(fmt(i.priceDay)) + ' ' + esc(tx('perDay')) + (i.priceHour != null ? '<small>' + esc(fmt(i.priceHour)) + ' ' + esc(tx('perHour')) + '</small>' : '') + '</span></label>').join('') + '</div>';
+  root.innerHTML =
+    '<section><h2><i>1</i>' + esc(tx('s1')) + '</h2><div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><input type="datetime-local" id="rwStart" value="' + esc(S.start) + '"></div>' +
+    '<div class="field"><label>' + esc(tx('to')) + '</label><input type="datetime-local" id="rwEnd" value="' + esc(S.end) + '"></div></div></section>' +
+    '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' +
+    '<form id="rwForm" novalidate><h2><i>3</i>' + esc(tx('s3')) + '</h2><div style="display:grid;gap:14px">' +
+    '<div class="row2"><div class="field"><label>' + esc(tx('name')) + '</label><input id="rwName" maxlength="80" autocomplete="name" value="' + esc(S.name) + '"></div>' +
+    '<div class="field"><label>' + esc(tx('phone')) + '</label><input id="rwPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" value="' + esc(S.phone) + '"></div></div>' +
+    '<div class="field"><label>' + esc(tx('note')) + '</label><textarea id="rwNote" maxlength="500">' + esc(S.note) + '</textarea></div>' +
+    '<div class="hp" aria-hidden="true"><label>website<input id="rwHp" tabindex="-1" autocomplete="off"></label></div>' +
+    '<div class="rw-note">' + esc(tx('notice')) + '</div>' +
+    '<div class="rw-sum"><span>' + esc(tx('est')) + '</span><span id="rwEst">' + esc(fmt(est())) + '</span></div>' +
+    '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
+    '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
+  $('rwStart').onchange = $('rwEnd').onchange = () => { S.start = $('rwStart').value; S.end = $('rwEnd').value; S.msg = ''; loadCatalog(); };
+  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = fmt(est()); });
+  ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; });
+  $('rwForm').onsubmit = submit;
+}
+
+function fail(m) { S.msg = m; const e = $('rwMsg'); if (e) { e.textContent = m; e.classList.add('on'); e.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }
+async function submit(ev) {
+  ev.preventDefault(); if (S.busy) return;
+  const digits = S.phone.replace(/\D/g, '');
+  if (S.name.trim().length < 2) return fail(tx('eName'));
+  if (digits.length < 8 || digits.length > 15) return fail(tx('ePhone'));
+  const w = win(); if (!w) return fail(tx('eTime'));
+  if (!S.sel.size || S.sel.size > 4) return fail(tx('eItems'));
+  S.busy = true; S.msg = ''; draw();
+  try {
+    const r = await fetch(RW_API + '?op=request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), assetIds: Array.from(S.sel), note: S.note.trim(),
+      requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
+    const j = await r.json().catch(() => ({}));
+    S.busy = false;
+    if (j.ok) { S.done = j.id; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); return; }
+    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', ITEMS: 'eItems', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
+    S.msg = tx(map[j.code] || 'eErr'); draw(); if (j.code === 'UNAVAILABLE') loadCatalog();
+  } catch (_) { S.busy = false; S.msg = tx('eErr'); draw(); }
+}
+document.addEventListener('langchange', draw);
+draw(); loadCatalog();
+</script>
+</body>
+</html>
