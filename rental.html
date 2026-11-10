@@ -415,13 +415,16 @@ const curPkg = () => S.pkgs.find(k => k.code === S.pkg) || null;
 const endOf = () => { const k = curPkg(), a = new Date(S.start); return k && !isNaN(a) ? locStr(new Date(a.getTime() + k.hours * 3600000)) : S.end; };
 const win = () => { const k = curPkg(), a = new Date(S.start), b = new Date(k ? endOf() : S.end); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && (k || b - a <= 30 * 86400000) && a.getTime() > Date.now() - 900000) ? [a, b] : null; };
 const pkgName = k => (k.name || {})[sdLang()] || (k.name || {}).lo || k.code;
-const priceOf = i => { const k = curPkg(); return k ? (i.packagePrices || {})[k.code] : null; };
+const priceOf = i => { const k = curPkg(); return k ? (i.packagePricesLak || {})[k.code] : null; };
+// ค่าเช่าแสดงเป็นกีบ (₭) เสมอ · ในวงเล็บ = ประมาณการเป็นสกุลที่ลูกค้าเลือกบนเว็บ (เรทจริงล็อกตอนร้านยืนยันสัญญา)
+const kip = v => '₭' + Math.round(Number(v) || 0).toLocaleString('en-US');
+const approx = v => (S.rate && typeof currency !== 'undefined' && currency !== 'LAK' && typeof fmtIn === 'function') ? ' (≈ ' + fmtIn(Number(v) / S.rate) + ')' : '';
 function est() {
   const w = win(); if (!w) return 0; const ms = w[1] - w[0];
   if (curPkg()) return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => s + Number(priceOf(i) || 0), 0);
   return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => {
-    const hr = ms < 86400000 && i.priceHour != null; const u = hr ? 3600000 : 86400000;
-    return s + Math.max(1, Math.ceil(ms / u)) * Number(hr ? i.priceHour : i.priceDay);
+    const hr = ms < 86400000 && i.priceHourLak != null; const u = hr ? 3600000 : 86400000;
+    return s + Math.max(1, Math.ceil(ms / u)) * Number(hr ? i.priceHourLak : i.priceDayLak);
   }, 0);
 }
 
@@ -435,7 +438,7 @@ async function loadCatalog() {
   if (w) u += '&start=' + encodeURIComponent(w[0].toISOString()) + '&end=' + encodeURIComponent(w[1].toISOString());
   try {
     const j = await (await fetch(u)).json();
-    S.enabled = j.enabled !== false; S.items = j.items || []; S.pkgs = j.packages || []; S.terms = j.terms || null;
+    S.enabled = j.enabled !== false; S.rate = Number(j.lakPerThb) || 0; S.items = j.items || []; S.pkgs = j.packages || []; S.terms = j.terms || null;
     if (S.pkg && !curPkg()) S.pkg = '';
     S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free && (!curPkg() || priceOf(i) != null))));
   } catch (_) { S.items = []; S.msg = tx('eErr'); }
@@ -461,7 +464,7 @@ function draw() {
     '<div class="rw-items">' + S.items.map(i => (ok => '<label class="rw-item' + (ok ? '' : ' off') + '"><input type="checkbox" data-id="' + esc(i.id) + '"' + (S.sel.has(i.id) ? ' checked' : '') + (ok ? '' : ' disabled') + '>' +
       (i.photoUrl && /^https:\/\//.test(i.photoUrl) ? '<img class="ph" loading="lazy" alt="' + esc(i.name) + '" src="' + esc(i.photoUrl) + '">' : '') +
       '<span class="nm"><b>' + esc(i.name) + '</b><small>' + esc([i.brand, i.size].filter(Boolean).join(' · ')) + (i.free ? (curPkg() && priceOf(i) == null ? ' ' + esc(tx('pkgNoPrice')) : '') : ' ' + esc(tx('busy'))) + '</small></span>' +
-      '<span class="pr">' + (curPkg() ? esc(priceOf(i) != null ? fmt(priceOf(i)) : '—') : esc(fmt(i.priceDay)) + ' ' + esc(tx('perDay')) + (i.priceHour != null ? '<small>' + esc(fmt(i.priceHour)) + ' ' + esc(tx('perHour')) + '</small>' : '')) + '</span></label>')(i.free && (!curPkg() || priceOf(i) != null))).join('') + '</div>';
+      '<span class="pr">' + (curPkg() ? esc(priceOf(i) != null ? kip(priceOf(i)) : '—') + (priceOf(i) != null ? '<small>' + esc(approx(priceOf(i))) + '</small>' : '') : esc(kip(i.priceDayLak)) + ' ' + esc(tx('perDay')) + '<small>' + esc(approx(i.priceDayLak)) + '</small>' + (i.priceHourLak != null ? '<small>' + esc(kip(i.priceHourLak)) + ' ' + esc(tx('perHour')) + '</small>' : '')) + '</span></label>')(i.free && (!curPkg() || priceOf(i) != null))).join('') + '</div>';
   root.innerHTML =
     '<section><h2><i>1</i>' + esc(tx('s1')) + '</h2>' +
     (S.pkgs.length ? '<div class="field"><label>' + esc(tx('pkg')) + '</label><select id="rwPkg"><option value="">' + esc(tx('pkgNone')) + '</option>' + S.pkgs.map(k => '<option value="' + esc(k.code) + '"' + (S.pkg === k.code ? ' selected' : '') + '>' + esc(pkgName(k)) + '</option>').join('') + '</select></div>' : '') + '<div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><input type="datetime-local" id="rwStart" value="' + esc(S.start) + '"></div>' +
@@ -476,12 +479,12 @@ function draw() {
     '<div class="field"><label>' + esc(tx('note')) + '</label><textarea id="rwNote" maxlength="500">' + esc(S.note) + '</textarea></div>' +
     '<div class="hp" aria-hidden="true"><label>website<input id="rwHp" tabindex="-1" autocomplete="off"></label></div>' +
     '<div class="rw-note">' + esc(tx('notice')) + '</div>' +
-    '<div class="rw-sum"><span>' + esc(tx('est')) + '</span><span id="rwEst">' + esc(fmt(est())) + '</span></div>' +
+    '<div class="rw-sum"><span>' + esc(tx('est')) + '</span><span id="rwEst">' + esc(kip(est()) + approx(est())) + '</span></div>' +
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
   $('rwStart').onchange = $('rwEnd').onchange = () => { S.start = $('rwStart').value; if (!curPkg()) S.end = $('rwEnd').value; S.msg = ''; loadCatalog(); };
   if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; S.msg = ''; loadCatalog(); };
-  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = fmt(est()); $('rwDepNote').innerHTML = depNote(); });
+  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = kip(est()) + approx(est()); $('rwDepNote').innerHTML = depNote(); });
   $('rwDep').onchange = () => { S.dep = $('rwDep').value; $('rwDepNote').innerHTML = depNote(); };
   if ($('rwAgree')) $('rwAgree').onchange = () => { S.agree = $('rwAgree').checked; };
   ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; });
