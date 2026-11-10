@@ -486,7 +486,7 @@ const WEB_LIMITS = {
   createBooking: [5, 86400, 40, 3600],
   filmRequest: [5, 86400, 40, 3600],
   registerCustomer: [3, 86400, 30, 3600],
-  "evt.createRegistration": [10, 3600, 300, 3600],
+  "evt.createRegistration": [30, 3600, 300, 3600],
   "evt.submitPayment": [10, 3600, 200, 3600],
   "evt.requestCategoryChange": [10, 3600, 200, 3600]
 };
@@ -5522,7 +5522,7 @@ function makeApp(ctx) {
     "createBooking": [5, 86400, 40, 3600],
     "filmRequest": [5, 86400, 40, 3600],
     "registerCustomer": [3, 86400, 30, 3600],
-    "evt.createRegistration": [10, 3600, 300, 3600],
+    "evt.createRegistration": [30, 3600, 300, 3600],
     "evt.submitPayment": [10, 3600, 200, 3600]
   };
   function _webGuard_(e) {
