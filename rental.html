@@ -342,6 +342,9 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-msg{font-weight:700;padding:12px 14px;border:2px solid #000;background:#fff;display:none}
 .rw-msg.on{display:block}
 .hp{position:absolute;left:-9999px;height:0;width:0;overflow:hidden}
+.rw-note:empty{display:none}
+.rw section,.rw .field,.rw .row2>*{min-width:0}.field select{width:100%;max-width:100%;text-overflow:ellipsis}
+.rw-terms{max-height:220px;overflow:auto;white-space:pre-wrap;border:1px solid var(--grey-300);padding:12px 14px;font-size:13.5px;line-height:1.6;background:#fafafa}.rw-agree{display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-weight:600;cursor:pointer}.rw-agree input{margin-top:4px;width:18px;height:18px}
 .rw-empty{color:var(--grey-600);padding:18px;border:1px dashed var(--grey-300);text-align:center}
 @media (max-width:860px){.rw-item .ph{width:64px;height:52px}.rw-item{flex-wrap:wrap}.rw-item .pr{width:100%;text-align:left}}
 </style>
@@ -386,6 +389,15 @@ const TX = {
   pkg: { lo: 'ແພັກເກັດເຊົ່າ', th: 'แพ็กเกจเช่า', en: 'Rental package' }, pkgNone: { lo: 'ກຳນົດວັນເວລາເອງ', th: 'กำหนดวันเวลาเอง', en: 'Choose my own dates' },
   pkgNoPrice: { lo: 'ບໍ່ມີແພັກເກັດນີ້', th: 'ไม่มีแพ็กเกจนี้', en: 'Package not offered' }, pkgEnd: { lo: 'ຄືນຂອງ (ຄຳນວນໃຫ້)', th: 'คืนของ (คำนวณให้)', en: 'Return (calculated)' },
   ePkg: { lo: 'ແພັກເກັດນີ້ບໍ່ເປີດແລ້ວ — ກະລຸນາເລືອກໃໝ່', th: 'แพ็กเกจนี้ปิดแล้ว — กรุณาเลือกใหม่', en: 'This package is no longer offered — please choose again' },
+  s4: { lo: 'ມັດຈຳ ແລະ ຂໍ້ກຳນົດ', th: 'มัดจำและข้อกำหนด', en: 'Deposit & terms' },
+  depT: { lo: 'ວິທີມັດຈຳ', th: 'วิธีมัดจำ', en: 'Deposit method' }, depCash: { lo: 'ເງິນສົດ (ຈ່າຍຕອນຮັບຂອງ)', th: 'เงินสด (จ่ายตอนรับของ)', en: 'Cash (paid at pick-up)' },
+  depPass: { lo: 'ມອບພາສປອດຕົວຈິງໄວ້ທີ່ຮ້ານ (ແທນເງິນ)', th: 'มอบพาสปอร์ตตัวจริงไว้ที่ร้าน (แทนเงิน)', en: 'Leave the original passport at the shop (instead of cash)' },
+  depNote: { lo: 'ພາສປອດຕົວຈິງຕ້ອງມອບໃຫ້ພະນັກງານຕອນຮັບຂອງ ແລະ ຮັບຄືນຕອນຄືນຂອງ — ບໍ່ຕ້ອງໃສ່ເລກພາສປອດໃນເວັບ', th: 'พาสปอร์ตตัวจริงต้องมอบให้พนักงานตอนรับของ และรับคืนตอนคืนของ — ไม่ต้องกรอกเลขพาสปอร์ตบนเว็บ', en: 'The original passport is handed to staff at pick-up and returned when you return the items — no passport number is entered online' },
+  depNoPass: { lo: 'ບາງລາຍການບໍ່ຮັບພາສປອດແທນເງິນ', th: 'บางรายการไม่รับพาสปอร์ตแทนเงินมัดจำ', en: 'Some items do not accept a passport as deposit' },
+  depSum: { lo: 'ມັດຈຳເງິນສົດ', th: 'มัดจำเงินสด', en: 'Cash deposit' }, termsT: { lo: 'ຂໍ້ກຳນົດສັນຍາເຊົ່າ', th: 'ข้อกำหนดสัญญาเช่า', en: 'Rental contract terms' },
+  agree: { lo: 'ຂ້ອຍໄດ້ອ່ານ ແລະ ຍອມຮັບຂໍ້ກຳນົດດ້ານເທິງ (ສັນຍາມີຜົນເມື່ອເຊັນທີ່ຮ້ານຕອນຮັບຂອງ)', th: 'ข้าพเจ้าได้อ่านและยอมรับข้อกำหนดข้างต้น (สัญญามีผลเมื่อลงนามที่ร้านตอนรับของ)', en: 'I have read and accept the terms above (the contract takes effect when I sign at the shop at pick-up)' },
+  eTerms: { lo: 'ກະລຸນາຕິກຍອມຮັບຂໍ້ກຳນົດ', th: 'กรุณาติ๊กยอมรับข้อกำหนด', en: 'Please accept the terms' }, eDep: { lo: 'ວິທີມັດຈຳບໍ່ຖືກຕ້ອງ ຫຼື ບາງລາຍການບໍ່ຮັບພາສປອດ', th: 'วิธีมัดจำไม่ถูกต้อง หรือบางรายการไม่รับพาสปอร์ต', en: 'Invalid deposit method, or an item does not accept a passport' },
+  eTermsNew: { lo: 'ຂໍ້ກຳນົດມີການປ່ຽນແປງ — ກະລຸນາອ່ານ ແລະ ຕິກໃໝ່', th: 'ข้อกำหนดมีการเปลี่ยนแปลง — กรุณาอ่านและติ๊กใหม่', en: 'The terms were updated — please read and accept again' },
   eErr: { lo: 'ສົ່ງບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ທັກ WhatsApp', th: 'ส่งไม่สำเร็จ — ลองใหม่ หรือทัก WhatsApp', en: 'Could not send — try again or message us on WhatsApp' },
 };
 const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
@@ -395,7 +407,7 @@ const pad = n => String(n).padStart(2, '0');
 const locStr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 const nextHour = (add) => { const d = new Date(Date.now() + add * 3600000); d.setMinutes(0, 0, 0); return d; };
 
-const S = { start: locStr(nextHour(2)), end: locStr(nextHour(26)), items: [], pkgs: [], pkg: '', sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
+const S = { start: locStr(nextHour(2)), end: locStr(nextHour(26)), items: [], pkgs: [], pkg: '', terms: null, dep: 'cash', agree: false, sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
 try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
 if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
 
@@ -413,18 +425,27 @@ function est() {
   }, 0);
 }
 
+const selItems = () => S.items.filter(i => S.sel.has(i.id));
+const depTotal = () => selItems().reduce((s, i) => s + Number(i.depositThb || 0), 0);
+const passAll = () => selItems().length > 0 && selItems().every(i => i.passportOk);
+const termsText = () => S.terms ? (S.terms[sdLang()] || S.terms.th || '') : '';
+
 async function loadCatalog() {
   const w = win(); let u = RW_API + '?op=catalog';
   if (w) u += '&start=' + encodeURIComponent(w[0].toISOString()) + '&end=' + encodeURIComponent(w[1].toISOString());
   try {
     const j = await (await fetch(u)).json();
-    S.enabled = j.enabled !== false; S.items = j.items || []; S.pkgs = j.packages || [];
+    S.enabled = j.enabled !== false; S.items = j.items || []; S.pkgs = j.packages || []; S.terms = j.terms || null;
     if (S.pkg && !curPkg()) S.pkg = '';
     S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free && (!curPkg() || priceOf(i) != null))));
   } catch (_) { S.items = []; S.msg = tx('eErr'); }
   S.loaded = true; draw();
 }
 
+function depNote() {
+  if (S.dep === 'passport') return esc(tx('depNote')) + (selItems().length && !passAll() ? '<br><b>⚠ ' + esc(tx('depNoPass')) + '</b>' : '');
+  const d = depTotal(); return d > 0 ? esc(tx('depSum')) + ': <b>' + esc(fmt(d)) + '</b>' : '';
+}
 function draw() {
   $('rwCrumb').textContent = tx('crumb'); $('rwH1').textContent = tx('h1'); $('rwSub').textContent = tx('sub');
   const root = $('rw');
@@ -446,7 +467,10 @@ function draw() {
     (S.pkgs.length ? '<div class="field"><label>' + esc(tx('pkg')) + '</label><select id="rwPkg"><option value="">' + esc(tx('pkgNone')) + '</option>' + S.pkgs.map(k => '<option value="' + esc(k.code) + '"' + (S.pkg === k.code ? ' selected' : '') + '>' + esc(pkgName(k)) + '</option>').join('') + '</select></div>' : '') + '<div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><input type="datetime-local" id="rwStart" value="' + esc(S.start) + '"></div>' +
     '<div class="field"><label>' + esc(curPkg() ? tx('pkgEnd') : tx('to')) + '</label><input type="datetime-local" id="rwEnd" value="' + esc(endOf()) + '"' + (curPkg() ? ' disabled' : '') + '></div></div></section>' +
     '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' +
-    '<form id="rwForm" novalidate><h2><i>3</i>' + esc(tx('s3')) + '</h2><div style="display:grid;gap:14px">' +
+    '<section><h2><i>3</i>' + esc(tx('s4')) + '</h2><div class="field"><label>' + esc(tx('depT')) + '</label><select id="rwDep"><option value="cash"' + (S.dep === 'cash' ? ' selected' : '') + '>' + esc(tx('depCash')) + '</option><option value="passport"' + (S.dep === 'passport' ? ' selected' : '') + '>' + esc(tx('depPass')) + '</option></select></div>' +
+    '<div class="rw-note" id="rwDepNote">' + depNote() + '</div>' +
+    (S.terms ? '<h3 style="margin:16px 0 6px;font-size:15px">' + esc(tx('termsT')) + ' <small>v' + esc(S.terms.version) + '</small></h3><div class="rw-terms" id="rwTerms">' + esc(termsText()) + '</div><label class="rw-agree"><input type="checkbox" id="rwAgree"' + (S.agree ? ' checked' : '') + '> <span>' + esc(tx('agree')) + '</span></label>' : '') + '</section>' +
+    '<form id="rwForm" novalidate><h2><i>4</i>' + esc(tx('s3')) + '</h2><div style="display:grid;gap:14px">' +
     '<div class="row2"><div class="field"><label>' + esc(tx('name')) + '</label><input id="rwName" maxlength="80" autocomplete="name" value="' + esc(S.name) + '"></div>' +
     '<div class="field"><label>' + esc(tx('phone')) + '</label><input id="rwPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" value="' + esc(S.phone) + '"></div></div>' +
     '<div class="field"><label>' + esc(tx('note')) + '</label><textarea id="rwNote" maxlength="500">' + esc(S.note) + '</textarea></div>' +
@@ -457,7 +481,9 @@ function draw() {
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
   $('rwStart').onchange = $('rwEnd').onchange = () => { S.start = $('rwStart').value; if (!curPkg()) S.end = $('rwEnd').value; S.msg = ''; loadCatalog(); };
   if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; S.msg = ''; loadCatalog(); };
-  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = fmt(est()); });
+  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = fmt(est()); $('rwDepNote').innerHTML = depNote(); });
+  $('rwDep').onchange = () => { S.dep = $('rwDep').value; $('rwDepNote').innerHTML = depNote(); };
+  if ($('rwAgree')) $('rwAgree').onchange = () => { S.agree = $('rwAgree').checked; };
   ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; });
   $('rwForm').onsubmit = submit;
 }
@@ -470,16 +496,19 @@ async function submit(ev) {
   if (digits.length < 8 || digits.length > 15) return fail(tx('ePhone'));
   const w = win(); if (!w) return fail(tx('eTime'));
   if (!S.sel.size || S.sel.size > 4) return fail(tx('eItems'));
+  if (S.dep === 'passport' && !passAll()) return fail(tx('eDep'));
+  if (S.terms && !S.agree) return fail(tx('eTerms'));
   S.busy = true; S.msg = ''; draw();
   try {
     const r = await fetch(RW_API + '?op=request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
-      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), packageCode: S.pkg || undefined, assetIds: Array.from(S.sel), note: S.note.trim(),
+      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), packageCode: S.pkg || undefined, depositType: S.dep, termsAccepted: !!(S.terms && S.agree), termsVersion: S.terms ? S.terms.version : undefined, assetIds: Array.from(S.sel), note: S.note.trim(),
       requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
     const j = await r.json().catch(() => ({}));
     S.busy = false;
     if (j.ok) { S.done = j.id; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); return; }
-    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', ITEMS: 'eItems', PACKAGE: 'ePkg', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
-    S.msg = tx(map[j.code] || 'eErr'); draw(); if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE') loadCatalog();
+    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', ITEMS: 'eItems', PACKAGE: 'ePkg', TERMS: 'eTermsNew', DEPOSIT: 'eDep', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
+    S.msg = tx(map[j.code] || 'eErr'); draw(); if (j.code === 'TERMS') S.agree = false;
+    if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE' || j.code === 'TERMS') loadCatalog();
   } catch (_) { S.busy = false; S.msg = tx('eErr'); draw(); }
 }
 document.addEventListener('langchange', draw);
