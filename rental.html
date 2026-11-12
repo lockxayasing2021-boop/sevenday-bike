@@ -363,6 +363,13 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-bk .no{font-weight:900;font-size:17px}
 .rw-bk .st{display:inline-block;padding:2px 10px;background:var(--black);color:#fff;font-size:13px;font-weight:700;margin-left:8px}
 .rw-bk p{margin:6px 0 0}
+.rw-ex{border:2px solid var(--black);padding:12px;margin-top:12px}
+.rw-ex h3{font-size:16px;margin:0 0 8px}
+.rw-ex .exrow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.rw-ex .exrow>*{flex:1 1 140px}
+.rw-ex .note{padding:10px;border:1px solid var(--grey-300);background:#f6f7fb;margin:8px 0;font-size:14px}
+.rw-ex .note.warn{border-color:#b45309;background:#fef3c7;color:#78350f}
+.rw-ex .note.ok{border-color:#166534;background:#f0fdf4;color:#14532d}
 @media (max-width:860px){.rw-add .qty{width:100%;justify-content:flex-end}}
 </style>
 </head>
@@ -383,6 +390,7 @@ const TX = {
   sub: { lo: 'ເລືອກວັນເວລາ ແລະ ລົດທີ່ວ່າງ ແລ້ວກົດຈອງໄດ້ທັນທີ', th: 'เลือกวันเวลาและจักรยานที่ว่าง แล้วกดจองได้ทันที', en: 'Pick your dates and a free bike, then book instantly' },
   s1: { lo: 'ເລືອກວັນ ແລະ ເວລາ', th: 'เลือกวันและเวลา', en: 'Choose dates & time' },
   from: { lo: 'ເລີ່ມເຊົ່າ (ຮັບລົດ)', th: 'เริ่มเช่า (รับรถ)', en: 'Pick-up' }, to: { lo: 'ຄືນລົດ', th: 'คืนรถ', en: 'Return' },
+  wkend: { lo: 'ເສົາ–ອາທິດ', th: 'เสาร์–อาทิตย์', en: 'Sat–Sun' },
   hoursNote: { lo: 'ຮັບ ແລະ ຄືນລົດໄດ້ໃນເວລາເປີດຮ້ານ {o}–{c}', th: 'รับและคืนรถได้ในเวลาเปิดร้าน {o}–{c}', en: 'Pick-up and return during opening hours {o}–{c}' },
   s2: { lo: 'ເລືອກລົດທີ່ຈະເຊົ່າ', th: 'เลือกจักรยานที่จะเช่า', en: 'Choose your bike' },
   sAdd: { lo: 'ອຸປະກອນເຊົ່າເພີ່ມ', th: 'อุปกรณ์เช่าเพิ่มเติม', en: 'Add-on gear' },
@@ -424,6 +432,25 @@ const TX = {
   mineH: { lo: 'ການຈອງຂອງຂ້ອຍ', th: 'การจองของฉัน', en: 'My bookings' }, mineHint: { lo: 'ໃສ່ເບີໂທ ແລະ ເລກທີ່ຈອງ (RT-…) ທີ່ໄດ້ຮັບຕອນຈອງ', th: 'กรอกเบอร์โทรและเลขที่จอง (RT-…) ที่ได้รับตอนจอง', en: 'Enter your phone and booking number (RT-…) from your confirmation' },
   mineNo: { lo: 'ເລກທີ່ຈອງ', th: 'เลขที่จอง', en: 'Booking number' }, mineGo: { lo: 'ຄົ້ນຫາ', th: 'ค้นหา', en: 'Find' },
   mineNf: { lo: 'ບໍ່ພົບການຈອງ — ກວດເບີໂທ ແລະ ເລກທີ່ຈອງ', th: 'ไม่พบการจอง — ตรวจเบอร์โทรและเลขที่จองอีกครั้ง', en: 'Booking not found — check phone and booking number' },
+  exH: { lo: 'ຂໍຕໍ່ສັນຍາເຊົ່າ', th: 'ขอต่อสัญญาเช่า', en: 'Request an extension' },
+  exUntil: { lo: 'ຕໍ່ໄດ້ເຖິງ', th: 'ต่อได้ถึง', en: 'You can extend until' },
+  exNewD: { lo: 'ວັນຄືນລົດໃໝ່', th: 'คืนรถใหม่ (วัน)', en: 'New return date' }, exNewT: { lo: 'ເວລາ', th: 'เวลา', en: 'Time' },
+  exPick: { lo: 'ກະລຸນາເລືອກວັນຄືນລົດໃໝ່', th: 'กรุณาเลือกวันคืนรถใหม่', en: 'Please choose a new return date' },
+  exQuote: { lo: 'ເບິ່ງຄ່າເຊົ່າເພີ່ມ', th: 'ดูค่าเช่าเพิ่ม', en: 'See extra cost' },
+  exExtra: { lo: 'ຄ່າເຊົ່າເພີ່ມ', th: 'ค่าเช่าเพิ่ม', en: 'Extra rent' },
+  exSend: { lo: 'ສົ່ງຄຳຂໍຕໍ່ສັນຍາ', th: 'ส่งคำขอต่อสัญญา', en: 'Send extension request' },
+  exSentNote: { lo: 'ພະນັກງານຈະກວດ ແລະ ຢືນຢັນທາງ WhatsApp — ຍັງບໍ່ຖືວ່າຕໍ່ແລ້ວຈົນກວ່າຈະຢືນຢັນ', th: 'พนักงานจะตรวจและยืนยันทาง WhatsApp — ยังไม่ถือว่าต่อสัญญาจนกว่าจะยืนยัน', en: 'Staff will review and confirm via WhatsApp — the booking is not extended until confirmed' },
+  exPending: { lo: 'ສົ່ງຄຳຂໍແລ້ວ ລໍພະນັກງານຢືນຢັນ — ຂໍຄືນລົດວັນທີ', th: 'ส่งคำขอแล้ว รอพนักงานยืนยัน — ขอคืนรถวันที่', en: 'Request sent, awaiting staff — requested return' },
+  exApproved: { lo: 'ພະນັກງານອະນຸມັດຕໍ່ສັນຍາແລ້ວ', th: 'พนักงานอนุมัติการต่อสัญญาแล้ว', en: 'Extension approved by staff' },
+  exRejected: { lo: 'ຄຳຂໍຕໍ່ສັນຍາບໍ່ໄດ້ຮັບການອະນຸມັດ', th: 'คำขอต่อสัญญาไม่ได้รับอนุมัติ', en: 'Extension request was not approved' },
+  eEXT_QUEUE: { lo: 'ມີລູກຄ້າຈອງລົດຄັນນີ້ຕໍ່ຈາກທ່ານ ຈຶ່ງຕໍ່ສັນຍາບໍ່ໄດ້ — ກະລຸນານຳລົດມາຄືນກ່ອນ ແລ້ວເລືອກລົດຄັນໃໝ່ທີ່ວ່າງ', th: 'มีลูกค้าจองต่อจากคุณแล้ว จึงต่อสัญญาไม่ได้ — กรุณานำรถมาคืนก่อน แล้วเลือกจักรยานคันใหม่ที่ว่าง', en: 'Another booking follows yours, so it cannot be extended — please return the bike and choose a new free one' },
+  eEXT_OVERDUE: { lo: 'ເກີນກຳນົດຄືນແລ້ວ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'เลยกำหนดคืนแล้ว — กรุณาติดต่อร้าน', en: 'Past the return time — please contact the shop' },
+  eEXT_RANGE: { lo: 'ວັນ/ເວລາຄືນໃໝ່ໃຊ້ບໍ່ໄດ້ (ຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ ແລະ ຫຼັງຈາກວັນຄືນເດີມ)', th: 'วัน/เวลาคืนใหม่ใช้ไม่ได้ (ต้องอยู่ในเวลาเปิดร้านและหลังวันคืนเดิม)', en: 'That return time is not allowed (must be in opening hours and after the current return)' },
+  eEXT_PENDING: { lo: 'ມີຄຳຂໍທີ່ລໍຖ້າຢູ່ແລ້ວ', th: 'มีคำขอที่รออนุมัติอยู่แล้ว', en: 'A request is already pending' },
+  eEXT_STATUS: { lo: 'ສັນຍານີ້ຕໍ່ບໍ່ໄດ້', th: 'สัญญานี้ต่อไม่ได้', en: 'This booking cannot be extended' },
+  eEXT_PRICE: { lo: 'ຄິດລາຄາບໍ່ໄດ້ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'คิดราคาไม่ได้ — กรุณาติดต่อร้าน', en: 'Cannot price this — please contact the shop' },
+  eLIMIT: { lo: 'ສົ່ງຄຳຂໍຫຼາຍເກີນໄປ ລອງໃໝ່ມື້ອື່ນ', th: 'ส่งคำขอบ่อยเกินไป ลองใหม่พรุ่งนี้', en: 'Too many requests — try again tomorrow' },
+  exFreeBikes: { lo: 'ເບິ່ງລົດທີ່ວ່າງ', th: 'ดูจักรยานที่ว่าง', en: 'See free bikes' },
   mineDev: { lo: 'ການຈອງໃນເຄື່ອງນີ້', th: 'การจองในเครื่องนี้', en: 'Bookings on this device' },
   stReserved: { lo: 'ຈອງແລ້ວ — ລໍຖ້າຮັບລົດ', th: 'จองแล้ว — รอรับรถ', en: 'Booked — awaiting pick-up' }, stActive: { lo: 'ກຳລັງເຊົ່າ', th: 'กำลังเช่า', en: 'Rented out' },
   stReturned: { lo: 'ຄືນລົດແລ້ວ', th: 'คืนรถแล้ว', en: 'Returned' }, stClosed: { lo: 'ປິດສັນຍາແລ້ວ', th: 'ปิดสัญญาแล้ว', en: 'Completed' }, stCancelled: { lo: 'ຍົກເລີກ', th: 'ยกเลิก', en: 'Cancelled' },
@@ -447,9 +474,11 @@ try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
 if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
 
 // ຊ່ອງເວລາທີ່ເລືອກໄດ້ (ທຸກ 30 ນາທີ ໃນເວລາເປີດຮ້ານ)
-function slots() { const o = mins(S.hours.open), c = mins(S.hours.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
+// ເວລາເປີດຮ້ານຕາມວັນ: ເສົາ–ອາທິດ ໃຊ້ S.hours.weekend (ຖ້າມີ) · d = Date ຫຼື 'YYYY-MM-DD'
+function hrsOn(d) { const w = S.hours.weekend; if (!d || !w) return S.hours; const g = (d instanceof Date ? d : new Date(String(d).slice(0, 10) + 'T12:00:00')).getDay(); return g === 0 || g === 6 ? w : S.hours; }
+function slots(ds) { const h = hrsOn(ds), o = mins(h.open), c = mins(h.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
 const curPkg = () => S.pkgs.find(k => k.code === S.pkg) || null;
-const inHours = d => { const m = d.getHours() * 60 + d.getMinutes(); return m >= mins(S.hours.open) && m <= mins(S.hours.close); };
+const inHours = d => { const h = hrsOn(d), m = d.getHours() * 60 + d.getMinutes(); return m >= mins(h.open) && m <= mins(h.close); };
 // ເວລາເລີ່ມທີ່ເລືອກໄດ້: ບໍ່ຍ້ອນຫຼັງ · ແພັກເກັດ: ເວລາຄືນຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ
 function startOk(ds, ts) {
   const a = at(ds, ts); if (isNaN(a) || a.getTime() < Date.now() - 900000) return false;
@@ -457,7 +486,7 @@ function startOk(ds, ts) {
 }
 function firstStart() {
   const d = new Date(); d.setSeconds(0, 0);
-  for (let i = 0; i < 8; i++) { const ds = dStr(d); const t = slots().find(x => startOk(ds, x) && at(ds, x).getTime() >= Date.now() + 3600000); if (t) return [ds, t]; d.setDate(d.getDate() + 1); }
+  for (let i = 0; i < 8; i++) { const ds = dStr(d); const t = slots(ds).find(x => startOk(ds, x) && at(ds, x).getTime() >= Date.now() + 3600000); if (t) return [ds, t]; d.setDate(d.getDate() + 1); }
   return [dStr(new Date()), S.hours.open];
 }
 (() => { const [ds, ts] = firstStart(); S.sd = ds; S.st = ts; const e = new Date(at(ds, ts).getTime() + 86400000); S.ed = dStr(e); S.et = ts; })();
@@ -493,7 +522,7 @@ const est = () => selItems().reduce((s, i) => s + costOf(i), 0) + selAdds().redu
 const depTotal = () => selItems().reduce((s, i) => s + Number(i.depositThb || 0), 0) + selAdds().reduce((s, a) => s + Number(a.depositThb || 0) * S.add[a.key], 0);
 const passAll = () => selItems().length > 0 && selItems().every(i => i.passportOk) && selAdds().every(a => a.passportOk);
 const addOk = a => a.free > 0 && (!curPkg() || priceOf(a) != null);
-const hoursTxt = k => tx(k).replace('{o}', S.hours.open).replace('{c}', S.hours.close);
+const hoursTxt = k => { const w = S.hours.weekend, h = S.hours; return tx(k).replace('{o}–{c}', h.open + '–' + h.close + (w && (w.open !== h.open || w.close !== h.close) ? ' (' + tx('wkend') + ' ' + w.open + '–' + w.close + ')' : '')); };
 
 async function loadCatalog() {
   const w = win(); let u = RW_API + '?op=catalog';
@@ -514,8 +543,8 @@ function depNote() {
   const d = depTotal(); return d > 0 ? esc(tx('depSum')) + ': <b>' + esc(fmt(d)) + '</b>' : '';
 }
 function timeSel(id, ds, val, dis, okFn) {
-  return '<select id="' + id + '"' + (dis ? ' disabled' : '') + '>' + slots().map(t => '<option' + (t === val ? ' selected' : '') + (okFn && !okFn(ds, t) ? ' disabled' : '') + '>' + t + '</option>').join('') +
-    (slots().indexOf(val) < 0 ? '<option selected disabled>' + esc(val) + '</option>' : '') + '</select>';
+  return '<select id="' + id + '"' + (dis ? ' disabled' : '') + '>' + slots(ds).map(t => '<option' + (t === val ? ' selected' : '') + (okFn && !okFn(ds, t) ? ' disabled' : '') + '>' + t + '</option>').join('') +
+    (slots(ds).indexOf(val) < 0 ? '<option selected disabled>' + esc(val) + '</option>' : '') + '</select>';
 }
 function addonsHtml() {
   if (!S.addons.length || !S.sel.size) return '';
@@ -570,10 +599,10 @@ function draw() {
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
   const re = () => { S.msg = ''; loadCatalog(); };
-  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots().find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; re(); };
+  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; if (slots(S.sd).indexOf(S.st) < 0) S.st = slots(S.sd)[slots(S.sd).length - 1]; if (!curPkg() && slots(S.ed).indexOf(S.et) < 0) S.et = slots(S.ed)[slots(S.ed).length - 1]; re(); };
   $('rwSt').onchange = () => { S.st = $('rwSt').value; re(); };
-  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
-  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; if (curPkg() && !startOk(S.sd, S.st)) { const t = slots().find(x => startOk(S.sd, x)); if (t) S.st = t; } re(); };
+  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; const L = slots(S.ed); if (L.indexOf(S.et) < 0) S.et = L[L.length - 1]; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
+  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; if (curPkg() && !startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } re(); };
   const upd = () => { $('rwEst').textContent = kip(est()) + approx(est()); $('rwDepNote').innerHTML = depNote(); };
   root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); if (!S.sel.size) S.add = {}; draw(); });
   root.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const a = S.addons.find(x => x.key === b.dataset.k); if (!a) return; const q = (S.add[a.key] || 0) + (b.dataset.q === '+' ? 1 : -1); S.add[a.key] = Math.max(0, Math.min(q, a.free, 4)); draw(); });
@@ -616,13 +645,57 @@ const M = { open: false, res: [], msg: '', busy: false, ph: '', id: '' };
 const fdt = v => v ? new Date(v).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 async function mineFetch(phone, id) {
   const r = await fetch(RW_API + '?op=mine', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone, id }) });
-  const j = await r.json().catch(() => ({})); return j.ok ? j : null;
+  const j = await r.json().catch(() => ({})); if (j.ok) j.ph = phone; return j.ok ? j : null;
+}
+// ===== ຂໍຕໍ່ສັນຍາ (5J): ສົ່ງຄຳຂໍໃຫ້ພະນັກງານອະນຸມັດ · ຖ້າມີຄິວຈອງຕໍ່ = ຕໍ່ບໍ່ໄດ້ =====
+M.ex = {};
+const extTimes = ds => slots(ds || undefined);
+const vteDate = v => new Date(new Date(v).getTime() + 7 * 3600e3).toISOString().slice(0, 10);
+function exErr(code) { return tx('eEXT_' + code) !== 'eEXT_' + code ? tx('eEXT_' + code) : (tx('e' + code) !== 'e' + code ? tx('e' + code) : tx('eErr')); }
+function exHtml(b) {
+  if (b.status !== 'active' || !b.extend) return '';
+  const X = M.ex[b.id] || (M.ex[b.id] = { d: '', t: '16:00', q: null, msg: '', busy: false, sent: false });
+  const ext = b.extension, e = b.extend;
+  let h = '<div class="rw-ex"><h3>' + esc(tx('exH')) + '</h3>';
+  if (ext && ext.status === 'pending') return h + '<div class="note ok">' + esc(tx('exPending')) + ' <b>' + esc(fdt(ext.newEnd)) + '</b> · ' + esc(tx('exExtra')) + ' <b>' + esc(kip(ext.extraLak)) + '</b></div></div>';
+  if (ext && ext.status === 'approved' && !X.sent) h += '<div class="note ok">' + esc(tx('exApproved')) + '</div>';
+  if (ext && ext.status === 'rejected') h += '<div class="note warn">' + esc(tx('exRejected')) + (ext.reason ? ': ' + esc(ext.reason) : '') + '</div>';
+  if (!e.canExtend) {
+    const k = e.code === 'QUEUE' || e.code === 'OVERDUE' || e.code === 'STATUS' ? e.code : 'STATUS';
+    return h + '<div class="note warn">' + esc(exErr(k)) + '</div></div>';
+  }
+  h += '<div class="note">' + esc(tx('exUntil')) + ' <b>' + esc(fdt(e.maxEnd)) + '</b></div>' +
+    '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" data-id="' + esc(b.id) + '" min="' + vteDate(b.endAt) + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
+    '<div class="field"><label>' + esc(tx('exNewT')) + '</label><select data-ex="t" data-id="' + esc(b.id) + '">' + extTimes(X.d).map(t => '<option' + (t === X.t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div></div>';
+  if (X.msg) h += '<div class="rw-msg on">' + esc(X.msg) + '</div>';
+  if (X.q && X.q.canExtend) h += '<div class="note ok">' + esc(tx('exExtra')) + ': <b>' + esc(kip(X.q.extraLak)) + '</b> · ' + esc(fdt(X.qEnd)) + '<br>' + esc(tx('exSentNote')) + '</div>' +
+    '<button class="btn btn-black" type="button" data-ex="send" data-id="' + esc(b.id) + '"' + (X.busy ? ' disabled' : '') + '>' + esc(tx('exSend')) + '</button>';
+  else h += '<button class="btn btn-black" type="button" data-ex="quote" data-id="' + esc(b.id) + '"' + (X.busy ? ' disabled' : '') + '>' + esc(tx('exQuote')) + '</button>';
+  return h + '</div>';
+}
+async function exCall(b, X, confirm) {
+  const endAt = X.d + 'T' + X.t + ':00+07:00';
+  const r = await fetch(RW_API + '?op=extend', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone: b.ph, id: b.id, endAt, confirm: confirm ? 'true' : 'false' }) });
+  const j = await r.json().catch(() => ({})); return { j, endAt };
+}
+async function exAction(act, id) {
+  const b = M.res.find(x => x.id === id), X = M.ex[id]; if (!b || !X) return;
+  if (!X.d) { X.msg = tx('exPick'); drawMine(); return; }
+  X.busy = true; X.msg = ''; drawMine();
+  try {
+    const { j, endAt } = await exCall(b, X, act === 'send');
+    if (!j.ok) X.msg = exErr(j.code || 'ERROR');
+    else if (!j.quote || !j.quote.canExtend) { X.q = null; X.msg = exErr(j.quote && j.quote.code || 'RANGE'); }
+    else if (act === 'quote') { X.q = j.quote; X.qEnd = endAt; }
+    else { X.q = null; X.sent = true; const nb = await mineFetch(b.ph, b.id).catch(() => null); if (nb) M.res = M.res.map(x => x.id === id ? nb : x); }
+  } catch (_) { X.msg = tx('eErr'); }
+  X.busy = false; drawMine();
 }
 function bkHtml(b) {
   const st = { reserved: 'stReserved', active: 'stActive', returned: 'stReturned', closed: 'stClosed', cancelled: 'stCancelled' }[b.status];
   return '<div class="rw-bk"><span class="no">' + esc(b.id) + '</span><span class="st">' + esc(tx(st || 'stReserved')) + '</span>' +
     '<p>' + esc(tx('okWhen')) + ': <b>' + esc(fdt(b.startAt)) + '</b> · ' + esc(tx('okBack')) + ': <b>' + esc(fdt(b.endAt)) + '</b></p>' +
-    '<p>' + esc((b.items || []).map(i => i.name).join(', ')) + '</p>' + (b.rentLak ? '<p>' + esc(tx('est')) + ': <b>' + esc(kip(b.rentLak)) + '</b></p>' : '') + '</div>';
+    '<p>' + esc((b.items || []).map(i => i.name).join(', ')) + '</p>' + (b.rentLak ? '<p>' + esc(tx('est')) + ': <b>' + esc(kip(b.rentLak)) + '</b></p>' : '') + exHtml(b) + '</div>';
 }
 function drawMine() {
   const el = $('rwMine');
@@ -637,6 +710,9 @@ function drawMine() {
     if (b) { saveMine(b.id, ph); M.res = [b].concat(M.res.filter(x => x.id !== b.id)); } else M.msg = tx('mineNf');
     drawMine();
   };
+  $('rwMp').oninput = e => { M.ph = e.target.value; }; $('rwMi').oninput = e => { M.id = e.target.value; };
+  el.onchange = e => { const t = e.target; if (!t.dataset || !t.dataset.ex || !M.ex[t.dataset.id]) return; const X = M.ex[t.dataset.id]; if (t.dataset.ex === 'd') { X.d = t.value; const L = extTimes(X.d); if (L.indexOf(X.t) < 0) X.t = L[L.length - 1]; } if (t.dataset.ex === 't') X.t = t.value; X.q = null; X.msg = ''; drawMine(); };
+  el.onclick = e => { const t = e.target.closest('[data-ex]'); if (t && (t.dataset.ex === 'quote' || t.dataset.ex === 'send')) exAction(t.dataset.ex, t.dataset.id); };
 }
 async function toggleMine() {
   M.open = !$('rwMine').hidden ? false : true; $('rwMine').hidden = !M.open; $('rw').hidden = M.open;
