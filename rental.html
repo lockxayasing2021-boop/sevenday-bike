@@ -352,14 +352,24 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-add{cursor:default}.rw-add.on{border:2px solid #000;padding:13px 15px}
 .rw-add .qty{display:flex;align-items:center;gap:10px;flex-shrink:0}.rw-add .qty button{width:34px;height:34px;border:2px solid #000;border-radius:50%;font-weight:800;font-size:18px;line-height:1}
 .rw-add .qty button:disabled{border-color:var(--grey-300);color:var(--grey-300);cursor:not-allowed}.rw-add .qty b{min-width:18px;text-align:center}
-.rw-link{text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap}
+.rw-link{text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap;color:#0b57d0}
+.rw-link:hover{color:#0842a0}
+.rw-mybar{display:flex;justify-content:flex-end;margin:18px 0 0}
+.rw-mine{border:2px solid var(--black);padding:18px;margin:18px 0}
+.rw-mine h2{font-size:20px;margin:0 0 12px}
+.rw-mine .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.rw-mine .row2{grid-template-columns:1fr}}
+.rw-bk{border:1px solid var(--grey-300);padding:14px;margin-top:12px}
+.rw-bk .no{font-weight:900;font-size:17px}
+.rw-bk .st{display:inline-block;padding:2px 10px;background:var(--black);color:#fff;font-size:13px;font-weight:700;margin-left:8px}
+.rw-bk p{margin:6px 0 0}
 @media (max-width:860px){.rw-add .qty{width:100%;justify-content:flex-end}}
 </style>
 </head>
 <body>
 
 <section class="phero "><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / <span id="rwCrumb"></span></nav><h1 id="rwH1"></h1><p id="rwSub"></p></div><svg class="phero-art" viewBox="0 0 80 70" aria-hidden="true" style="color:#fff"><use href="#i-wrench"/></svg></div></section>
-<main class="wrap"><div class="rw" id="rw"></div></main>
+<main class="wrap"><div class="rw-mybar"><button class="btn btn-line" type="button" id="rwMineBtn"></button></div><div class="rw-mine" id="rwMine" hidden></div><div class="rw" id="rw"></div></main>
 
 <script src="i18n.js"></script>
 <script src="layout.js"></script>
@@ -410,6 +420,13 @@ const TX = {
   depNote: { lo: 'ພາສປອດຕົວຈິງຕ້ອງມອບໃຫ້ພະນັກງານຕອນຮັບລົດ ແລະ ຮັບຄືນຕອນຄືນລົດ — ບໍ່ຕ້ອງໃສ່ເລກພາສປອດໃນເວັບ', th: 'พาสปอร์ตตัวจริงต้องมอบให้พนักงานตอนรับรถ และรับคืนตอนคืนรถ — ไม่ต้องกรอกเลขพาสปอร์ตบนเว็บ', en: 'The original passport is handed to staff at pick-up and returned when you bring the bike back — no passport number is entered online' },
   depNoPass: { lo: 'ບາງລາຍການບໍ່ຮັບພາສປອດແທນເງິນ', th: 'บางรายการไม่รับพาสปอร์ตแทนเงินมัดจำ', en: 'Some items do not accept a passport as deposit' },
   depSum: { lo: 'ມັດຈຳເງິນສົດ', th: 'มัดจำเงินสด', en: 'Cash deposit' },
+  mine: { lo: 'ເບິ່ງການຈອງຂອງຂ້ອຍ', th: 'ดูการจองของฉัน', en: 'View my bookings' }, mineBack: { lo: 'ກັບໄປຈອງລົດ', th: 'กลับไปจองรถ', en: 'Back to booking' },
+  mineH: { lo: 'ການຈອງຂອງຂ້ອຍ', th: 'การจองของฉัน', en: 'My bookings' }, mineHint: { lo: 'ໃສ່ເບີໂທ ແລະ ເລກທີ່ຈອງ (RT-…) ທີ່ໄດ້ຮັບຕອນຈອງ', th: 'กรอกเบอร์โทรและเลขที่จอง (RT-…) ที่ได้รับตอนจอง', en: 'Enter your phone and booking number (RT-…) from your confirmation' },
+  mineNo: { lo: 'ເລກທີ່ຈອງ', th: 'เลขที่จอง', en: 'Booking number' }, mineGo: { lo: 'ຄົ້ນຫາ', th: 'ค้นหา', en: 'Find' },
+  mineNf: { lo: 'ບໍ່ພົບການຈອງ — ກວດເບີໂທ ແລະ ເລກທີ່ຈອງ', th: 'ไม่พบการจอง — ตรวจเบอร์โทรและเลขที่จองอีกครั้ง', en: 'Booking not found — check phone and booking number' },
+  mineDev: { lo: 'ການຈອງໃນເຄື່ອງນີ້', th: 'การจองในเครื่องนี้', en: 'Bookings on this device' },
+  stReserved: { lo: 'ຈອງແລ້ວ — ລໍຖ້າຮັບລົດ', th: 'จองแล้ว — รอรับรถ', en: 'Booked — awaiting pick-up' }, stActive: { lo: 'ກຳລັງເຊົ່າ', th: 'กำลังเช่า', en: 'Rented out' },
+  stReturned: { lo: 'ຄືນລົດແລ້ວ', th: 'คืนรถแล้ว', en: 'Returned' }, stClosed: { lo: 'ປິດສັນຍາແລ້ວ', th: 'ปิดสัญญาแล้ว', en: 'Completed' }, stCancelled: { lo: 'ຍົກເລີກ', th: 'ยกเลิก', en: 'Cancelled' },
   agree: { lo: 'ຂ້ອຍຍອມຮັບຂໍ້ກຳນົດ ແລະ ສັນຍາເຊົ່າສະບັບນີ້ແລ້ວ', th: 'ข้าพเจ้ายอมรับข้อกำหนดและสัญญาเช่าฉบับนี้แล้ว', en: 'I accept the terms and this rental contract' },
   terms: { lo: 'ອ່ານສັນຍາ', th: 'อ่านสัญญา', en: 'Read the contract' },
   eTerms: { lo: 'ກະລຸນາຕິກຍອມຮັບຂໍ້ກຳນົດ ແລະ ສັນຍາ', th: 'กรุณาติ๊กยอมรับข้อกำหนดและสัญญา', en: 'Please accept the terms and contract' }, eDep: { lo: 'ວິທີມັດຈຳບໍ່ຖືກຕ້ອງ ຫຼື ບາງລາຍການບໍ່ຮັບພາສປອດ', th: 'วิธีมัดจำไม่ถูกต้อง หรือบางรายการไม่รับพาสปอร์ต', en: 'Invalid deposit method, or an item does not accept a passport' },
@@ -501,7 +518,7 @@ function addonsHtml() {
 }
 function draw() {
   $('rwCrumb').textContent = tx('crumb'); $('rwH1').textContent = tx('h1'); $('rwSub').textContent = tx('sub');
-  const root = $('rw');
+  const root = $('rw'); $('rwMineBtn').textContent = tx(M.open ? 'mineBack' : 'mine'); if (!$('rwMine').hidden) drawMine();
   if (S.done) {
     const d = S.done, f = v => v ? new Date(v).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
     root.innerHTML = '<div class="rw-ok"><h2>' + esc(tx('okT')) + '</h2><div class="no">' + esc(d.id) + '</div><p>' + esc(tx('okP')) + '</p>' +
@@ -529,7 +546,7 @@ function draw() {
     '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' + addonsHtml() +
     '<section><h2><i>3</i>' + esc(tx('s4')) + '</h2><div class="field"><label>' + esc(tx('depT')) + '</label><select id="rwDep"><option value="cash"' + (S.dep === 'cash' ? ' selected' : '') + '>' + esc(tx('depCash')) + '</option><option value="passport"' + (S.dep === 'passport' ? ' selected' : '') + '>' + esc(tx('depPass')) + '</option></select></div>' +
     '<div class="rw-note" id="rwDepNote">' + depNote() + '</div>' +
-    (S.terms ? '<label class="rw-agree"><input type="checkbox" id="rwAgree"' + (S.agree ? ' checked' : '') + '> <span>' + esc(tx('agree')) + ' — <a href="rental-terms.html?lang=' + esc(sdLang()) + '" target="_blank" rel="noopener" class="rw-link">' + esc(tx('terms')) + ' (v' + esc(S.terms.version) + ')</a></span></label>' : '') + '</section>' +
+    (S.terms ? '<label class="rw-agree"><input type="checkbox" id="rwAgree"' + (S.agree ? ' checked' : '') + '> <span>' + esc(tx('agree')) + ' — <a href="rental-terms.html?lang=' + esc(sdLang()) + '" target="_blank" rel="noopener" class="rw-link">' + esc(tx('terms')) + '</a></span></label>' : '') + '</section>' +
     '<form id="rwForm" novalidate><h2><i>4</i>' + esc(tx('s3')) + '</h2><div style="display:grid;gap:14px">' +
     '<div class="row2"><div class="field"><label>' + esc(tx('name')) + '</label><input id="rwName" maxlength="80" autocomplete="name" value="' + esc(S.name) + '"></div>' +
     '<div class="field"><label>' + esc(tx('phone')) + '</label><input id="rwPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" value="' + esc(S.phone) + '"></div></div>' +
@@ -572,13 +589,49 @@ async function submit(ev) {
       requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
     const j = await r.json().catch(() => ({}));
     S.busy = false;
-    if (j.ok) { S.done = j; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    if (j.ok) { S.done = j; saveMine(j.id, S.phone.trim()); try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', HOURS: 'eHours', ITEMS: 'eItems', PACKAGE: 'ePkg', TERMS: 'eTermsNew', DEPOSIT: 'eDep', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
     S.msg = j.code === 'HOURS' ? hoursTxt('eHours') : tx(map[j.code] || 'eErr'); if (j.code === 'TERMS') S.agree = false; draw();
     if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE' || j.code === 'TERMS') loadCatalog();
   } catch (_) { S.busy = false; S.msg = tx('eErr'); draw(); }
 }
-document.addEventListener('langchange', draw);
+// ===== ດູການຈອງຂອງຂ້ອຍ: ຄົ້ນດ້ວຍເບີໂທ + ເລກທີ່ຈອງ · ຈື່ການຈອງໃນເຄື່ອງນີ້ (localStorage) =====
+const MK = 'rw_mine';
+function mineList() { try { const a = JSON.parse(localStorage.getItem(MK) || '[]'); return Array.isArray(a) ? a.filter(x => x && x.id && x.phone).slice(0, 10) : []; } catch (_) { return []; } }
+function saveMine(id, phone) { if (!id || !phone || id === 'RT-00000000-0000') return; try { const a = mineList().filter(x => x.id !== id); a.unshift({ id, phone }); localStorage.setItem(MK, JSON.stringify(a.slice(0, 10))); } catch (_) {} }
+const M = { open: false, res: [], msg: '', busy: false, ph: '', id: '' };
+const fdt = v => v ? new Date(v).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+async function mineFetch(phone, id) {
+  const r = await fetch(RW_API + '?op=mine', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone, id }) });
+  const j = await r.json().catch(() => ({})); return j.ok ? j : null;
+}
+function bkHtml(b) {
+  const st = { reserved: 'stReserved', active: 'stActive', returned: 'stReturned', closed: 'stClosed', cancelled: 'stCancelled' }[b.status];
+  return '<div class="rw-bk"><span class="no">' + esc(b.id) + '</span><span class="st">' + esc(tx(st || 'stReserved')) + '</span>' +
+    '<p>' + esc(tx('okWhen')) + ': <b>' + esc(fdt(b.startAt)) + '</b> · ' + esc(tx('okBack')) + ': <b>' + esc(fdt(b.endAt)) + '</b></p>' +
+    '<p>' + esc((b.items || []).map(i => i.name).join(', ')) + '</p>' + (b.rentLak ? '<p>' + esc(tx('est')) + ': <b>' + esc(kip(b.rentLak)) + '</b></p>' : '') + '</div>';
+}
+function drawMine() {
+  const el = $('rwMine');
+  el.innerHTML = '<h2>' + esc(tx('mineH')) + '</h2><p class="rw-hint">' + esc(tx('mineHint')) + '</p>' +
+    '<form id="rwMineForm" novalidate><div class="row2"><div class="field"><label>' + esc(tx('phone')) + '</label><input type="tel" id="rwMp" autocomplete="tel" value="' + esc(M.ph) + '"></div>' +
+    '<div class="field"><label>' + esc(tx('mineNo')) + '</label><input type="text" id="rwMi" placeholder="RT-20261112-0001" autocapitalize="characters" value="' + esc(M.id) + '"></div></div>' +
+    '<button class="btn btn-black" type="submit"' + (M.busy ? ' disabled' : '') + '>' + esc(tx('mineGo')) + '</button></form>' +
+    (M.msg ? '<div class="rw-msg on">' + esc(M.msg) + '</div>' : '') + M.res.map(bkHtml).join('');
+  $('rwMineForm').onsubmit = async e => {
+    e.preventDefault(); const ph = $('rwMp').value.trim(), id = $('rwMi').value.trim().toUpperCase(); M.ph = ph; M.id = id;
+    M.busy = true; M.msg = ''; drawMine(); const b = await mineFetch(ph, id).catch(() => null); M.busy = false;
+    if (b) { saveMine(b.id, ph); M.res = [b].concat(M.res.filter(x => x.id !== b.id)); } else M.msg = tx('mineNf');
+    drawMine();
+  };
+}
+async function toggleMine() {
+  M.open = !$('rwMine').hidden ? false : true; $('rwMine').hidden = !M.open; $('rw').hidden = M.open;
+  $('rwMineBtn').textContent = M.open ? tx('mineBack') : tx('mine');
+  if (M.open) { M.res = []; M.msg = ''; drawMine(); const l = mineList(); const rs = await Promise.all(l.map(x => mineFetch(x.phone, x.id).catch(() => null))); M.res = rs.filter(Boolean); drawMine(); }
+}
+$('rwMineBtn').onclick = toggleMine;
+document.addEventListener('langchange', () => { draw(); if (M.open) $('rwMineBtn').textContent = tx('mineBack'); });
 draw(); loadCatalog();
 </script>
 </body>
