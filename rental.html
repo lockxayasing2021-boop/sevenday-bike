@@ -347,6 +347,13 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-terms{max-height:220px;overflow:auto;white-space:pre-wrap;border:1px solid var(--grey-300);padding:12px 14px;font-size:13.5px;line-height:1.6;background:#fafafa}.rw-agree{display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-weight:600;cursor:pointer}.rw-agree input{margin-top:4px;width:18px;height:18px}
 .rw-empty{color:var(--grey-600);padding:18px;border:1px dashed var(--grey-300);text-align:center}
 @media (max-width:860px){.rw-item .ph{width:64px;height:52px}.rw-item{flex-wrap:wrap}.rw-item .pr{width:100%;text-align:left}}
+.rw-dt{display:grid;grid-template-columns:1fr 112px;gap:8px}.rw-dt input,.rw-dt select{width:100%;min-width:0}
+.rw-hint{color:var(--grey-600);font-size:13.5px;margin:8px 0 0}
+.rw-add{cursor:default}.rw-add.on{border:2px solid #000;padding:13px 15px}
+.rw-add .qty{display:flex;align-items:center;gap:10px;flex-shrink:0}.rw-add .qty button{width:34px;height:34px;border:2px solid #000;border-radius:50%;font-weight:800;font-size:18px;line-height:1}
+.rw-add .qty button:disabled{border-color:var(--grey-300);color:var(--grey-300);cursor:not-allowed}.rw-add .qty b{min-width:18px;text-align:center}
+.rw-link{text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap}
+@media (max-width:860px){.rw-add .qty{width:100%;justify-content:flex-end}}
 </style>
 </head>
 <body>
@@ -358,89 +365,116 @@ form.cf .btn{border-radius:0;height:52px}
 <script src="layout.js"></script>
 <script>
 const RW_API = 'https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/rental-web';
-/* ຂໍ້ຄວາມໜ້ານີ້ (ລາວ / ໄທ / English) — ໃຊ້ຕາມພາສາທີ່ເລືອກ ແລະ ແປງໃໝ່ເມື່ອປ່ຽນພາສາ */
+/* ຂໍ້ຄວາມໜ້ານີ້ (ລາວ / ໄທ / English) — ໃຊ້ຕາມພາສາທີ່ເລືອກ ແລະ ແປງໃໝ່ເມື່ອປ່ຽນພາສາ
+ * ເຟສ 5F: ຈອງໄດ້ທັນທີຖ້າຂອງວ່າງ · ເລືອກເວລາໄດ້ສະເພາະເວລາເປີດຮ້ານ · ອຸປະກອນເສີມ · ຂໍ້ກຳນົດເປັນລິ້ງ */
 const TX = {
   crumb: { lo: 'ເຊົ່າລົດຖີບ', th: 'เช่าจักรยาน', en: 'Bike rental' },
   h1: { lo: 'ເຊົ່າລົດຖີບ & ອຸປະກອນ', th: 'เช่าจักรยานและอุปกรณ์', en: 'Rent a bike & gear' },
-  sub: { lo: 'ເລືອກວັນເວລາ ແລ້ວສົ່ງຄຳຂໍ — ພະນັກງານຈະຕິດຕໍ່ຢືນຢັນ', th: 'เลือกวันเวลา แล้วส่งคำขอ — พนักงานจะติดต่อกลับเพื่อยืนยัน', en: 'Pick your dates and send a request — our staff will contact you to confirm' },
+  sub: { lo: 'ເລືອກວັນເວລາ ແລະ ລົດທີ່ວ່າງ ແລ້ວກົດຈອງໄດ້ທັນທີ', th: 'เลือกวันเวลาและจักรยานที่ว่าง แล้วกดจองได้ทันที', en: 'Pick your dates and a free bike, then book instantly' },
   s1: { lo: 'ເລືອກວັນ ແລະ ເວລາ', th: 'เลือกวันและเวลา', en: 'Choose dates & time' },
-  from: { lo: 'ເລີ່ມເຊົ່າ', th: 'เริ่มเช่า', en: 'Pick-up' }, to: { lo: 'ຄືນຂອງ', th: 'คืนของ', en: 'Return' },
-  s2: { lo: 'ເລືອກຂອງທີ່ຈະເຊົ່າ', th: 'เลือกของที่จะเช่า', en: 'Choose what to rent' },
-  s3: { lo: 'ຂໍ້ມູນຕິດຕໍ່', th: 'ข้อมูลติดต่อ', en: 'Your contact details' },
+  from: { lo: 'ເລີ່ມເຊົ່າ (ຮັບລົດ)', th: 'เริ่มเช่า (รับรถ)', en: 'Pick-up' }, to: { lo: 'ຄືນລົດ', th: 'คืนรถ', en: 'Return' },
+  hoursNote: { lo: 'ຮັບ ແລະ ຄືນລົດໄດ້ໃນເວລາເປີດຮ້ານ {o}–{c}', th: 'รับและคืนรถได้ในเวลาเปิดร้าน {o}–{c}', en: 'Pick-up and return during opening hours {o}–{c}' },
+  s2: { lo: 'ເລືອກລົດທີ່ຈະເຊົ່າ', th: 'เลือกจักรยานที่จะเช่า', en: 'Choose your bike' },
+  sAdd: { lo: 'ອຸປະກອນເຊົ່າເພີ່ມ', th: 'อุปกรณ์เช่าเพิ่มเติม', en: 'Add-on gear' },
+  addHint: { lo: 'ເພີ່ມໃນການຈອງດຽວກັນ (ບໍ່ບັງຄັບ)', th: 'เพิ่มในการจองเดียวกัน (ไม่บังคับ)', en: 'Added to the same booking (optional)' },
+  left: { lo: 'ວ່າງ {n}', th: 'ว่าง {n}', en: '{n} free' },
+  s3: { lo: 'ຂໍ້ມູນຕິດຕໍ່ ແລະ ຈອງ', th: 'ข้อมูลติดต่อและจอง', en: 'Your details & booking' },
   name: { lo: 'ຊື່', th: 'ชื่อ', en: 'Name' }, phone: { lo: 'ເບີໂທ / WhatsApp', th: 'เบอร์โทร / WhatsApp', en: 'Phone / WhatsApp' }, note: { lo: 'ໝາຍເຫດ (ບໍ່ບັງຄັບ)', th: 'หมายเหตุ (ไม่บังคับ)', en: 'Notes (optional)' },
   perDay: { lo: '/ ມື້', th: '/ วัน', en: '/ day' }, perHour: { lo: '/ ຊົ່ວໂມງ', th: '/ ชั่วโมง', en: '/ hour' },
   busy: { lo: 'ບໍ່ວ່າງໃນຊ່ວງນີ້', th: 'ไม่ว่างในช่วงนี้', en: 'Not available for these dates' },
   none: { lo: 'ຍັງບໍ່ມີລາຍການໃຫ້ເຊົ່າ', th: 'ยังไม่มีรายการให้เช่า', en: 'Nothing available to rent yet' },
   loading: { lo: 'ກຳລັງໂຫຼດ…', th: 'กำลังโหลด…', en: 'Loading…' },
   est: { lo: 'ຄ່າເຊົ່າໂດຍປະມານ', th: 'ค่าเช่าโดยประมาณ', en: 'Estimated rent' },
-  notice: { lo: 'ນີ້ແມ່ນການສົ່ງຄຳຂໍ — ຍັງບໍ່ແມ່ນການຈອງ ແລະ ບໍ່ຕ້ອງຈ່າຍເງິນຕອນນີ້. ພະນັກງານຈະຕິດຕໍ່ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ (ໃນເວລາເປີດຮ້ານ). ຕອນມາຮັບຂອງ ກະລຸນານຳບັດປະຊາຊົນ ຫຼື ພາສປອດ ມາ ແລະ ຈ່າຍຄ່າເຊົ່າ + ເງິນມັດຈຳ.',
-    th: 'นี่คือการส่งคำขอ — ยังไม่ใช่การจอง และยังไม่ต้องชำระเงิน พนักงานจะติดต่อยืนยันภายใน 2 ชั่วโมง (ในเวลาเปิดร้าน) ตอนมารับของโปรดนำบัตรประชาชนหรือพาสปอร์ตมา พร้อมชำระค่าเช่า + เงินมัดจำ',
-    en: 'This is a request, not a booking yet, and nothing is charged now. Our staff will contact you within 2 hours (during opening hours). Please bring your ID card or passport at pick-up, along with payment for the rent and a deposit.' },
-  send: { lo: 'ສົ່ງຄຳຂໍ', th: 'ส่งคำขอ', en: 'Send request' }, sending: { lo: 'ກຳລັງສົ່ງ…', th: 'กำลังส่ง…', en: 'Sending…' },
-  okT: { lo: 'ໄດ້ຮັບຄຳຂໍແລ້ວ', th: 'ได้รับคำขอแล้ว', en: 'Request received' },
-  okP: { lo: 'ເລກຄຳຂໍຂອງທ່ານ — ພະນັກງານຈະຕິດຕໍ່ກັບທາງໂທລະສັບ / WhatsApp. ຍັງບໍ່ໄດ້ຈອງຂອງໄວ້ຈົນກວ່າພະນັກງານຈະຢືນຢັນ.', th: 'เลขคำขอของคุณ — พนักงานจะติดต่อกลับทางโทรศัพท์ / WhatsApp ของยังไม่ถูกกันไว้จนกว่าพนักงานจะยืนยัน', en: 'Your request number — we will contact you by phone / WhatsApp. Nothing is held until our staff confirms.' },
-  wa: { lo: 'ທັກ WhatsApp ຮ້ານ', th: 'ทัก WhatsApp ร้าน', en: 'Message us on WhatsApp' }, again: { lo: 'ສົ່ງຄຳຂໍໃໝ່', th: 'ส่งคำขอใหม่', en: 'New request' },
-  disabled: { lo: 'ຕອນນີ້ຍັງບໍ່ເປີດຮັບຄຳຂໍເຊົ່າອອນລາຍ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'ขณะนี้ยังไม่เปิดรับคำขอเช่าออนไลน์ — กรุณาติดต่อร้าน', en: 'Online rental requests are closed right now — please contact the shop' },
+  notice: { lo: 'ກົດຈອງແລ້ວ ລະບົບກັນລົດໃຫ້ທັນທີ — ຈ່າຍຄ່າເຊົ່າ + ເງິນມັດຈຳຕອນມາຮັບລົດ ແລະ ນຳບັດປະຊາຊົນ ຫຼື ພາສປອດມາ. ຖ້າບໍ່ມາຮັບພາຍໃນ {m} ນາທີ ຫຼັງເວລາຮັບ ການຈອງຈະຖືກຍົກເລີກອັດຕະໂນມັດ.',
+    th: 'กดจองแล้วระบบกันรถไว้ให้ทันที — ชำระค่าเช่า + เงินมัดจำตอนมารับรถ และนำบัตรประชาชนหรือพาสปอร์ตมาด้วย หากไม่มารับภายใน {m} นาทีหลังเวลารับ การจองจะถูกยกเลิกอัตโนมัติ',
+    en: 'Booking holds the bike for you right away — pay the rent and deposit at pick-up and bring your ID card or passport. If you do not arrive within {m} minutes of the pick-up time, the booking is cancelled automatically.' },
+  send: { lo: 'ຈອງເລີຍ', th: 'จองเลย', en: 'Book now' }, sending: { lo: 'ກຳລັງຈອງ…', th: 'กำลังจอง…', en: 'Booking…' },
+  okT: { lo: 'ຈອງສຳເລັດແລ້ວ', th: 'จองสำเร็จแล้ว', en: 'Booking confirmed' },
+  okP: { lo: 'ເລກການຈອງຂອງທ່ານ — ກະລຸນາມາຮັບລົດຕາມເວລາ ພ້ອມບັດປະຊາຊົນ ຫຼື ພາສປອດ. ພະນັກງານອາດທັກຫາທາງ WhatsApp.', th: 'เลขการจองของคุณ — โปรดมารับรถตามเวลา พร้อมบัตรประชาชนหรือพาสปอร์ต พนักงานอาจทักทาง WhatsApp', en: 'Your booking number — please come at the pick-up time with your ID card or passport. Our staff may message you on WhatsApp.' },
+  okWhen: { lo: 'ຮັບລົດ', th: 'รับรถ', en: 'Pick-up' }, okBack: { lo: 'ຄືນລົດ', th: 'คืนรถ', en: 'Return' },
+  wa: { lo: 'ທັກ WhatsApp ຮ້ານ', th: 'ทัก WhatsApp ร้าน', en: 'Message us on WhatsApp' }, again: { lo: 'ຈອງໃໝ່', th: 'จองใหม่', en: 'New booking' },
+  disabled: { lo: 'ຕອນນີ້ຍັງບໍ່ເປີດຈອງເຊົ່າອອນລາຍ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'ขณะนี้ยังไม่เปิดจองเช่าออนไลน์ — กรุณาติดต่อร้าน', en: 'Online rental booking is closed right now — please contact the shop' },
   eName: { lo: 'ກະລຸນາໃສ່ຊື່', th: 'กรุณากรอกชื่อ', en: 'Please enter your name' }, ePhone: { lo: 'ເບີໂທບໍ່ຖືກຕ້ອງ', th: 'เบอร์โทรไม่ถูกต้อง', en: 'Invalid phone number' },
-  eItems: { lo: 'ກະລຸນາເລືອກຂອງຢ່າງໜ້ອຍ 1 ຊິ້ນ (ສູງສຸດ 4)', th: 'กรุณาเลือกของอย่างน้อย 1 ชิ้น (สูงสุด 4)', en: 'Please select 1–4 items' },
+  eItems: { lo: 'ກະລຸນາເລືອກລົດຢ່າງໜ້ອຍ 1 ຄັນ (ສູງສຸດ 4)', th: 'กรุณาเลือกจักรยานอย่างน้อย 1 คัน (สูงสุด 4)', en: 'Please select 1–4 bikes' },
   eTime: { lo: 'ວັນເວລາບໍ່ຖືກຕ້ອງ (ຢ່າງໜ້ອຍ 1 ຊົ່ວໂມງ, ບໍ່ເກີນ 30 ມື້, ບໍ່ຍ້ອນຫຼັງ)', th: 'วันเวลาไม่ถูกต้อง (อย่างน้อย 1 ชั่วโมง ไม่เกิน 30 วัน ไม่ย้อนหลัง)', en: 'Invalid dates (min 1 hour, max 30 days, not in the past)' },
+  eHours: { lo: 'ເວລາຮັບ/ຄືນລົດຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ {o}–{c}', th: 'เวลารับ/คืนรถต้องอยู่ในเวลาเปิดร้าน {o}–{c}', en: 'Pick-up and return must be within opening hours {o}–{c}' },
+  pkgLate: { lo: 'ແພັກເກັດນີ້ຄືນລົດ {t} ເຊິ່ງເກີນເວລາປິດຮ້ານ — ກະລຸນາເລືອກເວລາຮັບໃຫ້ໄວຂຶ້ນ', th: 'แพ็กเกจนี้คืนรถ {t} ซึ่งเกินเวลาปิดร้าน — กรุณาเลือกเวลารับให้เร็วขึ้น', en: 'This package would return at {t}, after closing — please choose an earlier pick-up time' },
   eUnav: { lo: 'ມີຊິ້ນທີ່ເພິ່ງຖືກຈອງໄປ — ກະລຸນາເລືອກໃໝ່', th: 'มีบางชิ้นเพิ่งถูกจองไป — กรุณาเลือกใหม่', en: 'Something was just taken — please choose again' },
-  eLimit: { lo: 'ສົ່ງຄຳຂໍຫຼາຍເກີນໄປ — ລອງໃໝ່ພາຍຫຼັງ ຫຼື ທັກ WhatsApp', th: 'ส่งคำขอบ่อยเกินไป — ลองใหม่ภายหลัง หรือทัก WhatsApp', en: 'Too many requests — try later or message us on WhatsApp' },
+  eLimit: { lo: 'ຈອງຫຼາຍເກີນໄປ — ລອງໃໝ່ພາຍຫຼັງ ຫຼື ທັກ WhatsApp', th: 'จองบ่อยเกินไป — ลองใหม่ภายหลัง หรือทัก WhatsApp', en: 'Too many bookings — try later or message us on WhatsApp' },
   pkg: { lo: 'ແພັກເກັດເຊົ່າ', th: 'แพ็กเกจเช่า', en: 'Rental package' }, pkgNone: { lo: 'ກຳນົດວັນເວລາເອງ', th: 'กำหนดวันเวลาเอง', en: 'Choose my own dates' },
-  pkgNoPrice: { lo: 'ບໍ່ມີແພັກເກັດນີ້', th: 'ไม่มีแพ็กเกจนี้', en: 'Package not offered' }, pkgEnd: { lo: 'ຄືນຂອງ (ຄຳນວນໃຫ້)', th: 'คืนของ (คำนวณให้)', en: 'Return (calculated)' },
+  pkgNoPrice: { lo: 'ບໍ່ມີແພັກເກັດນີ້', th: 'ไม่มีแพ็กเกจนี้', en: 'Package not offered' }, pkgEnd: { lo: 'ຄືນລົດ (ຄຳນວນໃຫ້)', th: 'คืนรถ (คำนวณให้)', en: 'Return (calculated)' },
   ePkg: { lo: 'ແພັກເກັດນີ້ບໍ່ເປີດແລ້ວ — ກະລຸນາເລືອກໃໝ່', th: 'แพ็กเกจนี้ปิดแล้ว — กรุณาเลือกใหม่', en: 'This package is no longer offered — please choose again' },
-  s4: { lo: 'ມັດຈຳ ແລະ ຂໍ້ກຳນົດ', th: 'มัดจำและข้อกำหนด', en: 'Deposit & terms' },
-  depT: { lo: 'ວິທີມັດຈຳ', th: 'วิธีมัดจำ', en: 'Deposit method' }, depCash: { lo: 'ເງິນສົດ (ຈ່າຍຕອນຮັບຂອງ)', th: 'เงินสด (จ่ายตอนรับของ)', en: 'Cash (paid at pick-up)' },
+  s4: { lo: 'ມັດຈຳ ແລະ ສັນຍາ', th: 'มัดจำและสัญญา', en: 'Deposit & contract' },
+  depT: { lo: 'ວິທີມັດຈຳ', th: 'วิธีมัดจำ', en: 'Deposit method' }, depCash: { lo: 'ເງິນສົດ (ຈ່າຍຕອນຮັບລົດ)', th: 'เงินสด (จ่ายตอนรับรถ)', en: 'Cash (paid at pick-up)' },
   depPass: { lo: 'ມອບພາສປອດຕົວຈິງໄວ້ທີ່ຮ້ານ (ແທນເງິນ)', th: 'มอบพาสปอร์ตตัวจริงไว้ที่ร้าน (แทนเงิน)', en: 'Leave the original passport at the shop (instead of cash)' },
-  depNote: { lo: 'ພາສປອດຕົວຈິງຕ້ອງມອບໃຫ້ພະນັກງານຕອນຮັບຂອງ ແລະ ຮັບຄືນຕອນຄືນຂອງ — ບໍ່ຕ້ອງໃສ່ເລກພາສປອດໃນເວັບ', th: 'พาสปอร์ตตัวจริงต้องมอบให้พนักงานตอนรับของ และรับคืนตอนคืนของ — ไม่ต้องกรอกเลขพาสปอร์ตบนเว็บ', en: 'The original passport is handed to staff at pick-up and returned when you return the items — no passport number is entered online' },
+  depNote: { lo: 'ພາສປອດຕົວຈິງຕ້ອງມອບໃຫ້ພະນັກງານຕອນຮັບລົດ ແລະ ຮັບຄືນຕອນຄືນລົດ — ບໍ່ຕ້ອງໃສ່ເລກພາສປອດໃນເວັບ', th: 'พาสปอร์ตตัวจริงต้องมอบให้พนักงานตอนรับรถ และรับคืนตอนคืนรถ — ไม่ต้องกรอกเลขพาสปอร์ตบนเว็บ', en: 'The original passport is handed to staff at pick-up and returned when you bring the bike back — no passport number is entered online' },
   depNoPass: { lo: 'ບາງລາຍການບໍ່ຮັບພາສປອດແທນເງິນ', th: 'บางรายการไม่รับพาสปอร์ตแทนเงินมัดจำ', en: 'Some items do not accept a passport as deposit' },
-  depSum: { lo: 'ມັດຈຳເງິນສົດ', th: 'มัดจำเงินสด', en: 'Cash deposit' }, termsT: { lo: 'ຂໍ້ກຳນົດສັນຍາເຊົ່າ', th: 'ข้อกำหนดสัญญาเช่า', en: 'Rental contract terms' },
-  agree: { lo: 'ຂ້ອຍໄດ້ອ່ານ ແລະ ຍອມຮັບຂໍ້ກຳນົດດ້ານເທິງ (ສັນຍາມີຜົນເມື່ອເຊັນທີ່ຮ້ານຕອນຮັບຂອງ)', th: 'ข้าพเจ้าได้อ่านและยอมรับข้อกำหนดข้างต้น (สัญญามีผลเมื่อลงนามที่ร้านตอนรับของ)', en: 'I have read and accept the terms above (the contract takes effect when I sign at the shop at pick-up)' },
-  eTerms: { lo: 'ກະລຸນາຕິກຍອມຮັບຂໍ້ກຳນົດ', th: 'กรุณาติ๊กยอมรับข้อกำหนด', en: 'Please accept the terms' }, eDep: { lo: 'ວິທີມັດຈຳບໍ່ຖືກຕ້ອງ ຫຼື ບາງລາຍການບໍ່ຮັບພາສປອດ', th: 'วิธีมัดจำไม่ถูกต้อง หรือบางรายการไม่รับพาสปอร์ต', en: 'Invalid deposit method, or an item does not accept a passport' },
-  eTermsNew: { lo: 'ຂໍ້ກຳນົດມີການປ່ຽນແປງ — ກະລຸນາອ່ານ ແລະ ຕິກໃໝ່', th: 'ข้อกำหนดมีการเปลี่ยนแปลง — กรุณาอ่านและติ๊กใหม่', en: 'The terms were updated — please read and accept again' },
-  eErr: { lo: 'ສົ່ງບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ທັກ WhatsApp', th: 'ส่งไม่สำเร็จ — ลองใหม่ หรือทัก WhatsApp', en: 'Could not send — try again or message us on WhatsApp' },
+  depSum: { lo: 'ມັດຈຳເງິນສົດ', th: 'มัดจำเงินสด', en: 'Cash deposit' },
+  agree: { lo: 'ຂ້ອຍຍອມຮັບຂໍ້ກຳນົດ ແລະ ສັນຍາເຊົ່າສະບັບນີ້ແລ້ວ', th: 'ข้าพเจ้ายอมรับข้อกำหนดและสัญญาเช่าฉบับนี้แล้ว', en: 'I accept the terms and this rental contract' },
+  terms: { lo: 'ອ່ານສັນຍາ', th: 'อ่านสัญญา', en: 'Read the contract' },
+  eTerms: { lo: 'ກະລຸນາຕິກຍອມຮັບຂໍ້ກຳນົດ ແລະ ສັນຍາ', th: 'กรุณาติ๊กยอมรับข้อกำหนดและสัญญา', en: 'Please accept the terms and contract' }, eDep: { lo: 'ວິທີມັດຈຳບໍ່ຖືກຕ້ອງ ຫຼື ບາງລາຍການບໍ່ຮັບພາສປອດ', th: 'วิธีมัดจำไม่ถูกต้อง หรือบางรายการไม่รับพาสปอร์ต', en: 'Invalid deposit method, or an item does not accept a passport' },
+  eTermsNew: { lo: 'ສັນຍາມີການປ່ຽນແປງ — ກະລຸນາອ່ານ ແລະ ຕິກໃໝ່', th: 'สัญญามีการเปลี่ยนแปลง — กรุณาอ่านและติ๊กใหม่', en: 'The contract was updated — please read and accept again' },
+  eErr: { lo: 'ຈອງບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ທັກ WhatsApp', th: 'จองไม่สำเร็จ — ลองใหม่ หรือทัก WhatsApp', en: 'Could not book — try again or message us on WhatsApp' },
 };
 const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
 const $ = id => document.getElementById(id);
 const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pad = n => String(n).padStart(2, '0');
-const locStr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-const nextHour = (add) => { const d = new Date(Date.now() + add * 3600000); d.setMinutes(0, 0, 0); return d; };
+const dStr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const tStr = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
+const at = (ds, ts) => new Date(ds + 'T' + ts);   // ເວລາໃນເຄື່ອງລູກຄ້າ (ເວລາລາວ)
 
-const S = { start: locStr(nextHour(2)), end: locStr(nextHour(26)), items: [], pkgs: [], pkg: '', terms: null, dep: 'cash', agree: false, sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
+const S = { hours: { open: '09:00', close: '19:00' }, noshow: 60, items: [], addons: [], add: {}, pkgs: [], pkg: '', terms: null, dep: 'cash', agree: false, sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
 try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
 if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
 
+// ຊ່ອງເວລາທີ່ເລືອກໄດ້ (ທຸກ 30 ນາທີ ໃນເວລາເປີດຮ້ານ)
+function slots() { const o = mins(S.hours.open), c = mins(S.hours.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
 const curPkg = () => S.pkgs.find(k => k.code === S.pkg) || null;
-const endOf = () => { const k = curPkg(), a = new Date(S.start); return k && !isNaN(a) ? locStr(new Date(a.getTime() + k.hours * 3600000)) : S.end; };
-const win = () => { const k = curPkg(), a = new Date(S.start), b = new Date(k ? endOf() : S.end); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && (k || b - a <= 30 * 86400000) && a.getTime() > Date.now() - 900000) ? [a, b] : null; };
+const inHours = d => { const m = d.getHours() * 60 + d.getMinutes(); return m >= mins(S.hours.open) && m <= mins(S.hours.close); };
+// ເວລາເລີ່ມທີ່ເລືອກໄດ້: ບໍ່ຍ້ອນຫຼັງ · ແພັກເກັດ: ເວລາຄືນຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ
+function startOk(ds, ts) {
+  const a = at(ds, ts); if (isNaN(a) || a.getTime() < Date.now() - 900000) return false;
+  const k = curPkg(); return !k || inHours(new Date(a.getTime() + k.hours * 3600000));
+}
+function firstStart() {
+  const d = new Date(); d.setSeconds(0, 0);
+  for (let i = 0; i < 8; i++) { const ds = dStr(d); const t = slots().find(x => startOk(ds, x) && at(ds, x).getTime() >= Date.now() + 3600000); if (t) return [ds, t]; d.setDate(d.getDate() + 1); }
+  return [dStr(new Date()), S.hours.open];
+}
+(() => { const [ds, ts] = firstStart(); S.sd = ds; S.st = ts; const e = new Date(at(ds, ts).getTime() + 86400000); S.ed = dStr(e); S.et = ts; })();
+const startD = () => at(S.sd, S.st);
+const endD = () => { const k = curPkg(); return k ? new Date(startD().getTime() + k.hours * 3600000) : at(S.ed, S.et); };
+const win = () => { const k = curPkg(), a = startD(), b = endD(); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && (k || b - a <= 30 * 86400000) && a.getTime() > Date.now() - 900000 && inHours(a) && inHours(b)) ? [a, b] : null; };
 const pkgName = k => (k.name || {})[sdLang()] || (k.name || {}).lo || k.code;
 const priceOf = i => { const k = curPkg(); return k ? (i.packagePricesLak || {})[k.code] : null; };
-// ค่าเช่าแสดงเป็นกีบ (₭) เสมอ · ในวงเล็บ = ประมาณการเป็นสกุลที่ลูกค้าเลือกบนเว็บ (เรทจริงล็อกตอนร้านยืนยันสัญญา)
+// ຄ່າເຊົ່າສະແດງເປັນກີບ (₭) ສະເໝີ · ໃນວົງເລັບ = ປະມານເປັນສະກຸນທີ່ລູກຄ້າເລືອກ (ເຣດຈິງລັອກຕອນຈອງ)
 const kip = v => '₭' + Math.round(Number(v) || 0).toLocaleString('en-US');
 const approx = v => (S.rate && typeof currency !== 'undefined' && currency !== 'LAK' && typeof fmtIn === 'function') ? ' (≈ ' + fmtIn(Number(v) / S.rate) + ')' : '';
-function est() {
-  const w = win(); if (!w) return 0; const ms = w[1] - w[0];
-  if (curPkg()) return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => s + Number(priceOf(i) || 0), 0);
-  return S.items.filter(i => S.sel.has(i.id)).reduce((s, i) => {
-    const hr = ms < 86400000 && i.priceHourLak != null; const u = hr ? 3600000 : 86400000;
-    return s + Math.max(1, Math.ceil(ms / u)) * Number(hr ? i.priceHourLak : i.priceDayLak);
-  }, 0);
+function costOf(i) {
+  const w = win(); if (!w) return 0; if (curPkg()) return Number(priceOf(i) || 0);
+  const ms = w[1] - w[0], hr = ms < 86400000 && i.priceHourLak != null, u = hr ? 3600000 : 86400000;
+  return Math.max(1, Math.ceil(ms / u)) * Number(hr ? i.priceHourLak : i.priceDayLak);
 }
-
 const selItems = () => S.items.filter(i => S.sel.has(i.id));
-const depTotal = () => selItems().reduce((s, i) => s + Number(i.depositThb || 0), 0);
-const passAll = () => selItems().length > 0 && selItems().every(i => i.passportOk);
-const termsText = () => S.terms ? (S.terms[sdLang()] || S.terms.th || '') : '';
+const selAdds = () => S.addons.filter(a => (S.add[a.key] || 0) > 0);
+const est = () => selItems().reduce((s, i) => s + costOf(i), 0) + selAdds().reduce((s, a) => s + costOf(a) * S.add[a.key], 0);
+const depTotal = () => selItems().reduce((s, i) => s + Number(i.depositThb || 0), 0) + selAdds().reduce((s, a) => s + Number(a.depositThb || 0) * S.add[a.key], 0);
+const passAll = () => selItems().length > 0 && selItems().every(i => i.passportOk) && selAdds().every(a => a.passportOk);
+const addOk = a => a.free > 0 && (!curPkg() || priceOf(a) != null);
+const hoursTxt = k => tx(k).replace('{o}', S.hours.open).replace('{c}', S.hours.close);
 
 async function loadCatalog() {
   const w = win(); let u = RW_API + '?op=catalog';
   if (w) u += '&start=' + encodeURIComponent(w[0].toISOString()) + '&end=' + encodeURIComponent(w[1].toISOString());
   try {
     const j = await (await fetch(u)).json();
-    S.enabled = j.enabled !== false; S.rate = Number(j.lakPerThb) || 0; S.items = j.items || []; S.pkgs = j.packages || []; S.terms = j.terms || null;
+    S.enabled = j.enabled !== false; S.rate = Number(j.lakPerThb) || 0; S.items = (j.items || []).filter(i => !i.kind || i.kind === 'bike'); S.addons = j.addons || []; S.pkgs = j.packages || []; S.terms = j.terms || null;
+    if (j.hours && j.hours.open) S.hours = j.hours; if (j.noshowMin) S.noshow = j.noshowMin;
     if (S.pkg && !curPkg()) S.pkg = '';
     S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free && (!curPkg() || priceOf(i) != null))));
+    S.addons.forEach(a => { if (S.add[a.key]) S.add[a.key] = addOk(a) ? Math.min(S.add[a.key], a.free, 4) : 0; });
   } catch (_) { S.items = []; S.msg = tx('eErr'); }
   S.loaded = true; draw();
 }
@@ -449,14 +483,32 @@ function depNote() {
   if (S.dep === 'passport') return esc(tx('depNote')) + (selItems().length && !passAll() ? '<br><b>⚠ ' + esc(tx('depNoPass')) + '</b>' : '');
   const d = depTotal(); return d > 0 ? esc(tx('depSum')) + ': <b>' + esc(fmt(d)) + '</b>' : '';
 }
+function timeSel(id, ds, val, dis, okFn) {
+  return '<select id="' + id + '"' + (dis ? ' disabled' : '') + '>' + slots().map(t => '<option' + (t === val ? ' selected' : '') + (okFn && !okFn(ds, t) ? ' disabled' : '') + '>' + t + '</option>').join('') +
+    (slots().indexOf(val) < 0 ? '<option selected disabled>' + esc(val) + '</option>' : '') + '</select>';
+}
+function addonsHtml() {
+  if (!S.addons.length || !S.sel.size) return '';
+  return '<section><h2><i>+</i>' + esc(tx('sAdd')) + '</h2><p class="rw-hint">' + esc(tx('addHint')) + '</p><div class="rw-items">' + S.addons.map(a => {
+    const ok = addOk(a), q = S.add[a.key] || 0, max = Math.min(a.free, 4);
+    const pr = curPkg() ? (priceOf(a) != null ? kip(priceOf(a)) : '—') : kip(a.priceDayLak) + ' ' + tx('perDay');
+    return '<div class="rw-item rw-add' + (ok ? '' : ' off') + (q ? ' on' : '') + '">' +
+      (a.photoUrl && /^https:\/\//.test(a.photoUrl) ? '<img class="ph" loading="lazy" alt="' + esc(a.name) + '" src="' + esc(a.photoUrl) + '">' : '') +
+      '<span class="nm"><b>' + esc(a.name) + '</b><small>' + (ok ? esc(tx('left').replace('{n}', a.free)) : esc(curPkg() && priceOf(a) == null ? tx('pkgNoPrice') : tx('busy'))) + '</small></span>' +
+      '<span class="pr">' + esc(pr) + (!curPkg() && a.priceHourLak != null ? '<small>' + esc(kip(a.priceHourLak) + ' ' + tx('perHour')) + '</small>' : '') + '</span>' +
+      '<span class="qty"><button type="button" data-q="-" data-k="' + esc(a.key) + '"' + (q > 0 ? '' : ' disabled') + ' aria-label="−">−</button><b>' + q + '</b><button type="button" data-q="+" data-k="' + esc(a.key) + '"' + (ok && q < max ? '' : ' disabled') + ' aria-label="+">+</button></span></div>';
+  }).join('') + '</div></section>';
+}
 function draw() {
   $('rwCrumb').textContent = tx('crumb'); $('rwH1').textContent = tx('h1'); $('rwSub').textContent = tx('sub');
   const root = $('rw');
   if (S.done) {
-    root.innerHTML = '<div class="rw-ok"><h2>' + esc(tx('okT')) + '</h2><div class="no">' + esc(S.done) + '</div><p>' + esc(tx('okP')) + '</p>' +
-      '<div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-black" target="_blank" rel="noopener" href="https://wa.me/' + esc(SHOP.whatsapp) + '?text=' + encodeURIComponent(S.done) + '">' + esc(tx('wa')) + '</a>' +
+    const d = S.done, f = v => v ? new Date(v).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    root.innerHTML = '<div class="rw-ok"><h2>' + esc(tx('okT')) + '</h2><div class="no">' + esc(d.id) + '</div><p>' + esc(tx('okP')) + '</p>' +
+      '<p>' + esc(tx('okWhen')) + ': <b>' + esc(f(d.startAt)) + '</b> · ' + esc(tx('okBack')) + ': <b>' + esc(f(d.endAt)) + '</b>' + (d.rentLak ? '<br>' + esc(tx('est')) + ': <b>' + esc(kip(d.rentLak)) + '</b>' : '') + '</p>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-black" target="_blank" rel="noopener" href="https://wa.me/' + esc(SHOP.whatsapp) + '?text=' + encodeURIComponent(d.id) + '">' + esc(tx('wa')) + '</a>' +
       '<button class="btn btn-line" type="button" id="rwAgain">' + esc(tx('again')) + '</button></div></div>';
-    $('rwAgain').onclick = () => { S.done = null; S.sel = new Set(); S.rid = ''; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())); draw(); };
+    $('rwAgain').onclick = () => { S.done = null; S.sel = new Set(); S.add = {}; S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} loadCatalog(); };
     return;
   }
   if (!S.enabled) { root.innerHTML = '<div class="rw-note">' + esc(tx('disabled')) + '</div>'; return; }
@@ -465,27 +517,37 @@ function draw() {
       (i.photoUrl && /^https:\/\//.test(i.photoUrl) ? '<img class="ph" loading="lazy" alt="' + esc(i.name) + '" src="' + esc(i.photoUrl) + '">' : '') +
       '<span class="nm"><b>' + esc(i.name) + '</b><small>' + esc([i.brand, i.size].filter(Boolean).join(' · ')) + (i.free ? (curPkg() && priceOf(i) == null ? ' ' + esc(tx('pkgNoPrice')) : '') : ' ' + esc(tx('busy'))) + '</small></span>' +
       '<span class="pr">' + (curPkg() ? esc(priceOf(i) != null ? kip(priceOf(i)) : '—') + (priceOf(i) != null ? '<small>' + esc(approx(priceOf(i))) + '</small>' : '') : esc(kip(i.priceDayLak)) + ' ' + esc(tx('perDay')) + '<small>' + esc(approx(i.priceDayLak)) + '</small>' + (i.priceHourLak != null ? '<small>' + esc(kip(i.priceHourLak)) + ' ' + esc(tx('perHour')) + '</small>' : '')) + '</span></label>')(i.free && (!curPkg() || priceOf(i) != null))).join('') + '</div>';
+  const k = curPkg(), e = endD(), late = k && !isNaN(e) && !inHours(e);
+  const today = dStr(new Date());
   root.innerHTML =
     '<section><h2><i>1</i>' + esc(tx('s1')) + '</h2>' +
-    (S.pkgs.length ? '<div class="field"><label>' + esc(tx('pkg')) + '</label><select id="rwPkg"><option value="">' + esc(tx('pkgNone')) + '</option>' + S.pkgs.map(k => '<option value="' + esc(k.code) + '"' + (S.pkg === k.code ? ' selected' : '') + '>' + esc(pkgName(k)) + '</option>').join('') + '</select></div>' : '') + '<div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><input type="datetime-local" id="rwStart" value="' + esc(S.start) + '"></div>' +
-    '<div class="field"><label>' + esc(curPkg() ? tx('pkgEnd') : tx('to')) + '</label><input type="datetime-local" id="rwEnd" value="' + esc(endOf()) + '"' + (curPkg() ? ' disabled' : '') + '></div></div></section>' +
-    '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' +
+    (S.pkgs.length ? '<div class="field"><label>' + esc(tx('pkg')) + '</label><select id="rwPkg"><option value="">' + esc(tx('pkgNone')) + '</option>' + S.pkgs.map(x => '<option value="' + esc(x.code) + '"' + (S.pkg === x.code ? ' selected' : '') + '>' + esc(pkgName(x)) + '</option>').join('') + '</select></div>' : '') +
+    '<div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><div class="rw-dt"><input type="date" id="rwSd" min="' + today + '" value="' + esc(S.sd) + '">' + timeSel('rwSt', S.sd, S.st, false, startOk) + '</div></div>' +
+    '<div class="field"><label>' + esc(k ? tx('pkgEnd') : tx('to')) + '</label><div class="rw-dt">' + (k ? '<input type="date" disabled value="' + esc(isNaN(e) ? '' : dStr(e)) + '">' + timeSel('rwEt', '', isNaN(e) ? '' : tStr(e), true) :
+      '<input type="date" id="rwEd" min="' + esc(S.sd) + '" value="' + esc(S.ed) + '">' + timeSel('rwEt', S.ed, S.et, false)) + '</div></div></div>' +
+    '<p class="rw-hint">🕘 ' + esc(hoursTxt('hoursNote')) + '</p>' + (late ? '<div class="rw-msg on">' + esc(tx('pkgLate').replace('{t}', tStr(e))) + '</div>' : '') + '</section>' +
+    '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' + addonsHtml() +
     '<section><h2><i>3</i>' + esc(tx('s4')) + '</h2><div class="field"><label>' + esc(tx('depT')) + '</label><select id="rwDep"><option value="cash"' + (S.dep === 'cash' ? ' selected' : '') + '>' + esc(tx('depCash')) + '</option><option value="passport"' + (S.dep === 'passport' ? ' selected' : '') + '>' + esc(tx('depPass')) + '</option></select></div>' +
     '<div class="rw-note" id="rwDepNote">' + depNote() + '</div>' +
-    (S.terms ? '<h3 style="margin:16px 0 6px;font-size:15px">' + esc(tx('termsT')) + ' <small>v' + esc(S.terms.version) + '</small></h3><div class="rw-terms" id="rwTerms">' + esc(termsText()) + '</div><label class="rw-agree"><input type="checkbox" id="rwAgree"' + (S.agree ? ' checked' : '') + '> <span>' + esc(tx('agree')) + '</span></label>' : '') + '</section>' +
+    (S.terms ? '<label class="rw-agree"><input type="checkbox" id="rwAgree"' + (S.agree ? ' checked' : '') + '> <span>' + esc(tx('agree')) + ' — <a href="rental-terms.html?lang=' + esc(sdLang()) + '" target="_blank" rel="noopener" class="rw-link">' + esc(tx('terms')) + ' (v' + esc(S.terms.version) + ')</a></span></label>' : '') + '</section>' +
     '<form id="rwForm" novalidate><h2><i>4</i>' + esc(tx('s3')) + '</h2><div style="display:grid;gap:14px">' +
     '<div class="row2"><div class="field"><label>' + esc(tx('name')) + '</label><input id="rwName" maxlength="80" autocomplete="name" value="' + esc(S.name) + '"></div>' +
     '<div class="field"><label>' + esc(tx('phone')) + '</label><input id="rwPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" value="' + esc(S.phone) + '"></div></div>' +
     '<div class="field"><label>' + esc(tx('note')) + '</label><textarea id="rwNote" maxlength="500">' + esc(S.note) + '</textarea></div>' +
     '<div class="hp" aria-hidden="true"><label>website<input id="rwHp" tabindex="-1" autocomplete="off"></label></div>' +
-    '<div class="rw-note">' + esc(tx('notice')) + '</div>' +
+    '<div class="rw-note">' + esc(tx('notice').replace('{m}', S.noshow)) + '</div>' +
     '<div class="rw-sum"><span>' + esc(tx('est')) + '</span><span id="rwEst">' + esc(kip(est()) + approx(est())) + '</span></div>' +
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
-  $('rwStart').onchange = $('rwEnd').onchange = () => { S.start = $('rwStart').value; if (!curPkg()) S.end = $('rwEnd').value; S.msg = ''; loadCatalog(); };
-  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; S.msg = ''; loadCatalog(); };
-  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); $('rwEst').textContent = kip(est()) + approx(est()); $('rwDepNote').innerHTML = depNote(); });
-  $('rwDep').onchange = () => { S.dep = $('rwDep').value; $('rwDepNote').innerHTML = depNote(); };
+  const re = () => { S.msg = ''; loadCatalog(); };
+  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots().find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; re(); };
+  $('rwSt').onchange = () => { S.st = $('rwSt').value; re(); };
+  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
+  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; if (curPkg() && !startOk(S.sd, S.st)) { const t = slots().find(x => startOk(S.sd, x)); if (t) S.st = t; } re(); };
+  const upd = () => { $('rwEst').textContent = kip(est()) + approx(est()); $('rwDepNote').innerHTML = depNote(); };
+  root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); if (!S.sel.size) S.add = {}; draw(); });
+  root.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const a = S.addons.find(x => x.key === b.dataset.k); if (!a) return; const q = (S.add[a.key] || 0) + (b.dataset.q === '+' ? 1 : -1); S.add[a.key] = Math.max(0, Math.min(q, a.free, 4)); draw(); });
+  $('rwDep').onchange = () => { S.dep = $('rwDep').value; upd(); };
   if ($('rwAgree')) $('rwAgree').onchange = () => { S.agree = $('rwAgree').checked; };
   ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; });
   $('rwForm').onsubmit = submit;
@@ -497,20 +559,22 @@ async function submit(ev) {
   const digits = S.phone.replace(/\D/g, '');
   if (S.name.trim().length < 2) return fail(tx('eName'));
   if (digits.length < 8 || digits.length > 15) return fail(tx('ePhone'));
+  if (!inHours(startD()) || !inHours(endD())) return fail(hoursTxt('eHours'));
   const w = win(); if (!w) return fail(tx('eTime'));
   if (!S.sel.size || S.sel.size > 4) return fail(tx('eItems'));
   if (S.dep === 'passport' && !passAll()) return fail(tx('eDep'));
   if (S.terms && !S.agree) return fail(tx('eTerms'));
   S.busy = true; S.msg = ''; draw();
   try {
-    const r = await fetch(RW_API + '?op=request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
-      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), packageCode: S.pkg || undefined, depositType: S.dep, termsAccepted: !!(S.terms && S.agree), termsVersion: S.terms ? S.terms.version : undefined, assetIds: Array.from(S.sel), note: S.note.trim(),
+    const r = await fetch(RW_API + '?op=book', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+      name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), packageCode: S.pkg || undefined, depositType: S.dep, termsAccepted: !!(S.terms && S.agree), termsVersion: S.terms ? S.terms.version : undefined,
+      assetIds: Array.from(S.sel), addons: selAdds().map(a => ({ key: a.key, qty: S.add[a.key] })), note: S.note.trim(),
       requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
     const j = await r.json().catch(() => ({}));
     S.busy = false;
-    if (j.ok) { S.done = j.id; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); return; }
-    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', ITEMS: 'eItems', PACKAGE: 'ePkg', TERMS: 'eTermsNew', DEPOSIT: 'eDep', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
-    S.msg = tx(map[j.code] || 'eErr'); draw(); if (j.code === 'TERMS') S.agree = false;
+    if (j.ok) { S.done = j; try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', HOURS: 'eHours', ITEMS: 'eItems', PACKAGE: 'ePkg', TERMS: 'eTermsNew', DEPOSIT: 'eDep', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
+    S.msg = j.code === 'HOURS' ? hoursTxt('eHours') : tx(map[j.code] || 'eErr'); if (j.code === 'TERMS') S.agree = false; draw();
     if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE' || j.code === 'TERMS') loadCatalog();
   } catch (_) { S.busy = false; S.msg = tx('eErr'); draw(); }
 }
