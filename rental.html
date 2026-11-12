@@ -354,7 +354,7 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-add .qty button:disabled{border-color:var(--grey-300);color:var(--grey-300);cursor:not-allowed}.rw-add .qty b{min-width:18px;text-align:center}
 .rw-link{text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap;color:#0b57d0}
 .rw-link:hover{color:#0842a0}
-.rw-mybar{display:flex;justify-content:flex-end;margin:18px 0 0}
+.phero .mine{display:inline-flex;margin-top:18px;padding:0;background:none;border:0;color:inherit;font:inherit;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .rw-mine{border:2px solid var(--black);padding:18px;margin:18px 0}
 .rw-mine h2{font-size:20px;margin:0 0 12px}
 .rw-mine .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -368,8 +368,8 @@ form.cf .btn{border-radius:0;height:52px}
 </head>
 <body>
 
-<section class="phero "><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / <span id="rwCrumb"></span></nav><h1 id="rwH1"></h1><p id="rwSub"></p></div><svg class="phero-art" viewBox="0 0 80 70" aria-hidden="true" style="color:#fff"><use href="#i-wrench"/></svg></div></section>
-<main class="wrap"><div class="rw-mybar"><button class="btn btn-line" type="button" id="rwMineBtn"></button></div><div class="rw-mine" id="rwMine" hidden></div><div class="rw" id="rw"></div></main>
+<section class="phero "><div class="wrap phero-in"><div><nav class="crumbs-h"><a href="index.html">ໜ້າຫຼັກ</a> / <span id="rwCrumb"></span></nav><h1 id="rwH1"></h1><p id="rwSub"></p><button type="button" class="mine" id="rwMineBtn"></button></div><svg class="phero-art" viewBox="0 0 80 70" aria-hidden="true" style="color:#fff"><use href="#i-wrench"/></svg></div></section>
+<main class="wrap"><div class="rw-mine" id="rwMine" hidden></div><div class="rw" id="rw"></div></main>
 
 <script src="i18n.js"></script>
 <script src="layout.js"></script>
@@ -518,7 +518,7 @@ function addonsHtml() {
 }
 function draw() {
   $('rwCrumb').textContent = tx('crumb'); $('rwH1').textContent = tx('h1'); $('rwSub').textContent = tx('sub');
-  const root = $('rw'); $('rwMineBtn').textContent = tx(M.open ? 'mineBack' : 'mine'); if (!$('rwMine').hidden) drawMine();
+  const root = $('rw'); $('rwMineBtn').textContent = (M.open ? tx('mineBack') : tx('mine')) + (M.open ? '' : ' →'); if (!$('rwMine').hidden) drawMine();
   if (S.done) {
     const d = S.done, f = v => v ? new Date(v).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
     root.innerHTML = '<div class="rw-ok"><h2>' + esc(tx('okT')) + '</h2><div class="no">' + esc(d.id) + '</div><p>' + esc(tx('okP')) + '</p>' +
@@ -627,7 +627,7 @@ function drawMine() {
 }
 async function toggleMine() {
   M.open = !$('rwMine').hidden ? false : true; $('rwMine').hidden = !M.open; $('rw').hidden = M.open;
-  $('rwMineBtn').textContent = M.open ? tx('mineBack') : tx('mine');
+  $('rwMineBtn').textContent = M.open ? tx('mineBack') : tx('mine') + ' →'; if (M.open) $('rwMine').scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (M.open) { M.res = []; M.msg = ''; drawMine(); const l = mineList(); const rs = await Promise.all(l.map(x => mineFetch(x.phone, x.id).catch(() => null))); M.res = rs.filter(Boolean); drawMine(); }
 }
 $('rwMineBtn').onclick = toggleMine;
