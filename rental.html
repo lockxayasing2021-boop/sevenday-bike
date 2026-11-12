@@ -461,6 +461,19 @@ function firstStart() {
   return [dStr(new Date()), S.hours.open];
 }
 (() => { const [ds, ts] = firstStart(); S.sd = ds; S.st = ts; const e = new Date(at(ds, ts).getTime() + 86400000); S.ed = dStr(e); S.et = ts; })();
+// ຮ່າງຟອມ: ເກັບໄວ້ໃນເຄື່ອງ 6 ຊົ່ວໂມງ — ກົດອ່ານສັນຍາແລ້ວກັບມາ (ຫຼື ໜ້າຖືກໂຫຼດໃໝ່) ຂໍ້ມູນບໍ່ຫາຍ
+const DK = 'rw_draft';
+function saveDraft() { if (S.done) return; try { localStorage.setItem(DK, JSON.stringify({ t: Date.now(), pkg: S.pkg, sd: S.sd, st: S.st, ed: S.ed, et: S.et, sel: Array.from(S.sel), add: S.add, dep: S.dep, agree: S.agree, name: S.name, phone: S.phone, note: S.note })); } catch (_) {} }
+function clearDraft() { try { localStorage.removeItem(DK); } catch (_) {} }
+function restoreDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DK) || 'null'); if (!d || Date.now() - d.t > 6 * 3600000) return;
+    if (d.sd && d.sd >= dStr(new Date())) { S.sd = d.sd; S.st = d.st || S.st; S.ed = d.ed || S.ed; S.et = d.et || S.et; }
+    S.pkg = d.pkg || ''; S.sel = new Set(Array.isArray(d.sel) ? d.sel : []); S.add = d.add && typeof d.add === 'object' ? d.add : {}; S.dep = d.dep === 'passport' ? 'passport' : 'cash';
+    S.agree = !!d.agree; S.name = String(d.name || ''); S.phone = String(d.phone || ''); S.note = String(d.note || '');
+  } catch (_) {}
+}
+restoreDraft();
 const startD = () => at(S.sd, S.st);
 const endD = () => { const k = curPkg(); return k ? new Date(startD().getTime() + k.hours * 3600000) : at(S.ed, S.et); };
 const win = () => { const k = curPkg(), a = startD(), b = endD(); return (!isNaN(a) && !isNaN(b) && b - a >= 3540000 && (k || b - a <= 30 * 86400000) && a.getTime() > Date.now() - 900000 && inHours(a) && inHours(b)) ? [a, b] : null; };
@@ -518,7 +531,7 @@ function addonsHtml() {
 }
 function draw() {
   $('rwCrumb').textContent = tx('crumb'); $('rwH1').textContent = tx('h1'); $('rwSub').textContent = tx('sub');
-  const root = $('rw'); $('rwMineBtn').textContent = (M.open ? tx('mineBack') : tx('mine')) + (M.open ? '' : ' →'); if (!$('rwMine').hidden) drawMine();
+  saveDraft(); const root = $('rw'); $('rwMineBtn').textContent = (M.open ? tx('mineBack') : tx('mine')) + (M.open ? '' : ' →'); if (!$('rwMine').hidden) drawMine();
   if (S.done) {
     const d = S.done, f = v => v ? new Date(v).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
     root.innerHTML = '<div class="rw-ok"><h2>' + esc(tx('okT')) + '</h2><div class="no">' + esc(d.id) + '</div><p>' + esc(tx('okP')) + '</p>' +
@@ -565,8 +578,8 @@ function draw() {
   root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); if (!S.sel.size) S.add = {}; draw(); });
   root.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const a = S.addons.find(x => x.key === b.dataset.k); if (!a) return; const q = (S.add[a.key] || 0) + (b.dataset.q === '+' ? 1 : -1); S.add[a.key] = Math.max(0, Math.min(q, a.free, 4)); draw(); });
   $('rwDep').onchange = () => { S.dep = $('rwDep').value; upd(); };
-  if ($('rwAgree')) $('rwAgree').onchange = () => { S.agree = $('rwAgree').checked; };
-  ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; });
+  if ($('rwAgree')) $('rwAgree').onchange = () => { S.agree = $('rwAgree').checked; saveDraft(); };
+  ['rwName', 'rwPhone', 'rwNote'].forEach(id => $(id).oninput = () => { S[{ rwName: 'name', rwPhone: 'phone', rwNote: 'note' }[id]] = $(id).value; saveDraft(); });
   $('rwForm').onsubmit = submit;
 }
 
@@ -589,7 +602,7 @@ async function submit(ev) {
       requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
     const j = await r.json().catch(() => ({}));
     S.busy = false;
-    if (j.ok) { S.done = j; saveMine(j.id, S.phone.trim()); try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    if (j.ok) { S.done = j; clearDraft(); saveMine(j.id, S.phone.trim()); try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', HOURS: 'eHours', ITEMS: 'eItems', PACKAGE: 'ePkg', TERMS: 'eTermsNew', DEPOSIT: 'eDep', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
     S.msg = j.code === 'HOURS' ? hoursTxt('eHours') : tx(map[j.code] || 'eErr'); if (j.code === 'TERMS') S.agree = false; draw();
     if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE' || j.code === 'TERMS') loadCatalog();
