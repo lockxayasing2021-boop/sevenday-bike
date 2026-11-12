@@ -390,6 +390,16 @@ const TX = {
   sub: { lo: 'ເລືອກວັນເວລາ ແລະ ລົດທີ່ວ່າງ ແລ້ວກົດຈອງໄດ້ທັນທີ', th: 'เลือกวันเวลาและจักรยานที่ว่าง แล้วกดจองได้ทันที', en: 'Pick your dates and a free bike, then book instantly' },
   s1: { lo: 'ເລືອກວັນ ແລະ ເວລາ', th: 'เลือกวันและเวลา', en: 'Choose dates & time' },
   from: { lo: 'ເລີ່ມເຊົ່າ (ຮັບລົດ)', th: 'เริ่มเช่า (รับรถ)', en: 'Pick-up' }, to: { lo: 'ຄືນລົດ', th: 'คืนรถ', en: 'Return' },
+  holClosed: { lo: 'ຮ້ານປິດວັນພັກພິເສດ', th: 'ร้านปิดวันหยุดพิเศษ', en: 'Closed for special holidays' },
+  holPick: { lo: 'ວັນທີ່ເລືອກເປັນວັນພັກພິເສດ ({n}) — ຮ້ານປິດ ຮັບ/ຄືນລົດບໍ່ໄດ້ ກະລຸນາເລືອກວັນທີ່ຮ້ານເປີດ', th: 'วันที่เลือกเป็นวันหยุดพิเศษ ({n}) — ร้านปิด รับ/คืนรถไม่ได้ กรุณาเลือกวันที่ร้านเปิด', en: 'The chosen date is a special holiday ({n}) — we are closed, no pick-up/return. Please choose an open day.' },
+  holExH: { lo: 'ຮ້ານປິດວັນພັກພິເສດ', th: 'ร้านปิดวันหยุดพิเศษ', en: 'Shop closed for a special holiday' },
+  holExBody: { lo: 'ບໍ່ສາມາດຄືນລົດວັນທີ {o} ໄດ້ ({h}) — ຕ້ອງຄືນວັນທີ {e} ຄ່າເຊົ່າເພີ່ມ {x} (ເພາະຍັງບໍ່ໄດ້ຄືນລົດໃນວັນພັກ)', th: 'ไม่สามารถคืนรถวันที่ {o} ได้ ({h}) — ต้องคืนวันที่ {e} ค่าเช่าเพิ่ม {x} (เพราะยังไม่ได้คืนรถในวันหยุด)', en: 'The bike cannot be returned on {o} ({h}) — please return on {e}. Extra rent {x} (the bike is not returned on the holiday).' },
+  holExGo: { lo: 'ຍອມຮັບ ແລະ ຕໍ່ວັນຄືນ', th: 'ยอมรับ และต่อวันคืน', en: 'Accept and extend' },
+  holExDone: { lo: 'ຕໍ່ວັນຄືນແລ້ວ', th: 'ต่อวันคืนเรียบร้อยแล้ว', en: 'Return date extended' },
+  holExConf: { lo: 'ຕິດຕໍ່ຮ້ານເພື່ອຈັດການວັນຄືນ (ຮ້ານປິດວັນພັກພິເສດ)', th: 'กรุณาติดต่อร้านเพื่อจัดการวันคืน (ร้านปิดวันหยุดพิเศษ)', en: 'Please contact the shop to arrange the return (closed for a holiday)' },
+  holStartNote: { lo: 'ວັນຮັບລົດຕົງກັບວັນພັກພິເສດ ({h}) — ຮ້ານຈະຕິດຕໍ່ເພື່ອເລື່ອນວັນ', th: 'วันรับรถตรงกับวันหยุดพิเศษ ({h}) — ร้านจะติดต่อเพื่อเลื่อนวัน', en: 'Your pick-up date is a special holiday ({h}) — we will contact you to reschedule' },
+  eEXT_HOLIDAY: { lo: 'ວັນນັ້ນຮ້ານປິດ (ວັນພັກພິເສດ) ເລືອກວັນອື່ນ', th: 'วันนั้นร้านปิด (วันหยุดพิเศษ) เลือกวันอื่น', en: 'We are closed that day (special holiday) — choose another day' },
+  eEXT_CHANGED: { lo: 'ເວລາ/ລາຄາມີການປ່ຽນ ກະລຸນາໂຫຼດໃໝ່', th: 'เวลา/ราคามีการเปลี่ยน กรุณาโหลดใหม่', en: 'Time/price has changed — please reload' },
   wkend: { lo: 'ເສົາ–ອາທິດ', th: 'เสาร์–อาทิตย์', en: 'Sat–Sun' },
   hoursNote: { lo: 'ຮັບ ແລະ ຄືນລົດໄດ້ໃນເວລາເປີດຮ້ານ {o}–{c}', th: 'รับและคืนรถได้ในเวลาเปิดร้าน {o}–{c}', en: 'Pick-up and return during opening hours {o}–{c}' },
   s2: { lo: 'ເລືອກລົດທີ່ຈະເຊົ່າ', th: 'เลือกจักรยานที่จะเช่า', en: 'Choose your bike' },
@@ -469,16 +479,18 @@ const tStr = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
 const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
 const at = (ds, ts) => new Date(ds + 'T' + ts);   // ເວລາໃນເຄື່ອງລູກຄ້າ (ເວລາລາວ)
 
-const S = { hours: { open: '09:00', close: '19:00' }, noshow: 60, items: [], addons: [], add: {}, pkgs: [], pkg: '', terms: null, dep: 'cash', agree: false, sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
+const S = { hol: {}, hours: { open: '09:00', close: '19:00' }, noshow: 60, items: [], addons: [], add: {}, pkgs: [], pkg: '', terms: null, dep: 'cash', agree: false, sel: new Set(), name: '', phone: '', note: '', loaded: false, enabled: true, busy: false, done: null, msg: '' };
 try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
 if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
 
 // ຊ່ອງເວລາທີ່ເລືອກໄດ້ (ທຸກ 30 ນາທີ ໃນເວລາເປີດຮ້ານ)
 // ເວລາເປີດຮ້ານຕາມວັນ: ເສົາ–ອາທິດ ໃຊ້ S.hours.weekend (ຖ້າມີ) · d = Date ຫຼື 'YYYY-MM-DD'
+// ວັນພັກພິເສດ (ລະບົບ HR): ຮ້ານປິດ ຮັບ/ຄືນລົດບໍ່ໄດ້ — S.hol = { 'YYYY-MM-DD': ຊື່ }
+const holOn = d => S.hol[d instanceof Date ? dStr(d) : String(d || '').slice(0, 10)] || '';
 function hrsOn(d) { const w = S.hours.weekend; if (!d || !w) return S.hours; const g = (d instanceof Date ? d : new Date(String(d).slice(0, 10) + 'T12:00:00')).getDay(); return g === 0 || g === 6 ? w : S.hours; }
-function slots(ds) { const h = hrsOn(ds), o = mins(h.open), c = mins(h.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
+function slots(ds) { if (holOn(ds)) return []; const h = hrsOn(ds), o = mins(h.open), c = mins(h.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
 const curPkg = () => S.pkgs.find(k => k.code === S.pkg) || null;
-const inHours = d => { const h = hrsOn(d), m = d.getHours() * 60 + d.getMinutes(); return m >= mins(h.open) && m <= mins(h.close); };
+const inHours = d => { if (holOn(d)) return false; const h = hrsOn(d), m = d.getHours() * 60 + d.getMinutes(); return m >= mins(h.open) && m <= mins(h.close); };
 // ເວລາເລີ່ມທີ່ເລືອກໄດ້: ບໍ່ຍ້ອນຫຼັງ · ແພັກເກັດ: ເວລາຄືນຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ
 function startOk(ds, ts) {
   const a = at(ds, ts); if (isNaN(a) || a.getTime() < Date.now() - 900000) return false;
@@ -523,6 +535,7 @@ const depTotal = () => selItems().reduce((s, i) => s + Number(i.depositThb || 0)
 const passAll = () => selItems().length > 0 && selItems().every(i => i.passportOk) && selAdds().every(a => a.passportOk);
 const addOk = a => a.free > 0 && (!curPkg() || priceOf(a) != null);
 const hoursTxt = k => { const w = S.hours.weekend, h = S.hours; return tx(k).replace('{o}–{c}', h.open + '–' + h.close + (w && (w.open !== h.open || w.close !== h.close) ? ' (' + tx('wkend') + ' ' + w.open + '–' + w.close + ')' : '')); };
+const holList = () => Object.keys(S.hol).sort().filter(k => k >= dStr(new Date())).slice(0, 4).map(k => k.slice(8) + '/' + k.slice(5, 7) + ' ' + S.hol[k]);
 
 async function loadCatalog() {
   const w = win(); let u = RW_API + '?op=catalog';
@@ -530,6 +543,7 @@ async function loadCatalog() {
   try {
     const j = await (await fetch(u)).json();
     S.enabled = j.enabled !== false; S.rate = Number(j.lakPerThb) || 0; S.items = (j.items || []).filter(i => !i.kind || i.kind === 'bike'); S.addons = j.addons || []; S.pkgs = j.packages || []; S.terms = j.terms || null;
+    if (Array.isArray(j.holidays)) S.hol = Object.fromEntries(j.holidays.map(h => [String(h.date).slice(0, 10), h.name]));
     if (j.hours && j.hours.open) S.hours = j.hours; if (j.noshowMin) S.noshow = j.noshowMin;
     if (S.pkg && !curPkg()) S.pkg = '';
     S.sel = new Set(Array.from(S.sel).filter(id => S.items.some(i => i.id === id && i.free && (!curPkg() || priceOf(i) != null))));
@@ -584,7 +598,7 @@ function draw() {
     '<div class="row2"><div class="field"><label>' + esc(tx('from')) + '</label><div class="rw-dt"><input type="date" id="rwSd" min="' + today + '" value="' + esc(S.sd) + '">' + timeSel('rwSt', S.sd, S.st, false, startOk) + '</div></div>' +
     '<div class="field"><label>' + esc(k ? tx('pkgEnd') : tx('to')) + '</label><div class="rw-dt">' + (k ? '<input type="date" disabled value="' + esc(isNaN(e) ? '' : dStr(e)) + '">' + timeSel('rwEt', '', isNaN(e) ? '' : tStr(e), true) :
       '<input type="date" id="rwEd" min="' + esc(S.sd) + '" value="' + esc(S.ed) + '">' + timeSel('rwEt', S.ed, S.et, false)) + '</div></div></div>' +
-    '<p class="rw-hint">🕘 ' + esc(hoursTxt('hoursNote')) + '</p>' + (late ? '<div class="rw-msg on">' + esc(tx('pkgLate').replace('{t}', tStr(e))) + '</div>' : '') + '</section>' +
+    '<p class="rw-hint">🕘 ' + esc(hoursTxt('hoursNote')) + '</p>' + (holList().length ? '<p class="rw-hint">🔒 ' + esc(tx('holClosed')) + ': ' + esc(holList().join(', ')) + '</p>' : '') + (holOn(S.sd) || (!curPkg() && holOn(S.ed)) ? '<div class="rw-msg on">' + esc(tx('holPick').replace('{n}', holOn(S.sd) || holOn(S.ed))) + '</div>' : '') + + (late ? '<div class="rw-msg on">' + esc(tx('pkgLate').replace('{t}', tStr(e))) + '</div>' : '') + '</section>' +
     '<section><h2><i>2</i>' + esc(tx('s2')) + '</h2>' + list + '</section>' + addonsHtml() +
     '<section><h2><i>3</i>' + esc(tx('s4')) + '</h2><div class="field"><label>' + esc(tx('depT')) + '</label><select id="rwDep"><option value="cash"' + (S.dep === 'cash' ? ' selected' : '') + '>' + esc(tx('depCash')) + '</option><option value="passport"' + (S.dep === 'passport' ? ' selected' : '') + '>' + esc(tx('depPass')) + '</option></select></div>' +
     '<div class="rw-note" id="rwDepNote">' + depNote() + '</div>' +
@@ -599,9 +613,9 @@ function draw() {
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
   const re = () => { S.msg = ''; loadCatalog(); };
-  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; if (slots(S.sd).indexOf(S.st) < 0) S.st = slots(S.sd)[slots(S.sd).length - 1]; if (!curPkg() && slots(S.ed).indexOf(S.et) < 0) S.et = slots(S.ed)[slots(S.ed).length - 1]; re(); };
+  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; const L1 = slots(S.sd); if (L1.length && L1.indexOf(S.st) < 0) S.st = L1[L1.length - 1]; const L2 = slots(S.ed); if (!curPkg() && L2.length && L2.indexOf(S.et) < 0) S.et = L2[L2.length - 1]; re(); };
   $('rwSt').onchange = () => { S.st = $('rwSt').value; re(); };
-  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; const L = slots(S.ed); if (L.indexOf(S.et) < 0) S.et = L[L.length - 1]; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
+  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; const L = slots(S.ed); if (L.length && L.indexOf(S.et) < 0) S.et = L[L.length - 1]; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
   if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; if (curPkg() && !startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } re(); };
   const upd = () => { $('rwEst').textContent = kip(est()) + approx(est()); $('rwDepNote').innerHTML = depNote(); };
   root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); if (!S.sel.size) S.add = {}; draw(); });
@@ -618,6 +632,7 @@ async function submit(ev) {
   const digits = S.phone.replace(/\D/g, '');
   if (S.name.trim().length < 2) return fail(tx('eName'));
   if (digits.length < 8 || digits.length > 15) return fail(tx('ePhone'));
+  if (holOn(startD()) || holOn(endD())) return fail(tx('holPick').replace('{n}', holOn(startD()) || holOn(endD())));
   if (!inHours(startD()) || !inHours(endD())) return fail(hoursTxt('eHours'));
   const w = win(); if (!w) return fail(tx('eTime'));
   if (!S.sel.size || S.sel.size > 4) return fail(tx('eItems'));
@@ -652,13 +667,35 @@ M.ex = {};
 const extTimes = ds => slots(ds || undefined);
 const vteDate = v => new Date(new Date(v).getTime() + 7 * 3600e3).toISOString().slice(0, 10);
 function exErr(code) { return tx('eEXT_' + code) !== 'eEXT_' + code ? tx('eEXT_' + code) : (tx('e' + code) !== 'e' + code ? tx('e' + code) : tx('eErr')); }
+function holHtml(b) {
+  let h = '';
+  if (b.startHoliday) h += '<div class="rw-ex"><div class="note warn">' + esc(tx('holStartNote').replace('{h}', b.startHoliday)) + '</div></div>';
+  const o = b.holiday; if (!o) return h;
+  const X = M.ex['h' + b.id] || (M.ex['h' + b.id] = { msg: '', busy: false });
+  h += '<div class="rw-ex"><h3>🔒 ' + esc(tx('holExH')) + '</h3>';
+  if (o.conflict) return h + '<div class="note warn">' + esc(tx('holExConf')) + '</div></div>';
+  h += '<div class="note warn">' + esc(tx('holExBody').replace('{o}', fdt(b.endAt)).replace('{h}', o.holiday).replace('{e}', fdt(o.newEnd)).replace('{x}', kip(o.extraLak))) + '</div>';
+  if (X.msg) h += '<div class="rw-msg on">' + esc(X.msg) + '</div>';
+  return h + '<button class="btn btn-black" type="button" data-ex="holiday" data-id="' + esc(b.id) + '"' + (X.busy ? ' disabled' : '') + '>' + esc(tx('holExGo')) + '</button></div>';
+}
+async function holAccept(id) {
+  const b = M.res.find(x => x.id === id), X = M.ex['h' + id]; if (!b || !b.holiday || !X) return;
+  X.busy = true; X.msg = ''; drawMine();
+  try {
+    const r = await fetch(RW_API + '?op=extend', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone: b.ph, id: b.id, endAt: b.holiday.newEnd, confirm: 'true', holiday: 'true' }) });
+    const j = await r.json().catch(() => ({}));
+    if (!j.ok) X.msg = exErr(j.code || 'ERROR'); else { const nb = await mineFetch(b.ph, b.id).catch(() => null); if (nb) M.res = M.res.map(x => x.id === id ? nb : x); M.ex['h' + id] = { msg: '', busy: false, done: true }; }
+  } catch (_) { X.msg = tx('eErr'); }
+  X.busy = false; drawMine();
+}
 function exHtml(b) {
+  if (b.holiday) return '';
   if (b.status !== 'active' || !b.extend) return '';
   const X = M.ex[b.id] || (M.ex[b.id] = { d: '', t: '16:00', q: null, msg: '', busy: false, sent: false });
   const ext = b.extension, e = b.extend;
   let h = '<div class="rw-ex"><h3>' + esc(tx('exH')) + '</h3>';
   if (ext && ext.status === 'pending') return h + '<div class="note ok">' + esc(tx('exPending')) + ' <b>' + esc(fdt(ext.newEnd)) + '</b> · ' + esc(tx('exExtra')) + ' <b>' + esc(kip(ext.extraLak)) + '</b></div></div>';
-  if (ext && ext.status === 'approved' && !X.sent) h += '<div class="note ok">' + esc(tx('exApproved')) + '</div>';
+  if (ext && ext.status === 'approved' && !X.sent) h += '<div class="note ok">' + esc(tx(ext.kind === 'holiday' ? 'holExDone' : 'exApproved')) + '</div>';
   if (ext && ext.status === 'rejected') h += '<div class="note warn">' + esc(tx('exRejected')) + (ext.reason ? ': ' + esc(ext.reason) : '') + '</div>';
   if (!e.canExtend) {
     const k = e.code === 'QUEUE' || e.code === 'OVERDUE' || e.code === 'STATUS' ? e.code : 'STATUS';
@@ -695,7 +732,7 @@ function bkHtml(b) {
   const st = { reserved: 'stReserved', active: 'stActive', returned: 'stReturned', closed: 'stClosed', cancelled: 'stCancelled' }[b.status];
   return '<div class="rw-bk"><span class="no">' + esc(b.id) + '</span><span class="st">' + esc(tx(st || 'stReserved')) + '</span>' +
     '<p>' + esc(tx('okWhen')) + ': <b>' + esc(fdt(b.startAt)) + '</b> · ' + esc(tx('okBack')) + ': <b>' + esc(fdt(b.endAt)) + '</b></p>' +
-    '<p>' + esc((b.items || []).map(i => i.name).join(', ')) + '</p>' + (b.rentLak ? '<p>' + esc(tx('est')) + ': <b>' + esc(kip(b.rentLak)) + '</b></p>' : '') + exHtml(b) + '</div>';
+    '<p>' + esc((b.items || []).map(i => i.name).join(', ')) + '</p>' + (b.rentLak ? '<p>' + esc(tx('est')) + ': <b>' + esc(kip(b.rentLak)) + '</b></p>' : '') + holHtml(b) + exHtml(b) + '</div>';
 }
 function drawMine() {
   const el = $('rwMine');
@@ -711,8 +748,8 @@ function drawMine() {
     drawMine();
   };
   $('rwMp').oninput = e => { M.ph = e.target.value; }; $('rwMi').oninput = e => { M.id = e.target.value; };
-  el.onchange = e => { const t = e.target; if (!t.dataset || !t.dataset.ex || !M.ex[t.dataset.id]) return; const X = M.ex[t.dataset.id]; if (t.dataset.ex === 'd') { X.d = t.value; const L = extTimes(X.d); if (L.indexOf(X.t) < 0) X.t = L[L.length - 1]; } if (t.dataset.ex === 't') X.t = t.value; X.q = null; X.msg = ''; drawMine(); };
-  el.onclick = e => { const t = e.target.closest('[data-ex]'); if (t && (t.dataset.ex === 'quote' || t.dataset.ex === 'send')) exAction(t.dataset.ex, t.dataset.id); };
+  el.onchange = e => { const t = e.target; if (!t.dataset || !t.dataset.ex || !M.ex[t.dataset.id]) return; const X = M.ex[t.dataset.id]; if (t.dataset.ex === 'd') { X.d = t.value; const L = extTimes(X.d); if (L.length && L.indexOf(X.t) < 0) X.t = L[L.length - 1]; } if (t.dataset.ex === 't') X.t = t.value; X.q = null; X.msg = ''; drawMine(); };
+  el.onclick = e => { const t = e.target.closest('[data-ex]'); if (t && (t.dataset.ex === 'quote' || t.dataset.ex === 'send')) exAction(t.dataset.ex, t.dataset.id); else if (t && t.dataset.ex === 'holiday') holAccept(t.dataset.id); };
 }
 async function toggleMine() {
   M.open = !$('rwMine').hidden ? false : true; $('rwMine').hidden = !M.open; $('rw').hidden = M.open;
