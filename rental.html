@@ -390,6 +390,7 @@ const TX = {
   sub: { lo: 'ເລືອກວັນເວລາ ແລະ ລົດທີ່ວ່າງ ແລ້ວກົດຈອງໄດ້ທັນທີ', th: 'เลือกวันเวลาและจักรยานที่ว่าง แล้วกดจองได้ทันที', en: 'Pick your dates and a free bike, then book instantly' },
   s1: { lo: 'ເລືອກວັນ ແລະ ເວລາ', th: 'เลือกวันและเวลา', en: 'Choose dates & time' },
   from: { lo: 'ເລີ່ມເຊົ່າ (ຮັບລົດ)', th: 'เริ่มเช่า (รับรถ)', en: 'Pick-up' }, to: { lo: 'ຄືນລົດ', th: 'คืนรถ', en: 'Return' },
+  wkend: { lo: 'ເສົາ–ອາທິດ', th: 'เสาร์–อาทิตย์', en: 'Sat–Sun' },
   hoursNote: { lo: 'ຮັບ ແລະ ຄືນລົດໄດ້ໃນເວລາເປີດຮ້ານ {o}–{c}', th: 'รับและคืนรถได้ในเวลาเปิดร้าน {o}–{c}', en: 'Pick-up and return during opening hours {o}–{c}' },
   s2: { lo: 'ເລືອກລົດທີ່ຈະເຊົ່າ', th: 'เลือกจักรยานที่จะเช่า', en: 'Choose your bike' },
   sAdd: { lo: 'ອຸປະກອນເຊົ່າເພີ່ມ', th: 'อุปกรณ์เช่าเพิ่มเติม', en: 'Add-on gear' },
@@ -473,9 +474,11 @@ try { S.rid = sessionStorage.getItem('rw_rid') || ''; } catch (_) {}
 if (!S.rid) { S.rid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); try { sessionStorage.setItem('rw_rid', S.rid); } catch (_) {} }
 
 // ຊ່ອງເວລາທີ່ເລືອກໄດ້ (ທຸກ 30 ນາທີ ໃນເວລາເປີດຮ້ານ)
-function slots() { const o = mins(S.hours.open), c = mins(S.hours.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
+// ເວລາເປີດຮ້ານຕາມວັນ: ເສົາ–ອາທິດ ໃຊ້ S.hours.weekend (ຖ້າມີ) · d = Date ຫຼື 'YYYY-MM-DD'
+function hrsOn(d) { const w = S.hours.weekend; if (!d || !w) return S.hours; const g = (d instanceof Date ? d : new Date(String(d).slice(0, 10) + 'T12:00:00')).getDay(); return g === 0 || g === 6 ? w : S.hours; }
+function slots(ds) { const h = hrsOn(ds), o = mins(h.open), c = mins(h.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad(Math.floor(m / 60)) + ':' + pad(m % 60)); return r; }
 const curPkg = () => S.pkgs.find(k => k.code === S.pkg) || null;
-const inHours = d => { const m = d.getHours() * 60 + d.getMinutes(); return m >= mins(S.hours.open) && m <= mins(S.hours.close); };
+const inHours = d => { const h = hrsOn(d), m = d.getHours() * 60 + d.getMinutes(); return m >= mins(h.open) && m <= mins(h.close); };
 // ເວລາເລີ່ມທີ່ເລືອກໄດ້: ບໍ່ຍ້ອນຫຼັງ · ແພັກເກັດ: ເວລາຄືນຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ
 function startOk(ds, ts) {
   const a = at(ds, ts); if (isNaN(a) || a.getTime() < Date.now() - 900000) return false;
@@ -483,7 +486,7 @@ function startOk(ds, ts) {
 }
 function firstStart() {
   const d = new Date(); d.setSeconds(0, 0);
-  for (let i = 0; i < 8; i++) { const ds = dStr(d); const t = slots().find(x => startOk(ds, x) && at(ds, x).getTime() >= Date.now() + 3600000); if (t) return [ds, t]; d.setDate(d.getDate() + 1); }
+  for (let i = 0; i < 8; i++) { const ds = dStr(d); const t = slots(ds).find(x => startOk(ds, x) && at(ds, x).getTime() >= Date.now() + 3600000); if (t) return [ds, t]; d.setDate(d.getDate() + 1); }
   return [dStr(new Date()), S.hours.open];
 }
 (() => { const [ds, ts] = firstStart(); S.sd = ds; S.st = ts; const e = new Date(at(ds, ts).getTime() + 86400000); S.ed = dStr(e); S.et = ts; })();
@@ -519,7 +522,7 @@ const est = () => selItems().reduce((s, i) => s + costOf(i), 0) + selAdds().redu
 const depTotal = () => selItems().reduce((s, i) => s + Number(i.depositThb || 0), 0) + selAdds().reduce((s, a) => s + Number(a.depositThb || 0) * S.add[a.key], 0);
 const passAll = () => selItems().length > 0 && selItems().every(i => i.passportOk) && selAdds().every(a => a.passportOk);
 const addOk = a => a.free > 0 && (!curPkg() || priceOf(a) != null);
-const hoursTxt = k => tx(k).replace('{o}', S.hours.open).replace('{c}', S.hours.close);
+const hoursTxt = k => { const w = S.hours.weekend, h = S.hours; return tx(k).replace('{o}–{c}', h.open + '–' + h.close + (w && (w.open !== h.open || w.close !== h.close) ? ' (' + tx('wkend') + ' ' + w.open + '–' + w.close + ')' : '')); };
 
 async function loadCatalog() {
   const w = win(); let u = RW_API + '?op=catalog';
@@ -540,8 +543,8 @@ function depNote() {
   const d = depTotal(); return d > 0 ? esc(tx('depSum')) + ': <b>' + esc(fmt(d)) + '</b>' : '';
 }
 function timeSel(id, ds, val, dis, okFn) {
-  return '<select id="' + id + '"' + (dis ? ' disabled' : '') + '>' + slots().map(t => '<option' + (t === val ? ' selected' : '') + (okFn && !okFn(ds, t) ? ' disabled' : '') + '>' + t + '</option>').join('') +
-    (slots().indexOf(val) < 0 ? '<option selected disabled>' + esc(val) + '</option>' : '') + '</select>';
+  return '<select id="' + id + '"' + (dis ? ' disabled' : '') + '>' + slots(ds).map(t => '<option' + (t === val ? ' selected' : '') + (okFn && !okFn(ds, t) ? ' disabled' : '') + '>' + t + '</option>').join('') +
+    (slots(ds).indexOf(val) < 0 ? '<option selected disabled>' + esc(val) + '</option>' : '') + '</select>';
 }
 function addonsHtml() {
   if (!S.addons.length || !S.sel.size) return '';
@@ -596,10 +599,10 @@ function draw() {
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
   const re = () => { S.msg = ''; loadCatalog(); };
-  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots().find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; re(); };
+  $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; if (slots(S.sd).indexOf(S.st) < 0) S.st = slots(S.sd)[slots(S.sd).length - 1]; if (!curPkg() && slots(S.ed).indexOf(S.et) < 0) S.et = slots(S.ed)[slots(S.ed).length - 1]; re(); };
   $('rwSt').onchange = () => { S.st = $('rwSt').value; re(); };
-  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
-  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; if (curPkg() && !startOk(S.sd, S.st)) { const t = slots().find(x => startOk(S.sd, x)); if (t) S.st = t; } re(); };
+  if ($('rwEd')) { $('rwEd').onchange = () => { S.ed = $('rwEd').value; const L = slots(S.ed); if (L.indexOf(S.et) < 0) S.et = L[L.length - 1]; re(); }; $('rwEt').onchange = () => { S.et = $('rwEt').value; re(); }; }
+  if ($('rwPkg')) $('rwPkg').onchange = () => { S.pkg = $('rwPkg').value; if (curPkg() && !startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } re(); };
   const upd = () => { $('rwEst').textContent = kip(est()) + approx(est()); $('rwDepNote').innerHTML = depNote(); };
   root.querySelectorAll('.rw-item input').forEach(c => c.onchange = () => { c.checked ? S.sel.add(c.dataset.id) : S.sel.delete(c.dataset.id); if (!S.sel.size) S.add = {}; draw(); });
   root.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const a = S.addons.find(x => x.key === b.dataset.k); if (!a) return; const q = (S.add[a.key] || 0) + (b.dataset.q === '+' ? 1 : -1); S.add[a.key] = Math.max(0, Math.min(q, a.free, 4)); draw(); });
@@ -646,7 +649,7 @@ async function mineFetch(phone, id) {
 }
 // ===== ຂໍຕໍ່ສັນຍາ (5J): ສົ່ງຄຳຂໍໃຫ້ພະນັກງານອະນຸມັດ · ຖ້າມີຄິວຈອງຕໍ່ = ຕໍ່ບໍ່ໄດ້ =====
 M.ex = {};
-const EXT_TIMES = (() => { const a = []; for (let h = 9; h <= 19; h++) for (const m of [0, 30]) { if (h === 19 && m) break; a.push(String(h).padStart(2, '0') + ':' + (m ? '30' : '00')); } return a; })();
+const extTimes = ds => slots(ds || undefined);
 const vteDate = v => new Date(new Date(v).getTime() + 7 * 3600e3).toISOString().slice(0, 10);
 function exErr(code) { return tx('eEXT_' + code) !== 'eEXT_' + code ? tx('eEXT_' + code) : (tx('e' + code) !== 'e' + code ? tx('e' + code) : tx('eErr')); }
 function exHtml(b) {
@@ -663,7 +666,7 @@ function exHtml(b) {
   }
   h += '<div class="note">' + esc(tx('exUntil')) + ' <b>' + esc(fdt(e.maxEnd)) + '</b></div>' +
     '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" data-id="' + esc(b.id) + '" min="' + vteDate(b.endAt) + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
-    '<div class="field"><label>' + esc(tx('exNewT')) + '</label><select data-ex="t" data-id="' + esc(b.id) + '">' + EXT_TIMES.map(t => '<option' + (t === X.t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div></div>';
+    '<div class="field"><label>' + esc(tx('exNewT')) + '</label><select data-ex="t" data-id="' + esc(b.id) + '">' + extTimes(X.d).map(t => '<option' + (t === X.t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div></div>';
   if (X.msg) h += '<div class="rw-msg on">' + esc(X.msg) + '</div>';
   if (X.q && X.q.canExtend) h += '<div class="note ok">' + esc(tx('exExtra')) + ': <b>' + esc(kip(X.q.extraLak)) + '</b> · ' + esc(fdt(X.qEnd)) + '<br>' + esc(tx('exSentNote')) + '</div>' +
     '<button class="btn btn-black" type="button" data-ex="send" data-id="' + esc(b.id) + '"' + (X.busy ? ' disabled' : '') + '>' + esc(tx('exSend')) + '</button>';
@@ -708,7 +711,7 @@ function drawMine() {
     drawMine();
   };
   $('rwMp').oninput = e => { M.ph = e.target.value; }; $('rwMi').oninput = e => { M.id = e.target.value; };
-  el.onchange = e => { const t = e.target; if (!t.dataset || !t.dataset.ex || !M.ex[t.dataset.id]) return; const X = M.ex[t.dataset.id]; if (t.dataset.ex === 'd') X.d = t.value; if (t.dataset.ex === 't') X.t = t.value; X.q = null; X.msg = ''; drawMine(); };
+  el.onchange = e => { const t = e.target; if (!t.dataset || !t.dataset.ex || !M.ex[t.dataset.id]) return; const X = M.ex[t.dataset.id]; if (t.dataset.ex === 'd') { X.d = t.value; const L = extTimes(X.d); if (L.indexOf(X.t) < 0) X.t = L[L.length - 1]; } if (t.dataset.ex === 't') X.t = t.value; X.q = null; X.msg = ''; drawMine(); };
   el.onclick = e => { const t = e.target.closest('[data-ex]'); if (t && (t.dataset.ex === 'quote' || t.dataset.ex === 'send')) exAction(t.dataset.ex, t.dataset.id); };
 }
 async function toggleMine() {
