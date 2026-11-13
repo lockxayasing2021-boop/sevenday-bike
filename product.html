@@ -390,6 +390,7 @@ main.wrap{padding-top:8px}
       <div class="alt" id="alt"></div>
       <div class="opt" id="colorOpt" hidden><div class="opt-label">ສີ <span id="colorSel"></span></div><div class="opts" id="colors"></div></div>
       <div class="opt" id="sizeOpt" hidden><div class="opt-label">ຂະໜາດ <a href="contact.html" style="text-decoration:underline;font-weight:600;font-size:13px">ບໍ່ແນ່ໃຈຂະໜາດ? ຖາມຊ່າງ</a></div><div class="opts" id="sizes"></div></div>
+      <div id="specOpts"></div>
       <div class="stock-line" id="stock"></div>
       <div class="buy">
         <div class="qty"><button aria-label="ຫຼຸດ" onclick="setQty(-1)">−</button><input id="qty" value="1" aria-label="ຈຳນວນ" inputmode="numeric"><button aria-label="ເພີ່ມ" onclick="setQty(1)">+</button></div>
@@ -448,7 +449,7 @@ function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທ
 </script>
 <script>
 const sku = new URLSearchParams(location.search).get('sku');
-let P=null, V=[], M=[], gi=0, sel={color:'',size:''};
+let P=null, V=[], M=[], gi=0, sel={color:'',size:'',specs:{}}, DESC='';
 
 async function load(){
   if(!sku){ return notFound('ບໍ່ໄດ້ເລືອກສິນຄ້າ'); }
@@ -470,7 +471,7 @@ async function load(){
 }
 let LIVE = false, mediaKey = null;
 function show(raw, live){
-  P = mapP(raw); V = Array.isArray(raw.variants) ? raw.variants : (raw.vlist||[]);
+  P = mapP(raw); V = Array.isArray(raw.variants) ? raw.variants : (raw.vlist||[]); DESC = String(raw.description||'').trim();
   const m = (raw.media||[]).filter(m=>m&&m.url&&(m.type==='image'||m.embed)), mk = JSON.stringify(m)+'|'+P.image;
   window._catalog=[P, ...(window._catalog||[]).filter(x=>x.sku!==P.sku)];
   document.title = `${P.name} — Sevenday Bike`;
@@ -482,7 +483,9 @@ function notFound(msg){
   document.getElementById('page').innerHTML = `<div class="notfound"><h1>${msg}</h1><p style="color:var(--grey-600);margin-bottom:24px">ລອງຄົ້ນຫາ ຫຼື ກັບໄປເບິ່ງສິນຄ້າທັງໝົດ</p><a class="btn btn-black" href="catalogue.html">ເບິ່ງສິນຄ້າທັງໝົດ</a></div>`;
   document.querySelector('.mobile-buy').remove();
 }
-function current(){ if(!sel.color&&!sel.size) return P; const v=V.find(x=>(!sel.color||x.color===sel.color)&&(!sel.size||x.size===sel.size)); return v ? {...P, sku:v.sku||P.sku, price:Number(v.price_thb)||P.price, stock:Number(v.stock), variant:[v.color,v.size].filter(Boolean).join(' / ')} : P; }
+const specKeys=()=>[...new Set(V.flatMap(v=>Object.keys(v.specs||{})))];
+const vMatch=(v,except)=>(except==='color'||!sel.color||v.color===sel.color)&&(except==='size'||!sel.size||v.size===sel.size)&&specKeys().every(k=>except==='spec:'+k||!sel.specs[k]||(v.specs||{})[k]===sel.specs[k]);
+function current(){ const any=sel.color||sel.size||Object.keys(sel.specs).some(k=>sel.specs[k]); if(!any) return P; const v=V.find(x=>vMatch(x)); return v ? {...P, sku:v.sku||P.sku, price:Number(v.price_thb)||P.price, stock:Number(v.stock), variant:(v.label||[v.color,v.size].filter(Boolean).join(' / ')), specs:v.specs||{}, vimage:v.image||''} : P; }
 
 function render(){
   const c=current();
@@ -502,22 +505,41 @@ function render(){
   const swatch=x=>{ const m=M.find(m=>m.type==='image'&&m.color&&m.color.toLowerCase()===x.toLowerCase()); return m?`<img src="${esc(m.thumb||m.url)}" alt="">`:''; };
   document.getElementById('colors').innerHTML=colors.map(x=>{ const sw=swatch(x), any=V.some(v=>v.color===x&&v.stock>0);
     return `<button class="${sel.color===x?'on':''} ${sw?'sw':''}" data-color="${esc(x)}" title="${any?'':'ໝົດ'}">${sw}${esc(x)}</button>`; }).join('');
-  document.getElementById('sizes').innerHTML=sizes.map(x=>{ const ok=V.some(v=>v.size===x&&(!sel.color||v.color===sel.color)&&v.stock>0);
+  document.getElementById('sizes').innerHTML=sizes.map(x=>{ const ok=V.some(v=>v.size===x&&vMatch(v,'size')&&v.stock>0);
     return `<button class="${sel.size===x?'on':''}" ${ok?'':'disabled'} data-size="${esc(x)}">${esc(x)}</button>`; }).join('');
 
-  const needPick = (colors.length&&!sel.color)||(sizes.length&&!sel.size);
+  const sk=specKeys().filter(k=>new Set(V.map(v=>(v.specs||{})[k]).filter(Boolean)).size>0);
+  document.getElementById('specOpts').innerHTML=sk.map(k=>{ const vals=[...new Set(V.map(v=>(v.specs||{})[k]).filter(Boolean))];
+    return `<div class="opt"><div class="opt-label">${esc(k)} <span>${esc(sel.specs[k]||'')}</span></div><div class="opts">`+vals.map(x=>{ const ok=V.some(v=>(v.specs||{})[k]===x&&vMatch(v,'spec:'+k)&&v.stock>0);
+      return `<button class="${sel.specs[k]===x?'on':''}" ${ok?'':'disabled'} data-spec="${esc(k)}" data-val="${esc(x)}">${esc(x)}</button>`; }).join('')+`</div></div>`; }).join('');
+  const needSpec=sk.find(k=>!sel.specs[k]);
+  const needPick = (colors.length&&!sel.color)||(sizes.length&&!sel.size)||!!needSpec;
   const st=document.getElementById('stock'), btn=document.getElementById('addBtn');
-  if(needPick){ st.innerHTML='<span class="dot low"></span>ເລືອກ'+(colors.length&&!sel.color?'ສີ':'ຂະໜາດ')+'ກ່ອນ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
+  if(needPick){ st.innerHTML='<span class="dot low"></span>ເລືອກ'+(colors.length&&!sel.color?'ສີ':sizes.length&&!sel.size?'ຂະໜາດ':esc(needSpec))+'ກ່ອນ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   else if(c.stock<=0){ st.innerHTML='<span class="dot out"></span>ສິນຄ້າໝົດ — ສອບຖາມວັນເຂົ້າໃໝ່ໄດ້ທີ່ຮ້ານ'; btn.disabled=true; btn.textContent='ສິນຄ້າໝົດ'; }
   else if(c.stock<=2){ st.innerHTML='<span class="dot low"></span>ໃກ້ໝົດ — ມີຈຳນວນຈຳກັດທີ່ຮ້ານ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   else { st.innerHTML='<span class="dot"></span>ມີສິນຄ້າທີ່ຮ້ານ'; btn.disabled=false; btn.textContent='ໃສ່ກະຕ່າ'; }
   if(!LIVE){ btn.disabled=true; btn.textContent='ກຳລັງກວດສະຕັອກ…'; }
 
-  document.getElementById('desc').textContent = `${P.name} ຈາກ ${P.brand}. ສອບຖາມລາຍລະອຽດເພີ່ມເຕີມ ຫຼື ນັດມາລອງທີ່ຮ້ານໄດ້.`;
-  document.getElementById('spec').innerHTML = [['ຍີ່ຫໍ້',P.brand],['ໝວດໝູ່',(SUBS[P.sub]&&SUBS[P.sub][1])||P.category],['ປະເພດ',P.category],['ລະຫັດສິນຄ້າ',P.sku],['ຫົວໜ່ວຍ',P.unit]].filter(r=>r[1]).map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  const dEl=document.getElementById('desc'); dEl.style.whiteSpace=DESC?'pre-line':''; dEl.textContent = DESC || `${P.name} ຈາກ ${P.brand}. ສອບຖາມລາຍລະອຽດເພີ່ມເຕີມ ຫຼື ນັດມາລອງທີ່ຮ້ານໄດ້.`;
+  document.getElementById('spec').innerHTML = [['ຍີ່ຫໍ້',P.brand],['ໝວດໝູ່',(SUBS[P.sub]&&SUBS[P.sub][1])||P.category],['ປະເພດ',P.category],['ລະຫັດສິນຄ້າ',P.sku],['ຫົວໜ່ວຍ',P.unit],...Object.entries(c.specs||{})].filter(r=>r[1]).map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  window._needPick=needPick; applyVariantImage();
 }
+function applyVariantImage(){   // รูปของตัวเลือกที่เลือก (ถ้ามี) ขึ้นเป็นรูปแรกของแกลเลอรี
+  const u=window._needPick?'':(current().vimage||''), cur=M[0]&&M[0].vimg?M[0].url:'';
+  if(u===cur) return;
+  if(cur) M.shift();
+  if(u) M.unshift({type:'image',url:u,thumb:u,vimg:true});
+  renderGallery();
+}
+function onlyKeep(kind,k){   // เลือกแล้วไม่มีตัวเลือกที่ตรงทุกข้อ → เก็บไว้เฉพาะข้อที่เพิ่งกด
+  if(V.some(v=>vMatch(v))) return;
+  const keepV = kind==='spec' ? sel.specs[k] : sel[kind];
+  sel={color:'',size:'',specs:{}}; if(kind==='spec') sel.specs[k]=keepV; else sel[kind]=keepV;
+}
+function pickSpec(k,v){ sel.specs[k]=sel.specs[k]===v?'':v; onlyKeep('spec',k); render(); }
 function pick(k,v){
-  sel[k]=sel[k]===v?'':v; render();
+  sel[k]=sel[k]===v?'':v; onlyKeep(k); render();
   if(k==='color'&&sel.color){ const i=M.findIndex(m=>m.color&&m.color.toLowerCase()===sel.color.toLowerCase()); if(i>=0) gGo(i); }
 }
 
@@ -562,6 +584,7 @@ function stopVideo(i){            // leaving a video slide → stop playback, sh
   const cls=m.type==='tiktok'?'tt':m.type==='youtube'?'yt':'mp', bg=m.thumb?` style="background-image:url('${esc(m.thumb)}')"`:'';
   sl.innerHTML=`<button class="gposter ${cls}"${bg} data-play="${i}" aria-label="ເບິ່ງວິດີໂອ"><span class="pl">${PLAY}</span><small>${m.type==='tiktok'?'TikTok':m.type==='youtube'?'YouTube':''}</small></button>`;
 }
+document.getElementById('specOpts').addEventListener('click',e=>{ const b=e.target.closest('[data-spec]'); if(b&&!b.disabled) pickSpec(b.dataset.spec,b.dataset.val); });
 document.getElementById('colors').addEventListener('click',e=>{ const b=e.target.closest('[data-color]'); if(b) pick('color',b.dataset.color); });
 document.getElementById('sizes').addEventListener('click',e=>{ const b=e.target.closest('[data-size]'); if(b&&!b.disabled) pick('size',b.dataset.size); });
 (function(){
