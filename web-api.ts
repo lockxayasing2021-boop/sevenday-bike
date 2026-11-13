@@ -2137,7 +2137,9 @@ function makeApp(ctx) {
               sku: String(v.sku).trim(),
               barcode: String(v.barcode || "").trim(),
               price: Number(v.price) || 0,
-              stock: Number(v.stock) || 0
+              stock: Number(v.stock) || 0,
+              specs: v.specs && typeof v.specs === "object" ? v.specs : {},
+              label: String(v.label || "")
             };
           });
         });
@@ -2239,8 +2241,10 @@ function makeApp(ctx) {
           image: _sbCover(P),
           group: so.group,
           sub: so.sub,
+          main_cat: String(P.main_cat || ""),
+          description: String(P.description || ""),
           variants: (_variantMap()[lk] || []).map(function(v) {
-            return { variant_id: v.id, color: v.color, size: v.size, sku: v.sku, barcode: v.barcode, price_thb: v.price || pp.thb, stock: v.stock };
+            return { variant_id: v.id, color: v.color, size: v.size, sku: v.sku, barcode: v.barcode, price_thb: v.price || pp.thb, stock: v.stock, specs: v.specs || {}, label: v.label || "", image: _posImgMap()[String(v.sku)] || "" };
           }),
           media: (_mediaMap()[lk] || []).map(_mediaPublic)
         };
