@@ -240,6 +240,35 @@ a{color:inherit;text-decoration:none}
 .qc .who.pos{border-color:#8E6BD8}
 .qc .rs{font-size:11px;font-weight:700}
 .qdet{margin-top:14px}
+.r-by{height:36px;border:1.5px solid var(--g2);padding:0 10px;font:inherit;font-size:14px;width:180px;background:#fff}
+.r-kpis{margin:0 0 16px}
+.r-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
+.r-tabs button{height:38px;padding:0 14px;border:1.5px solid var(--g2);background:#fff;font:inherit;font-weight:700;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:6px;cursor:pointer}
+.r-tabs button.on{background:#000;color:#fff;border-color:#000}
+.r-tabs .bd{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#E53935;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.r-card{background:#fff;border:1px solid var(--g2);padding:14px 16px;margin-bottom:10px}
+.r-card.new{border-left:4px solid var(--bad)}
+.r-card .r-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.r-card .r-h .sp{flex:1}
+.r-card .r-h b{font-size:16px}
+.r-card .r-id{font-size:12px;color:var(--g6);font-variant-numeric:tabular-nums}
+.r-card .r-m{font-size:14px;margin-top:6px;line-height:1.5}
+.r-card .r-m small{color:var(--g6)}
+.r-card .r-a{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.r-sec{font-size:13px;font-weight:800;color:var(--g6);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.04em}
+.r-empty{padding:28px 16px;text-align:center;color:var(--g6);background:#fff;border:1px dashed var(--g2)}
+.r-calnav{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.r-calwrap{overflow-x:auto;background:#fff;border:1px solid var(--g2)}
+.r-cal{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
+.r-cal th,.r-cal td{border:1px solid var(--g1);padding:6px;text-align:center}
+.r-cal th:first-child,.r-cal td:first-child{text-align:left;position:sticky;left:0;background:#fff;min-width:130px;max-width:170px;font-weight:700}
+.r-cal td.busy{background:#111;color:#fff;font-weight:800;cursor:pointer}
+.r-cal td.busy.web{background:#1565C0}
+.r-cal td.busy.over{background:#E53935}
+.r-cal th.tod{background:#FFF3C4}
+.r-leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--g6);margin-top:8px}
+.r-leg i{display:inline-block;width:12px;height:12px;margin-right:4px;vertical-align:-1px}
+@media (max-width:640px){.r-by{width:100%}}
 .qdet .bd{padding:14px 16px}
 .qent{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--g1)}
 .qent:last-child{border-bottom:0}
@@ -303,6 +332,7 @@ a{color:inherit;text-decoration:none}
       <div class="nav-h">ร้าน</div>
       <a href="#orders" data-p="orders"><span class="ic">🛒</span>ออเดอร์ &amp; งานซ่อม<span class="bd" id="bdOrders" hidden></span></a>
       <a href="#queue" data-p="queue"><span class="ic">🔧</span>คิวซ่อม<span class="bd" id="bdQueue" hidden></span></a>
+      <a href="#rental" data-p="rental"><span class="ic">🚲</span>เช่าจักรยาน<span class="bd" id="bdRental" hidden></span></a>
       <div class="nav-h">กิจกรรม</div>
       <a href="#events" data-p="events"><span class="ic">📅</span>จัดการกิจกรรม</a>
       <a href="#participants" data-p="participants"><span class="ic">👥</span>ผู้สมัคร / ตรวจสลิป<span class="bd" id="bdSlips" hidden></span></a>
@@ -339,6 +369,10 @@ a{color:inherit;text-decoration:none}
       <div class="card" style="margin-bottom:16px">
         <h2>🔧 คิวซ่อมวันนี้<span class="sp"></span><button class="btn sm" type="button" data-go="queue">ดูตารางคิว</button></h2>
         <ul class="list qtoday" id="qTodayList"><li><div class="sk" style="height:36px;width:100%"></div></li></ul>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <h2>🚲 เช่าจักรยานวันนี้<span class="sp"></span><button class="btn sm" type="button" data-go="rental">ดูการเช่า</button></h2>
+        <ul class="list" id="rTodayList"><li><div class="sk" style="height:36px;width:100%"></div></li></ul>
       </div>
       <div class="grid2">
         <div class="card">
@@ -444,6 +478,25 @@ a{color:inherit;text-decoration:none}
     </div>
 
 
+    <div class="dash" id="rental" hidden>
+      <div class="site-head"><div><h1>เช่าจักรยาน</h1><div class="sub">ดูการจองวันนี้ · รับทราบ / ยกเลิกการจองจากเว็บ · ปฏิทินรถ — รับรถ คืนรถ และรับเงิน ทำใน POS</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input id="rBy" class="r-by" maxlength="40" placeholder="ชื่อผู้ใช้งาน (เช่น OS)" aria-label="ชื่อผู้ใช้งาน"><button class="btn" type="button" id="rReload">↻ โหลดใหม่</button></div></div>
+      <div class="kpis r-kpis">
+        <button class="kpi" type="button" data-rtab="web"><b id="rkNew">–</b><span>จองเว็บใหม่ (รอรับทราบ)</span></button>
+        <button class="kpi" type="button" data-rtab="today"><b id="rkPick">–</b><span>รอรับรถวันนี้</span></button>
+        <button class="kpi" type="button" data-rtab="today"><b id="rkRet">–</b><span>ต้องคืนวันนี้</span></button>
+        <button class="kpi" type="button" data-rtab="today"><b id="rkOver">–</b><span>เกินกำหนดคืน</span></button>
+      </div>
+      <div class="r-tabs" role="tablist">
+        <button type="button" data-rtab="web" class="on">จองจากเว็บ<span class="bd" id="rtNew" hidden></span></button>
+        <button type="button" data-rtab="today">วันนี้</button>
+        <button type="button" data-rtab="cal">ปฏิทินรถ</button>
+      </div>
+      <div id="rWeb" class="r-pane"></div>
+      <div id="rToday" class="r-pane" hidden></div>
+      <div id="rCal" class="r-pane" hidden></div>
+    </div>
+
     <div class="dash" id="queue" hidden>
       <div class="site-head"><div><h1>คิวซ่อม</h1><div class="sub" id="qSub">ตารางคิวรับซ่อม / Service — ลูกค้าจองผ่านเว็บได้คิวทันที · งานที่รับหน้าร้านใน POS นับเป็นคิวอัตโนมัติ</div></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn dark" type="button" id="qAddBtn">+ เพิ่มคิว</button><button class="btn" type="button" id="qSetBtn">⚙️ ตั้งค่า</button></div></div>
@@ -500,6 +553,7 @@ const PAGES = {
   site:         { title: 'ตั้งค่าหน้าเว็บ' },
   media:        { title: 'รูป / วิดีโอสินค้า' },
   queue:        { title: 'คิวซ่อม' },
+  rental:       { title: 'เช่าจักรยาน' },
   orders:       { title: 'ออเดอร์ & งานซ่อม', file: 'admin-orders.html' },
   events:       { title: 'จัดการกิจกรรม', file: 'admin-events.html' },
   detail:       { title: 'แก้ไขกิจกรรม', file: 'admin-events-detail.html', parent: 'events' },
@@ -559,7 +613,8 @@ function route(){
   const { p, q } = parseHash();
   setActive(p);
   const fr = $('frame');
-  $('site').hidden = p !== 'site'; $('media').hidden = p !== 'media'; $('queue').hidden = p !== 'queue';
+  $('site').hidden = p !== 'site'; $('media').hidden = p !== 'media'; $('queue').hidden = p !== 'queue'; $('rental').hidden = p !== 'rental';
+  if (p === 'rental') { fr.hidden = true; $('dash').hidden = true; loadRental(); return; }
   if (p === 'queue') { fr.hidden = true; $('dash').hidden = true; loadQueue(q); return; }
   if (p === 'home') { fr.hidden = true; $('dash').hidden = false; loadDash(); return; }
   if (p === 'site') { fr.hidden = true; $('dash').hidden = true; loadSite(); return; }
@@ -626,6 +681,130 @@ const TYPE = { order: ['🛒', 'ออเดอร์'], booking: ['🔧', 'จ�
 const EV_ST = { DRAFT: ['ร่าง', 'mute'], PUBLISHED: ['ประกาศแล้ว', 'mid'], REGISTRATION_OPEN: ['เปิดรับสมัคร', 'ok'], REGISTRATION_CLOSED: ['ปิดรับสมัคร', 'mid'], EVENT_FINISHED: ['จบแล้ว', 'mute'], CANCELLED: ['ยกเลิก', 'mute'] };
 const thDate = d => { if (!d) return ''; const x = new Date(String(d).slice(0, 10) + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? 'เมื่อกี้' : m < 60 ? m + ' นาทีที่แล้ว' : m < 1440 ? Math.round(m / 60) + ' ชม.ที่แล้ว' : Math.round(m / 1440) + ' วันที่แล้ว'; };
+
+/* ══ เช่าจักรยาน ══════════════════════════════════════════════════════ */
+const R_TZ = 'Asia/Vientiane';
+const rDT = d => d ? new Date(d).toLocaleString('en-GB', { timeZone: R_TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }) : '';
+const rT = d => d ? new Date(d).toLocaleTimeString('en-GB', { timeZone: R_TZ, hour: '2-digit', minute: '2-digit', hour12: false }) : '';
+const rYmd = d => new Date(d).toLocaleDateString('en-CA', { timeZone: R_TZ });
+const R_ST = { reserved: ['จองแล้ว', 'mid'], active: ['กำลังเช่า', 'ok'], returned: ['รอปิดสัญญา', 'mid'], closed: ['ปิดแล้ว', 'mute'], cancelled: ['ยกเลิก', 'mute'] };
+let R = null, rTab = 'web', rBusy = false, rCalFrom = '';
+function rAuthFail(x){ if (/ADMIN_AUTH/.test(x.message)) { store.del('sd_admin'); token = ''; showLogin('หมดเวลาเข้าสู่ระบบ — กรุณาเข้าใหม่'); return true; } return false; }
+function rBy(){ return ($('rBy').value || '').trim(); }
+function rItems(c){ return (c.items || []).map(i => esc(i.name) + ' <small>(' + esc(i.assetNo) + ')</small>').join(', ') || '-'; }
+function rKip(c){ const n = Number(c.rentLak) || 0; return n ? '₭ ' + Math.round(n).toLocaleString('en-US') : (Number(c.rentThb) ? '฿ ' + Number(c.rentThb).toLocaleString('en-US') : ''); }
+function rWa(c){
+  let p = String(c.customerPhone || '').replace(/\D/g, '');
+  if (!p) return '';
+  if (p.startsWith('00')) p = p.slice(2); else if (p.startsWith('0')) p = '856' + p.slice(1); else if (!p.startsWith('856') && p.length <= 10) p = '856' + p;
+  const it = (c.items || []).map(i => i.name).join(', '), a = rDT(c.startAt), b = rDT(c.endAt);
+  const M = {
+    lo: `ສະບາຍດີ ${c.customerName} — Sevenday Bike ຢືນຢັນການຈອງເຊົ່າ ${c.id}\n${it}\nຮັບລົດ: ${a}\nສົ່ງຄືນ: ${b}\nກະລຸນາມາຮັບລົດຕາມເວລາ ຂອບໃຈ 🙏`,
+    th: `สวัสดีครับคุณ ${c.customerName} — Sevenday Bike ยืนยันการจองเช่า ${c.id}\n${it}\nรับรถ: ${a}\nคืนรถ: ${b}\nกรุณามารับรถตามเวลานัด ขอบคุณครับ 🙏`,
+    en: `Hello ${c.customerName} — Sevenday Bike confirms your rental booking ${c.id}\n${it}\nPick-up: ${a}\nReturn: ${b}\nPlease arrive on time. Thank you 🙏`,
+  };
+  return 'https://wa.me/' + p + '?text=' + encodeURIComponent(M[c.lang] || M.lo);
+}
+function rCard(c, mode){
+  const st = R_ST[c.status] || [c.status, 'mute'], isNew = c.source === 'web' && c.status === 'reserved' && !c.ackAt, wa = rWa(c);
+  const acts = [];
+  if (c.status === 'reserved') {
+    if (c.source === 'web' && !c.ackAt) acts.push(`<button class="btn sm dark" type="button" data-rack="${esc(c.id)}">✓ รับทราบ</button>`);
+    if (wa) acts.push(`<a class="btn sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`);
+    acts.push(`<button class="btn sm" type="button" data-rcancel="${esc(c.id)}">ยกเลิกการจอง</button>`);
+  } else if (wa && c.status === 'active') acts.push(`<a class="btn sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`);
+  return `<div class="r-card${isNew ? ' new' : ''}">
+    <div class="r-h"><b>${esc(c.customerName)}</b>${isNew ? '<span class="pill new">ใหม่</span>' : ''}<span class="pill ${c.overdue ? 'new' : st[1]}">${c.overdue ? 'เกินกำหนดคืน' : esc(st[0])}</span>${c.source === 'web' ? '<span class="pill mute">เว็บ</span>' : ''}<span class="sp"></span><span class="r-id" translate="no">${esc(c.id)}</span></div>
+    <div class="r-m"><span translate="no">📞 ${esc(c.customerPhone || '-')}</span><br>🚲 ${rItems(c)}<br><span translate="no">🕘 ${esc(rDT(c.startAt))} → ${esc(rDT(c.endAt))}${rKip(c) ? ' · ' + esc(rKip(c)) : ''}</span>
+      ${c.note ? '<br><small>📝 ' + esc(c.note) + '</small>' : ''}${c.status === 'cancelled' && c.cancelReason ? '<br><small>✕ ' + esc(c.cancelReason) + '</small>' : ''}
+      ${c.ackAt ? '<br><small>✓ <span>รับทราบแล้ว</span> <span translate="no">' + esc(rDT(c.ackAt)) + (c.ackBy ? ' · ' + esc(c.ackBy) : '') + '</span></small>' : ''}</div>
+    ${acts.length ? '<div class="r-a">' + acts.join('') + '</div>' : ''}</div>`;
+}
+function rRender(){
+  if (!R) return;
+  const k = R.counts || {};
+  $('rkNew').textContent = k.webNew || 0; $('rkPick').textContent = k.pickupsToday || 0; $('rkRet').textContent = k.returnsToday || 0; $('rkOver').textContent = k.overdue || 0;
+  $('rkNew').parentElement.classList.toggle('hot', k.webNew > 0); $('rkOver').parentElement.classList.toggle('hot', k.overdue > 0);
+  badge('bdRental', k.webNew || 0); badge('rtNew', k.webNew || 0);
+  document.querySelectorAll('.r-tabs [data-rtab]').forEach(b => b.classList.toggle('on', b.dataset.rtab === rTab));
+  $('rWeb').hidden = rTab !== 'web'; $('rToday').hidden = rTab !== 'today'; $('rCal').hidden = rTab !== 'cal';
+  // จองจากเว็บ
+  const web = R.web || [], open = web.filter(c => c.status === 'reserved'), rest = web.filter(c => c.status !== 'reserved').slice(0, 30);
+  $('rWeb').innerHTML = (open.length ? open.map(c => rCard(c)).join('') : '<div class="r-empty">ไม่มีการจองจากเว็บที่รอรับรถ</div>')
+    + (rest.length ? '<div class="r-sec">ก่อนหน้านี้</div>' + rest.map(c => rCard(c)).join('') : '');
+  // วันนี้
+  const over = (R.returns || []).filter(c => c.overdue), ret = (R.returns || []).filter(c => !c.overdue), pk = R.pickups || [];
+  $('rToday').innerHTML = (over.length ? '<div class="r-sec">เกินกำหนดคืน</div>' + over.map(c => rCard(c)).join('') : '')
+    + '<div class="r-sec">รอรับรถวันนี้</div>' + (pk.length ? pk.map(c => rCard(c)).join('') : '<div class="r-empty">วันนี้ไม่มีการจองรอรับรถ</div>')
+    + '<div class="r-sec">ต้องคืนวันนี้</div>' + (ret.length ? ret.map(c => rCard(c)).join('') : '<div class="r-empty">วันนี้ไม่มีรถที่ต้องคืน</div>');
+  rCalRender();
+}
+function rCalRender(){
+  const cal = R.calendar || {}, days = [], n = cal.days || 7, f = rYmd(cal.from), today = rYmd(Date.now());
+  for (let i = 0; i < n; i++) days.push(qAddD(f, i));
+  const dayRange = ymd => { const a = new Date(ymd + 'T00:00:00+07:00').getTime(); return [a, a + 864e5]; };
+  const rows = (cal.assets || []).map(a => {
+    const bl = (cal.blocks || []).filter(b => b.assetId === a.id);
+    return '<tr><td>' + esc(a.name) + ' <small translate="no">' + esc(a.assetNo) + '</small></td>' + days.map(d => {
+      const [s, e] = dayRange(d);
+      const hit = bl.filter(b => new Date(b.startAt).getTime() < e && Math.max(new Date(b.endAt).getTime(), b.overdue ? Date.now() : 0) > s);
+      if (!hit.length) return '<td></td>';
+      const b = hit[0], tip = hit.map(h => `${h.customer} · ${rDT(h.startAt)} → ${rDT(h.endAt)} · ${h.contractId}`).join('\n');
+      return `<td class="busy${b.overdue ? ' over' : b.source === 'web' ? ' web' : ''}" title="${esc(tip)}" data-rtip="${esc(tip)}" translate="no">${new Date(b.startAt).getTime() >= s ? esc(rT(b.startAt)) : '→'}</td>`;
+    }).join('') + '</tr>';
+  }).join('');
+  $('rCal').innerHTML = `<div class="r-calnav"><button class="btn sm" type="button" data-rcal="-7">← 7</button><button class="btn sm" type="button" data-rcal="0">วันนี้</button><button class="btn sm" type="button" data-rcal="7">7 →</button></div>
+    <div class="r-calwrap"><table class="r-cal"><thead><tr><th>รถ / อุปกรณ์</th>${days.map(d => `<th class="${d === today ? 'tod' : ''}" translate="no">${esc(qNice(d))}</th>`).join('')}</tr></thead>
+    <tbody>${rows || '<tr><td colspan="' + (n + 1) + '" style="text-align:center;color:var(--g6)">ยังไม่มีรถให้เช่า</td></tr>'}</tbody></table></div>
+    <div class="r-leg"><span><i style="background:#1565C0"></i>จองจากเว็บ</span><span><i style="background:#111"></i>จอง / เช่าหน้าร้าน</span><span><i style="background:#E53935"></i>เกินกำหนดคืน</span><span>แตะช่องเพื่อดูชื่อลูกค้า</span></div>`;
+}
+async function loadRental(quiet){
+  if (rBusy) return; rBusy = true;
+  if (!R && !quiet) $('rWeb').innerHTML = '<div class="r-empty">กำลังโหลด…</div>';
+  try { R = await post('rentalAdmin', rCalFrom ? { from: rCalFrom, days: 7 } : { days: 7 }); rRender(); }
+  catch (x) { if (!rAuthFail(x)) { if (!R) $('rWeb').innerHTML = '<div class="r-empty">' + esc(x.message) + '</div>'; else toast(x.message); } }
+  finally { rBusy = false; }
+}
+async function dashRental(){
+  try {
+    const d = await post('rentalAdmin', { days: 1 }), k = d.counts || {};
+    badge('bdRental', k.webNew || 0);
+    const rows = [...(d.returns || []).filter(c => c.overdue), ...(d.pickups || []), ...(d.returns || []).filter(c => !c.overdue)].slice(0, 8);
+    $('rTodayList').innerHTML = rows.length ? rows.map(c => `<li data-go="rental">
+        <span style="font-size:20px">🚲</span>
+        <div class="t"><b>${esc(c.customerName)} · ${(c.items || []).map(i => esc(i.name)).join(', ')}</b><small translate="no">${esc(c.status === 'reserved' ? rDT(c.startAt) : rDT(c.endAt))} · ${esc(c.id)}</small></div>
+        <span class="pill ${c.overdue ? 'new' : c.status === 'reserved' ? (c.source === 'web' && !c.ackAt ? 'new' : 'mid') : 'ok'}">${c.overdue ? 'เกินกำหนดคืน' : c.status === 'reserved' ? (c.source === 'web' && !c.ackAt ? 'จองเว็บใหม่' : 'รอรับรถ') : 'ต้องคืนวันนี้'}</span></li>`).join('')
+      : '<li class="empty" style="cursor:default">วันนี้ไม่มีการจองเช่า</li>';
+  } catch (x) { $('rTodayList').innerHTML = `<li class="empty" style="cursor:default">${esc(x.message)}</li>`; }
+}
+try { $('rBy').value = localStorage.getItem('sd_admin_name') || ''; } catch (_) {}
+$('rBy').addEventListener('change', () => { try { localStorage.setItem('sd_admin_name', rBy()); } catch (_) {} });
+$('rReload').onclick = () => loadRental();
+$('rental').addEventListener('click', async e => {
+  const t = e.target.closest('[data-rtab]'); if (t) { rTab = t.dataset.rtab; rRender(); return; }
+  const cn = e.target.closest('[data-rcal]'); if (cn) { const n = +cn.dataset.rcal; rCalFrom = n ? qAddD(rCalFrom || rYmd(Date.now()), n) : ''; loadRental(true); return; }
+  const tip = e.target.closest('[data-rtip]'); if (tip) { toast(tip.dataset.rtip.split('\n')[0]); return; }
+  const a = e.target.closest('[data-rack]');
+  if (a) { a.disabled = true;
+    try { await post('rentalAdminAck', { id: a.dataset.rack, by: rBy() }); toast('รับทราบแล้ว'); await loadRental(true); }
+    catch (x) { a.disabled = false; if (!rAuthFail(x)) toast(x.message); }
+    return; }
+  const c = e.target.closest('[data-rcancel]');
+  if (c) {
+    const card = c.closest('.r-card'); if (card.querySelector('.r-cx')) return;
+    const box = document.createElement('div'); box.className = 'r-a r-cx';
+    box.innerHTML = '<input class="r-by" style="flex:1;min-width:180px" maxlength="300" placeholder="เหตุผลการยกเลิก"><button class="btn sm dark" type="button">ยืนยันยกเลิก</button><button class="btn sm" type="button">ไม่ยกเลิก</button>';
+    card.appendChild(box); const inp = box.querySelector('input'), [ok, no] = box.querySelectorAll('button'); inp.focus();
+    no.onclick = () => box.remove();
+    ok.onclick = async () => {
+      if (!inp.value.trim()) { toast('กรุณาระบุเหตุผลการยกเลิก'); inp.focus(); return; }
+      ok.disabled = true;
+      try { await post('rentalAdminCancel', { id: c.dataset.rcancel, reason: inp.value.trim(), by: rBy() }); toast('ยกเลิกการจองแล้ว'); await loadRental(true); }
+      catch (x) { ok.disabled = false; if (!rAuthFail(x)) toast(x.message); }
+    };
+  }
+});
+setInterval(() => { if (token && !document.hidden) { if (!$('rental').hidden) loadRental(true); else if (!$('dash').hidden) dashRental(); } }, 120000);
 
 /* ══ คิวซ่อม ══════════════════════════════════════════════════════════ */
 const QP = { am: 'เช้า', pm: 'บ่าย', ev: 'เย็น' }, QSRC = { 'เว็บไซต์': '🌐', 'แอดมิน': '📞', 'พนักงาน POS': '🧾', 'หน้าร้าน (POS)': '🏪', 'POS': '🏪' };
@@ -774,7 +953,7 @@ async function loadDash(){
   if (dashBusy) return; dashBusy = true;
   $('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const [inbox, sum] = await Promise.allSettled([post('adminList', { days: 60 }), post('evt.adminSummary', {})]);
-  dashQueue();
+  dashQueue(); dashRental();
   dashBusy = false;
   const auth = [inbox, sum].some(r => r.status === 'rejected' && /ADMIN_AUTH/.test(r.reason.message));
   if (auth) { store.del('sd_admin'); token = ''; return showLogin('หมดเวลาเข้าสู่ระบบ — กรุณาเข้าใหม่'); }
