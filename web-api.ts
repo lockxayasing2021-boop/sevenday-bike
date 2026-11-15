@@ -2,6 +2,7 @@
 // Sevenday web-api — Supabase Edge Function (built from edge/web-api/build.mjs; comments stripped)
 // 2026-10-31: BIB per category (each category starts at 01) + evt.renumberBibs
 // 2026-11-05: SESSION_KEY → Edge secret WEB_SESSION_KEY · ລະຫັດຜ່ານ PBKDF2 (ຂອງເກົ່າ sha256 ຍັງໃຊ້ໄດ້ ແລະ ອັບເກຣດຕອນລັອກອິນ)
+// 2026-11-15: หน้าเช่าในแอดมินเว็บ: rentalAdmin / rentalAdminAck / rentalAdminCancel (ต้องรัน 097 ก่อน)
 // 2026-11-03: ຂໍປ່ຽນລຸ້ນ (ຜູ້ສະໝັກຂໍ → ແອັດມິນອະນຸມັດ): evt.requestCategoryChange / withdrawCategoryChange / decideCategoryChange
 import { createHash, createHmac, randomUUID, pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { Buffer } from "node:buffer";
@@ -27,7 +28,7 @@ const R2 = () => ENV("R2_ENDPOINT") && ENV("R2_ACCESS_KEY_ID") && ENV("R2_SECRET
   client: new AwsClient({ accessKeyId: ENV("R2_ACCESS_KEY_ID").trim(), secretAccessKey: ENV("R2_SECRET_ACCESS_KEY").trim(), service: "s3", region: "auto" })
 } : null;
 const WEB_SHEETS = { WebOrders: 1, WebMedia: 1, WebImages: 1, WebImagesPOS: 1, WebCategories: 1 };
-const READ_RPC = /^web_(status|catalog|stock|customer_find|customer_orders|queue_data|evt_load)$/;
+const READ_RPC = /^web_(status|catalog|stock|customer_find|customer_orders|queue_data|evt_load|admin_rental)$/;
 function norm(v) {
   if (v === null || v === void 0) return "";
   if (v instanceof Date) return isNaN(v.getTime()) ? "" : new Date(v.getTime());
@@ -2722,6 +2723,21 @@ function makeApp(ctx) {
       c.hours = _qHours();
       return await _RQ().setConfig(c);
     }
+    async function rentalAdmin(body) {
+      if (!_isAdmin(body.token)) throw new Error("ADMIN_AUTH");
+      var p = {};
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(body.from || ""))) p.from = String(body.from);
+      if (body.days) p.days = Math.max(1, Math.min(31, parseInt(body.days, 10) || 7));
+      return await SB_WEB_.rpc("web_admin_rental", { p });
+    }
+    async function rentalAdminAck(body) {
+      if (!_isAdmin(body.token)) throw new Error("ADMIN_AUTH");
+      return await SB_WEB_.rpc("web_admin_rental_ack", { p: { id: String(body.id || ""), by: String(body.by || "").slice(0, 60) } });
+    }
+    async function rentalAdminCancel(body) {
+      if (!_isAdmin(body.token)) throw new Error("ADMIN_AUTH");
+      return await SB_WEB_.rpc("web_admin_rental_cancel", { p: { id: String(body.id || ""), reason: String(body.reason || "").slice(0, 300), by: String(body.by || "").slice(0, 60) } });
+    }
     async function upsertCustomer(body) {
       var c = body.customer || body;
       if (!c.phone) throw new Error("customer.phone required");
@@ -3143,6 +3159,12 @@ function makeApp(ctx) {
               return _ok(await queueBlock(body));
             case "queueConfig":
               return _ok(await queueConfig(body));
+            case "rentalAdmin":
+              return _ok(await rentalAdmin(body));
+            case "rentalAdminAck":
+              return _ok(await rentalAdminAck(body));
+            case "rentalAdminCancel":
+              return _ok(await rentalAdminCancel(body));
             case "registerCustomer":
               return _ok(await registerCustomer(body));
             case "getCustomerOrders":
