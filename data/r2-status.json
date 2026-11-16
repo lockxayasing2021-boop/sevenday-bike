@@ -1,12 +1,12 @@
 {
- "t": "2026-11-16T07:09:54.808Z",
+ "t": "2026-11-16T13:09:08.769Z",
  "endpoint_host": "********f98becefc676855011fc164c.r2.cloudflarestorage.com",
  "endpoint_has_path": false,
  "bucket": "sevenday-media",
  "public_url": "https://img.sevendaybike.com",
  "uploaded": 0,
  "failed": 0,
- "total": 356,
- "want": 356,
+ "total": 348,
+ "want": 348,
  "errors": []
 }
