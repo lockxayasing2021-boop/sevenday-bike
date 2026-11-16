@@ -311,8 +311,8 @@ main.wrap{padding-top:8px}
 .pts{background:#000;color:#fff;padding:18px 24px;text-align:right}
 .pts b{display:block;font-size:34px;font-weight:800;line-height:1}
 .pts span{font-size:13px;opacity:.75}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--grey-300);margin:24px 0}
-.tabs button{padding:14px 18px;font-weight:700;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--grey-300);margin:24px 0;overflow-x:auto;scrollbar-width:none}
+.tabs button{flex:none;white-space:nowrap;padding:14px 18px;font-weight:700;border-bottom:3px solid transparent;margin-bottom:-1px}
 .tabs button.on{border-color:#000}
 .list{display:flex;flex-direction:column;gap:12px;padding-bottom:72px}
 .order{border:1px solid var(--grey-300);padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:8px 20px}
@@ -327,6 +327,10 @@ main.wrap{padding-top:8px}
 .cs-sale{grid-column:1/-1;background:var(--grey-100);padding:10px 12px;font-size:13px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:4px 16px}
 .cs-sale span{color:var(--grey-600)}.cs-sale b{display:block;color:var(--ink)}
 .cs-hd{font-size:13px;color:var(--grey-600);margin:10px 0 2px}
+.co-pay{grid-column:1/-1;background:var(--grey-100);padding:10px 12px;font-size:13px;white-space:pre-wrap}
+.co-acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.co-acts .btn{height:40px;padding:0 18px;font-size:14px}
+.co-err{grid-column:1/-1;color:#b00020;font-size:13px;font-weight:600}
 .empty{border:1px dashed var(--grey-300);padding:48px;text-align:center}
 .empty p{color:var(--grey-600);margin:6px 0 18px}
 .ptsbox{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grey-300);border:1px solid var(--grey-300)}
@@ -348,7 +352,7 @@ main.wrap{padding-top:8px}
 <main class="wrap">
   
   <div class="tabs" role="tablist">
-    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button>
+    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button><button data-t="corders" id="tabCOrders" hidden></button>
   </div>
   <div class="list" id="list"><div class="empty">ກຳລັງໂຫຼດ...</div></div>
 </main>
@@ -394,6 +398,7 @@ function render(){
   document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   const L=$('list');
   if(tab==='consign'){ renderConsign(); return; }
+  if(tab==='corders'){ renderCOrders(); return; }
   if(tab==='orders') L.innerHTML = data.orders.length ? data.orders.slice().reverse().map(o=>`<div class="order"><div><b>${o.bill_id}</b>${o.status?`<span class="st ${o.status==='ສຳເລັດ'?'done':''}">${o.status}</span>`:''}<div class="meta">${d8(o.date)} · ${o.payment||''}</div></div><div class="amt">${fmt(o.total)}</div><div class="items">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(', ')}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີການສັ່ງຊື້</b><p>ຄຳສັ່ງຊື້ຈາກເວັບ ແລະ ທີ່ຮ້ານ ຈະສະແດງຢູ່ບ່ອນນີ້</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>`;
   if(tab==='repairs') L.innerHTML = data.repairs.length ? data.repairs.slice().reverse().map(r=>`<div class="order"><div><b>${r.bike||'ລົດຖີບ'}</b><span class="st ${/ສຳເລັດ|สำเร็จ|รับรถ|done|complete/i.test(r.status)?'done':''}">${r.status||'-'}</span><div class="meta">${r.job_id} · ${d8(r.date)}</div></div><div class="amt">${r.total?fmt(r.total):''}</div><div class="items">${r.symptoms||''}</div></div>`).join('')
@@ -441,14 +446,81 @@ async function loadConsign(){
   catch(_){ /* ບໍ່ແຈ້ງຜິດພາດ: ລູກຄ້າທົ່ວໄປບໍ່ຕ້ອງເຫັນ */ }
 }
 document.addEventListener('langchange',()=>{ if(cons){ $('tabConsign').textContent=ct('tab'); if(tab==='consign') renderConsign(); } });
+
+/* ── ຄຳສັ່ງຊື້ຂອງຝາກຂາຍຂອງຂ້ອຍ (supabase/107) — consign-web ?op=orders · ສະແດງສະເພາະຜູ້ທີ່ເຄີຍສັ່ງ ── */
+const CO={
+  tab:{lo:'ຄຳສັ່ງຊື້ຂອງຂ້ອຍ',th:'คำสั่งซื้อของฉัน',en:'My orders'},
+  none:{lo:'ຍັງບໍ່ມີຄຳສັ່ງຊື້',th:'ยังไม่มีคำสั่งซื้อ',en:'No orders yet'},
+  st:{new:['ລໍຖ້າຮ້ານກຳນົດຄ່າສົ່ງ','รอร้านกำหนดค่าส่ง','Waiting for shipping fee'],quoted:['ກວດຄ່າສົ່ງ ແລ້ວກົດຢືນຢັນ','ตรวจค่าส่งแล้วกดยืนยัน','Review the fee and confirm'],confirmed:['ໂອນເງິນ ແລ້ວສົ່ງສະລິບ','โอนเงินแล้วส่งสลิป','Transfer, then upload your slip'],slip:['ຮ້ານກຳລັງກວດສະລິບ','ร้านกำลังตรวจสลิป','Shop is checking your slip'],paid:['ຊຳລະແລ້ວ — ກຳລັງກຽມຂອງ','ชำระแล้ว — กำลังเตรียมของ','Paid — being prepared'],completed:['ສຳເລັດ','สำเร็จ','Completed'],cancelled:['ຍົກເລີກ','ยกเลิก','Cancelled']},
+  pickup:{lo:'ຮັບທີ່ຮ້ານ',th:'รับที่ร้าน',en:'Pickup'},ship:{lo:'ສົ່ງຕ່າງແຂວງ',th:'ส่งต่างจังหวัด',en:'Shipping'},
+  price:{lo:'ລາຄາ',th:'ราคา',en:'Price'},fee:{lo:'ຄ່າສົ່ງ',th:'ค่าส่ง',en:'Shipping'},total:{lo:'ຍອດໂອນ',th:'ยอดโอน',en:'Transfer total'},
+  payTo:{lo:'ບັນຊີຮັບໂອນ',th:'บัญชีรับโอน',en:'Pay to'},noPay:{lo:'ຕິດຕໍ່ຮ້ານເພື່ອຂໍເລກບັນຊີ',th:'ติดต่อร้านเพื่อขอเลขบัญชี',en:'Contact the shop for bank details'},
+  confirmB:{lo:'ຢືນຢັນຍອດ',th:'ยืนยันยอด',en:'Confirm total'},cancelB:{lo:'ຍົກເລີກຄຳສັ່ງຊື້',th:'ยกเลิกคำสั่งซื้อ',en:'Cancel order'},cancelAsk:{lo:'ຍົກເລີກຄຳສັ່ງຊື້ນີ້ບໍ?',th:'ยกเลิกคำสั่งซื้อนี้ใช่ไหม?',en:'Cancel this order?'},
+  slipB:{lo:'ອັບໂຫຼດສະລິບ',th:'อัปโหลดสลิป',en:'Upload slip'},slipAgain:{lo:'ສົ່ງສະລິບໃໝ່',th:'ส่งสลิปใหม่',en:'Upload a new slip'},track:{lo:'ພັດສະດຸ',th:'พัสดุ',en:'Parcel'},
+  busy:{lo:'ກຳລັງສົ່ງ...',th:'กำลังส่ง...',en:'Sending...'},bad:{lo:'ອັບໂຫຼດບໍ່ໄດ້',th:'อัปโหลดไม่ได้',en:'Upload failed'}
+};
+const coL=()=>typeof sdLang==='function'?sdLang():'lo', coI=()=>({lo:0,th:1,en:2}[coL()]||0);
+const co=k=>(CO[k]||{})[coL()]||(CO[k]||{}).lo||k, cos=s=>(CO.st[s]||[s,s,s])[coI()];
+let corders=null, coErr={}, coBusy=false;
+async function coPost(op,body){
+  const r=await fetch(CW_API+'?op='+op,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({token:user.token},body))});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){ sessionStorage.removeItem('sd_user'); location.replace('login.html'); throw new Error('SESSION_EXPIRED'); }
+  if(!r.ok||!j.ok) throw new Error(j.message||co('bad'));
+  return j;
+}
+function renderCOrders(){
+  const L=$('list'); if(!corders||!corders.orders||!corders.orders.length){ L.innerHTML='<div class="empty"><b>'+cesc(co('none'))+'</b></div>'; return; }
+  L.innerHTML=corders.orders.map(o=>{ const it=o.item||{}, ship=o.method==='ship', live=['new','quoted','confirmed','slip','paid'].indexOf(o.status)>-1;
+    const acts=[];
+    if(o.status==='quoted') acts.push('<button class="btn btn-black" type="button" data-ca="fee" data-id="'+cesc(o.id)+'">'+cesc(co('confirmB'))+'</button>');
+    if(o.status==='confirmed'||o.status==='slip') acts.push('<label class="btn btn-black" style="cursor:pointer"><input type="file" accept="image/*" hidden data-slip="'+cesc(o.id)+'">'+cesc(co(o.status==='slip'?'slipAgain':'slipB'))+'</label>');
+    if(['new','quoted','confirmed'].indexOf(o.status)>-1) acts.push('<button class="btn btn-line" type="button" data-ca="cancel" data-id="'+cesc(o.id)+'">'+cesc(co('cancelB'))+'</button>');
+    return '<div class="order" style="'+(live?'':'opacity:.6')+'"><div><b>'+cesc(it.name||'')+'</b><span class="st '+(o.status==='completed'?'done':'')+'">'+cesc(cos(o.status))+'</span><div class="meta">'+cesc(o.id)+' · '+cesc(it.code||'')+' · '+cesc(co(ship?'ship':'pickup'))+'</div></div>'+
+      '<div class="amt">'+cesc(fmt(Number(o.totalThb)))+'</div>'+
+      '<div class="items">'+cesc(co('price'))+' '+cesc(fmt(Number(o.priceThb)))+(ship&&o.shipFeeThb!=null?' + '+cesc(co('fee'))+' '+cesc(fmt(Number(o.shipFeeThb))):'')+(o.trackingNo?' · '+cesc(co('track'))+': '+cesc(o.carrier)+' '+cesc(o.trackingNo):'')+(o.cancelNote?' · '+cesc(o.cancelNote):'')+'</div>'+
+      (o.status==='confirmed'||o.status==='slip'?'<div class="co-pay"><b>'+cesc(co('payTo'))+'</b>\n'+cesc(corders.payInfo||co('noPay'))+'</div>':'')+
+      (coErr[o.id]?'<div class="co-err" role="alert">'+cesc(coErr[o.id])+'</div>':'')+
+      (acts.length?'<div class="co-acts">'+acts.join('')+'</div>':'')+'</div>'; }).join('');
+}
+/* ຍ່ອຮູບສະລິບ (≤1400px JPEG) ກ່ອນສົ່ງ — ເຊີບເວີຮັບ ≤2 MB ແລະກວດຊະນິດໄຟລ໌ຈາກໄບຕ໌ */
+async function coShrink(file){
+  const bmp=await createImageBitmap(file); const k=Math.min(1,1400/Math.max(bmp.width,bmp.height));
+  const cv=document.createElement('canvas'); cv.width=Math.round(bmp.width*k); cv.height=Math.round(bmp.height*k);
+  cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
+  for(const q of [0.85,0.7,0.55,0.4]){ const b=await new Promise(r=>cv.toBlob(r,'image/jpeg',q)); if(b&&b.size<=1500*1024) return b; }
+  throw new Error(co('bad'));
+}
+const coB64=blob=>new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]); r.onerror=rej; r.readAsDataURL(blob); });
+async function loadCOrders(){
+  try{ const j=await coPost('orders',{}); corders=j; if(j.orders&&j.orders.length){ const b=$('tabCOrders'); b.hidden=false; b.textContent=co('tab'); if(new URLSearchParams(location.search).get('tab')==='corders'&&!coOpened){ coOpened=true; tab='corders'; } render(); } }
+  catch(_){ /* ລູກຄ້າທົ່ວໄປບໍ່ຕ້ອງເຫັນຂໍ້ຜິດພາດ */ }
+}
+let coOpened=false;
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-ca]'); if(!b||coBusy) return; const id=b.dataset.id;
+  if(b.dataset.ca==='cancel'&&!confirm(co('cancelAsk'))) return;
+  coBusy=true; delete coErr[id];
+  try{ await coPost(b.dataset.ca==='fee'?'order_fee':'order_cancel',{order:id}); corders=await coPost('orders',{}); }
+  catch(er){ if(er.message!=='SESSION_EXPIRED') coErr[id]=er.message; }
+  coBusy=false; renderCOrders();
+});
+document.addEventListener('change',async e=>{
+  const inp=e.target.closest('[data-slip]'); if(!inp||!inp.files||!inp.files[0]||coBusy) return; const id=inp.dataset.slip, file=inp.files[0]; inp.value='';
+  coBusy=true; delete coErr[id]; coErr[id]=co('busy'); renderCOrders();
+  try{ const blob=await coShrink(file); await coPost('order_slip',{order:id,image:await coB64(blob)}); delete coErr[id]; corders=await coPost('orders',{}); }
+  catch(er){ if(er.message!=='SESSION_EXPIRED') coErr[id]=er.message; }
+  coBusy=false; renderCOrders();
+});
+document.addEventListener('langchange',()=>{ if(corders&&corders.orders&&corders.orders.length){ $('tabCOrders').textContent=co('tab'); if(tab==='corders') renderCOrders(); } });
 function logout(){ sessionStorage.removeItem('sd_user'); location.href='login.html'; }
 async function load(){
   try{ const d=await apiPost('getCustomerOrders',{token:user.token}); data={orders:d.orders||[],repairs:d.repairs||[],points:d.points??user.points}; }
   catch(e){ if(/SESSION_EXPIRED/.test(e.message)||!user.token){ sessionStorage.removeItem('sd_user'); location.replace('login.html'); return; } $('list').innerHTML=`<div class="empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b><p>${e.message}</p><button class="btn btn-black" onclick="load()">ລອງອີກຄັ້ງ</button></div>`; return; }
   render();
 }
-document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else render(); });
-if(user){ load(); if(user.token) loadConsign(); }
+document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else if(tab==='corders') renderCOrders(); else render(); });
+if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); } }
 
 </script>
 </body>
