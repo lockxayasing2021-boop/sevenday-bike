@@ -1268,19 +1268,25 @@ function makeApp(ctx) {
       for (var i = 0; i < SUBS.length; i++) if (SUBS[i][2] === String(label).trim() || SUBS[i][0] === String(label).trim()) return SUBS[i];
       return null;
     }
-    function _guessSub(cat, type) {
-      var c = String(cat || "").toLowerCase(), t = String(type || "");
+    // 2026-11-16: ສະກົດໝວດພາສາລາວໃຫ້ເປັນແບບດຽວ (ຫມ = ໝ, ຫນ = ໜ, ສະຫຼະ/ວັນນະຍຸດຊ້ຳ) ກ່ອນຈັບຄຳ
+    function _catNorm(cat) {
+      return String(cat || "").toLowerCase().replace(/ຫມ/g, "ໝ").replace(/ຫນ/g, "ໜ").replace(/([ະ-ຼ່-ໍ])\1+/g, "$1");
+    }
+    // ໝວດຫຼັກໃນ POS (main_cat) → ກຸ່ມເທິງເວັບ + ໝວດຍ່ອຍເລີ່ມຕົ້ນ
+    var MAIN2GROUP = { bike: ["bikes", "city"], used: ["used", "used"], parts: ["parts", "parts-other"], accessories: ["accessories", "acc-other"], apparel: ["gear", "apparel"], lifestyle: ["outdoor", "outdoor-other"], service: ["service", "service"] };
+    function _guessSub(cat, type, only) {
+      var c = _catNorm(cat), t = String(type || "");
       var R = [
         [/บริการ|ບໍລິການ|^ค่า|^ຄ່າ|service|ค่าแรง|ຄ່າແຮງ/, "service"],
         [/มือสอง|ມືສອງ|used|second/, "used"],
         [/ไฟฟ้า|ໄຟຟ້າ|e-?bike|electric/, "ebike"],
         [/ภูเขา|ພູເຂົາ|mtb|mountain|เสือภูเขา/, "mtb"],
-        [/หมอบ|ໝອບ|road|ถนน|ຖະໜົນ|gravel/, "road"],
+        [/หมอบ|ໝອບ|ເສືອ ?ມອບ|road|ถนน|ຖະໜົນ|gravel/, "road"],
         [/เด็ก|ເດັກ|kid|balance/, "kids"],
         [/หมวก|ໝວກ|helmet/, "helmet"],
         [/เสื้อ|ເສື້ອ|กางเกง|ໂສ້ງ|ถุงมือ|ຖົງມື|รองเท้า|ເກີບ|แว่น|ແວ່ນ|glove|jersey|shoe|apparel/, "apparel"],
         [/โซ่|ໂສ້|chain|เฟือง|ເຟືອງ|cassette|sprocket|ตีนผี|ຕີນຜີ|derail|สายเกียร์|ສາຍເກຍ|จาน|ຈານ|crank|เกียร์|ເກຍ|shifter|กะโหลก|ກະໂຫຼກ|bb/, "drivetrain"],
-        [/เบรก|เบรค|ເບຣກ|brake|ผ้าเบรก|ຜ້າເບຣກ|ดิส|disc/, "brake"],
+        [/เบรก|เบรค|ເບຣກ|ເບກ|brake|ผ้าเบรก|ຜ້າເບຣກ|ดิส|disc/, "brake"],
         [/ยาง|ຢາງ|ล้อ|ລໍ້|ขอบ|ຂອບ|ซี่|ຊີ່|ดุม|ດຸມ|tyre|tire|tube|wheel|rim|hub/, "wheel"],
         [/แฮนด์|แฮน|ແຮນ|คอ|ຄໍ|เบาะ|ເບາະ|อาน|บันได|ບັນໄດ|pedal|saddle|grip|ปลอก|ປອກ|stem|seatpost|หลักอาน/, "cockpit"],
         [/เฟรม|ເຟຣມ|โช้ค|โช๊ค|ໂຊັກ|fork|frame/, "frame"],
@@ -1299,8 +1305,8 @@ function makeApp(ctx) {
         if (/กระเป๋า|ກະເປົາ|เป้|ເປ້|bag|แก้ว|ແກ້ວ|กระติก|ກະຕິກ|tumbler|bottle|mug|ของใช้|ຂອງໃຊ້/.test(c)) return "lifestyle-gear";
         return "outdoor-other";
       }
-      for (var i = 0; i < R.length; i++) if (R[i][0].test(c)) return R[i][1];
-      return "acc-other";
+      for (var i = 0; i < R.length; i++) if (R[i][0].test(c) && (!only || only(R[i][1]))) return R[i][1];
+      return only ? "" : "acc-other";
     }
     var _catMap = null;
     function _catMapGet() {
@@ -1313,9 +1319,30 @@ function makeApp(ctx) {
       });
       return _catMap;
     }
-    function _subOf(cat, type) {
+    // main = ໝວດຫຼັກທີ່ເຈົ້າຂອງເລືອກໃນ POS (bike/used/parts/accessories/apparel/lifestyle/service) — ຕັດສິນກ່ອນຊື່ໝວດ:
+    //  · bike/used → ຢູ່ກຸ່ມລົດຖີບສະເໝີ (ຊະນິດຍ່ອຍເດົາຈາກຊື່ໝວດ)  · ໝວດຫຼັກອື່ນ → ບໍ່ມີທາງໄປກຸ່ມລົດຖີບ (ເຊັ່ນ "ເກີບໝອບ", "ໄມລົດຖີບ")
+    //  · ບໍ່ມີ main → ຄືເກົ່າ (ຊີດ WebCategories → ເດົາຈາກຊື່ໝວດ)
+    function _subOf(cat, type, main) {
       var code = _catMapGet()[String(cat || "").trim()] || _guessSub(cat, type);
       var sub = _label2sub(code) || _label2sub("acc-other");
+      var M = MAIN2GROUP[String(main || "").trim().toLowerCase()];
+      if (M && !/บริการ|ບໍລິການ/.test(String(type || ""))) {
+        var grpOf = function(s) {
+          var x = _label2sub(s);
+          return x ? x[1] : "";
+        };
+        var isBike = function(g) {
+          return g === "bikes" || g === "used";
+        };
+        if (M[0] === "bikes" ? !isBike(sub[1]) : M[0] === "used" ? sub[1] !== "used" : isBike(sub[1]) || sub[1] === "service" && M[0] !== "service") {
+          var g2 = _guessSub(cat, "", function(s) {
+            return grpOf(s) === M[0];
+          }) || (isBike(M[0]) ? "" : _guessSub(cat, "", function(s) {
+            return !isBike(grpOf(s)) && grpOf(s) !== "service";
+          })) || M[1];
+          sub = _label2sub(g2) || sub;
+        }
+      }
       return { sub: sub[0], group: sub[1] };
     }
     function syncCategories() {
@@ -1662,7 +1689,7 @@ function makeApp(ctx) {
         var C = _sbCat(), so = [];
         C.products.forEach(function(p) {
           if (!(p.variants || []).length) return;
-          if (!/บริการ|ບໍລິການ|service/i.test(String(p.type || "")) && _subOf(p.category, p.type).group !== "service") return;
+          if (!/บริการ|ບໍລິການ|service/i.test(String(p.type || "")) && _subOf(p.category, p.type, p.main_cat).group !== "service") return;
           var pr = _prices(_sbPrice(p));
           so.push({
             sku: String(p.sku).trim(),
@@ -2015,7 +2042,7 @@ function makeApp(ctx) {
         var C = _sbCat(), VMS = _variantMap(), out = [];
         C.products.forEach(function(p) {
           if (!_sbVisible(C, p)) return;
-          var pr = _prices(_sbPrice(p)), so = _subOf(p.category, p.type), st = _sbStock(p);
+          var pr = _prices(_sbPrice(p)), so = _subOf(p.category, p.type, p.main_cat), st = _sbStock(p);
           var o = {
             sku: String(p.sku),
             name: String(p.name || ""),
@@ -2227,7 +2254,7 @@ function makeApp(ctx) {
           if (!P && String(x.sku).toLowerCase() === lk && _sbVisible(C, x)) P = x;
         });
         if (!P) throw new Error("Product not found: " + sku);
-        var b = _sbSingle(P), pp = _prices(_sbPrice(P)), so = _subOf(P.category, P.type), st = _sbStock(P);
+        var b = _sbSingle(P), pp = _prices(_sbPrice(P)), so = _subOf(P.category, P.type, P.main_cat), st = _sbStock(P);
         return {
           sku: String(P.sku),
           name: String(P.name || ""),
