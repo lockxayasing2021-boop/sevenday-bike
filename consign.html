@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ຂອງມືສອງຝາກຂາຍ — Sevenday Bike</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--ink:#1C1C1C;--grey-900:#2B2B2B;--grey-600:#6E6E6E;--grey-300:#D4D4D4;
+  --grey-100:#F3F3F3;--white:#FFF;
+  --font:'Archivo','Noto Sans Lao',system-ui,sans-serif;
+  --wrap:1320px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--white);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 28px;border-radius:999px;font-weight:700;font-size:15px;transition:background .2s,color .2s}
+.btn-black{background:var(--black);color:var(--white)}
+.btn-black:hover{background:var(--grey-900)}
+.btn-line{border:2px solid var(--black)}
+.btn-line:hover{background:var(--black);color:var(--white)}
+
+/* ── Page hero ── */
+.phero{background:var(--black);color:var(--white)}
+.phero-in{padding-top:36px;padding-bottom:36px}
+.phero .crumbs-h{font-size:13px;opacity:.75;margin-bottom:14px}
+.phero .crumbs-h a{text-decoration:underline;text-underline-offset:3px}
+.phero h1{font-size:clamp(32px,4.6vw,56px);font-weight:900;line-height:1.05;letter-spacing:-1.5px}
+.phero p{font-size:17px;opacity:.85;margin-top:14px;max-width:640px}
+
+/* ── ຂອງຝາກຂາຍ ── */
+.cw-note{margin:22px 0 6px;padding:14px 18px;background:var(--grey-100);border-radius:12px;font-size:14px;color:var(--grey-900)}
+.cw-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 10px}
+.cw-chip{height:38px;padding:0 18px;border-radius:999px;border:1.5px solid var(--grey-300);font-weight:600;font-size:14px}
+.cw-chip.on{background:var(--black);border-color:var(--black);color:var(--white)}
+.cw-legend{margin-left:auto;font-size:13px;color:var(--grey-600)}
+.cw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;margin:14px 0 48px}
+.cw-card{display:flex;flex-direction:column;text-align:left;border:1px solid var(--grey-300);border-radius:14px;overflow:hidden;background:var(--white);transition:box-shadow .2s,transform .2s}
+.cw-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px)}
+.cw-img{position:relative;aspect-ratio:4/3;background:var(--grey-100);overflow:hidden}
+.cw-img img{width:100%;height:100%;object-fit:cover}
+.cw-card.sold .cw-img img{filter:grayscale(1);opacity:.6}
+.cw-ribbon{position:absolute;top:12px;left:12px;background:var(--black);color:var(--white);font-weight:800;font-size:13px;padding:5px 12px;border-radius:999px}
+.cw-grade{position:absolute;top:12px;right:12px;background:var(--white);color:var(--black);font-weight:900;font-size:13px;padding:4px 10px;border-radius:999px;border:1.5px solid var(--black)}
+.cw-body{padding:14px 16px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.cw-name{font-weight:700;font-size:16px;line-height:1.3}
+.cw-kind{font-size:12px;color:var(--grey-600);text-transform:uppercase;letter-spacing:.5px}
+.cw-price{margin-top:auto;font-size:21px;font-weight:900}
+.cw-card.sold .cw-price{text-decoration:line-through;color:var(--grey-600)}
+.cw-empty{padding:60px 20px;text-align:center;color:var(--grey-600)}
+.cw-empty b{display:block;font-size:18px;color:var(--ink);margin-bottom:6px}
+.cw-empty .btn{margin-top:16px}
+.cw-cta{margin:0 0 56px;padding:22px;border:1.5px dashed var(--grey-300);border-radius:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.cw-cta b{font-size:17px}
+
+/* ── ລາຍລະອຽດ ── */
+.cw-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 14px}
+.cw-modal.open{display:flex}
+.cw-box{background:var(--white);border-radius:16px;max-width:860px;width:100%;display:grid;grid-template-columns:1.2fr 1fr;overflow:hidden;position:relative}
+.cw-x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;background:var(--white);border:1.5px solid var(--black);font-size:22px;line-height:1;z-index:2}
+.cw-gal{background:var(--grey-100)}
+.cw-main{aspect-ratio:4/3;width:100%;object-fit:contain;background:var(--grey-100)}
+.cw-thumbs{display:flex;gap:6px;padding:8px;overflow-x:auto}
+.cw-thumbs button{flex:0 0 62px;height:62px;border:2px solid transparent;border-radius:8px;overflow:hidden;padding:0}
+.cw-thumbs button.on{border-color:var(--black)}
+.cw-thumbs img{width:100%;height:100%;object-fit:cover}
+.cw-info{padding:26px 24px;display:flex;flex-direction:column;gap:12px}
+.cw-info h2{font-size:24px;font-weight:900;line-height:1.2;padding-right:36px}
+.cw-meta{font-size:13px;color:var(--grey-600)}
+.cw-gtag{display:inline-block;font-weight:900;border:1.5px solid var(--black);border-radius:999px;padding:2px 12px;font-size:14px}
+.cw-flaw{background:var(--grey-100);border-radius:10px;padding:12px 14px;font-size:14px;white-space:pre-wrap}
+.cw-flaw small{display:block;font-weight:700;margin-bottom:4px;color:var(--grey-600)}
+.cw-big{font-size:30px;font-weight:900}
+.cw-loading{padding:60px 0;text-align:center;color:var(--grey-600)}
+@media(max-width:720px){
+  .cw-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .cw-body{padding:10px 12px 14px}.cw-name{font-size:14px}.cw-price{font-size:17px}
+  .cw-box{grid-template-columns:1fr}
+  .cw-legend{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<section class="phero"><div class="wrap phero-in"><nav class="crumbs-h"><a href="index.html" id="cwHome"></a> / <span id="cwCrumb"></span></nav><h1 id="cwH1"></h1><p id="cwSub"></p></div></section>
+<main class="wrap" translate="no">
+  <div class="cw-note" id="cwNote"></div>
+  <div class="cw-bar" id="cwBar"></div>
+  <div id="cwList"><div class="cw-loading" id="cwLoad"></div></div>
+  <div class="cw-cta" id="cwCta"></div>
+</main>
+<div class="cw-modal" id="cwModal" role="dialog" aria-modal="true"></div>
+
+<script src="i18n.js"></script>
+<script src="layout.js"></script>
+<script>
+/* ໜ້າຂອງຝາກຂາຍ (ດູຢ່າງດຽວ) — ຂໍ້ມູນຈາກ Edge Function consign-web (supabase/106)
+ * ສະແດງສະເພາະ: ຊື່ · ເກຣດ · ໝາຍເຫດສະພາບ/ຕຳໜິ · ຮູບ · ລາຄາ · ປ້າຍ "ຂາຍແລ້ວ" (ບໍ່ມີ Serial / ຜູ້ຝາກ / ຄ່າຄອມ)
+ * ຍັງບໍ່ມີການສັ່ງຊື້ອອນລາຍ: ກົດ "ສົນໃຈຊິ້ນນີ້" → WhatsApp ຮ້ານ ພ້ອມລະຫັດຊິ້ນ */
+const CW_API = 'https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/consign-web';
+const CW_IMG = 'https://xukczixtojfmqhxepxwi.supabase.co/storage/v1/object/public/consign-photos/';
+const TX = {
+  home: { lo: 'ໜ້າຫຼັກ', th: 'หน้าหลัก', en: 'Home' },
+  crumb: { lo: 'ຂອງຝາກຂາຍ', th: 'ของฝากขาย', en: 'Consignment' },
+  h1: { lo: 'ຂອງມືສອງຝາກຂາຍ', th: 'ของมือสองฝากขาย', en: 'Pre-owned on consignment' },
+  sub: { lo: 'ລົດຖີບ ແລະ ອາໄຫຼ່ມືສອງ ທີ່ລູກຄ້າຝາກຮ້ານຂາຍ — ຊ່າງຂອງຮ້ານກວດສະພາບແລ້ວທຸກຊິ້ນ', th: 'จักรยานและอะไหล่มือสองที่ลูกค้าฝากร้านขาย — ช่างของร้านตรวจสภาพแล้วทุกชิ้น', en: 'Pre-owned bikes and parts sold on behalf of customers — every item checked by our mechanics' },
+  note: { lo: 'ຕອນນີ້ຍັງບໍ່ຮັບສັ່ງຊື້ອອນລາຍ — ສົນໃຈຊິ້ນໃດ ກົດ "ສົນໃຈຊິ້ນນີ້" ເພື່ອທັກຮ້ານທາງ WhatsApp ຫຼື ມາເບິ່ງຂອງຈິງທີ່ຮ້ານ', th: 'ตอนนี้ยังไม่รับสั่งซื้อออนไลน์ — สนใจชิ้นไหนกด "สนใจชิ้นนี้" เพื่อทักร้านทาง WhatsApp หรือมาดูของจริงที่ร้าน', en: 'Online ordering is not available yet — tap "I\'m interested" to message us on WhatsApp, or come see the item in store' },
+  all: { lo: 'ທັງໝົດ', th: 'ทั้งหมด', en: 'All' }, bike: { lo: 'ລົດຖີບ', th: 'จักรยาน', en: 'Bikes' }, part: { lo: 'ອາໄຫຼ່ ແລະ ອຸປະກອນ', th: 'อะไหล่และอุปกรณ์', en: 'Parts & gear' },
+  legend: { lo: 'ເກຣດສະພາບ: A ດີທີ່ສຸດ → D ມີຮອຍໃຊ້ງານຫຼາຍ', th: 'เกรดสภาพ: A ดีที่สุด → D มีร่องรอยการใช้งานมาก', en: 'Condition grade: A best → D most wear' },
+  grade: { lo: 'ເກຣດ', th: 'เกรด', en: 'Grade' }, sold: { lo: 'ຂາຍແລ້ວ', th: 'ขายแล้ว', en: 'Sold' },
+  cond: { lo: 'ສະພາບ / ຕຳໜິ', th: 'สภาพ / ตำหนิ', en: 'Condition / flaws' }, code: { lo: 'ລະຫັດ', th: 'รหัส', en: 'Code' },
+  interested: { lo: 'ສົນໃຈຊິ້ນນີ້ (WhatsApp)', th: 'สนใจชิ้นนี้ (WhatsApp)', en: 'I\'m interested (WhatsApp)' },
+  soldMsg: { lo: 'ຊິ້ນນີ້ຂາຍແລ້ວ', th: 'ชิ้นนี้ขายแล้ว', en: 'This item has been sold' },
+  wa: { lo: 'ສະບາຍດີ ຂ້ອຍສົນໃຈຂອງຝາກຂາຍ {code} · {name}', th: 'สวัสดี สนใจของฝากขาย {code} · {name}', en: 'Hi, I\'m interested in consignment item {code} · {name}' },
+  empty: { lo: 'ຍັງບໍ່ມີຂອງຝາກຂາຍໃນຕອນນີ້', th: 'ตอนนี้ยังไม่มีของฝากขาย', en: 'No consignment items right now' },
+  emptyP: { lo: 'ກັບມາເບິ່ງໃໝ່ໄດ້ ຫຼື ຢາກຝາກຂາຍຂອງຂອງທ່ານ ຕິດຕໍ່ຮ້ານໄດ້ເລີຍ', th: 'กลับมาดูใหม่ได้ หรือถ้าอยากฝากขายของคุณ ติดต่อร้านได้เลย', en: 'Check back soon — or contact us to consign your own' },
+  fail: { lo: 'ໂຫຼດຂໍ້ມູນບໍ່ໄດ້', th: 'โหลดข้อมูลไม่ได้', en: 'Couldn\'t load the items' }, retry: { lo: 'ລອງອີກຄັ້ງ', th: 'ลองอีกครั้ง', en: 'Try again' },
+  loading: { lo: 'ກຳລັງໂຫຼດ...', th: 'กำลังโหลด...', en: 'Loading...' }, close: { lo: 'ປິດ', th: 'ปิด', en: 'Close' },
+  ctaH: { lo: 'ຢາກຝາກຂາຍຂອງຂອງທ່ານ?', th: 'อยากฝากขายของคุณ?', en: 'Want to consign your own?' },
+  ctaP: { lo: 'ຮ້ານກວດສະພາບ ຖ່າຍຮູບ ແລະ ຂາຍໃຫ້ — ຕິດຕໍ່ຮ້ານເພື່ອຖາມເງື່ອນໄຂ', th: 'ร้านตรวจสภาพ ถ่ายรูป และขายให้ — ติดต่อร้านเพื่อสอบถามเงื่อนไข', en: 'We inspect, photograph and sell for you — contact us for the terms' },
+  ctaB: { lo: 'ທັກຮ້ານ WhatsApp', th: 'ทักร้าน WhatsApp', en: 'WhatsApp the shop' },
+  ctaMsg: { lo: 'ສະບາຍດີ ຢາກຝາກຂາຍຂອງ', th: 'สวัสดี อยากฝากขายของ', en: 'Hi, I\'d like to consign an item' },
+  photo: { lo: 'ຮູບ', th: 'รูป', en: 'Photo' }
+};
+const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const okImg = u => typeof u === 'string' && u.indexOf(CW_IMG) === 0;
+const waLink = txt => 'https://wa.me/' + SHOP.whatsapp + '?text=' + encodeURIComponent(txt);
+let S = { items: null, filter: 'all', err: false, cur: null, img: 0 };
+
+async function load() {
+  S.err = false; S.items = null; draw();
+  try {
+    const r = await fetch(CW_API + '?op=list'); const j = await r.json();
+    if (!r.ok || !j.ok) throw new Error('bad');
+    S.items = (j.items || []).filter(i => i && i.code && Array.isArray(i.photos));
+  } catch (e) { S.err = true; }
+  draw();
+}
+function card(i) {
+  const img = (i.photos || []).filter(okImg)[0];
+  return '<button type="button" class="cw-card' + (i.sold ? ' sold' : '') + '" data-code="' + esc(i.code) + '">' +
+    '<div class="cw-img">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(i.name) + '">' : '') +
+    (i.sold ? '<span class="cw-ribbon">' + esc(tx('sold')) + '</span>' : '') + (i.grade ? '<span class="cw-grade">' + esc(tx('grade')) + ' ' + esc(i.grade) + '</span>' : '') + '</div>' +
+    '<div class="cw-body"><span class="cw-kind">' + esc(tx(i.kind === 'bike' ? 'bike' : 'part')) + '</span><span class="cw-name">' + esc(i.name) + '</span>' +
+    '<span class="cw-price">' + esc(fmt(Number(i.priceThb))) + '</span></div></button>';
+}
+function draw() {
+  $('cwHome').textContent = tx('home'); $('cwCrumb').textContent = tx('crumb'); $('cwH1').textContent = tx('h1'); $('cwSub').textContent = tx('sub');
+  $('cwNote').textContent = tx('note');
+  document.title = tx('h1') + ' — Sevenday Bike';
+  $('cwBar').innerHTML = ['all', 'bike', 'part'].map(k => '<button type="button" class="cw-chip' + (S.filter === k ? ' on' : '') + '" data-f="' + k + '">' + esc(tx(k)) + '</button>').join('') + '<span class="cw-legend">' + esc(tx('legend')) + '</span>';
+  $('cwCta').innerHTML = '<div><b>' + esc(tx('ctaH')) + '</b><p>' + esc(tx('ctaP')) + '</p></div><a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(tx('ctaMsg'))) + '">' + esc(tx('ctaB')) + '</a>';
+  const L = $('cwList');
+  if (S.err) { L.innerHTML = '<div class="cw-empty"><b>' + esc(tx('fail')) + '</b><button class="btn btn-black" type="button" id="cwRetry">' + esc(tx('retry')) + '</button></div>'; $('cwRetry').onclick = load; return; }
+  if (!S.items) { L.innerHTML = '<div class="cw-loading">' + esc(tx('loading')) + '</div>'; return; }
+  const list = S.items.filter(i => S.filter === 'all' || (S.filter === 'bike' ? i.kind === 'bike' : i.kind !== 'bike'));
+  L.innerHTML = list.length ? '<div class="cw-grid">' + list.map(card).join('') + '</div>'
+    : '<div class="cw-empty"><b>' + esc(tx('empty')) + '</b><p>' + esc(tx('emptyP')) + '</p></div>';
+  if (S.cur) openItem(S.cur, true);
+}
+function openItem(code, keep) {
+  const i = (S.items || []).find(x => x.code === code); if (!i) { closeItem(); return; }
+  if (!keep) { S.img = 0; } S.cur = code;
+  const photos = (i.photos || []).filter(okImg);
+  const msg = tx('wa').replace('{code}', i.code).replace('{name}', i.name);
+  $('cwModal').innerHTML = '<div class="cw-box"><button class="cw-x" type="button" data-x="1" aria-label="' + esc(tx('close')) + '">×</button>' +
+    '<div class="cw-gal">' + (photos.length ? '<img class="cw-main" src="' + esc(photos[Math.min(S.img, photos.length - 1)]) + '" alt="' + esc(i.name) + '">' : '<div class="cw-main"></div>') +
+    (photos.length > 1 ? '<div class="cw-thumbs">' + photos.map((p, n) => '<button type="button" data-img="' + n + '"' + (n === S.img ? ' class="on"' : '') + ' aria-label="' + esc(tx('photo')) + ' ' + (n + 1) + '"><img src="' + esc(p) + '" alt=""></button>').join('') + '</div>' : '') + '</div>' +
+    '<div class="cw-info"><h2>' + esc(i.name) + '</h2>' +
+    '<div class="cw-meta">' + esc(tx('code')) + ' ' + esc(i.code) + ' · ' + esc(tx(i.kind === 'bike' ? 'bike' : 'part')) + '</div>' +
+    (i.grade ? '<div><span class="cw-gtag">' + esc(tx('grade')) + ' ' + esc(i.grade) + '</span></div>' : '') +
+    (i.note ? '<div class="cw-flaw"><small>' + esc(tx('cond')) + '</small>' + esc(i.note) + '</div>' : '') +
+    '<div class="cw-big">' + (i.sold ? '<s style="color:var(--grey-600)">' + esc(fmt(Number(i.priceThb))) + '</s>' : esc(fmt(Number(i.priceThb)))) + '</div>' +
+    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : '<a class="btn btn-black" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
+    '</div></div>';
+  $('cwModal').classList.add('open'); document.body.style.overflow = 'hidden';
+}
+function closeItem() { S.cur = null; $('cwModal').classList.remove('open'); $('cwModal').innerHTML = ''; document.body.style.overflow = ''; }
+
+document.addEventListener('click', e => {
+  const f = e.target.closest('[data-f]'); if (f) { S.filter = f.dataset.f; draw(); return; }
+  const c = e.target.closest('.cw-card'); if (c) { openItem(c.dataset.code); return; }
+  const im = e.target.closest('[data-img]'); if (im) { S.img = Number(im.dataset.img); openItem(S.cur, true); return; }
+  if (e.target.closest('[data-x]') || e.target === $('cwModal')) closeItem();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.cur) closeItem(); });
+document.addEventListener('langchange', draw);
+document.addEventListener('currencychange', draw);
+load();
+</script>
+</body>
+</html>

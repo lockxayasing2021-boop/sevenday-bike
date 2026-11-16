@@ -322,6 +322,11 @@ main.wrap{padding-top:8px}
 .order .items{grid-column:1/-1;font-size:14px;color:var(--grey-900)}
 .st{display:inline-block;font-size:12px;font-weight:800;padding:3px 8px;border:1px solid #000;margin-left:8px}
 .st.done{background:#000;color:#fff}
+.cs-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--grey-300);border:1px solid var(--grey-300);margin-bottom:6px}
+.cs-sum div{background:#fff;padding:16px 18px}.cs-sum b{display:block;font-size:18px;font-weight:800}.cs-sum small{color:var(--grey-600)}
+.cs-sale{grid-column:1/-1;background:var(--grey-100);padding:10px 12px;font-size:13px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:4px 16px}
+.cs-sale span{color:var(--grey-600)}.cs-sale b{display:block;color:var(--ink)}
+.cs-hd{font-size:13px;color:var(--grey-600);margin:10px 0 2px}
 .empty{border:1px dashed var(--grey-300);padding:48px;text-align:center}
 .empty p{color:var(--grey-600);margin:6px 0 18px}
 .ptsbox{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grey-300);border:1px solid var(--grey-300)}
@@ -343,7 +348,7 @@ main.wrap{padding-top:8px}
 <main class="wrap">
   
   <div class="tabs" role="tablist">
-    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button>
+    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button>
   </div>
   <div class="list" id="list"><div class="empty">ກຳລັງໂຫຼດ...</div></div>
 </main>
@@ -388,6 +393,7 @@ function render(){
   $('uPts').textContent=Number(data.points||0).toLocaleString();
   document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   const L=$('list');
+  if(tab==='consign'){ renderConsign(); return; }
   if(tab==='orders') L.innerHTML = data.orders.length ? data.orders.slice().reverse().map(o=>`<div class="order"><div><b>${o.bill_id}</b>${o.status?`<span class="st ${o.status==='ສຳເລັດ'?'done':''}">${o.status}</span>`:''}<div class="meta">${d8(o.date)} · ${o.payment||''}</div></div><div class="amt">${fmt(o.total)}</div><div class="items">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(', ')}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີການສັ່ງຊື້</b><p>ຄຳສັ່ງຊື້ຈາກເວັບ ແລະ ທີ່ຮ້ານ ຈະສະແດງຢູ່ບ່ອນນີ້</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>`;
   if(tab==='repairs') L.innerHTML = data.repairs.length ? data.repairs.slice().reverse().map(r=>`<div class="order"><div><b>${r.bike||'ລົດຖີບ'}</b><span class="st ${/ສຳເລັດ|สำเร็จ|รับรถ|done|complete/i.test(r.status)?'done':''}">${r.status||'-'}</span><div class="meta">${r.job_id} · ${d8(r.date)}</div></div><div class="amt">${r.total?fmt(r.total):''}</div><div class="items">${r.symptoms||''}</div></div>`).join('')
@@ -395,14 +401,54 @@ function render(){
   if(tab==='points') L.innerHTML = `<div class="ptsbox"><div><b>${Number(data.points||0).toLocaleString()} ແຕ້ມ</b><small>ແຕ້ມທີ່ມີຕອນນີ້</small></div><div><b>฿1 = 1 ແຕ້ມ</b><small>ໄດ້ທຸກການຊື້ ແລະ ການສ້ອມ</small></div><div><b>ແລກສ່ວນຫຼຸດທີ່ຮ້ານ</b><small>ແຈ້ງພະນັກງານຕອນຊຳລະເງິນ</small></div></div>`;
 }
 document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ tab=b.dataset.t; render(); });
+
+/* ── ຂອງຝາກຂາຍຂອງຂ້ອຍ (ສະແດງສະເພາະຜູ້ຝາກ) — consign-web ?op=mine, ບໍ່ມີຂໍ້ມູນຜູ້ຊື້ ── */
+const CW_API='https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/consign-web';
+const CT={
+  tab:{lo:'ຂອງຝາກຂາຍ',th:'ของฝากขาย',en:'My consignments'},
+  recv:{lo:'ຮັບຝາກ',th:'รับฝาก',en:'Received'},exp:{lo:'ໝົດສັນຍາ',th:'หมดสัญญา',en:'Expires'},
+  held:{lo:'ລໍຖ້າຮັບເງິນ',th:'รอรับเงิน',en:'Awaiting payout'},paid:{lo:'ຮັບເງິນແລ້ວ',th:'รับเงินแล้ว',en:'Paid'},
+  agreed:{lo:'ລາຄາຕົກລົງ',th:'ราคาตกลง',en:'Agreed price'},sold:{lo:'ລາຄາຂາຍ',th:'ราคาขาย',en:'Sold at'},
+  comm:{lo:'ຄ່າຄອມ',th:'ค่าคอม',en:'Commission'},net:{lo:'ຍອດທີ່ໄດ້ຮັບ',th:'ยอดที่ได้รับ',en:'You receive'},
+  hold:{lo:'ຄົບພັກເງິນ',th:'ครบพักเงิน',en:'Hold ends'},paidOn:{lo:'ຈ່າຍແລ້ວ',th:'จ่ายแล้ว',en:'Paid on'},
+  ready:{lo:'ພ້ອມຈ່າຍ — ຕິດຕໍ່ຮ້ານ',th:'พร้อมจ่าย — ติดต่อร้าน',en:'Ready — contact the shop'},
+  noRenew:{lo:'ບໍ່ຕໍ່ສັນຍາ',th:'ไม่ต่อสัญญา',en:'Not renewing'},
+  none:{lo:'ຍັງບໍ່ມີຂອງຝາກ',th:'ยังไม่มีของฝาก',en:'No consigned items'},
+  st:{received:['ຮັບແລ້ວ','รับแล้ว','Received'],inspecting:['ກຳລັງກວດ','กำลังตรวจ','Inspecting'],approved:['ກວດຜ່ານ','ตรวจผ่าน','Approved'],rejected:['ບໍ່ຜ່ານ','ไม่ผ่าน','Rejected'],listed:['ກຳລັງຂາຍ','วางขายอยู่','Listed'],reserved:['ຈອງແລ້ວ','จองแล้ว','Reserved'],sold:['ຂາຍແລ້ວ','ขายแล้ว','Sold'],returned:['ສົ່ງຄືນແລ້ວ','คืนแล้ว','Returned'],cancelled:['ຍົກເລີກ','ยกเลิก','Cancelled']}
+};
+const cL=()=>({lo:0,th:1,en:2}[(typeof sdLang==='function'?sdLang():'lo')]||0);
+const ct=k=>(CT[k]||{})[typeof sdLang==='function'?sdLang():'lo']||(CT[k]||{}).lo||k;
+const cst=s=>((CT.st[s]||[s,s,s])[cL()]);
+const cesc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cmoney=(n,cur)=>Number(n||0).toLocaleString('en-US')+' '+cesc(cur||'THB');
+let cons=null;
+function renderConsign(){
+  const L=$('list'); if(!cons||!cons.consignments||!cons.consignments.length){ L.innerHTML='<div class="empty"><b>'+cesc(ct('none'))+'</b></div>'; return; }
+  const tot=(cons.totals||[]).map(t=>'<div><b>'+cmoney(t.held,t.currency)+'</b><small>'+cesc(ct('held'))+'</small></div><div><b>'+cmoney(t.paid,t.currency)+'</b><small>'+cesc(ct('paid'))+'</small></div>').join('');
+  L.innerHTML=(tot?'<div class="cs-sum">'+tot+'</div>':'')+cons.consignments.map(c=>
+    '<div class="cs-hd">'+cesc(c.id)+' · '+cesc(ct('recv'))+' '+cesc(c.receivedDate||'')+' · '+cesc(ct('exp'))+' '+cesc(c.expiresDate||'')+(c.noRenew?' · '+cesc(ct('noRenew')):'')+'</div>'+
+    (c.items||[]).map(i=>{ const s=i.sale;
+      return '<div class="order"><div><b>'+cesc(i.name)+'</b><span class="st '+(i.status==='sold'?'done':'')+'">'+cesc(cst(i.status))+'</span><div class="meta">'+cesc(i.code)+(i.grade?' · '+cesc(i.grade):'')+'</div></div>'+
+      '<div class="amt">'+(s?cesc(fmt(Number(s.priceThb))):(i.agreedPrice!=null?cesc(fmt(Number(i.agreedPrice))):''))+'</div>'+
+      (s?'<div class="cs-sale"><div><span>'+cesc(ct('sold'))+' '+cesc(s.soldDate||'')+'</span><b>'+cesc(fmt(Number(s.priceThb)))+'</b></div>'+
+        '<div><span>'+cesc(ct('comm'))+(s.pct!=null?' '+cesc(s.pct)+'%':'')+'</span><b>'+cesc(fmt(Number(s.commissionThb)))+'</b></div>'+
+        '<div><span>'+cesc(ct('net'))+'</span><b>'+cmoney(s.netPayout,s.currency)+'</b></div>'+
+        '<div><span>'+cesc(s.paid?ct('paidOn'):ct('hold'))+'</span><b>'+cesc(s.paid?(s.paidDate||''):(s.holdUntil||''))+(!s.paid&&s.holdOver?' ✓ '+cesc(ct('ready')):'')+'</b></div></div>':'')+'</div>'; }).join('')).join('');
+}
+async function loadConsign(){
+  try{ const r=await fetch(CW_API+'?op=mine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:user.token})}); const j=await r.json();
+    if(r.ok&&j.ok&&j.isConsignor){ cons=j; const b=$('tabConsign'); b.hidden=false; b.textContent=ct('tab'); if(tab==='consign') renderConsign(); } }
+  catch(_){ /* ບໍ່ແຈ້ງຜິດພາດ: ລູກຄ້າທົ່ວໄປບໍ່ຕ້ອງເຫັນ */ }
+}
+document.addEventListener('langchange',()=>{ if(cons){ $('tabConsign').textContent=ct('tab'); if(tab==='consign') renderConsign(); } });
 function logout(){ sessionStorage.removeItem('sd_user'); location.href='login.html'; }
 async function load(){
   try{ const d=await apiPost('getCustomerOrders',{token:user.token}); data={orders:d.orders||[],repairs:d.repairs||[],points:d.points??user.points}; }
   catch(e){ if(/SESSION_EXPIRED/.test(e.message)||!user.token){ sessionStorage.removeItem('sd_user'); location.replace('login.html'); return; } $('list').innerHTML=`<div class="empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b><p>${e.message}</p><button class="btn btn-black" onclick="load()">ລອງອີກຄັ້ງ</button></div>`; return; }
   render();
 }
-document.addEventListener('currencychange',render);
-if(user) load();
+document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else render(); });
+if(user){ load(); if(user.token) loadConsign(); }
 
 </script>
 </body>
