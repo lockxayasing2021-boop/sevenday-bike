@@ -78,6 +78,17 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 .cw-flaw small{display:block;font-weight:700;margin-bottom:4px;color:var(--grey-600)}
 .cw-big{font-size:30px;font-weight:900}
 .cw-loading{padding:60px 0;text-align:center;color:var(--grey-600)}
+.cw-form{display:flex;flex-direction:column;gap:10px}
+.cw-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+.cw-form input,.cw-form textarea{font:inherit;padding:10px 12px;border:1.5px solid var(--grey-300);border-radius:10px;font-weight:400}
+.cw-form textarea{min-height:76px;resize:vertical}
+.cw-radio{display:flex;gap:8px;flex-wrap:wrap}
+.cw-radio label{flex:1;min-width:140px;flex-direction:row;align-items:center;gap:8px;border:1.5px solid var(--grey-300);border-radius:10px;padding:10px 12px;cursor:pointer}
+.cw-radio input{width:auto;padding:0}
+.cw-err{color:#b00020;font-size:13px;font-weight:600}
+.cw-pay{background:var(--grey-100);border-radius:10px;padding:12px 14px;font-size:14px;white-space:pre-wrap}
+.cw-ok{font-weight:800;font-size:18px}
+.btn[disabled]{opacity:.5;cursor:default}
 @media(max-width:720px){
   .cw-grid{grid-template-columns:repeat(2,1fr);gap:12px}
   .cw-body{padding:10px 12px 14px}.cw-name{font-size:14px}.cw-price{font-size:17px}
@@ -110,7 +121,7 @@ const TX = {
   crumb: { lo: 'ຂອງຝາກຂາຍ', th: 'ของฝากขาย', en: 'Consignment' },
   h1: { lo: 'ຂອງມືສອງຝາກຂາຍ', th: 'ของมือสองฝากขาย', en: 'Pre-owned on consignment' },
   sub: { lo: 'ລົດຖີບ ແລະ ອາໄຫຼ່ມືສອງ ທີ່ລູກຄ້າຝາກຮ້ານຂາຍ — ຊ່າງຂອງຮ້ານກວດສະພາບແລ້ວທຸກຊິ້ນ', th: 'จักรยานและอะไหล่มือสองที่ลูกค้าฝากร้านขาย — ช่างของร้านตรวจสภาพแล้วทุกชิ้น', en: 'Pre-owned bikes and parts sold on behalf of customers — every item checked by our mechanics' },
-  note: { lo: 'ຕອນນີ້ຍັງບໍ່ຮັບສັ່ງຊື້ອອນລາຍ — ສົນໃຈຊິ້ນໃດ ກົດ "ສົນໃຈຊິ້ນນີ້" ເພື່ອທັກຮ້ານທາງ WhatsApp ຫຼື ມາເບິ່ງຂອງຈິງທີ່ຮ້ານ', th: 'ตอนนี้ยังไม่รับสั่งซื้อออนไลน์ — สนใจชิ้นไหนกด "สนใจชิ้นนี้" เพื่อทักร้านทาง WhatsApp หรือมาดูของจริงที่ร้าน', en: 'Online ordering is not available yet — tap "I\'m interested" to message us on WhatsApp, or come see the item in store' },
+  note: { lo: 'ສັ່ງຊື້ອອນລາຍໄດ້: ເຂົ້າສູ່ລະບົບ → ເລືອກຮັບທີ່ຮ້ານ ຫຼື ສົ່ງຕ່າງແຂວງ → ໂອນເງິນ ແລ້ວສົ່ງສະລິບ ຫຼື ກົດ "ສົນໃຈຊິ້ນນີ້" ເພື່ອທັກຮ້ານທາງ WhatsApp', th: 'สั่งซื้อออนไลน์ได้: เข้าสู่ระบบ → เลือกรับที่ร้านหรือส่งต่างจังหวัด → โอนเงินแล้วส่งสลิป หรือกด "สนใจชิ้นนี้" เพื่อทักร้านทาง WhatsApp', en: 'Order online: log in → choose pickup or shipping → transfer and upload your slip — or tap "I\'m interested" to message us on WhatsApp' },
   all: { lo: 'ທັງໝົດ', th: 'ทั้งหมด', en: 'All' }, bike: { lo: 'ລົດຖີບ', th: 'จักรยาน', en: 'Bikes' }, part: { lo: 'ອາໄຫຼ່ ແລະ ອຸປະກອນ', th: 'อะไหล่และอุปกรณ์', en: 'Parts & gear' },
   legend: { lo: 'ເກຣດສະພາບ: A ດີທີ່ສຸດ → D ມີຮອຍໃຊ້ງານຫຼາຍ', th: 'เกรดสภาพ: A ดีที่สุด → D มีร่องรอยการใช้งานมาก', en: 'Condition grade: A best → D most wear' },
   grade: { lo: 'ເກຣດ', th: 'เกรด', en: 'Grade' }, sold: { lo: 'ຂາຍແລ້ວ', th: 'ขายแล้ว', en: 'Sold' },
@@ -126,7 +137,19 @@ const TX = {
   ctaP: { lo: 'ຮ້ານກວດສະພາບ ຖ່າຍຮູບ ແລະ ຂາຍໃຫ້ — ຕິດຕໍ່ຮ້ານເພື່ອຖາມເງື່ອນໄຂ', th: 'ร้านตรวจสภาพ ถ่ายรูป และขายให้ — ติดต่อร้านเพื่อสอบถามเงื่อนไข', en: 'We inspect, photograph and sell for you — contact us for the terms' },
   ctaB: { lo: 'ທັກຮ້ານ WhatsApp', th: 'ทักร้าน WhatsApp', en: 'WhatsApp the shop' },
   ctaMsg: { lo: 'ສະບາຍດີ ຢາກຝາກຂາຍຂອງ', th: 'สวัสดี อยากฝากขายของ', en: 'Hi, I\'d like to consign an item' },
-  photo: { lo: 'ຮູບ', th: 'รูป', en: 'Photo' }
+  photo: { lo: 'ຮູບ', th: 'รูป', en: 'Photo' },
+  orderB: { lo: 'ສັ່ງຊື້ຊິ້ນນີ້', th: 'สั่งซื้อชิ้นนี้', en: 'Order this item' },
+  loginB: { lo: 'ເຂົ້າສູ່ລະບົບເພື່ອສັ່ງຊື້', th: 'เข้าสู่ระบบเพื่อสั่งซื้อ', en: 'Log in to order' },
+  oTitle: { lo: 'ສັ່ງຊື້', th: 'สั่งซื้อ', en: 'Order' }, oHow: { lo: 'ຮັບຂອງແນວໃດ', th: 'รับของอย่างไร', en: 'How do you want to receive it?' },
+  oPickup: { lo: 'ຮັບທີ່ຮ້ານ', th: 'รับที่ร้าน', en: 'Pick up in store' }, oShip: { lo: 'ສົ່ງຕ່າງແຂວງ', th: 'ส่งต่างจังหวัด', en: 'Ship to me' },
+  oName: { lo: 'ຊື່ຜູ້ຮັບ', th: 'ชื่อผู้รับ', en: 'Recipient name' }, oPhone: { lo: 'ເບີໂທ', th: 'เบอร์โทร', en: 'Phone' }, oAddr: { lo: 'ທີ່ຢູ່ຈັດສົ່ງ', th: 'ที่อยู่จัดส่ง', en: 'Shipping address' },
+  oSubmit: { lo: 'ຢືນຢັນການສັ່ງຊື້', th: 'ยืนยันการสั่งซื้อ', en: 'Place order' }, oSending: { lo: 'ກຳລັງສົ່ງ...', th: 'กำลังส่ง...', en: 'Sending...' },
+  oLock: { lo: 'ເມື່ອສັ່ງແລ້ວ ຮ້ານຈະລັອກຊິ້ນນີ້ໃຫ້ທ່ານ — ຖ້າບໍ່ໂອນ ໃຫ້ຍົກເລີກໃນ "ຄຳສັ່ງຊື້ຂອງຂ້ອຍ"', th: 'เมื่อสั่งแล้วร้านจะล็อกชิ้นนี้ไว้ให้คุณ — ถ้าไม่โอน ให้ยกเลิกที่ "คำสั่งซื้อของฉัน"', en: 'Once you order, the item is held for you — if you will not pay, cancel it in "My orders"' },
+  oDone: { lo: 'ສັ່ງຊື້ສຳເລັດ', th: 'สั่งซื้อสำเร็จ', en: 'Order placed' },
+  oDoneShip: { lo: 'ຮ້ານຈະກຳນົດຄ່າສົ່ງ ແລ້ວແຈ້ງຢູ່ "ຄຳສັ່ງຊື້ຂອງຂ້ອຍ" — ກວດ ແລະ ຢືນຢັນຍອດກ່ອນໂອນ', th: 'ร้านจะกำหนดค่าส่งแล้วแจ้งที่ "คำสั่งซื้อของฉัน" — ตรวจและยืนยันยอดก่อนโอน', en: 'We will set the shipping fee and show it in "My orders" — confirm the total before paying' },
+  oDonePick: { lo: 'ໂອນຕາມຍອດນີ້ ແລ້ວສົ່ງສະລິບທີ່ "ຄຳສັ່ງຊື້ຂອງຂ້ອຍ"', th: 'โอนตามยอดนี้ แล้วส่งสลิปที่ "คำสั่งซื้อของฉัน"', en: 'Transfer this amount, then upload the slip in "My orders"' },
+  oTotal: { lo: 'ຍອດໂອນ', th: 'ยอดโอน', en: 'Transfer total' }, oPayTo: { lo: 'ບັນຊີຮັບໂອນ', th: 'บัญชีรับโอน', en: 'Pay to' }, oNoPay: { lo: 'ຕິດຕໍ່ຮ້ານເພື່ອຂໍເລກບັນຊີ', th: 'ติดต่อร้านเพื่อขอเลขบัญชี', en: 'Contact the shop for bank details' },
+  oMine: { lo: 'ໄປທີ່ ຄຳສັ່ງຊື້ຂອງຂ້ອຍ', th: 'ไปที่ คำสั่งซื้อของฉัน', en: 'Go to My orders' }, oErr: { lo: 'ສັ່ງຊື້ບໍ່ໄດ້', th: 'สั่งซื้อไม่ได้', en: 'Could not place the order' }
 };
 const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
 const $ = id => document.getElementById(id);
@@ -179,13 +202,56 @@ function openItem(code, keep) {
     (i.grade ? '<div><span class="cw-gtag">' + esc(tx('grade')) + ' ' + esc(i.grade) + '</span></div>' : '') +
     (i.note ? '<div class="cw-flaw"><small>' + esc(tx('cond')) + '</small>' + esc(i.note) + '</div>' : '') +
     '<div class="cw-big">' + (i.sold ? '<s style="color:var(--grey-600)">' + esc(fmt(Number(i.priceThb))) + '</s>' : esc(fmt(Number(i.priceThb)))) + '</div>' +
-    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : '<a class="btn btn-black" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
+    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : (me() ? '<button type="button" class="btn btn-black" data-order="' + esc(i.code) + '">' + esc(tx('orderB')) + '</button>' : '<a class="btn btn-black" href="login.html">' + esc(tx('loginB')) + '</a>') + '<a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
     '</div></div>';
   $('cwModal').classList.add('open'); document.body.style.overflow = 'hidden';
 }
 function closeItem() { S.cur = null; $('cwModal').classList.remove('open'); $('cwModal').innerHTML = ''; document.body.style.overflow = ''; }
 
+
+/* ── ສັ່ງຊື້ (supabase/107): ຕ້ອງເຂົ້າລະບົບ · token ຈາກ sessionStorage 'sd_user' ── */
+const me = () => { try { const u = JSON.parse(sessionStorage.getItem('sd_user') || 'null'); return u && u.token ? u : null; } catch (_) { return null; } };
+async function cwPost(op, body) {
+  const r = await fetch(CW_API + '?op=' + op, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { sessionStorage.removeItem('sd_user'); location.href = 'login.html'; throw new Error('SESSION_EXPIRED'); }
+  if (!r.ok || !j.ok) throw new Error(j.message || tx('oErr'));
+  return j;
+}
+function orderForm(code) {
+  const i = (S.items || []).find(x => x.code === code), u = me(); if (!i || !u) return;
+  $('cwModal').innerHTML = '<div class="cw-box" style="grid-template-columns:1fr"><button class="cw-x" type="button" data-x="1" aria-label="' + esc(tx('close')) + '">×</button>' +
+    '<div class="cw-info"><h2>' + esc(tx('oTitle')) + ' · ' + esc(i.name) + '</h2><div class="cw-big">' + esc(fmt(Number(i.priceThb))) + '</div>' +
+    '<form class="cw-form" id="cwOF" novalidate><div>' + esc(tx('oHow')) + '</div>' +
+    '<div class="cw-radio"><label><input type="radio" name="m" value="pickup" checked> ' + esc(tx('oPickup')) + '</label><label><input type="radio" name="m" value="ship"> ' + esc(tx('oShip')) + '</label></div>' +
+    '<div id="cwShip" hidden><label>' + esc(tx('oName')) + '<input name="name" maxlength="100" value="' + esc(u.name || '') + '"></label><label>' + esc(tx('oPhone')) + '<input name="phone" maxlength="40" inputmode="tel" value="' + esc(u.phone || '') + '"></label>' +
+    '<label>' + esc(tx('oAddr')) + '<textarea name="address" maxlength="400"></textarea></label></div>' +
+    '<div class="cw-meta">' + esc(tx('oLock')) + '</div><div class="cw-err" id="cwErr" role="alert"></div>' +
+    '<button type="submit" class="btn btn-black" id="cwGo">' + esc(tx('oSubmit')) + '</button></form></div></div>';
+  const f = $('cwOF');
+  f.onchange = () => { $('cwShip').hidden = f.m.value !== 'ship'; };
+  f.onsubmit = async e => {
+    e.preventDefault(); const m = f.m.value, err = $('cwErr'); err.textContent = '';
+    if (m === 'ship' && !(f.name.value.trim() && f.phone.value.trim() && f.address.value.trim())) { err.textContent = tx('oAddr') + ' / ' + tx('oName') + ' / ' + tx('oPhone'); return; }
+    const b = $('cwGo'); b.disabled = true; b.textContent = tx('oSending');
+    try { const r = await cwPost('order', { token: me().token, code: code, method: m, name: f.name.value, phone: f.phone.value, address: f.address.value }); orderDone(i, r); }
+    catch (er) { err.textContent = er.message; b.disabled = false; b.textContent = tx('oSubmit'); }
+  };
+}
+function orderDone(i, r) {
+  const o = r.order, ship = o.method === 'ship';
+  S.items = (S.items || []).filter(x => x.code !== i.code);   // ຊິ້ນຖືກລັອກແລ້ວ — ບໍ່ສະແດງໃນລາຍການ
+  $('cwModal').innerHTML = '<div class="cw-box" style="grid-template-columns:1fr"><button class="cw-x" type="button" data-x="1" aria-label="' + esc(tx('close')) + '">×</button><div class="cw-info">' +
+    '<div class="cw-ok">✓ ' + esc(tx('oDone')) + ' · ' + esc(o.id) + '</div><div>' + esc(i.name) + '</div>' +
+    (ship ? '<div class="cw-flaw">' + esc(tx('oDoneShip')) + '</div>'
+          : '<div class="cw-big">' + esc(tx('oTotal')) + ' ' + esc(fmt(Number(o.totalThb))) + '</div><div class="cw-pay"><b>' + esc(tx('oPayTo')) + '</b>\n' + esc(r.payInfo || tx('oNoPay')) + '</div><div class="cw-flaw">' + esc(tx('oDonePick')) + '</div>') +
+    '<a class="btn btn-black" href="account.html?tab=corders">' + esc(tx('oMine')) + '</a></div></div>';
+  S.cur = null; draw2();
+}
+function draw2() { const keep = $('cwModal').innerHTML; draw(); $('cwModal').innerHTML = keep; $('cwModal').classList.add('open'); }
+
 document.addEventListener('click', e => {
+  const od = e.target.closest('[data-order]'); if (od) { orderForm(od.dataset.order); return; }
   const f = e.target.closest('[data-f]'); if (f) { S.filter = f.dataset.f; draw(); return; }
   const c = e.target.closest('.cw-card'); if (c) { openItem(c.dataset.code); return; }
   const im = e.target.closest('[data-img]'); if (im) { S.img = Number(im.dataset.img); openItem(S.cur, true); return; }
