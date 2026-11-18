@@ -3295,7 +3295,8 @@ function makeApp(ctx) {
         "created_at",
         "updated_at",
         "created_by",
-        "updated_by"
+        "updated_by",
+        "info_sections"
       ],
       CATEGORIES: [
         "category_id",
@@ -3644,7 +3645,8 @@ function makeApp(ctx) {
         now,
         now,
         adminId,
-        adminId
+        adminId,
+        _infoSections(body.info_sections)
       ]);
       Logger.log("ສ້າງ Event: " + evId + " (" + code + ")");
       return { event_id: evId, event_code: code, event_name: name, status: "DRAFT", created_at: now.toISOString() };
@@ -3688,13 +3690,15 @@ function makeApp(ctx) {
         organizer: 16,
         contact_phone: 17,
         contact_email: 18,
-        terms_url: 19
+        terms_url: 19,
+        info_sections: 24
       };
       Object.keys(map).forEach(function(k) {
         if (body[k] !== void 0) {
           var val = body[k];
           if (["event_date", "registration_open", "registration_close"].indexOf(k) > -1) val = val ? new Date(val) : "";
           else if (["start_time", "end_time", "contact_phone"].indexOf(k) > -1 && val) val = "'" + String(val);
+          else if (k === "info_sections") val = _infoSections(val);
           sh.getRange(row, map[k]).setValue(val);
         }
       });
@@ -3803,8 +3807,43 @@ function makeApp(ctx) {
         organizer: ev[15],
         contact_phone: String(ev[16] || ""),
         contact_email: ev[17],
-        terms_url: ev[18]
+        terms_url: ev[18],
+        info_sections: _infoParse(ev[23])
       };
+    }
+    // 2026-11-18: ລາຍລະອຽດງານ (ສະຖານທີ່/ແຜນທີ່, ເວລາປ່ອຍແຕ່ລະລຸ້ນ, ນັດຮັບປ້າຍ+ເສື້ອ …) — [{title, text, image, map_url}] ເກັບເປັນ JSON ຖັນ 24
+    function _infoClean(list) {
+      var http = function(u) {
+        u = String(u || "").trim();
+        return /^https:\/\/[^\s"'<>]+$/.test(u) ? u.slice(0, 600) : "";
+      };
+      return (Array.isArray(list) ? list : []).slice(0, 12).map(function(x) {
+        x = x || {};
+        return { title: String(x.title || "").trim().slice(0, 120), text: String(x.text || "").slice(0, 4000), image: http(x.image), map_url: http(x.map_url) };
+      }).filter(function(x) {
+        return x.title || x.text || x.image || x.map_url;
+      });
+    }
+    function _infoSections(v) {
+      if (v === void 0 || v === null || v === "") return "";
+      var list = v;
+      if (typeof v === "string") {
+        try {
+          list = JSON.parse(v);
+        } catch (_) {
+          throw new Error("info_sections ຕ້ອງເປັນ JSON");
+        }
+      }
+      var out = _infoClean(list);
+      return out.length ? JSON.stringify(out) : "";
+    }
+    function _infoParse(v) {
+      if (!v) return [];
+      try {
+        return _infoClean(typeof v === "string" ? JSON.parse(v) : v);
+      } catch (_) {
+        return [];
+      }
     }
     function getEvents(params) {
       var E = _rows(SN.EVENTS);
