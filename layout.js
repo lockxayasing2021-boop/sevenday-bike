@@ -494,6 +494,10 @@ const sdI18n = (function () {
         if (m) { let i = 1; v = p.out.replace(/\{0\}/g, () => tr(m[i++], lang)); break; }
       }
     }
+    if (v === undefined && /[\r\n]/.test(str)) {
+      // ຂໍ້ຄວາມຫຼາຍແຖວ (ເຊັ່ນ ລາຍລະອຽດງານທີ່ແອດມິນພິມ) → ແປເທື່ອລະແຖວ ເພື່ອຮັກສາການຂຶ້ນແຖວໃໝ່
+      return str.split('\n').map(line => tr(line, lang)).join('\n');
+    }
     if (v === undefined) {
       // ແປສ່ວນຍ່ອຍ (ເດືອນ, ຫົວໜ່ວຍ...) ຖ້າບໍ່ພົບທັງປະໂຫຍກ
       let out = k, hit = false;
