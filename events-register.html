@@ -91,6 +91,13 @@
 .er-pay{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:start}
 .er-pay img{width:100%;height:auto;aspect-ratio:882/1023;object-fit:contain;border:1px solid var(--grey-300);background:#fff}
 .er-pay .amt{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums}
+.er-ptabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px}
+.er-ptabs button{padding:12px 8px;border:1.5px solid var(--black);background:var(--white);font-weight:800;font-size:15px;cursor:pointer;line-height:1.3}
+.er-ptabs button small{display:block;font-weight:600;font-size:12px;opacity:.75}
+.er-ptabs button[aria-selected="true"]{background:var(--black);color:var(--white)}
+.er-pay .cur-tag{display:inline-block;font-weight:800;font-size:13px;padding:4px 10px;background:var(--black);color:var(--white);margin-bottom:8px}
+.er-pay .thb-note{font-size:13px;color:var(--grey-600);margin:-8px 0 16px}
+.er-pay [hidden]{display:none!important}
 .acct{background:var(--grey-100);padding:12px 14px;margin:10px 0 16px;font-size:14px}
 .acct b{font-variant-numeric:tabular-nums}
 .copy{margin-left:6px;font-size:12px;font-weight:700;text-decoration:underline}
@@ -189,12 +196,22 @@
     <!-- 4. Payment -->
     <section class="panel" data-step="4" hidden>
       <h2>ຊຳລະຄ່າສະໝັກ</h2>
+      <div class="er-ptabs" role="tablist" aria-label="ເລືອກສະກຸນເງິນ">
+        <button type="button" role="tab" id="tabLak" aria-selected="true" onclick="setCur('LAK')">🇱🇦 ໂອນເປັນກີບ<small>QR ລາວ · LAK</small></button>
+        <button type="button" role="tab" id="tabThb" aria-selected="false" onclick="setCur('THB')">🇹🇭 ໂອນເປັນບາດ<small>QR ໄທ · THB</small></button>
+      </div>
       <div class="er-pay">
-        <img src="events-assets/qr-event.png?v=2" width="882" height="1023" alt="LAO QR — SEVENDAY BIKE">
+        <div>
+          <span class="cur-tag" id="curTag">QR ລາວ · ກີບ (LAK)</span>
+          <img id="qrLak" src="events-assets/qr-event.png?v=2" width="882" height="1023" alt="LAO QR — SEVENDAY BIKE">
+          <img id="qrThb" src="events-assets/qr-thai.jpg" width="590" height="800" alt="Thai QR PromptPay — MR. KHITTIPHAN XAYASING" hidden>
+        </div>
         <div>
           <div style="font-size:14px;color:var(--grey-600)">ຍອດທີ່ຕ້ອງໂອນ</div>
           <div class="amt" id="amt">₭0</div>
-          <div class="acct">ສະແກນ QR ຫຼື ໂອນເຂົ້າ Phongsavanh Bank<br><b>KITTIPHANH XAYASING</b><br><b id="acctNo">2000000002723</b><button class="copy" type="button" onclick="copyAcct(this)">ຄັດລອກ</button></div>
+          <div class="thb-note" id="thbNote" hidden></div>
+          <div class="acct" id="acctLak">ສະແກນ QR ຫຼື ໂອນເຂົ້າ Phongsavanh Bank<br><b>KITTIPHANH XAYASING</b><br><b id="acctNo">2000000002723</b><button class="copy" type="button" onclick="copyAcct(this)">ຄັດລອກ</button></div>
+          <div class="acct" id="acctThb" hidden>ສະແກນ QR ໄທ (PromptPay) ເພື່ອໂອນເປັນເງິນບາດ<br><b>MR. KHITTIPHAN XAYASING</b><br>ບັນຊີ: <b>xxx-x-x7548-x</b></div>
           <label class="drop" id="drop">
             <input type="file" id="slip" accept="image/*,application/pdf">
             <b>ແນບສະລິບການໂອນ</b><br><span style="font-size:13px;color:var(--grey-600)" id="slipTxt">ແຕະເພື່ອເລືອກຮູບ ຫຼື PDF (ບໍ່ເກີນ 5MB)</span>
@@ -345,7 +362,8 @@ function go(n){
     }
   }
   if (n === 3) summary();
-  if (n === 4) $('amt').textContent = evtKip(priceOf(cat()));
+
+  if (n === 4) setCur('LAK');
   step = n; render();
   window.scrollTo({ top: $('flow').offsetTop - 90, behavior: 'smooth' });
 }
@@ -390,6 +408,20 @@ $('slip').addEventListener('change', async e => {
     $('drop').classList.add('on'); showErr('');
   } catch (err) { showErr('ອ່ານໄຟລ໌ບໍ່ໄດ້: ' + err.message + ' — ລອງຖ່າຍໜ້າຈໍສະລິບແລ້ວແນບໃໝ່'); }
 });
+let curSel = 'LAK';
+function setCur(c){
+  curSel = c;
+  const thb = c === 'THB';
+  $('qrLak').hidden = thb; $('qrThb').hidden = !thb;
+  $('acctLak').hidden = thb; $('acctThb').hidden = !thb;
+  $('tabLak').setAttribute('aria-selected', String(!thb)); $('tabThb').setAttribute('aria-selected', String(thb));
+  $('curTag').textContent = thb ? 'QR ໄທ · ບາດ (THB)' : 'QR ລາວ · ກີບ (LAK)';
+  const note = $('thbNote');
+  if (thb && typeof THB_TO_LAK === 'number' && THB_TO_LAK > 0) {
+    note.hidden = false;
+    note.textContent = '≈ ฿' + Math.ceil(priceOf(cat()) / THB_TO_LAK).toLocaleString('en-US') + ' (ອັດຕາ 1 ບາດ ≈ ₭' + Math.round(THB_TO_LAK).toLocaleString('en-US') + ') — ໂອນຕາມຍອດນີ້ ແລ້ວແນບສະລິບ';
+  } else note.hidden = true;
+}
 function copyAcct(btn){
   const t = $('acctNo').textContent;
   (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = 'ຄັດລອກແລ້ວ'; },
@@ -408,7 +440,7 @@ async function submit(withSlip){
   try {
     const body = { event_id: ev.event_id, category_id: c.category_id, participant: vals() };
     if (user && user.token) body.token = user.token;
-    if (withSlip) body.payment = { amount: priceOf(c), payment_method: 'QR_PAYMENT', payment_reference: $('ref').value.trim(), proof_image: slipData };
+    if (withSlip) body.payment = { amount: priceOf(c), payment_method: 'QR_PAYMENT', payment_reference: ((curSel === 'THB' ? '[THB ບາດ] ' : '') + $('ref').value.trim()).trim(), proof_image: slipData };
     const r = await evtPost('evt.createRegistration', body);
     done(r, c);
   } catch (err) {
