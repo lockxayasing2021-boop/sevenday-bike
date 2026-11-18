@@ -21,6 +21,18 @@
 .evh-meta div small{display:block;font-size:11px!important;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)}
 .evh-meta div b{font-weight:700}
 .evh-desc{margin-top:14px;color:var(--grey-900);white-space:pre-line;max-width:65ch}
+/* ລາຍລະອຽດງານ */
+.evi{margin:18px 0 6px}
+.evi>h2{font-size:18px;font-weight:800;margin:0 0 10px}
+.evi details{border:1.5px solid var(--grey-300);border-radius:10px;margin-bottom:10px;background:var(--white);overflow:hidden}
+.evi summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:800;display:flex;align-items:center;gap:10px}
+.evi summary::-webkit-details-marker{display:none}
+.evi summary::after{content:"＋";margin-left:auto;font-weight:700;color:var(--grey-600)}
+.evi details[open] summary::after{content:"－"}
+.evi .b{padding:0 16px 16px}
+.evi img{display:block;width:100%;height:auto;border-radius:8px;margin-bottom:12px;cursor:zoom-in}
+.evi p{margin:0;white-space:pre-line;line-height:1.6;color:var(--grey-900)}
+.evi .map{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:10px 14px;border:1.5px solid var(--black);border-radius:8px;font-weight:700}
 
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:22px;list-style:none;counter-reset:s}
 .steps li{counter-increment:s;font-size:12px;font-weight:700;color:var(--grey-600);border-top:4px solid var(--grey-300);padding-top:8px}
@@ -247,6 +259,13 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
       </div>
       ${ev.description ? `<p class="evh-desc">${evtEsc(ev.description)}</p>` : ''}
     </div></div>`;
+  const infos = Array.isArray(ev.info_sections) ? ev.info_sections : [];
+  if (infos.length) $('evHead').insertAdjacentHTML('beforeend', `<section class="evi" aria-label="ລາຍລະອຽດງານ"><h2>ລາຍລະອຽດງານ</h2>${infos.map((s, i) => `<details ${i === 0 ? 'open' : ''}>
+    <summary>${evtEsc(s.title || 'ລາຍລະອຽດ')}</summary><div class="b">
+    ${s.image ? `<a href="${evtEsc(s.image)}" target="_blank" rel="noopener"><img src="${evtEsc(s.image)}" alt="${evtEsc(s.title)}" loading="lazy"></a>` : ''}
+    ${s.text ? `<p>${evtEsc(s.text)}</p>` : ''}
+    ${s.map_url ? `<a class="map" href="${evtEsc(s.map_url)}" target="_blank" rel="noopener">📍 ເປີດແຜນທີ່</a>` : ''}
+    </div></details>`).join('')}</section>`);
   if (ev.registration_state !== 'OPEN') {
     $('closedMsg').hidden = false;
     $('closedMsg').innerHTML = `<div class="msg" style="border-color:var(--black);background:var(--grey-100);color:var(--ink)">${ev.registration_state === 'SOON' ? 'ຍັງບໍ່ເປີດຮັບສະໝັກ — ເປີດ ' + evtDate(ev.registration_open) : 'ງານນີ້ປິດຮັບສະໝັກແລ້ວ'}</div>`;

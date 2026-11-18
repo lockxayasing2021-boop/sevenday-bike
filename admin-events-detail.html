@@ -149,6 +149,16 @@ tr:last-child td{border-bottom:none}
 .del-confirm.show{display:block}
 .del-confirm p{font-size:14px;color:#800;margin-bottom:14px;font-weight:600}
 .del-confirm .actions{display:flex;gap:10px}
+/* ── ລາຍລະອຽດງານ (info sections) ── */
+.inf-presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.inf-card{border:1.5px solid var(--g3);padding:16px;margin-bottom:12px}
+.inf-head{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.inf-head input{font-weight:700}
+.inf-img{position:relative;margin:10px 0;border:1.5px dashed var(--g3);min-height:70px;display:flex;align-items:center;justify-content:center;color:var(--g6);font-size:13px;cursor:pointer}
+.inf-img img{display:block;width:100%;max-height:340px;object-fit:contain}
+.inf-img .rm{position:absolute;top:6px;right:6px}
+.inf-card textarea{min-height:110px}
+.inf-empty{color:var(--g6);font-size:13px;padding:6px 0 12px}
 </style>
 
 <!-- ── LOGIN GATE ── -->
@@ -271,6 +281,20 @@ tr:last-child td{border-bottom:none}
         <label class="label">Terms & Conditions URL</label>
         <input id="termsUrl" type="url" placeholder="https://..." style="margin-top:6px">
       </div>
+    </div>
+
+    <!-- ລາຍລະອຽດງານ: ຮູບ + ຂໍ້ຄວາມ ແຕ່ລະຫົວຂໍ້ (ສະແດງໃນໜ້າສະໝັກ) -->
+    <div class="section">
+      <div class="section-title">รายละเอียดงาน (แสดงในหน้าสมัคร)</div>
+      <div class="hint" style="margin-bottom:12px">แต่ละหัวข้อใส่รูปภาพ แล้วพิมพ์ข้อความด้านล่างได้ · กดบันทึกด้านบนเพื่อแสดงบนเว็บ · ลูกค้าเห็นเป็นภาษาที่คุณพิมพ์</div>
+      <div class="inf-presets">
+        <button type="button" class="btn sm" onclick="infAdd('map')">📍 สถานที่ / แผนที่</button>
+        <button type="button" class="btn sm" onclick="infAdd('start')">⏱ เวลาปล่อยตัวแต่ละรุ่น</button>
+        <button type="button" class="btn sm" onclick="infAdd('pickup')">🎽 นัดรับป้ายนักกีฬา + เสื้อ</button>
+        <button type="button" class="btn sm" onclick="infAdd('')">＋ หัวข้ออื่น</button>
+      </div>
+      <div id="infList"></div>
+      <input type="file" id="infFile" accept="image/*" style="display:none" onchange="infUpload(this)">
     </div>
 
     <!-- Date & Location -->
@@ -575,6 +599,7 @@ function fillForm(){
   setV('regOpen', ev.registration_open); setV('regClose', ev.registration_close);
   setV('organizer', ev.organizer); setV('contactPhone', ev.contact_phone); setV('contactEmail', ev.contact_email);
   setV('coverUrl', ev.cover_image); updateCoverFromUrl(ev.cover_image);
+  infSecs = Array.isArray(ev.info_sections) ? ev.info_sections.map(x => ({ ...x })) : []; infRender();
   $('eventMeta').textContent = ev.event_code;
 }
 
@@ -651,6 +676,7 @@ async function saveEvent(){
     location: gv('location'), latitude: gv('lat'), longitude: gv('lng'),
     registration_open: gv('regOpen'), registration_close: gv('regClose'),
     organizer: gv('organizer'), contact_phone: gv('contactPhone'), contact_email: gv('contactEmail'), terms_url: gv('termsUrl'),
+    info_sections: JSON.stringify(infSecs.filter(x => x.title || x.text || x.image || x.map_url)),
   };
   try {
     if (eventId) {
@@ -675,6 +701,56 @@ async function confirmDelete(){
     dirty = false; showToast('ลบงานแล้ว');
     setTimeout(() => location.href = 'admin-events.html', 700);
   } catch (err) { $('delConfirm').classList.remove('show'); showToast(err.message, 'err'); }
+}
+
+// ── ລາຍລະອຽດງານ (info sections) ─────────────────────────────
+let infSecs = [], infTarget = -1;
+const INF_PRESETS = {
+  map:    { title: 'ສະຖານທີ່ ແລະ ແຜນທີ່', text: '', map_url: '' },
+  start:  { title: 'ເວລາປ່ອຍຕົວແຕ່ລະລຸ້ນ', text: '' },
+  pickup: { title: 'ນັດຮັບປ້າຍນັກກິລາ ແລະ ເສື້ອ', text: 'ວັນທີ:\nເວລາ:\nສະຖານທີ່:\nເອກະສານທີ່ຕ້ອງນຳມາ:' },
+};
+function infAdd(kind){
+  const p = INF_PRESETS[kind] || { title: '', text: '' };
+  if (kind === 'start') p.text = (cats || []).filter(c => String(c.status).toUpperCase() === 'ACTIVE').map(c => (c.category_name || '') + ' — ').join('\n');
+  infSecs.push({ title: p.title, text: p.text, image: '', map_url: kind === 'map' ? '' : undefined, _map: kind === 'map' });
+  infDirty(); infRender();
+  const cards = document.querySelectorAll('#infList .inf-card'); const last = cards[cards.length - 1];
+  if (last) { last.scrollIntoView({ behavior: 'smooth', block: 'center' }); (last.querySelector('textarea') || last.querySelector('input')).focus(); }
+}
+function infDirty(){ dirty = true; if ($('saveInfo')) $('saveInfo').textContent = 'มีการแก้ไข — กดบันทึก'; }
+function infRender(){
+  const el = $('infList'); if (!el) return;
+  el.innerHTML = infSecs.length ? infSecs.map((s, i) => `<div class="inf-card" data-i="${i}">
+    <div class="inf-head">
+      <input value="${esc(s.title)}" placeholder="หัวข้อ เช่น ສະຖານທີ່ ແລະ ແຜນທີ່" oninput="infSecs[${i}].title=this.value">
+      <button type="button" class="btn sm ghost" title="ขึ้น" onclick="infMove(${i},-1)" ${i ? '' : 'disabled'}>▲</button>
+      <button type="button" class="btn sm ghost" title="ลง" onclick="infMove(${i},1)" ${i < infSecs.length - 1 ? '' : 'disabled'}>▼</button>
+      <button type="button" class="btn sm danger" title="ลบหัวข้อ" onclick="infDel(${i})">✕</button>
+    </div>
+    <div class="inf-img" onclick="infPick(${i})">${s.image
+      ? `<img src="${esc(s.image)}" alt=""><button type="button" class="btn sm danger rm" onclick="event.stopPropagation();infSecs[${i}].image='';infDirty();infRender()">ลบรูป</button>`
+      : (s._busy ? 'กำลังอัปโหลด…' : '📸 แตะเพื่อใส่รูปภาพ (ไม่บังคับ)')}</div>
+    <textarea placeholder="พิมพ์รายละเอียดด้านล่างรูป…" oninput="infSecs[${i}].text=this.value">${esc(s.text)}</textarea>
+    ${s.map_url !== undefined || s._map ? `<input style="margin-top:8px" type="url" value="${esc(s.map_url || '')}" placeholder="ลิงก์ Google Maps (https://maps.app.goo.gl/...)" oninput="infSecs[${i}].map_url=this.value">` : `<button type="button" class="btn sm ghost" style="margin-top:6px" onclick="infSecs[${i}]._map=true;infRender()">＋ เพิ่มลิงก์แผนที่</button>`}
+  </div>`).join('') : '<div class="inf-empty">ยังไม่มีหัวข้อ — กดปุ่มด้านบนเพื่อเพิ่ม</div>';
+}
+function infMove(i, d){ const j = i + d; if (j < 0 || j >= infSecs.length) return; [infSecs[i], infSecs[j]] = [infSecs[j], infSecs[i]]; infDirty(); infRender(); }
+function infDel(i){ if (!confirm('ลบหัวข้อ "' + (infSecs[i].title || 'ไม่มีชื่อ') + '" ?')) return; infSecs.splice(i, 1); infDirty(); infRender(); }
+function infPick(i){ if (infSecs[i].image || infSecs[i]._busy) return; infTarget = i; $('infFile').click(); }
+async function infUpload(input){
+  const file = input.files[0], i = infTarget; input.value = ''; if (!file || !infSecs[i]) return;
+  infSecs[i]._busy = true; infRender();
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 1600 / bmp.width);
+    const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+    const r = await post('evt.uploadCover', { event_id: (eventId || 'new') + '-info', image: cv.toDataURL('image/jpeg', 0.85) });
+    infSecs[i].image = r.url; infDirty();
+    showToast('อัปโหลดรูปแล้ว — กดบันทึกเพื่อแสดงบนเว็บ');
+  } catch (err) { showToast('อัปโหลดไม่สำเร็จ: ' + err.message, 'err'); }
+  delete infSecs[i]._busy; infRender();
 }
 
 // ── cover ──────────────────────────────────────────────────
