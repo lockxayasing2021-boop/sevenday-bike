@@ -56,6 +56,7 @@
 .f .hint{font-size:12px;color:var(--grey-600)}
 .f.bad input,.f.bad select{border-color:#C4161C}
 .f .err{font-size:12px;color:#C4161C;display:none}
+.er-shirtnote,.er-cat small.er-shirtnote{display:block;font-size:12px;font-weight:700;color:#C4161C !important;margin-top:4px}
 .f.bad .err{display:block}
 .er-sizes{display:flex;flex-wrap:wrap;gap:6px}
 .er-sizes label{position:relative}
@@ -219,6 +220,10 @@ const user = (() => { try { return JSON.parse(sessionStorage.getItem('sd_user') 
 
 let ev = null, step = 1, slipData = '';
 const eventId = new URLSearchParams(location.search).get('event_id') || new URLSearchParams(location.search).get('id');
+// 2026-11-18 ເຈົ້າຂອງສັ່ງ: ງານ PCAC2026 — ຜູ້ສະໝັກຕັ້ງແຕ່ 17/11/2026 ເສື້ອອາດບໍ່ຕົງໄຊສ໌ທີ່ເລືອກ (ສັ່ງຜະລິດເສື້ອໄປແລ້ວ)
+const SHIRT_NOTE_EVENTS = { 'EV-01C02E8C': '2026-11-17' };
+const SHIRT_NOTE = 'ຜູ້ສະໝັກຕັ້ງແຕ່ວັນທີ 17 ພະຈິກ 2026 ເປັນຕົ້ນໄປ ເສື້ອອາດບໍ່ຕົງກັບໄຊສ໌ທີ່ເລືອກໄວ້';
+const shirtNoteOn = () => { const d = SHIRT_NOTE_EVENTS[eventId]; return !!d && new Date() >= new Date(d + 'T00:00:00+07:00'); };
 
 function showErr(m){ const e = $('err'); e.textContent = m; e.hidden = !m; if (m) e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
 const cat = () => { const c = document.querySelector('input[name=cat]:checked'); return c && ev.categories.find(x => x.category_id === c.value); };
@@ -254,12 +259,14 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
     const rules = [c.distance, c.gender_rule === 'MALE' ? 'ຊາຍ' : c.gender_rule === 'FEMALE' ? 'ຍິງ' : '', c.min_age ? `ອາຍຸ ${c.min_age}+` : '', c.max_age ? `ບໍ່ເກີນ ${c.max_age} ປີ` : ''].filter(Boolean).map(x => `<span>${evtEsc(x)}</span>`).join(' · ');
     return `<label class="er-cat ${full ? 'off' : ''}">
       <input type="radio" name="cat" value="${evtEsc(c.category_id)}" ${full ? 'disabled' : ''} ${pick === c.category_id ? 'checked' : ''}>
-      <span><b>${evtEsc(c.category_name)}</b><small>${[rules, c.description ? `<span>${evtEsc(c.description)}</span>` : '', c.registered_count ? `<span>ສະໝັກແລ້ວ ${c.registered_count} ຄົນ</span>` : '', full ? '<span>ເຕັມແລ້ວ</span>' : c.remaining !== null ? `<span>ເຫຼືອ ${c.remaining} ບ່ອນ</span>` : ''].filter(Boolean).join(' · ')}</small>${c.early_bird ? `<small class="er-eb">Early Bird · ຮອດ ${evtEsc(evtDate(c.early_bird.until))}${c.early_bird.remaining !== null ? ` · ເຫຼືອ ${c.early_bird.remaining} ສິດ` : ''}</small>` : ''}</span>
+      <span><b>${evtEsc(c.category_name)}</b><small>${[rules, c.description ? `<span>${evtEsc(c.description)}</span>` : '', c.registered_count ? `<span>ສະໝັກແລ້ວ ${c.registered_count} ຄົນ</span>` : '', full ? '<span>ເຕັມແລ້ວ</span>' : c.remaining !== null ? `<span>ເຫຼືອ ${c.remaining} ບ່ອນ</span>` : ''].filter(Boolean).join(' · ')}</small>${c.early_bird ? `<small class="er-eb">Early Bird · ຮອດ ${evtEsc(evtDate(c.early_bird.until))}${c.early_bird.remaining !== null ? ` · ເຫຼືອ ${c.early_bird.remaining} ສິດ` : ''}</small>` : ''}
+      ${shirtNoteOn() ? `<small class="er-shirtnote">⚠️ ${SHIRT_NOTE}</small>` : ''}</span>
       <span class="pr">${c.early_bird ? `<s>${evtKip(c.price_lak)}</s>` : ''}${priceOf(c) ? evtKip(priceOf(c)) : 'ຟຣີ'}</span></label>`;
   }).join('') : '<div class="msg">ງານນີ້ຍັງບໍ່ມີລຸ້ນໃຫ້ສະໝັກ</div>';
   const ebs = cats.filter(c => c.early_bird).map(c => c.early_bird.until).sort();
   if (ebs.length) $('cats').insertAdjacentHTML('beforebegin', `<div class="er-ebbar"><span aria-hidden="true">🐦</span><span><b>Early Bird</b> — ສະໝັກກ່ອນ ${evtEsc(evtDate(ebs[0]))} ຈ່າຍລາຄາພິເສດ</span></div>`);
   $('sizes').innerHTML = SIZES.map(s => `<label><input type="radio" name="jersey_size" value="${s}"><span>${s}</span></label>`).join('');
+  if (shirtNoteOn()) $('sizes').insertAdjacentHTML('afterend', `<span class="er-shirtnote">⚠️ ${SHIRT_NOTE}</span>`);
   document.querySelectorAll('.bike').forEach(el => el.hidden = !isBike());
   if (ev.terms_url) $('termsLink').innerHTML = ` <a href="${evtEsc(ev.terms_url)}" target="_blank" rel="noopener" style="text-decoration:underline">ອ່ານກົດລະບຽບ</a>`;
   if (user) {
