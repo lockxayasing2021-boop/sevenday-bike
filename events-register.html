@@ -260,12 +260,13 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
       ${ev.description ? `<p class="evh-desc">${evtEsc(ev.description)}</p>` : ''}
     </div></div>`;
   const infos = Array.isArray(ev.info_sections) ? ev.info_sections : [];
-  if (infos.length) $('evHead').insertAdjacentHTML('beforeend', `<section class="evi" aria-label="ລາຍລະອຽດງານ"><h2>ລາຍລະອຽດງານ</h2>${infos.map((s, i) => `<details ${i === 0 ? 'open' : ''}>
+  if (infos.length) $('evHead').insertAdjacentHTML('beforeend', `<section class="evi" id="detail" aria-label="ລາຍລະອຽດງານ"><h2>ລາຍລະອຽດງານ</h2>${infos.map((s, i) => `<details ${i === 0 ? 'open' : ''}>
     <summary>${evtEsc(s.title || 'ລາຍລະອຽດ')}</summary><div class="b">
     ${s.image ? `<a href="${evtEsc(s.image)}" target="_blank" rel="noopener"><img src="${evtEsc(s.image)}" alt="${evtEsc(s.title)}" loading="lazy"></a>` : ''}
     ${s.text ? `<p>${evtEsc(s.text)}</p>` : ''}
     ${s.map_url ? `<a class="map" href="${evtEsc(s.map_url)}" target="_blank" rel="noopener">📍 ເປີດແຜນທີ່</a>` : ''}
     </div></details>`).join('')}</section>`);
+  if (location.hash === '#detail') setTimeout(() => { const d = document.getElementById('detail'); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
   if (ev.registration_state !== 'OPEN') {
     $('closedMsg').hidden = false;
     $('closedMsg').innerHTML = `<div class="msg" style="border-color:var(--black);background:var(--grey-100);color:var(--ink)">${ev.registration_state === 'SOON' ? 'ຍັງບໍ່ເປີດຮັບສະໝັກ — ເປີດ ' + evtDate(ev.registration_open) : 'ງານນີ້ປິດຮັບສະໝັກແລ້ວ'}</div>`;
