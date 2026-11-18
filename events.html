@@ -45,6 +45,8 @@
 .ev-bar i{display:block;height:100%;background:var(--black);border-radius:999px}
 .ev-card .btn{height:44px;margin:0 18px 18px}
 .ev-card .btn-line{border:2px solid var(--black)}
+.ev-btns{display:flex;gap:8px;margin:0 18px 18px}
+.ev-btns .btn{flex:1;margin:0}
 
 .ev-empty{grid-column:1/-1;text-align:center;padding:64px 16px;color:var(--grey-600)}
 .ev-empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
@@ -144,7 +146,9 @@ function evCard(e){
     </div>
     ${e.results_published
       ? `<a class="btn btn-black" href="events-results.html?event_id=${encodeURIComponent(e.event_id)}">ເບິ່ງຜົນການແຂ່ງຂັນ</a>`
-      : `<a class="btn ${canReg ? 'btn-black' : 'btn-line'}" href="${href}">${canReg ? 'ສະໝັກເລີຍ' : 'ເບິ່ງລາຍລະອຽດ'}</a>`}
+      : canReg
+        ? `<div class="ev-btns"><a class="btn btn-line" href="${href}#detail">ເບິ່ງລາຍລະອຽດ</a><a class="btn btn-black" href="${href}">ສະໝັກເລີຍ</a></div>`
+        : `<a class="btn btn-line" href="${href}#detail">ເບິ່ງລາຍລະອຽດ</a>`}
   </article>`;
 }
 
