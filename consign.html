@@ -136,6 +136,7 @@ const TX = {
   ctaH: { lo: 'ຢາກຝາກຂາຍຂອງຂອງທ່ານ?', th: 'อยากฝากขายของคุณ?', en: 'Want to consign your own?' },
   ctaP: { lo: 'ຮ້ານກວດສະພາບ ຖ່າຍຮູບ ແລະ ຂາຍໃຫ້ — ຕິດຕໍ່ຮ້ານເພື່ອຖາມເງື່ອນໄຂ', th: 'ร้านตรวจสภาพ ถ่ายรูป และขายให้ — ติดต่อร้านเพื่อสอบถามเงื่อนไข', en: 'We inspect, photograph and sell for you — contact us for the terms' },
   ctaB: { lo: 'ທັກຮ້ານ WhatsApp', th: 'ทักร้าน WhatsApp', en: 'WhatsApp the shop' },
+  ctaReq: { lo: 'ສົ່ງຄຳຂໍຝາກຂາຍອອນລາຍ', th: 'ส่งคำขอฝากขายออนไลน์', en: 'Send a consignment request' },
   ctaMsg: { lo: 'ສະບາຍດີ ຢາກຝາກຂາຍຂອງ', th: 'สวัสดี อยากฝากขายของ', en: 'Hi, I\'d like to consign an item' },
   photo: { lo: 'ຮູບ', th: 'รูป', en: 'Photo' },
   orderB: { lo: 'ສັ່ງຊື້ຊິ້ນນີ້', th: 'สั่งซื้อชิ้นนี้', en: 'Order this item' },
@@ -180,7 +181,7 @@ function draw() {
   $('cwNote').textContent = tx('note');
   document.title = tx('h1') + ' — Sevenday Bike';
   $('cwBar').innerHTML = ['all', 'bike', 'part'].map(k => '<button type="button" class="cw-chip' + (S.filter === k ? ' on' : '') + '" data-f="' + k + '">' + esc(tx(k)) + '</button>').join('') + '<span class="cw-legend">' + esc(tx('legend')) + '</span>';
-  $('cwCta').innerHTML = '<div><b>' + esc(tx('ctaH')) + '</b><p>' + esc(tx('ctaP')) + '</p></div><a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(tx('ctaMsg'))) + '">' + esc(tx('ctaB')) + '</a>';
+  $('cwCta').innerHTML = '<div><b>' + esc(tx('ctaH')) + '</b><p>' + esc(tx('ctaP')) + '</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-black" href="account.html?tab=creq">' + esc(tx('ctaReq')) + '</a><a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(tx('ctaMsg'))) + '">' + esc(tx('ctaB')) + '</a></div>';
   const L = $('cwList');
   if (S.err) { L.innerHTML = '<div class="cw-empty"><b>' + esc(tx('fail')) + '</b><button class="btn btn-black" type="button" id="cwRetry">' + esc(tx('retry')) + '</button></div>'; $('cwRetry').onclick = load; return; }
   if (!S.items) { L.innerHTML = '<div class="cw-loading">' + esc(tx('loading')) + '</div>'; return; }

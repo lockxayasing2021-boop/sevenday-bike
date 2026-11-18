@@ -118,6 +118,7 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
     </li>
     <li class="nav-item"><a href="rental.html">ເຊົ່າລົດ</a></li>
     <li class="nav-item"><a href="catalogue.html?cat=used">ມືສອງ</a></li>
+    <li class="nav-item"><a href="consign.html">ຝາກຂາຍ</a></li>
     <li class="nav-item"><a href="events.html">ກິດຈະກຳ</a>
       <div class="mega"><div class="wrap mega-inner">
         <div><h4>ກິດຈະກຳ</h4><ul><li><a href="events.html">ກິດຈະກຳທັງໝົດ</a></li><li><a href="events.html?type=CYCLING">ປັ່ນລົດຖີບ</a></li><li><a href="events.html?type=RUNNING">ແລ່ນ</a></li><li><a href="events.html?type=COMMUNITY">ກິດຈະກຳຊຸມຊົນ</a></li><li><a href="events.html?type=WORKSHOP">Workshop</a></li></ul></div>
@@ -174,6 +175,7 @@ html[lang="th"]{--font:'Archivo','Noto Sans Thai','Noto Sans Lao',system-ui,sans
     <a class="d-link" href="service.html">Workshop</a>
     <a class="d-link" href="rental.html">ເຊົ່າລົດ</a>
     <a class="d-link" href="catalogue.html?cat=used">ມືສອງ</a>
+    <a class="d-link" href="consign.html">ຝາກຂາຍ</a>
     <a class="d-link" href="events.html">ກິດຈະກຳ</a>
     <a class="d-link" href="my-registrations.html">ການສະໝັກຂອງຂ້ອຍ</a>
     <a class="d-link" href="catalogue.html?sale=1">Sale</a>

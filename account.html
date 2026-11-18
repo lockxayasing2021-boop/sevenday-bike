@@ -331,6 +331,16 @@ main.wrap{padding-top:8px}
 .co-acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .co-acts .btn{height:40px;padding:0 18px;font-size:14px}
 .co-err{grid-column:1/-1;color:#b00020;font-size:13px;font-weight:600}
+.cr-form{display:flex;flex-direction:column;gap:12px;border:1.5px solid var(--grey-300);padding:20px;margin-bottom:24px}
+.cr-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
+.cr-form input:not([type=checkbox]),.cr-form select,.cr-form textarea{font:inherit;font-weight:400;padding:10px 12px;border:1.5px solid var(--grey-300);border-radius:10px;background:#fff}
+.cr-form textarea{min-height:76px;resize:vertical}
+.cr-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cr-ck{flex-direction:row!important;align-items:flex-start;gap:8px!important;font-weight:400!important;font-size:13px!important}
+.cr-ck input{margin-top:3px}
+.cr-note{font-size:13px;color:var(--grey-600)}
+.cr-ok{font-weight:800;color:#0a7a3b}
+@media(max-width:560px){.cr-row{grid-template-columns:1fr}}
 .empty{border:1px dashed var(--grey-300);padding:48px;text-align:center}
 .empty p{color:var(--grey-600);margin:6px 0 18px}
 .ptsbox{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grey-300);border:1px solid var(--grey-300)}
@@ -352,7 +362,7 @@ main.wrap{padding-top:8px}
 <main class="wrap">
   
   <div class="tabs" role="tablist">
-    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button><button data-t="corders" id="tabCOrders" hidden></button>
+    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button><button data-t="corders" id="tabCOrders" hidden></button><button data-t="creq" id="tabCReq" hidden></button>
   </div>
   <div class="list" id="list"><div class="empty">ກຳລັງໂຫຼດ...</div></div>
 </main>
@@ -399,6 +409,7 @@ function render(){
   const L=$('list');
   if(tab==='consign'){ renderConsign(); return; }
   if(tab==='corders'){ renderCOrders(); return; }
+  if(tab==='creq'){ renderCReq(); return; }
   if(tab==='orders') L.innerHTML = data.orders.length ? data.orders.slice().reverse().map(o=>`<div class="order"><div><b>${o.bill_id}</b>${o.status?`<span class="st ${o.status==='ສຳເລັດ'?'done':''}">${o.status}</span>`:''}<div class="meta">${d8(o.date)} · ${o.payment||''}</div></div><div class="amt">${fmt(o.total)}</div><div class="items">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(', ')}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີການສັ່ງຊື້</b><p>ຄຳສັ່ງຊື້ຈາກເວັບ ແລະ ທີ່ຮ້ານ ຈະສະແດງຢູ່ບ່ອນນີ້</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>`;
   if(tab==='repairs') L.innerHTML = data.repairs.length ? data.repairs.slice().reverse().map(r=>`<div class="order"><div><b>${r.bike||'ລົດຖີບ'}</b><span class="st ${/ສຳເລັດ|สำเร็จ|รับรถ|done|complete/i.test(r.status)?'done':''}">${r.status||'-'}</span><div class="meta">${r.job_id} · ${d8(r.date)}</div></div><div class="amt">${r.total?fmt(r.total):''}</div><div class="items">${r.symptoms||''}</div></div>`).join('')
@@ -513,14 +524,103 @@ document.addEventListener('change',async e=>{
   coBusy=false; renderCOrders();
 });
 document.addEventListener('langchange',()=>{ if(corders&&corders.orders&&corders.orders.length){ $('tabCOrders').textContent=co('tab'); if(tab==='corders') renderCOrders(); } });
+
+/* ── ຂໍຝາກຂາຍອອນລາຍ (supabase/121) — ລູກຄ້າສົ່ງຄຳຂໍ + ຮູບ → ຮ້ານກວດ/ນັດ/ປະຕິເສດ ── */
+const CR={
+  tab:{lo:'ຂໍຝາກຂາຍ',th:'ขอฝากขาย',en:'Consign my item'},
+  h:{lo:'ສົ່ງຄຳຂໍຝາກຂາຍ',th:'ส่งคำขอฝากขาย',en:'Send a consignment request'},
+  intro:{lo:'ແຈ້ງລາຍລະອຽດ + ແນບຮູບ ຮ້ານຈະກວດ ແລ້ວນັດໃຫ້ນຳຂອງມາທີ່ຮ້ານ — ຮ້ານກວດສະພາບ ແລະ ໃຫ້ເກຣດກ່ອນລົງຂາຍທຸກຊິ້ນ',th:'แจ้งรายละเอียด + แนบรูป ร้านจะตรวจแล้วนัดให้นำของมาที่ร้าน — ร้านตรวจสภาพและให้เกรดก่อนลงขายทุกชิ้น',en:'Tell us about the item and attach photos. We review, then arrange a drop-off at the shop — every item is inspected and graded before listing.'},
+  kind:{lo:'ປະເພດ',th:'ประเภท',en:'Type'},bike:{lo:'ລົດຖີບ',th:'จักรยาน',en:'Bicycle'},part:{lo:'ອາໄຫຼ່/ອຸປະກອນ',th:'อะไหล่/อุปกรณ์',en:'Part / gear'},
+  title:{lo:'ຍີ່ຫໍ້ / ລຸ້ນ',th:'ยี่ห้อ / รุ่น',en:'Brand / model'},year:{lo:'ປີທີ່ຊື້',th:'ปีที่ซื้อ',en:'Year bought'},
+  cond:{lo:'ສະພາບ / ຕຳນິ (ຕາມທີ່ທ່ານເຫັນ)',th:'สภาพ / ตำหนิ (ตามที่คุณเห็น)',en:'Condition / flaws (as you see it)'},
+  want:{lo:'ລາຄາທີ່ຢາກໄດ້ (ບາດ)',th:'ราคาที่อยากได้ (บาท)',en:'Asking price (THB)'},cur:{lo:'ສະກຸນເງິນທີ່ຮັບ',th:'สกุลเงินที่รับเงิน',en:'Payout currency'},
+  photos:{lo:'ຮູບ 1–6 ຮູບ (ຮູບລວມ ແລະ ຈຸດຕຳນິ)',th:'รูป 1–6 รูป (ภาพรวม และจุดตำหนิ)',en:'1–6 photos (overall + any flaws)'},picked:{lo:'ເລືອກແລ້ວ',th:'เลือกแล้ว',en:'selected'},
+  consent:{lo:'ຂ້ອຍຍອມຮັບເງື່ອນໄຂຝາກຂາຍ: ຮ້ານກວດສະພາບ/ໃຫ້ເກຣດກ່ອນລົງຂາຍ · ຄ່າຄອມມິດຊັ່ນ 4–20% ຕາມລາຄາຂາຍ (ລາຄາຖືກ = % ສູງກວ່າ) · ສັນຍາ 60 ວັນ ຕໍ່ອັດຕະໂນມັດຄັ້ງລະ 30 ວັນ · ຈ່າຍເງິນຫຼັງຜູ້ຊື້ຮັບຂອງ 3 ວັນ',th:'ฉันยอมรับเงื่อนไขฝากขาย: ร้านตรวจสภาพ/ให้เกรดก่อนลงขาย · ค่าคอมมิชชั่น 4–20% ตามราคาขาย (ราคาถูก = % สูงกว่า) · สัญญา 60 วัน ต่ออัตโนมัติครั้งละ 30 วัน · จ่ายเงินหลังผู้ซื้อรับของ 3 วัน',en:'I accept the consignment terms: items are inspected and graded before listing · commission 4–20% by sale price (cheaper items = higher %) · 60-day contract, auto-renewing 30 days at a time · payout 3 days after the buyer receives the item'},
+  send:{lo:'ສົ່ງຄຳຂໍ',th:'ส่งคำขอ',en:'Send request'},sending:{lo:'ກຳລັງສົ່ງ...',th:'กำลังส่ง...',en:'Sending...'},
+  photoN:{lo:'ກຳລັງອັບໂຫຼດຮູບ',th:'กำลังอัปโหลดรูป',en:'Uploading photo'},
+  done:{lo:'ສົ່ງຄຳຂໍແລ້ວ — ຮ້ານຈະກວດ ແລະ ແຈ້ງຜົນຢູ່ລຸ່ມນີ້',th:'ส่งคำขอแล้ว — ร้านจะตรวจและแจ้งผลด้านล่างนี้',en:'Request sent — we will review it and show the result below'},
+  need:{lo:'ກະລຸນາເລືອກປະເພດ, ໃສ່ຍີ່ຫໍ້/ລຸ້ນ, ແນບຮູບ 1–6 ຮູບ ແລະ ຕິກຍອມຮັບເງື່ອນໄຂ',th:'กรุณาเลือกประเภท ใส่ยี่ห้อ/รุ่น แนบรูป 1–6 รูป และติ๊กยอมรับเงื่อนไข',en:'Please choose a type, enter brand/model, attach 1–6 photos and accept the terms'},
+  partial:{lo:'ສົ່ງຄຳຂໍບໍ່ຄົບ — ຄຳຂໍຖືກບັນທຶກເປັນຮ່າງ ກົດ "ເພີ່ມຮູບ" ຫຼື "ສົ່ງຄຳຂໍ" ຢູ່ລຸ່ມນີ້',th:'ส่งไม่ครบ — คำขอถูกบันทึกเป็นร่าง กด "เพิ่มรูป" หรือ "ส่งคำขอ" ด้านล่าง',en:'Not fully sent — saved as a draft. Use "Add photos" or "Send request" below'},
+  mine:{lo:'ຄຳຂໍຂອງຂ້ອຍ',th:'คำขอของฉัน',en:'My requests'},none:{lo:'ຍັງບໍ່ມີຄຳຂໍ',th:'ยังไม่มีคำขอ',en:'No requests yet'},
+  st:{draft:['ຮ່າງ — ຍັງບໍ່ໄດ້ສົ່ງ','ร่าง — ยังไม่ได้ส่ง','Draft — not sent'],new:['ລໍຮ້ານກວດ','รอร้านตรวจ','Waiting for review'],scheduled:['ນັດນຳຂອງມາຮ້ານ','นัดนำของมาที่ร้าน','Drop-off scheduled'],received:['ຮ້ານຮັບຝາກແລ້ວ','ร้านรับฝากแล้ว','Received by the shop'],rejected:['ບໍ່ຮັບຝາກ','ไม่รับฝาก','Not accepted'],cancelled:['ຍົກເລີກ','ยกเลิก','Cancelled']},
+  addPh:{lo:'ເພີ່ມຮູບ',th:'เพิ่มรูป',en:'Add photos'},submitB:{lo:'ສົ່ງຄຳຂໍ',th:'ส่งคำขอ',en:'Send request'},cancelB:{lo:'ຍົກເລີກຄຳຂໍ',th:'ยกเลิกคำขอ',en:'Cancel request'},cancelAsk:{lo:'ຍົກເລີກຄຳຂໍນີ້ບໍ?',th:'ยกเลิกคำขอนี้ใช่ไหม?',en:'Cancel this request?'},
+  receipt:{lo:'ໃບຮັບຝາກ',th:'ใบรับฝาก',en:'Receipt'},phN:{lo:'ຮູບ',th:'รูป',en:'photos'},bad:{lo:'ສົ່ງບໍ່ໄດ້',th:'ส่งไม่ได้',en:'Could not send'}
+};
+const crL=()=>typeof sdLang==='function'?sdLang():'lo', crI=()=>({lo:0,th:1,en:2}[crL()]||0);
+const cr=k=>(CR[k]||{})[crL()]||(CR[k]||{}).lo||k, crs=s=>(CR.st[s]||[s,s,s])[crI()];
+let creq=null, crErr={}, crMsg='', crBusy=false, crOpened=false;
+function renderCReq(){
+  const L=$('list'), list=(creq&&creq.requests)||[];
+  const form='<form class="cr-form" id="crForm" novalidate><b>'+cesc(cr('h'))+'</b><div class="cr-note">'+cesc(cr('intro'))+'</div>'+
+    '<div class="cr-row"><label>'+cesc(cr('kind'))+'<select name="kind"><option value="bike">'+cesc(cr('bike'))+'</option><option value="part">'+cesc(cr('part'))+'</option></select></label>'+
+    '<label>'+cesc(cr('title'))+'<input name="title" maxlength="120"></label></div>'+
+    '<div class="cr-row"><label>'+cesc(cr('year'))+'<input name="yearBought" maxlength="20" inputmode="numeric"></label><label>'+cesc(cr('want'))+'<input name="wantPriceThb" type="number" min="0" step="any" inputmode="decimal"></label></div>'+
+    '<label>'+cesc(cr('cond'))+'<textarea name="conditionNote" maxlength="800"></textarea></label>'+
+    '<div class="cr-row"><label>'+cesc(cr('cur'))+'<select name="payoutCurrency"><option value="LAK">LAK ₭</option><option value="THB">THB ฿</option><option value="USD">USD $</option></select></label>'+
+    '<label>'+cesc(cr('photos'))+'<input name="photos" type="file" accept="image/*" multiple></label></div><div class="cr-note" id="crPicked"></div>'+
+    '<label class="cr-ck"><input type="checkbox" name="consent"><span>'+cesc(cr('consent'))+'</span></label>'+
+    '<div class="co-err" id="crErr" role="alert"></div><div class="cr-ok" id="crOk">'+cesc(crMsg)+'</div>'+
+    '<button type="submit" class="btn btn-black" id="crGo">'+cesc(cr('send'))+'</button></form>';
+  const card=r=>{ const acts=[];
+    if(r.status==='draft'){ if(r.photoCount<6) acts.push('<label class="btn btn-line" style="cursor:pointer"><input type="file" accept="image/*" multiple hidden data-crph="'+cesc(r.id)+'">'+cesc(cr('addPh'))+'</label>');
+      if(r.photoCount>=1) acts.push('<button class="btn btn-black" type="button" data-cra="submit" data-id="'+cesc(r.id)+'">'+cesc(cr('submitB'))+'</button>'); }
+    if(['draft','new','scheduled'].indexOf(r.status)>-1) acts.push('<button class="btn btn-line" type="button" data-cra="cancel" data-id="'+cesc(r.id)+'">'+cesc(cr('cancelB'))+'</button>');
+    return '<div class="order"><div><b>'+cesc(r.title)+'</b><span class="st '+(r.status==='received'?'done':'')+'">'+cesc(crs(r.status))+'</span><div class="meta">'+cesc(r.id)+' · '+cesc(cr(r.kind))+' · '+r.photoCount+' '+cesc(cr('phN'))+'</div></div>'+
+      '<div class="amt">'+(r.wantPriceThb==null?'':cesc(fmt(Number(r.wantPriceThb))))+'</div>'+
+      (r.scheduleNote?'<div class="co-pay">📅 '+cesc(r.scheduleNote)+'</div>':'')+(r.rejectNote?'<div class="co-pay">'+cesc(r.rejectNote)+'</div>':'')+
+      (r.consignmentId?'<div class="items">'+cesc(cr('receipt'))+' '+cesc(r.consignmentId)+'</div>':'')+
+      (crErr[r.id]?'<div class="co-err" role="alert">'+cesc(crErr[r.id])+'</div>':'')+(acts.length?'<div class="co-acts">'+acts.join('')+'</div>':'')+'</div>'; };
+  L.innerHTML=form+'<h3 style="margin:0 0 12px">'+cesc(cr('mine'))+'</h3>'+(list.length?list.map(card).join(''):'<div class="empty"><b>'+cesc(cr('none'))+'</b></div>');
+}
+async function crPhotos(id,files,from,total){
+  for(let i=0;i<files.length;i++){ crMsg=''; const e=$('crErr'); if(e&&id===crPhotos.cur) e.textContent=cr('photoN')+' '+(from+i+1)+'/'+total;
+    const blob=await coShrink(files[i]); await coPost('request_photo',{request:id,image:await coB64(blob)}); }
+}
+async function loadCReq(){ try{ creq=await coPost('requests',{}); }catch(_){ creq=creq||{requests:[]}; } if(tab==='creq') renderCReq(); }
+document.addEventListener('change',e=>{
+  const f=e.target.closest('#crForm input[name=photos]'); if(f){ const n=f.files.length; $('crPicked').textContent=n?(n+' '+cr('picked')+(n>6?' ⚠ max 6':'')):''; return; }
+});
+document.addEventListener('submit',async e=>{
+  if(e.target.id!=='crForm') return; e.preventDefault(); if(crBusy) return; const f=e.target, err=$('crErr'); err.textContent=''; crMsg='';
+  const files=[...f.photos.files];
+  if(!f.title.value.trim()||files.length<1||files.length>6||!f.consent.checked){ err.textContent=cr('need'); return; }
+  crBusy=true; const b=$('crGo'); b.disabled=true; b.textContent=cr('sending'); let id=null;
+  try{
+    const r=await coPost('request',{kind:f.kind.value,title:f.title.value,yearBought:f.yearBought.value,conditionNote:f.conditionNote.value,wantPriceThb:f.wantPriceThb.value,payoutCurrency:f.payoutCurrency.value,consent:true});
+    id=r.request.id; crPhotos.cur=id; await crPhotos(id,files,0,files.length);
+    await coPost('request_submit',{request:id}); crMsg=cr('done'); creq=await coPost('requests',{}); crBusy=false; renderCReq();
+  }catch(er){
+    crBusy=false; if(er.message==='SESSION_EXPIRED') return;
+    if(id){ crMsg=''; try{ creq=await coPost('requests',{}); }catch(_){} renderCReq(); const e2=$('crErr'); if(e2) e2.textContent=er.message+' — '+cr('partial'); }
+    else { err.textContent=er.message; b.disabled=false; b.textContent=cr('send'); }
+  }
+});
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-cra]'); if(!b||crBusy) return; const id=b.dataset.id; delete crErr[id];
+  if(b.dataset.cra==='cancel'&&!confirm(cr('cancelAsk'))) return;
+  crBusy=true;
+  try{ await coPost(b.dataset.cra==='submit'?'request_submit':'request_cancel',{request:id}); creq=await coPost('requests',{}); }
+  catch(er){ if(er.message!=='SESSION_EXPIRED') crErr[id]=er.message; }
+  crBusy=false; renderCReq();
+});
+document.addEventListener('change',async e=>{
+  const inp=e.target.closest('[data-crph]'); if(!inp||!inp.files||!inp.files.length||crBusy) return; const id=inp.dataset.crph, files=[...inp.files]; inp.value='';
+  const r=((creq&&creq.requests)||[]).find(x=>x.id===id); if(!r) return;
+  if(r.photoCount+files.length>6){ crErr[id]=cr('photos'); renderCReq(); return; }
+  crBusy=true; delete crErr[id]; crErr[id]=cr('sending'); renderCReq();
+  try{ await crPhotos(id,files,0,files.length); delete crErr[id]; creq=await coPost('requests',{}); }
+  catch(er){ if(er.message!=='SESSION_EXPIRED') crErr[id]=er.message; try{ creq=await coPost('requests',{}); }catch(_){} }
+  crBusy=false; renderCReq();
+});
+document.addEventListener('langchange',()=>{ const b=$('tabCReq'); if(b&&!b.hidden){ b.textContent=cr('tab'); if(tab==='creq'&&!crBusy) renderCReq(); } });
 function logout(){ sessionStorage.removeItem('sd_user'); location.href='login.html'; }
 async function load(){
   try{ const d=await apiPost('getCustomerOrders',{token:user.token}); data={orders:d.orders||[],repairs:d.repairs||[],points:d.points??user.points}; }
   catch(e){ if(/SESSION_EXPIRED/.test(e.message)||!user.token){ sessionStorage.removeItem('sd_user'); location.replace('login.html'); return; } $('list').innerHTML=`<div class="empty"><b>ໂຫຼດຂໍ້ມູນບໍ່ໄດ້</b><p>${e.message}</p><button class="btn btn-black" onclick="load()">ລອງອີກຄັ້ງ</button></div>`; return; }
   render();
 }
-document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else if(tab==='corders') renderCOrders(); else render(); });
-if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); } }
+document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else if(tab==='corders') renderCOrders(); else if(tab==='creq'&&!crBusy) renderCReq(); else render(); });
+if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); const tb=$('tabCReq'); tb.hidden=false; tb.textContent=cr('tab'); if(new URLSearchParams(location.search).get('tab')==='creq'){ tab='creq'; } loadCReq(); } }
 
 </script>
 </body>
