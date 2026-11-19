@@ -332,6 +332,11 @@ main.wrap{padding-top:8px}
 .co-acts .btn{height:40px;padding:0 18px;font-size:14px}
 .co-err{grid-column:1/-1;color:#b00020;font-size:13px;font-weight:600}
 
+.cp-cur{height:40px;padding:0 10px;border:1.5px solid var(--grey-300);border-radius:10px;font:inherit;font-size:14px;background:#fff}
+.cp-box{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;border:1.5px solid var(--grey-300);padding:14px;font-size:14px}
+.cp-box.ok{background:#e8f5e9;border-color:#a5d6a7;font-weight:700}
+.cp-qr{width:200px;max-width:100%;height:auto;align-self:flex-start}
+.cp-ref{font-size:12.5px;color:#777;word-break:break-all}.cp-wait{font-size:13px;color:#555}
 .cm-wrap{display:flex;flex-direction:column;gap:10px}
 .cm-hint{font-size:13px;color:var(--grey-600,#666);line-height:1.5}
 .cm-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--grey-300);padding:14px 16px;cursor:pointer;background:#fff;text-align:left;width:100%}
@@ -500,17 +505,83 @@ async function coPost(op,body){
   if(!r.ok||!j.ok) throw new Error(j.message||co('bad'));
   return j;
 }
+
+/* ── ຊຳລະອອນລາຍ (supabase/123) — ຜູ້ໃຫ້ບໍລິການຢືນຢັນເງິນເຂົ້າເອງ (ບໍ່ເຊື່ອໜ້າ "ສຳເລັດ" ຂອງຝັ່ງລູກຄ້າ); ໂອນ+ສະລິບຍັງໃຊ້ໄດ້ ── */
+const CP={
+  payB:{lo:'ຈ່າຍອອນລາຍ',th:'จ่ายออนไลน์',en:'Pay online'},cur:{lo:'ສະກຸນເງິນ',th:'สกุลเงิน',en:'Currency'},
+  amt:{lo:'ຍອດທີ່ຕ້ອງຈ່າຍ',th:'ยอดที่ต้องจ่าย',en:'Amount to pay'},exp:{lo:'ໝົດອາຍຸ',th:'หมดอายุ',en:'Expires'},
+  go:{lo:'ໄປໜ້າຊຳລະເງິນ',th:'ไปหน้าชำระเงิน',en:'Go to payment page'},qr:{lo:'ສະແກນ QR ເພື່ອຈ່າຍ',th:'สแกน QR เพื่อชำระเงิน',en:'Scan the QR to pay'},
+  wait:{lo:'ກຳລັງລໍຖ້າການຢືນຢັນເງິນເຂົ້າ... (ໜ້ານີ້ອັບເດດເອງ)',th:'กำลังรอยืนยันเงินเข้า... (หน้านี้อัปเดตเอง)',en:'Waiting for the payment to be confirmed... (this page updates itself)'},
+  paid:{lo:'✓ ຊຳລະເງິນແລ້ວ — ຮ້ານກຳລັງກຽມຂອງ',th:'✓ ชำระเงินแล้ว — ร้านกำลังเตรียมของ',en:'✓ Paid — the shop is preparing your item'},
+  paidWait:{lo:'ຊຳລະອອນລາຍແລ້ວ — ກຳລັງກຽມຂອງ',th:'ชำระออนไลน์แล้ว — กำลังเตรียมของ',en:'Paid online — being prepared'},
+  expired:{lo:'ໝົດເວລາຊຳລະ — ກົດ "ຈ່າຍອອນລາຍ" ໃໝ່ ຫຼື ໂອນແລ້ວສົ່ງສະລິບ',th:'หมดเวลาชำระ — กด "จ่ายออนไลน์" ใหม่ หรือโอนแล้วส่งสลิป',en:'Payment time ran out — press "Pay online" again, or transfer and upload your slip'},
+  review:{lo:'ຮ້ານກຳລັງກວດຍອດຊຳລະນີ້ — ຖ້າມີເງິນຖືກຕັດ ຮ້ານຈະຕິດຕໍ່ກັບ ຫຼື ຄືນເງິນ',th:'ร้านกำลังตรวจสอบยอดชำระนี้ — หากมีการตัดเงิน ร้านจะติดต่อกลับหรือคืนเงิน',en:'The shop is reviewing this payment — if you were charged, we will contact you or refund'},
+  ref:{lo:'ເລກອ້າງອີງທົດສອບ',th:'เลขอ้างอิงทดสอบ',en:'Test reference'},bad:{lo:'ສ້າງການຊຳລະບໍ່ໄດ້',th:'สร้างรายการชำระไม่ได้',en:'Could not start the payment'},
+  mins:{lo:'ນາທີ',th:'นาที',en:'min'}
+};
+const cpL=()=>typeof sdLang==='function'?sdLang():'lo';
+const cp=k=>(CP[k]||{})[cpL()]||(CP[k]||{}).lo||k;
+const PAY_API=CW_API.replace('consign-web','consign-pay');
+let payCfg=null, payState={}, payTimer=null;
+async function payPost(op,body){
+  const r=await fetch(PAY_API+'?op='+op,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({token:user.token},body))});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){ sessionStorage.removeItem('sd_user'); location.replace('login.html'); throw new Error('SESSION_EXPIRED'); }
+  if(!r.ok||!j.ok) throw new Error(j.message||cp('bad'));
+  return j;
+}
+async function loadPayCfg(){ try{ const r=await fetch(PAY_API+'?op=config'); const j=await r.json(); if(r.ok&&j.ok) payCfg=j; }catch(_){ payCfg=null; } if(tab==='corders'&&!coBusy) renderCOrders(); }
+const httpsOnly=u=>typeof u==='string'&&/^https:\/\//.test(u)?u:'';
+function payPanel(o){
+  const ps=payState[o.id]; if(!ps) return '';
+  if(o.payVia==='gateway'&&o.status!=='cancelled') return '<div class="cp-box ok">'+cesc(cp('paid'))+'</div>';
+  const it=ps.intent; if(!it) return ps.err?'<div class="co-err" role="alert">'+cesc(ps.err)+'</div>':'';
+  if(it.status==='pending'||it.status==='created'){
+    const left=Math.max(0,Math.round((new Date(it.expiresAt)-Date.now())/60000));
+    return '<div class="cp-box"><div><b>'+cesc(cp('amt'))+': '+Number(it.amount).toLocaleString('en-US')+' '+cesc(it.currency)+'</b> · '+cesc(cp('exp'))+' ~'+left+' '+cesc(cp('mins'))+'</div>'+
+      (httpsOnly(it.qrImageUrl)?'<div>'+cesc(cp('qr'))+'</div><img class="cp-qr" alt="QR" src="'+cesc(it.qrImageUrl)+'">':'')+
+      (httpsOnly(it.payUrl)?'<a class="btn btn-black" target="_blank" rel="noopener" href="'+cesc(it.payUrl)+'">'+cesc(cp('go'))+'</a>':'')+
+      (ps.sandboxRef?'<div class="cp-ref">'+cesc(cp('ref'))+': '+cesc(ps.sandboxRef)+'</div>':'')+'<div class="cp-wait">'+cesc(cp('wait'))+'</div></div>';
+  }
+  if(it.status==='expired'||it.status==='failed') return '<div class="co-err" role="alert">'+cesc(cp('expired'))+'</div>';
+  if(it.status==='exception') return '<div class="co-err" role="alert">'+cesc(cp('review'))+'</div>';
+  return '';
+}
+function payPoll(){
+  if(payTimer){ clearInterval(payTimer); payTimer=null; }
+  const live=Object.keys(payState).filter(id=>payState[id].intent&&(payState[id].intent.status==='pending'||payState[id].intent.status==='created'));
+  if(!live.length) return;
+  payTimer=setInterval(async()=>{
+    if(tab!=='corders'||document.hidden||coBusy) return; let changed=false;
+    for(const id of Object.keys(payState)){ const ps=payState[id]; if(!ps.intent||!(ps.intent.status==='pending'||ps.intent.status==='created')) continue;
+      try{ const j=await payPost('status',{order:id}); if(j.intent&&j.intent.status!==ps.intent.status||(j.order&&j.order.payVia==='gateway')){ ps.intent=j.intent||ps.intent; changed=true; } else if(j.intent) ps.intent=j.intent; }catch(er){ if(er.message==='SESSION_EXPIRED') return; } }
+    if(changed){ try{ corders=await coPost('orders',{}); }catch(_){} payPoll(); }
+    renderCOrders();
+  },5000);
+}
+document.addEventListener('change',e=>{ const s=e.target.closest('[data-paycur]'); if(s){ const id=s.dataset.paycur; payState[id]=Object.assign(payState[id]||{},{cur:s.value}); } });
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-pay]'); if(!b||coBusy) return; const id=b.dataset.pay; const sel=document.querySelector('[data-paycur="'+id+'"]'); const cur=sel?sel.value:'THB';
+  coBusy=true; b.disabled=true; delete coErr[id];
+  try{ const j=await payPost('create',{order:id,currency:cur}); payState[id]={cur,intent:j.intent,sandboxRef:j.sandboxRef||''}; payPoll();
+    const u=httpsOnly(j.intent&&j.intent.payUrl); if(u) window.open(u,'_blank','noopener'); }
+  catch(er){ if(er.message!=='SESSION_EXPIRED') payState[id]={cur,err:er.message}; }
+  coBusy=false; renderCOrders();
+});
+document.addEventListener('langchange',()=>{ if(tab==='corders'&&!coBusy) renderCOrders(); });
 function renderCOrders(){
   const L=$('list'); if(!corders||!corders.orders||!corders.orders.length){ L.innerHTML='<div class="empty"><b>'+cesc(co('none'))+'</b></div>'; return; }
   L.innerHTML=corders.orders.map(o=>{ const it=o.item||{}, ship=o.method==='ship', live=['new','quoted','confirmed','slip','paid'].indexOf(o.status)>-1;
     const acts=[];
     if(o.status==='quoted') acts.push('<button class="btn btn-black" type="button" data-ca="fee" data-id="'+cesc(o.id)+'">'+cesc(co('confirmB'))+'</button>');
-    if(o.status==='confirmed'||o.status==='slip') acts.push('<label class="btn btn-black" style="cursor:pointer"><input type="file" accept="image/*" hidden data-slip="'+cesc(o.id)+'">'+cesc(co(o.status==='slip'?'slipAgain':'slipB'))+'</label>');
+    const gw=o.payVia==='gateway', ps=payState[o.id];
+    if(o.status==='confirmed'&&payCfg&&payCfg.enabled&&!(ps&&ps.intent&&ps.intent.status==='pending')) acts.push('<select class="cp-cur" data-paycur="'+cesc(o.id)+'" aria-label="'+cesc(cp('cur'))+'">'+(payCfg.currencies||[]).map(c=>'<option value="'+cesc(c)+'"'+((ps&&ps.cur)===c?' selected':'')+'>'+cesc(c)+'</option>').join('')+'</select><button class="btn btn-black" type="button" data-pay="'+cesc(o.id)+'">'+cesc(cp('payB'))+'</button>');
+    if((o.status==='confirmed'||o.status==='slip')&&!gw) acts.push('<label class="btn btn-line" style="cursor:pointer"><input type="file" accept="image/*" hidden data-slip="'+cesc(o.id)+'">'+cesc(co(o.status==='slip'?'slipAgain':'slipB'))+'</label>');
     if(['new','quoted','confirmed'].indexOf(o.status)>-1) acts.push('<button class="btn btn-line" type="button" data-ca="cancel" data-id="'+cesc(o.id)+'">'+cesc(co('cancelB'))+'</button>');
-    return '<div class="order" style="'+(live?'':'opacity:.6')+'"><div><b>'+cesc(it.name||'')+'</b><span class="st '+(o.status==='completed'?'done':'')+'">'+cesc(cos(o.status))+'</span><div class="meta">'+cesc(o.id)+' · '+cesc(it.code||'')+' · '+cesc(co(ship?'ship':'pickup'))+'</div></div>'+
+    return '<div class="order" style="'+(live?'':'opacity:.6')+'"><div><b>'+cesc(it.name||'')+'</b><span class="st '+(o.status==='completed'||gw?'done':'')+'">'+cesc(gw&&o.status==='slip'?cp('paidWait'):cos(o.status))+'</span><div class="meta">'+cesc(o.id)+' · '+cesc(it.code||'')+' · '+cesc(co(ship?'ship':'pickup'))+'</div></div>'+
       '<div class="amt">'+cesc(fmt(Number(o.totalThb)))+'</div>'+
       '<div class="items">'+cesc(co('price'))+' '+cesc(fmt(Number(o.priceThb)))+(ship&&o.shipFeeThb!=null?' + '+cesc(co('fee'))+' '+cesc(fmt(Number(o.shipFeeThb))):'')+(o.trackingNo?' · '+cesc(co('track'))+': '+cesc(o.carrier)+' '+cesc(o.trackingNo):'')+(o.cancelNote?' · '+cesc(o.cancelNote):'')+'</div>'+
-      (o.status==='confirmed'||o.status==='slip'?'<div class="co-pay"><b>'+cesc(co('payTo'))+'</b>\n'+cesc(corders.payInfo||co('noPay'))+'</div>':'')+
+      (o.status==='confirmed'||(o.status==='slip'&&!gw)?'<div class="co-pay"><b>'+cesc(co('payTo'))+'</b>\n'+cesc(corders.payInfo||co('noPay'))+'</div>':'')+payPanel(o)+
       (coErr[o.id]?'<div class="co-err" role="alert">'+cesc(coErr[o.id])+'</div>':'')+
       (acts.length?'<div class="co-acts">'+acts.join('')+'</div>':'')+'</div>'; }).join('');
 }
@@ -705,7 +776,7 @@ async function load(){
   render();
 }
 document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else if(tab==='corders') renderCOrders(); else if(tab==='creq'&&!crBusy) renderCReq(); else render(); });
-if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); const tb=$('tabCReq'); tb.hidden=false; tb.textContent=cr('tab'); if(new URLSearchParams(location.search).get('tab')==='creq'){ tab='creq'; } loadCReq(); loadMsg(); const qs=new URLSearchParams(location.search); if(qs.get('tab')==='msg'){ tab='msg'; render(); const th=qs.get('th'); if(th&&/^[0-9a-f-]{36}$/.test(th)) coPost('threads',{}).then(j=>{ cmThreads=j; cmTab(); cmOpenThread(th); }).catch(()=>{}); } } }
+if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); loadPayCfg(); const tb=$('tabCReq'); tb.hidden=false; tb.textContent=cr('tab'); if(new URLSearchParams(location.search).get('tab')==='creq'){ tab='creq'; } loadCReq(); loadMsg(); const qs=new URLSearchParams(location.search); if(qs.get('tab')==='msg'){ tab='msg'; render(); const th=qs.get('th'); if(th&&/^[0-9a-f-]{36}$/.test(th)) coPost('threads',{}).then(j=>{ cmThreads=j; cmTab(); cmOpenThread(th); }).catch(()=>{}); } } }
 
 </script>
 </body>
