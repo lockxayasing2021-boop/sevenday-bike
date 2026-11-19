@@ -335,6 +335,7 @@ main.wrap{padding-top:8px}
 .cp-cur{height:40px;padding:0 10px;border:1.5px solid var(--grey-300);border-radius:10px;font:inherit;font-size:14px;background:#fff}
 .cp-box{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;border:1.5px solid var(--grey-300);padding:14px;font-size:14px}
 .cp-box.ok{background:#e8f5e9;border-color:#a5d6a7;font-weight:700}
+.cp-tqr{display:flex;flex-direction:column;gap:8px;margin-top:10px;white-space:normal}
 .cp-qr{width:200px;max-width:100%;height:auto;align-self:flex-start}
 .cp-ref{font-size:12.5px;color:#777;word-break:break-all}.cp-wait{font-size:13px;color:#555}
 .cm-wrap{display:flex;flex-direction:column;gap:10px}
@@ -517,7 +518,9 @@ const CP={
   expired:{lo:'ໝົດເວລາຊຳລະ — ກົດ "ຈ່າຍອອນລາຍ" ໃໝ່ ຫຼື ໂອນແລ້ວສົ່ງສະລິບ',th:'หมดเวลาชำระ — กด "จ่ายออนไลน์" ใหม่ หรือโอนแล้วส่งสลิป',en:'Payment time ran out — press "Pay online" again, or transfer and upload your slip'},
   review:{lo:'ຮ້ານກຳລັງກວດຍອດຊຳລະນີ້ — ຖ້າມີເງິນຖືກຕັດ ຮ້ານຈະຕິດຕໍ່ກັບ ຫຼື ຄືນເງິນ',th:'ร้านกำลังตรวจสอบยอดชำระนี้ — หากมีการตัดเงิน ร้านจะติดต่อกลับหรือคืนเงิน',en:'The shop is reviewing this payment — if you were charged, we will contact you or refund'},
   ref:{lo:'ເລກອ້າງອີງທົດສອບ',th:'เลขอ้างอิงทดสอบ',en:'Test reference'},bad:{lo:'ສ້າງການຊຳລະບໍ່ໄດ້',th:'สร้างรายการชำระไม่ได้',en:'Could not start the payment'},
-  mins:{lo:'ນາທີ',th:'นาที',en:'min'}
+  mins:{lo:'ນາທີ',th:'นาที',en:'min'},
+  qrScan:{lo:'ສະແກນ QR ຂອງທະນາຄານ LDB ເພື່ອໂອນ ແລ້ວກົດ "ສົ່ງສະລິບ" ດ້ານລຸ່ມ',th:'สแกน QR ธนาคาร LDB เพื่อโอน แล้วกด "ส่งสลิป" ด้านล่าง',en:'Scan the LDB bank QR to transfer, then upload your slip below'},
+  qrAmt:{lo:'ຍອດທີ່ຕ້ອງໂອນ',th:'ยอดที่ต้องโอน',en:'Amount to transfer'}
 };
 const cpL=()=>typeof sdLang==='function'?sdLang():'lo';
 const cp=k=>(CP[k]||{})[cpL()]||(CP[k]||{}).lo||k;
@@ -532,6 +535,10 @@ async function payPost(op,body){
 }
 async function loadPayCfg(){ try{ const r=await fetch(PAY_API+'?op=config'); const j=await r.json(); if(r.ok&&j.ok) payCfg=j; }catch(_){ payCfg=null; } if(tab==='corders'&&!coBusy) renderCOrders(); }
 const httpsOnly=u=>typeof u==='string'&&/^https:\/\//.test(u)?u:'';
+function qrBox(o){
+  const u=payCfg&&httpsOnly(payCfg.transferQrUrl); if(!u) return '';
+  return '<div class="cp-tqr"><div><b>'+cesc(cp('qrAmt'))+': '+cesc(fmt(Number(o.totalThb)))+'</b></div><img class="cp-qr" alt="QR" src="'+cesc(u)+'"><div>'+cesc(cp('qrScan'))+'</div></div>';
+}
 function payPanel(o){
   const ps=payState[o.id]; if(!ps) return '';
   if(o.payVia==='gateway'&&o.status!=='cancelled') return '<div class="cp-box ok">'+cesc(cp('paid'))+'</div>';
@@ -581,7 +588,7 @@ function renderCOrders(){
     return '<div class="order" style="'+(live?'':'opacity:.6')+'"><div><b>'+cesc(it.name||'')+'</b><span class="st '+(o.status==='completed'||gw?'done':'')+'">'+cesc(gw&&o.status==='slip'?cp('paidWait'):cos(o.status))+'</span><div class="meta">'+cesc(o.id)+' · '+cesc(it.code||'')+' · '+cesc(co(ship?'ship':'pickup'))+'</div></div>'+
       '<div class="amt">'+cesc(fmt(Number(o.totalThb)))+'</div>'+
       '<div class="items">'+cesc(co('price'))+' '+cesc(fmt(Number(o.priceThb)))+(ship&&o.shipFeeThb!=null?' + '+cesc(co('fee'))+' '+cesc(fmt(Number(o.shipFeeThb))):'')+(o.trackingNo?' · '+cesc(co('track'))+': '+cesc(o.carrier)+' '+cesc(o.trackingNo):'')+(o.cancelNote?' · '+cesc(o.cancelNote):'')+'</div>'+
-      (o.status==='confirmed'||(o.status==='slip'&&!gw)?'<div class="co-pay"><b>'+cesc(co('payTo'))+'</b>\n'+cesc(corders.payInfo||co('noPay'))+'</div>':'')+payPanel(o)+
+      (o.status==='confirmed'||(o.status==='slip'&&!gw)?'<div class="co-pay"><b>'+cesc(co('payTo'))+'</b>\n'+cesc(corders.payInfo||co('noPay'))+qrBox(o)+'</div>':'')+payPanel(o)+
       (coErr[o.id]?'<div class="co-err" role="alert">'+cesc(coErr[o.id])+'</div>':'')+
       (acts.length?'<div class="co-acts">'+acts.join('')+'</div>':'')+'</div>'; }).join('');
 }
