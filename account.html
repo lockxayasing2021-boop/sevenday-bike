@@ -331,6 +331,25 @@ main.wrap{padding-top:8px}
 .co-acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .co-acts .btn{height:40px;padding:0 18px;font-size:14px}
 .co-err{grid-column:1/-1;color:#b00020;font-size:13px;font-weight:600}
+
+.cm-wrap{display:flex;flex-direction:column;gap:10px}
+.cm-hint{font-size:13px;color:var(--grey-600,#666);line-height:1.5}
+.cm-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--grey-300);padding:14px 16px;cursor:pointer;background:#fff;text-align:left;width:100%}
+.cm-row b{display:block;font-size:15px}.cm-row small{display:block;color:#777;margin-top:3px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw}
+.cm-dot{background:#d32f2f;color:#fff;border-radius:10px;font-size:12px;font-weight:700;padding:2px 8px;flex:none}
+.tabs button .cm-dot{margin-left:6px;font-size:11px;padding:1px 6px;vertical-align:middle}
+.cm-box{border:1.5px solid var(--grey-300);display:flex;flex-direction:column;height:min(70vh,560px)}
+.cm-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--grey-300)}
+.cm-top b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cm-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--grey-100)}
+.cm-m{max-width:82%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.cm-m.me{align-self:flex-end;background:#000;color:#fff}.cm-m.shop{align-self:flex-start;background:#fff;border:1px solid var(--grey-300)}
+.cm-m time{display:block;font-size:10.5px;opacity:.6;margin-top:3px}
+.cm-warn{background:#fff3e0;color:#8a4b00;padding:8px 12px;font-size:12.5px;font-weight:600}
+.cm-send{display:flex;gap:8px;padding:10px;border-top:1px solid var(--grey-300)}
+.cm-send textarea{flex:1;font:inherit;padding:9px 12px;border:1.5px solid var(--grey-300);border-radius:10px;resize:none;height:44px;min-height:44px}
+.cm-send .btn{height:44px;padding:0 18px}
+.cm-closed{padding:12px;text-align:center;font-size:13px;color:#777;border-top:1px solid var(--grey-300)}
 .cr-form{display:flex;flex-direction:column;gap:12px;border:1.5px solid var(--grey-300);padding:20px;margin-bottom:24px}
 .cr-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
 .cr-form input:not([type=checkbox]),.cr-form select,.cr-form textarea{font:inherit;font-weight:400;padding:10px 12px;border:1.5px solid var(--grey-300);border-radius:10px;background:#fff}
@@ -362,7 +381,7 @@ main.wrap{padding-top:8px}
 <main class="wrap">
   
   <div class="tabs" role="tablist">
-    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button><button data-t="corders" id="tabCOrders" hidden></button><button data-t="creq" id="tabCReq" hidden></button>
+    <button class="on" data-t="orders">ປະຫວັດການສັ່ງຊື້</button><button data-t="repairs">ປະຫວັດການສ້ອມ</button><button data-t="points">ແຕ້ມສະສົມ</button><button data-t="consign" id="tabConsign" hidden></button><button data-t="corders" id="tabCOrders" hidden></button><button data-t="creq" id="tabCReq" hidden></button><button data-t="msg" id="tabMsg" hidden></button>
   </div>
   <div class="list" id="list"><div class="empty">ກຳລັງໂຫຼດ...</div></div>
 </main>
@@ -410,13 +429,14 @@ function render(){
   if(tab==='consign'){ renderConsign(); return; }
   if(tab==='corders'){ renderCOrders(); return; }
   if(tab==='creq'){ renderCReq(); return; }
+  if(tab==='msg'){ renderMsg(); return; }
   if(tab==='orders') L.innerHTML = data.orders.length ? data.orders.slice().reverse().map(o=>`<div class="order"><div><b>${o.bill_id}</b>${o.status?`<span class="st ${o.status==='ສຳເລັດ'?'done':''}">${o.status}</span>`:''}<div class="meta">${d8(o.date)} · ${o.payment||''}</div></div><div class="amt">${fmt(o.total)}</div><div class="items">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(', ')}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີການສັ່ງຊື້</b><p>ຄຳສັ່ງຊື້ຈາກເວັບ ແລະ ທີ່ຮ້ານ ຈະສະແດງຢູ່ບ່ອນນີ້</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>`;
   if(tab==='repairs') L.innerHTML = data.repairs.length ? data.repairs.slice().reverse().map(r=>`<div class="order"><div><b>${r.bike||'ລົດຖີບ'}</b><span class="st ${/ສຳເລັດ|สำเร็จ|รับรถ|done|complete/i.test(r.status)?'done':''}">${r.status||'-'}</span><div class="meta">${r.job_id} · ${d8(r.date)}</div></div><div class="amt">${r.total?fmt(r.total):''}</div><div class="items">${r.symptoms||''}</div></div>`).join('')
     : `<div class="empty"><b>ຍັງບໍ່ມີປະຫວັດການສ້ອມ</b><p>ຈອງຄິວອອນລາຍ ແລ້ວຕິດຕາມສະຖານະໄດ້ບ່ອນນີ້</p><a class="btn btn-black" href="service.html#book">ຈອງຄິວ Workshop</a></div>`;
   if(tab==='points') L.innerHTML = `<div class="ptsbox"><div><b>${Number(data.points||0).toLocaleString()} ແຕ້ມ</b><small>ແຕ້ມທີ່ມີຕອນນີ້</small></div><div><b>฿1 = 1 ແຕ້ມ</b><small>ໄດ້ທຸກການຊື້ ແລະ ການສ້ອມ</small></div><div><b>ແລກສ່ວນຫຼຸດທີ່ຮ້ານ</b><small>ແຈ້ງພະນັກງານຕອນຊຳລະເງິນ</small></div></div>`;
 }
-document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ tab=b.dataset.t; render(); });
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(tab==='msg'&&b.dataset.t!=='msg'){ cmStop(); cmCur=null; } tab=b.dataset.t; render(); });
 
 /* ── ຂອງຝາກຂາຍຂອງຂ້ອຍ (ສະແດງສະເພາະຜູ້ຝາກ) — consign-web ?op=mine, ບໍ່ມີຂໍ້ມູນຜູ້ຊື້ ── */
 const CW_API='https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/consign-web';
@@ -442,7 +462,7 @@ function renderConsign(){
   const L=$('list'); if(!cons||!cons.consignments||!cons.consignments.length){ L.innerHTML='<div class="empty"><b>'+cesc(ct('none'))+'</b></div>'; return; }
   const tot=(cons.totals||[]).map(t=>'<div><b>'+cmoney(t.held,t.currency)+'</b><small>'+cesc(ct('held'))+'</small></div><div><b>'+cmoney(t.paid,t.currency)+'</b><small>'+cesc(ct('paid'))+'</small></div>').join('');
   L.innerHTML=(tot?'<div class="cs-sum">'+tot+'</div>':'')+cons.consignments.map(c=>
-    '<div class="cs-hd">'+cesc(c.id)+' · '+cesc(ct('recv'))+' '+cesc(c.receivedDate||'')+' · '+cesc(ct('exp'))+' '+cesc(c.expiresDate||'')+(c.noRenew?' · '+cesc(ct('noRenew')):'')+'</div>'+
+    '<div class="cs-hd">'+cesc(c.id)+' · '+cesc(ct('recv'))+' '+cesc(c.receivedDate||'')+' · '+cesc(ct('exp'))+' '+cesc(c.expiresDate||'')+(c.noRenew?' · '+cesc(ct('noRenew')):'')+' <button class="btn btn-line" type="button" style="height:32px;padding:0 12px;font-size:12px" data-msgopen="consignmentId" data-ref="'+cesc(c.id)+'">'+cesc(cm('toShop'))+'</button></div>'+
     (c.items||[]).map(i=>{ const s=i.sale;
       return '<div class="order"><div><b>'+cesc(i.name)+'</b><span class="st '+(i.status==='sold'?'done':'')+'">'+cesc(cst(i.status))+'</span><div class="meta">'+cesc(i.code)+(i.grade?' · '+cesc(i.grade):'')+'</div></div>'+
       '<div class="amt">'+(s?cesc(fmt(Number(s.priceThb))):(i.agreedPrice!=null?cesc(fmt(Number(i.agreedPrice))):''))+'</div>'+
@@ -569,7 +589,7 @@ function renderCReq(){
       '<div class="amt">'+(r.wantPriceThb==null?'':cesc(fmt(Number(r.wantPriceThb))))+'</div>'+
       (r.scheduleNote?'<div class="co-pay">📅 '+cesc(r.scheduleNote)+'</div>':'')+(r.rejectNote?'<div class="co-pay">'+cesc(r.rejectNote)+'</div>':'')+
       (r.consignmentId?'<div class="items">'+cesc(cr('receipt'))+' '+cesc(r.consignmentId)+'</div>':'')+
-      (crErr[r.id]?'<div class="co-err" role="alert">'+cesc(crErr[r.id])+'</div>':'')+(acts.length?'<div class="co-acts">'+acts.join('')+'</div>':'')+'</div>'; };
+      (crErr[r.id]?'<div class="co-err" role="alert">'+cesc(crErr[r.id])+'</div>':'')+(r.status!=='draft'&&r.status!=='cancelled'?'<div class="co-acts"><button class="btn btn-line" type="button" data-msgopen="requestId" data-ref="'+cesc(r.id)+'">'+cesc(cm('toShop'))+'</button></div>':'')+(acts.length?'<div class="co-acts">'+acts.join('')+'</div>':'')+'</div>'; };
   L.innerHTML=form+'<h3 style="margin:0 0 12px">'+cesc(cr('mine'))+'</h3>'+(list.length?list.map(card).join(''):'<div class="empty"><b>'+cesc(cr('none'))+'</b></div>');
 }
 async function crPhotos(id,files,from,total){
@@ -613,6 +633,71 @@ document.addEventListener('change',async e=>{
   crBusy=false; renderCReq();
 });
 document.addEventListener('langchange',()=>{ const b=$('tabCReq'); if(b&&!b.hidden){ b.textContent=cr('tab'); if(tab==='creq'&&!crBusy) renderCReq(); } });
+
+/* ── ຂໍ້ຄວາມຫາຮ້ານ (supabase/122) — ລູກຄ້າລົມກັບ "ຮ້ານ" ເທົ່ານັ້ນ; ຂໍ້ມູນຕິດຕໍ່ຖືກຊ່ອນ + ເຕືອນ ── */
+const CM={
+  tab:{lo:'ຂໍ້ຄວາມ',th:'ข้อความ',en:'Messages'},
+  hint:{lo:'ສົນທະນາກັບຮ້ານເທົ່ານັ້ນ — ເພື່ອຄວາມປອດໄພ ກະລຸນາຢ່າສົ່ງເບີໂທ/ລິ້ງ/ເລກບັນຊີ ແລະ ຢ່າຕົກລົງຊື້ຂາຍນອກຮ້ານ',th:'คุยกับร้านเท่านั้น — เพื่อความปลอดภัย โปรดอย่าส่งเบอร์โทร/ลิงก์/เลขบัญชี และอย่าตกลงซื้อขายนอกร้าน',en:'You chat with the shop only. For your safety please do not share phone numbers, links or bank numbers, and never deal outside the shop.'},
+  none:{lo:'ຍັງບໍ່ມີຂໍ້ຄວາມ — ກົດ "ຖາມຮ້ານ" ໃນໜ້າສິນຄ້າຝາກຂາຍ ຫຼື ໃນຄຳຂໍ/ໃບຮັບຝາກຂອງທ່ານ',th:'ยังไม่มีข้อความ — กด "ถามร้าน" ในหน้าสินค้าฝากขาย หรือในคำขอ/ใบรับฝากของคุณ',en:'No messages yet — use "Ask the shop" on an item page, or on your request/receipt'},
+  toShop:{lo:'ສົ່ງຂໍ້ຄວາມຫາຮ້ານ',th:'ส่งข้อความถึงร้าน',en:'Message the shop'},
+  back:{lo:'← ກັບຄືນ',th:'← กลับ',en:'← Back'},ph:{lo:'ພິມຂໍ້ຄວາມ...',th:'พิมพ์ข้อความ...',en:'Type a message...'},send:{lo:'ສົ່ງ',th:'ส่ง',en:'Send'},
+  closed:{lo:'ຫ້ອງນີ້ປິດແລ້ວ — ເປີດຫ້ອງໃໝ່ໄດ້ຈາກໜ້າສິນຄ້າ/ຄຳຂໍ',th:'ห้องนี้ปิดแล้ว — เปิดห้องใหม่ได้จากหน้าสินค้า/คำขอ',en:'This chat is closed — open a new one from the item page or your request'},
+  shop:{lo:'ຮ້ານ',th:'ร้าน',en:'Shop'},bad:{lo:'ສົ່ງບໍ່ໄດ້',th:'ส่งไม่ได้',en:'Could not send'},
+  warn:{lo:'ເພື່ອຄວາມປອດໄພ ຕິດຕໍ່ຜ່ານຮ້ານເທົ່ານັ້ນ — ຂໍ້ມູນຕິດຕໍ່ໃນຂໍ້ຄວາມນີ້ຖືກຊ່ອນຈາກພະນັກງານ',th:'เพื่อความปลอดภัย โปรดติดต่อผ่านร้านเท่านั้น — ข้อมูลติดต่อในข้อความนี้ถูกซ่อนจากพนักงาน',en:'For your safety please contact us through the shop only — the contact details in your last message were hidden from staff'},
+  itemTag:{lo:'ຜູ້ຊື້',th:'ผู้ซื้อ',en:'Buyer'},cnTag:{lo:'ຜູ້ຝາກ',th:'ผู้ฝาก',en:'Consignor'}
+};
+const cmL=()=>typeof sdLang==='function'?sdLang():'lo';
+const cm=k=>(CM[k]||{})[cmL()]||(CM[k]||{}).lo||k;
+let cmThreads=null, cmCur=null, cmMsgs=[], cmLast=0, cmBusy=false, cmTimer=null, cmWarn='', cmErr='';
+const cmTime=d=>{ try{ return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(_){ return ''; } };
+function cmUnread(){ return ((cmThreads&&cmThreads.threads)||[]).reduce((n,t)=>n+(Number(t.unread)||0),0); }
+function cmTab(){ const b=$('tabMsg'); if(!b) return; b.hidden=false; const n=cmUnread(); b.innerHTML=cesc(cm('tab'))+(n?'<span class="cm-dot">'+n+'</span>':''); }
+async function loadMsg(){ try{ cmThreads=await coPost('threads',{}); }catch(_){ cmThreads=cmThreads||{threads:[]}; } cmTab(); if(tab==='msg'&&!cmCur) renderMsg(); }
+function cmStop(){ if(cmTimer){ clearInterval(cmTimer); cmTimer=null; } }
+function cmPoll(){ cmStop(); cmTimer=setInterval(async()=>{ if(tab!=='msg'||!cmCur||document.hidden||cmBusy) return; try{ await cmFetch(false); }catch(_){} },20000); }
+async function cmFetch(reset){
+  if(reset){ cmMsgs=[]; cmLast=0; }
+  const j=await coPost('thread_messages',{thread:cmCur.id,after:cmLast}); cmCur=j.thread;
+  const add=j.messages||[]; if(add.length){ cmMsgs=cmMsgs.concat(add); cmLast=add[add.length-1].id; }
+  if(reset||add.length) drawChat(true);
+  const l=(cmThreads&&cmThreads.threads)||[]; const t=l.find(x=>x.id===cmCur.id); if(t){ t.unread=0; cmTab(); }
+}
+async function cmOpenThread(id){
+  const l=(cmThreads&&cmThreads.threads)||[]; cmCur=l.find(x=>x.id===id)||{id:id}; cmWarn=''; cmErr='';
+  try{ await cmFetch(true); }catch(er){ if(er.message!=='SESSION_EXPIRED'){ cmErr=er.message; } }
+  cmPoll(); render();
+}
+function drawChat(keepBox){
+  if(tab!=='msg'||!cmCur) return; const L=$('list'); const open=cmCur.status!=='closed';
+  const prev=$('cmMsgs'), near=!prev||prev.scrollHeight-prev.scrollTop-prev.clientHeight<80, draft=($('cmIn')||{}).value||'';
+  L.innerHTML='<div class="cm-box"><div class="cm-top"><button class="btn btn-line" type="button" style="height:34px;padding:0 14px;font-size:13px" data-cmback="1">'+cesc(cm('back'))+'</button><b>'+cesc(cmCur.title||'')+'</b></div>'+
+    (cmWarn?'<div class="cm-warn" role="alert">'+cesc(cmWarn)+'</div>':'')+
+    '<div class="cm-msgs" id="cmMsgs">'+cmMsgs.map(m=>'<div class="cm-m '+(m.sender==='customer'?'me':'shop')+'">'+cesc(m.body)+'<time>'+(m.sender==='customer'?'':cesc(cm('shop'))+' · ')+cesc(cmTime(m.createdAt))+'</time></div>').join('')+'</div>'+
+    (cmErr?'<div class="co-err" role="alert" style="padding:6px 14px">'+cesc(cmErr)+'</div>':'')+
+    (open?'<form class="cm-send" id="cmForm"><textarea id="cmIn" maxlength="1000" placeholder="'+cesc(cm('ph'))+'"></textarea><button class="btn btn-black" type="submit">'+cesc(cm('send'))+'</button></form>':'<div class="cm-closed">'+cesc(cm('closed'))+'</div>')+'</div>';
+  const box=$('cmMsgs'); if(box&&near) box.scrollTop=box.scrollHeight; const inp=$('cmIn'); if(inp&&draft) inp.value=draft;
+}
+function renderMsg(){
+  const L=$('list'); if(cmCur){ drawChat(); return; }
+  const l=(cmThreads&&cmThreads.threads)||[];
+  L.innerHTML='<div class="cm-wrap"><div class="cm-hint">'+cesc(cm('hint'))+'</div>'+(l.length?l.map(t=>'<button type="button" class="cm-row" data-cmth="'+cesc(t.id)+'"><div><b>'+cesc(t.title||'')+'</b><small>'+cesc(t.last||'')+'</small></div>'+(Number(t.unread)?'<span class="cm-dot">'+t.unread+'</span>':'')+'</button>').join(''):'<div class="empty"><b>'+cesc(cm('none'))+'</b></div>')+'</div>';
+}
+document.addEventListener('click',async e=>{
+  const th=e.target.closest('[data-cmth]'); if(th){ await cmOpenThread(th.dataset.cmth); return; }
+  if(e.target.closest('[data-cmback]')){ cmStop(); cmCur=null; cmWarn=''; cmErr=''; await loadMsg(); render(); return; }
+  const op=e.target.closest('[data-msgopen]'); if(op&&!cmBusy){ cmBusy=true;
+    try{ const r=await coPost('thread_open',{kind:'consignor',[op.dataset.msgopen]:op.dataset.ref}); await loadMsg(); tab='msg'; cmCur=r.thread; cmWarn=''; cmErr=''; await cmFetch(true); cmPoll(); render(); }
+    catch(er){ if(er.message!=='SESSION_EXPIRED') alert(er.message); } cmBusy=false; }
+});
+document.addEventListener('submit',async e=>{
+  if(e.target.id!=='cmForm') return; e.preventDefault(); if(cmBusy) return; const inp=$('cmIn'), body=inp.value.trim(); if(!body) return;
+  cmBusy=true; cmErr=''; cmWarn='';
+  try{ const r=await coPost('thread_send',{thread:cmCur.id,body}); inp.value=''; if(r.warning) cmWarn=cm('warn'); await cmFetch(false); drawChat(true); }
+  catch(er){ if(er.message!=='SESSION_EXPIRED'){ cmErr=er.message; drawChat(true); } }
+  cmBusy=false;
+});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&tab==='msg'&&cmCur&&!cmBusy) cmFetch(false).catch(()=>{}); });
+document.addEventListener('langchange',()=>{ cmTab(); if(tab==='msg'&&!cmBusy) renderMsg(); });
 function logout(){ sessionStorage.removeItem('sd_user'); location.href='login.html'; }
 async function load(){
   try{ const d=await apiPost('getCustomerOrders',{token:user.token}); data={orders:d.orders||[],repairs:d.repairs||[],points:d.points??user.points}; }
@@ -620,7 +705,7 @@ async function load(){
   render();
 }
 document.addEventListener('currencychange',()=>{ if(tab==='consign') renderConsign(); else if(tab==='corders') renderCOrders(); else if(tab==='creq'&&!crBusy) renderCReq(); else render(); });
-if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); const tb=$('tabCReq'); tb.hidden=false; tb.textContent=cr('tab'); if(new URLSearchParams(location.search).get('tab')==='creq'){ tab='creq'; } loadCReq(); } }
+if(user){ load(); if(user.token){ loadConsign(); loadCOrders(); const tb=$('tabCReq'); tb.hidden=false; tb.textContent=cr('tab'); if(new URLSearchParams(location.search).get('tab')==='creq'){ tab='creq'; } loadCReq(); loadMsg(); const qs=new URLSearchParams(location.search); if(qs.get('tab')==='msg'){ tab='msg'; render(); const th=qs.get('th'); if(th&&/^[0-9a-f-]{36}$/.test(th)) coPost('threads',{}).then(j=>{ cmThreads=j; cmTab(); cmOpenThread(th); }).catch(()=>{}); } } }
 
 </script>
 </body>

@@ -141,6 +141,7 @@ const TX = {
   photo: { lo: 'ຮູບ', th: 'รูป', en: 'Photo' },
   orderB: { lo: 'ສັ່ງຊື້ຊິ້ນນີ້', th: 'สั่งซื้อชิ้นนี้', en: 'Order this item' },
   loginB: { lo: 'ເຂົ້າສູ່ລະບົບເພື່ອສັ່ງຊື້', th: 'เข้าสู่ระบบเพื่อสั่งซื้อ', en: 'Log in to order' },
+  askB: { lo: 'ຖາມຮ້ານກ່ຽວກັບຊິ້ນນີ້', th: 'ถามร้านเกี่ยวกับชิ้นนี้', en: 'Ask the shop about this item' }, askErr: { lo: 'ເປີດແຊັດບໍ່ໄດ້', th: 'เปิดแชตไม่ได้', en: 'Could not open the chat' },
   oTitle: { lo: 'ສັ່ງຊື້', th: 'สั่งซื้อ', en: 'Order' }, oHow: { lo: 'ຮັບຂອງແນວໃດ', th: 'รับของอย่างไร', en: 'How do you want to receive it?' },
   oPickup: { lo: 'ຮັບທີ່ຮ້ານ', th: 'รับที่ร้าน', en: 'Pick up in store' }, oShip: { lo: 'ສົ່ງຕ່າງແຂວງ', th: 'ส่งต่างจังหวัด', en: 'Ship to me' },
   oName: { lo: 'ຊື່ຜູ້ຮັບ', th: 'ชื่อผู้รับ', en: 'Recipient name' }, oPhone: { lo: 'ເບີໂທ', th: 'เบอร์โทร', en: 'Phone' }, oAddr: { lo: 'ທີ່ຢູ່ຈັດສົ່ງ', th: 'ที่อยู่จัดส่ง', en: 'Shipping address' },
@@ -203,7 +204,7 @@ function openItem(code, keep) {
     (i.grade ? '<div><span class="cw-gtag">' + esc(tx('grade')) + ' ' + esc(i.grade) + '</span></div>' : '') +
     (i.note ? '<div class="cw-flaw"><small>' + esc(tx('cond')) + '</small>' + esc(i.note) + '</div>' : '') +
     '<div class="cw-big">' + (i.sold ? '<s style="color:var(--grey-600)">' + esc(fmt(Number(i.priceThb))) + '</s>' : esc(fmt(Number(i.priceThb)))) + '</div>' +
-    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : (me() ? '<button type="button" class="btn btn-black" data-order="' + esc(i.code) + '">' + esc(tx('orderB')) + '</button>' : '<a class="btn btn-black" href="login.html">' + esc(tx('loginB')) + '</a>') + '<a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
+    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : (me() ? '<button type="button" class="btn btn-black" data-order="' + esc(i.code) + '">' + esc(tx('orderB')) + '</button>' : '<a class="btn btn-black" href="login.html">' + esc(tx('loginB')) + '</a>') + (me() ? '<button type="button" class="btn btn-line" data-ask="' + esc(i.code) + '">' + esc(tx('askB')) + '</button><div class="cw-err" id="cwAskErr" role="alert"></div>' : '') + '<a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
     '</div></div>';
   $('cwModal').classList.add('open'); document.body.style.overflow = 'hidden';
 }
@@ -218,6 +219,11 @@ async function cwPost(op, body) {
   if (r.status === 401) { sessionStorage.removeItem('sd_user'); location.href = 'login.html'; throw new Error('SESSION_EXPIRED'); }
   if (!r.ok || !j.ok) throw new Error(j.message || tx('oErr'));
   return j;
+}
+async function askShop(btn) {
+  if (btn.disabled) return; btn.disabled = true; const err = $('cwAskErr'); if (err) err.textContent = '';
+  try { const r = await cwPost('thread_open', { token: me().token, kind: 'item', code: btn.dataset.ask }); location.href = 'account.html?tab=msg&th=' + encodeURIComponent(r.thread.id); }
+  catch (er) { if (err) err.textContent = er.message || tx('askErr'); btn.disabled = false; }
 }
 function orderForm(code) {
   const i = (S.items || []).find(x => x.code === code), u = me(); if (!i || !u) return;
@@ -253,6 +259,7 @@ function draw2() { const keep = $('cwModal').innerHTML; draw(); $('cwModal').inn
 
 document.addEventListener('click', e => {
   const od = e.target.closest('[data-order]'); if (od) { orderForm(od.dataset.order); return; }
+  const ak = e.target.closest('[data-ask]'); if (ak) { askShop(ak); return; }
   const f = e.target.closest('[data-f]'); if (f) { S.filter = f.dataset.f; draw(); return; }
   const c = e.target.closest('.cw-card'); if (c) { openItem(c.dataset.code); return; }
   const im = e.target.closest('[data-img]'); if (im) { S.img = Number(im.dataset.img); openItem(S.cur, true); return; }
