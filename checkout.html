@@ -363,7 +363,8 @@ main.wrap{padding-top:8px}
         </div>
       </section>
       <section class="step"><h2><i>3</i>ການຊຳລະເງິນ</h2>
-        <div class="stack">
+        <div class="alert" id="payConsign" style="display:none;margin-bottom:12px"><b>ສິນຄ້າຝາກຂາຍ</b> ຈ່າຍຜ່ານ QR ທະນາຄານ LDB (ສະແກນຫຼັງກົດຢືນຢັນ) ແລ້ວສົ່ງສະລິບທາງ WhatsApp — ແອດມິນກວດສະລິບ ແລ້ວຕິດຕໍ່ນັດຮັບທີ່ຮ້ານ ຫຼື ຈັດສົ່ງ · ຊິ້ນທີ່ບໍ່ຊຳລະພາຍໃນ 48 ຊົ່ວໂມງຈະຖືກປ່ອຍກັບໄປຂາຍ</div>
+        <div class="stack" id="payStack">
           <label class="choice"><input type="radio" name="pay" value="ໂອນ BCEL One" checked><div><b>ສະແກນ QR / ໂອນເງິນ</b><small>ສະແກນ QR OnePay (ທຸກທະນາຄານຜ່ານ LAPNet) ຫຼື ໂອນເຂົ້າບັນຊີ — ສະແດງ QR ຫຼັງກົດຢືນຢັນ</small></div></label>
           <label class="choice"><input type="radio" name="pay" value="ຈ່າຍທີ່ຮ້ານ"><div><b>ຈ່າຍທີ່ຮ້ານ ຕອນຮັບສິນຄ້າ</b><small>ເງິນສົດ LAK, THB ຫຼື USD</small></div></label>
           <div class="field"><label for="notes">ໝາຍເຫດເຖິງຮ້ານ (ບໍ່ບັງຄັບ)</label><textarea id="notes" placeholder="ເຊັ່ນ ເວລາທີ່ຈະມາຮັບ"></textarea></div>
@@ -405,13 +406,18 @@ const PAY_QR='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAjAAAAItBAMAAADVl10Z
 const COUPONS={SEVENDAY10:0.10};
 let coupon=null; try{coupon=sessionStorage.getItem('sd_coupon');}catch(_){}
 const $=id=>document.getElementById(id);
-function totals(){ const c=getCart(); const sub=c.reduce((s,i)=>s+i.price*i.qty,0); const d=coupon&&COUPONS[coupon]?Math.round(sub*COUPONS[coupon]):0; return {sub,d,total:sub-d}; }
+const LDB_QR='assets/ldb-qr.jpg', CW_API='https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/consign-web';
+function totals(){ const c=getCart(); const nrm=c.filter(i=>!i.consign), con=c.filter(i=>i.consign);
+  const sub=nrm.reduce((s,i)=>s+i.price*i.qty,0), subC=con.reduce((s,i)=>s+i.price,0);
+  const d=nrm.length&&coupon&&COUPONS[coupon]?Math.round(sub*COUPONS[coupon]):0;   // ຄູປ໋ອງໃຊ້ກັບສິນຄ້າທົ່ວໄປເທົ່ານັ້ນ (ບໍ່ໃຊ້ກັບຂອງຝາກຂາຍ)
+  return {sub,subC,d,totalN:sub-d,total:sub-d+subC,hasN:nrm.length>0,hasC:con.length>0}; }
 function renderSum(){
   const c=getCart();
   if(!c.length){ $('main').innerHTML='<div class="done"><h1>ກະຕ່າຍັງວ່າງຢູ່</h1><p style="color:var(--grey-600);margin-bottom:24px">ເລືອກສິນຄ້າກ່ອນ ແລ້ວຈຶ່ງສັ່ງຊື້</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>'; return; }
-  $('items').innerHTML=c.map(i=>`<div class="it"><div class="th">${i.image?`<img src="${i.image}" alt="">`:`<svg viewBox="0 0 120 70"><use href="${iconFor((i.category||'')+' '+i.name)}"/></svg>`}<span>${i.qty}</span></div><b>${i.name}</b><span>${fmt(i.price*i.qty)}</span></div>`).join('');
+  $('items').innerHTML=c.map(i=>`<div class="it"><div class="th">${i.image?`<img src="${i.image}" alt="">`:`<svg viewBox="0 0 120 70"><use href="${iconFor((i.category||'')+' '+i.name)}"/></svg>`}<span>${i.qty}</span></div><b>${i.name}${i.consign?' <small style="border:1px solid #000;padding:0 4px;font-size:10px">ຝາກຂາຍ</small>':''}</b><span>${fmt(i.price*i.qty)}</span></div>`).join('');
   const t=totals();
-  $('totals').innerHTML=`<div class="r" style="margin-top:10px"><span>ລາຄາສິນຄ້າ</span><span>${fmt(t.sub)}</span></div>${t.d?`<div class="r"><span>ສ່ວນຫຼຸດ ${coupon}</span><span>−${fmt(t.d)}</span></div>`:''}<div class="r"><span>ຄ່າສົ່ງ</span><span id="shipTxt">ຟຣີ</span></div><div class="r t"><span>ລວມ</span><span>${fmt(t.total)}</span></div><div style="font-size:12px;color:var(--grey-600);text-align:right">${'≈ '+fmtIn(t.total, currency==='LAK'?'THB':'LAK')}</div>`;
+  $('totals').innerHTML=`${t.hasN?`<div class="r" style="margin-top:10px"><span>ສິນຄ້າທົ່ວໄປ</span><span>${fmt(t.sub)}</span></div>`:''}${t.d?`<div class="r"><span>ສ່ວນຫຼຸດ ${coupon}</span><span>−${fmt(t.d)}</span></div>`:''}${t.hasC?`<div class="r" style="margin-top:${t.hasN?0:10}px"><span>ສິນຄ້າຝາກຂາຍ</span><span>${fmt(t.subC)}</span></div>`:''}<div class="r"><span>ຄ່າສົ່ງ</span><span id="shipTxt">ຟຣີ</span></div><div class="r t"><span>ລວມ</span><span>${fmt(t.total)}</span></div><div style="font-size:12px;color:var(--grey-600);text-align:right">${'≈ '+fmtIn(t.total, currency==='LAK'?'THB':'LAK')}</div>${t.hasC&&t.hasN?`<div style="font-size:12px;color:var(--grey-600);margin-top:8px">ຈ່າຍ 2 ຍອດແຍກກັນ: ສິນຄ້າທົ່ວໄປ ${fmt(t.totalN)} (QR BCEL) · ສິນຄ້າຝາກຂາຍ ${fmt(t.subC)} (QR LDB)</div>`:''}`;
+  $('payStack').style.display=t.hasN?'':'none'; $('payConsign').style.display=t.hasC?'block':'none';
   shipTxt();
 }
 function shipTxt(){ const el=$('shipTxt'); if(el) el.textContent=document.querySelector('[name=del]:checked').value==='ຮັບທີ່ຮ້ານ'?'ຟຣີ':'ແຈ້ງພາຍຫຼັງ'; }
@@ -426,35 +432,79 @@ function validate(){
   if(bad) document.querySelector('.invalid input,.invalid textarea')?.focus();
   return !bad;
 }
+async function cwPost(op, body){
+  const r=await fetch(CW_API+'?op='+op,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok) throw new Error(j.message||'ສັ່ງຊື້ບໍ່ສຳເລັດ ກະລຸນາລອງໃໝ່ ຫຼື ທັກ WhatsApp');
+  return j;
+}
 async function placeOrder(){
   if(!validate()) return;
   const btn=$('placeBtn'), msg=$('stockMsg');
   btn.disabled=true; btn.textContent='ກຳລັງກວດສະຕັອກ...'; msg.hidden=true;
-  const cart=getCart();
+  const cart=getCart(), nrm=cart.filter(i=>!i.consign), con=cart.filter(i=>i.consign);
+  const fail=(h)=>{ msg.hidden=false; msg.innerHTML=h; btn.disabled=false; btn.textContent='ຢືນຢັນຄຳສັ່ງຊື້'; };
   try{
-    const r=await fetch(`${API_URL}?action=checkStock&secret=${API_SECRET}&skus=${cart.map(i=>encodeURIComponent(i.sku)).join(',')}`);
-    const j=await r.json(); const list=j.stock||j.data?.stock||j.data||[]; const m={}; (Array.isArray(list)?list:[]).forEach(s=>m[s.sku]=Number(s.stock));
-    const short=cart.filter(i=>m[i.sku]!=null && m[i.sku]<i.qty);
-    if(short.length){ msg.hidden=false; msg.innerHTML='ສິນຄ້າບໍ່ພໍ: '+short.map(i=>`<b>${i.name}</b>`).join(', ')+' — <a href="cart.html" style="text-decoration:underline">ປັບຈຳນວນໃນກະຕ່າ</a>'; btn.disabled=false; btn.textContent='ຢືນຢັນຄຳສັ່ງຊື້'; return; }
+    if(nrm.length){
+      const r=await fetch(`${API_URL}?action=checkStock&secret=${API_SECRET}&skus=${nrm.map(i=>encodeURIComponent(i.sku)).join(',')}`);
+      const j=await r.json(); const list=j.stock||j.data?.stock||j.data||[]; const m={}; (Array.isArray(list)?list:[]).forEach(s=>m[s.sku]=Number(s.stock));
+      const short=nrm.filter(i=>m[i.sku]!=null && m[i.sku]<i.qty);
+      if(short.length){ return fail('ສິນຄ້າບໍ່ພໍ: '+short.map(i=>`<b>${i.name}</b>`).join(', ')+' — <a href="cart.html" style="text-decoration:underline">ປັບຈຳນວນໃນກະຕ່າ</a>'); }
+    }
   }catch(_){}
-  btn.textContent='ກຳລັງບັນທຶກຄຳສັ່ງຊື້...';
-  const t=totals(), del=document.querySelector('[name=del]:checked').value, pay=document.querySelector('[name=pay]:checked').value;
-  const k = t.d ? 1-COUPONS[coupon] : 1;
-  try{
-    const res=await apiPost('createSale',{
-      items: cart.map(i=>({sku:i.sku,name:i.name,qty:i.qty,price_thb:Math.round(i.price*k)})),
-      customer:{name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim()},
-      payment_method:pay, delivery_method:del+($('addr').value.trim()?' — '+$('addr').value.trim():''),
-      currency, coupon: t.d ? coupon : '', notes:[$('notes').value.trim(), coupon?'ລະຫັດສ່ວນຫຼຸດ: '+coupon:''].filter(Boolean).join(' | ')
-    });
-    setCart([]); try{sessionStorage.removeItem('sd_coupon');}catch(_){}
-    showDone(res.bill_id, pay, t.total);
-  }catch(e){
-    msg.hidden=false; msg.innerHTML=`ບັນທຶກຄຳສັ່ງຊື້ບໍ່ສຳເລັດ (${e.message}). ລອງອີກຄັ້ງ ຫຼື <a data-shop="whatsapp" style="text-decoration:underline">ສົ່ງ WhatsApp ຫາຮ້ານ</a>`; fillShop();
-    btn.disabled=false; btn.textContent='ຢືນຢັນຄຳສັ່ງຊື້';
+  const t=totals(), del=document.querySelector('[name=del]:checked').value, pay=t.hasN?document.querySelector('[name=pay]:checked').value:'';
+  const ship = del!=='ຮັບທີ່ຮ້ານ';
+  // 1) ຂອງຝາກຂາຍກ່ອນ (ລັອກຊິ້ນ) — ຖ້າຊິ້ນໃດຫຼຸດ ຍັງບໍ່ສ້າງຫຍັງ
+  let cons=null;
+  if(con.length){
+    btn.textContent='ກຳລັງລັອກສິນຄ້າຝາກຂາຍ...';
+    try{
+      cons=await cwPost('guest_order',{items:con.map(i=>i.sku),method:ship?'ship':'pickup',name:$('name').value.trim(),phone:$('phone').value.trim(),address:ship?$('addr').value.trim():''});
+    }catch(e){
+      return fail(`${e.message} — <a href="cart.html" style="text-decoration:underline">ກັບໄປກະຕ່າ</a>`);
+    }
   }
+  // 2) ບິນສິນຄ້າທົ່ວໄປ — ຖ້າບໍ່ສຳເລັດ ຍົກເລີກໃບຝາກຂາຍທີ່ເພິ່ງລັອກ
+  let bill=null;
+  if(nrm.length){
+    btn.textContent='ກຳລັງບັນທຶກຄຳສັ່ງຊື້...';
+    const k = t.d ? 1-COUPONS[coupon] : 1;
+    const refs = cons ? 'ຄູ່ກັບອໍເດີຝາກຂາຍ '+cons.orders.map(o=>o.id).join(', ') : '';
+    try{
+      const res=await apiPost('createSale',{
+        items: nrm.map(i=>({sku:i.sku,name:i.name,qty:i.qty,price_thb:Math.round(i.price*k)})),
+        customer:{name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim()},
+        payment_method:pay, delivery_method:del+($('addr').value.trim()?' — '+$('addr').value.trim():''),
+        currency, coupon: t.d ? coupon : '', notes:[$('notes').value.trim(), coupon&&t.d?'ລະຫັດສ່ວນຫຼຸດ: '+coupon:'', refs].filter(Boolean).join(' | ')
+      });
+      bill=res.bill_id;
+    }catch(e){
+      if(cons){ try{ await cwPost('guest_cancel',{phone:$('phone').value.trim(),orders:cons.orders.map(o=>o.id)}); }catch(_){ /* ແອດມິນຈະເຫັນງານຄ້າງ ແລະ ລະບົບປ່ອຍເອງໃນ 48 ຊມ. */ } }
+      return fail(`ບັນທຶກຄຳສັ່ງຊື້ບໍ່ສຳເລັດ (${e.message}). ${cons?'ຍົກເລີກການລັອກສິນຄ້າຝາກຂາຍໃຫ້ແລ້ວ. ':''}ລອງອີກຄັ້ງ ຫຼື <a data-shop="whatsapp" style="text-decoration:underline">ສົ່ງ WhatsApp ຫາຮ້ານ</a>`);
+    }
+  }
+  setCart([]); try{sessionStorage.removeItem('sd_coupon');}catch(_){}
+  showDone(bill,pay,t.totalN,cons,t);
 }
-function showDone(bill,pay,total){
+function consignCard(cons,t){
+  const ids=cons.orders.map(o=>o.id).join(', ');
+  const wa='https://wa.me/'+SHOP.whatsapp+'?text='+encodeURIComponent('ສະລິບໂອນເງິນ ສິນຄ້າຝາກຂາຍ ອໍເດີ '+ids);
+  return `<div style="text-align:left;border:1px solid #000;padding:16px;margin:16px 0"><b>ສິນຄ້າຝາກຂາຍ — ອໍເດີ ${ids}</b>
+   <ol style="margin:8px 0 0 18px;line-height:1.7"><li><b>ສະແກນ QR LDB ເພື່ອຈ່າຍ ${fmt(t.subC)}</b> <small>(≈ ${fmtIn(t.subC,currency==='LAK'?'THB':'LAK')})</small></li></ol>
+   <div class="qrbox"><img src="${LDB_QR}" alt="QR ຊຳລະເງິນ LDB — SEVENDAY BIKE" width="260" style="max-width:100%;height:auto"><div><b>SEVENDAY BIKE · LDB</b><br>ຍອດ: <b>${fmt(t.subC)}</b><br><small>ໃສ່ຍອດເງິນເອງຕອນໂອນ (QR ບໍ່ລະບຸຍອດ)</small></div></div>
+   <ol start="2" style="margin:8px 0 0 18px;line-height:1.7"><li>ຈ່າຍແລ້ວ ສົ່ງສະລິບທາງ <a href="${wa}" target="_blank" rel="noopener" style="text-decoration:underline;font-weight:700">WhatsApp</a></li>
+   <li>ແອດມິນກວດສະລິບ ແລ້ວຕິດຕໍ່ນັດ${cons.orders[0]&&cons.orders[0].method==='ship'?'ຈັດສົ່ງ ແລະ ແຈ້ງຄ່າສົ່ງ':'ຮັບທີ່ຮ້ານ'}</li>
+   <li>ຊິ້ນຝາກຂາຍຖືກລັອກໃຫ້ທ່ານ ${cons.holdHours||48} ຊົ່ວໂມງ — ຖ້າບໍ່ໂອນ ລະບົບຈະປ່ອຍກັບໄປຂາຍ</li></ol></div>`;
+}
+function showDone(bill,pay,total,cons,t){
+  if(!bill && cons){   // ມີສະເພາະຂອງຝາກຂາຍ
+    scrollTo(0,0);
+    $('main').innerHTML=`<div class="done"><div class="ok">✓</div><h1>ໄດ້ຮັບຄຳສັ່ງຊື້ແລ້ວ</h1>${consignCard(cons,t)}<a class="btn btn-black" href="index.html">ກັບໜ້າຫຼັກ</a></div>`; return;
+  }
+  showDoneNormal(bill,pay,total);
+  if(cons){ const d=document.querySelector('#main .done'); const a=d&&d.querySelector('a.btn-black'); if(d&&a) a.insertAdjacentHTML('beforebegin',consignCard(cons,t)); }
+}
+function showDoneNormal(bill,pay,total){
   scrollTo(0,0);
   $('main').innerHTML=`<div class="done"><div class="ok">✓</div><h1>ໄດ້ຮັບຄຳສັ່ງຊື້ແລ້ວ</h1><p>ເລກທີ່ຄຳສັ່ງຊື້ຂອງທ່ານ</p><div class="bill">${bill||'—'}</div>
    <ol><li>ຮ້ານຈະໂທ ຫຼື WhatsApp ຢືນຢັນພາຍໃນ 2 ຊົ່ວໂມງ (ເວລາເປີດຮ້ານ)</li>${pay.includes('BCEL')?`<li><b>ສະແກນ QR ເພື່ອຈ່າຍ ₭${Math.round(total*THB_TO_LAK).toLocaleString()}</b> (OnePay / ທຸກທະນາຄານຜ່ານ LAPNet)

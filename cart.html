@@ -307,6 +307,7 @@ main.wrap{padding-top:8px}
 .summary h2{font-size:20px;font-weight:800;margin-bottom:16px}
 .row{display:flex;justify-content:space-between;padding:8px 0;font-size:15px}
 .row.total{border-top:2px solid #000;margin-top:10px;padding-top:16px;font-weight:800;font-size:20px}
+.tag-cons{display:inline-block;font-size:11px;font-weight:700;border:1px solid #000;padding:1px 6px;margin-left:4px;vertical-align:middle;letter-spacing:.2px}
 .coupon{display:flex;margin:16px 0}
 .coupon input{flex:1;height:44px;border:1px solid #000;border-right:none;padding:0 12px;font:inherit;min-width:0}
 .coupon button{padding:0 16px;background:#000;color:#fff;font-weight:700}
@@ -371,7 +372,16 @@ function subscribe(e){ e.preventDefault(); e.target.reset(); toast('ລົງທ
 </script>
 <script>
 const COUPONS = { SEVENDAY10:0.10 };  // ຕົວຢ່າງ — ແກ້ໄຂໄດ້ຕາມໂປຣໂມຊັນຈິງ
-let coupon=null, stockMap={};
+let coupon=null, stockMap={}, consignGone=new Set();
+const CW_API='https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/consign-web';
+async function checkConsign(){
+  const mine=getCart().filter(i=>i.consign); if(!mine.length) return;
+  try{
+    const r=await fetch(CW_API+'?op=list'); const j=await r.json(); if(!r.ok||!j.ok) return;
+    const live=new Set((j.items||[]).filter(i=>!i.sold).map(i=>i.code));
+    consignGone=new Set(mine.filter(i=>!live.has(i.sku)).map(i=>i.sku)); render();
+  }catch(_){}
+}
 try{ coupon=sessionStorage.getItem('sd_coupon'); }catch(_){}
 
 function render(){
@@ -382,21 +392,33 @@ function render(){
     root.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 4h2l2.4 11h11L21 8H7"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
       <h2>ກະຕ່າຍັງວ່າງຢູ່</h2><p>ເລືອກລົດຖີບ ຫຼື ອຸປະກອນ ແລ້ວກົດ "ໃສ່ກະຕ່າ"</p><a class="btn btn-black" href="catalogue.html">ເລືອກຊື້ສິນຄ້າ</a></div>`; return;
   }
-  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0), disc=coupon&&COUPONS[coupon]?Math.round(sub*COUPONS[coupon]):0;
-  root.innerHTML=`<div class="cart"><div>${cart.map((i,k)=>{
+  const normal=cart.filter(i=>!i.consign), cons=cart.filter(i=>i.consign);
+  const sub=normal.reduce((s,i)=>s+i.price*i.qty,0), subC=cons.reduce((s,i)=>s+i.price,0), disc=coupon&&COUPONS[coupon]?Math.round(sub*COUPONS[coupon]):0;
+  const lineHtml=(i,k)=>{
+      if(i.consign){
+        const gone = consignGone.has(i.sku);
+        return `<div class="line">
+        <a class="thumb" href="consign.html?code=${encodeURIComponent(i.sku)}">${i.image?`<img src="${i.image}" alt="">`:`<svg viewBox="0 0 120 70"><use href="${iconFor((i.category||'')+' '+i.name)}"/></svg>`}</a>
+        <div><h3><a href="consign.html?code=${encodeURIComponent(i.sku)}">${i.name}</a> <span class="tag-cons">ຝາກຂາຍ${i.grade?' · ເກຣດ '+i.grade:''}</span></h3><div class="meta">ລະຫັດ ${i.sku} · ມີ 1 ຊິ້ນ · ຈ່າຍ QR LDB ແຍກຈາກສິນຄ້າອື່ນ</div>
+          <div class="ctrl"><button class="rm" onclick="rm(${k})">ລຶບອອກ</button></div>${gone?`<div class="warn">⚠ ຊິ້ນນີ້ບໍ່ພ້ອມຂາຍແລ້ວ (ອາດມີຄົນສັ່ງໄປກ່ອນ) — ກະລຸນາລຶບອອກ</div>`:''}</div>
+        <div class="line-price">${fmt(i.price)}</div></div>`;
+      }
       const st=stockMap[i.sku]; const warn = st!=null && st<i.qty ? `<div class="warn">⚠ ຈຳນວນທີ່ຮ້ານມີບໍ່ພໍ — ກະລຸນາຫຼຸດຈຳນວນ</div>` : '';
       return `<div class="line">
         <a class="thumb" href="product.html?sku=${encodeURIComponent(i.sku)}">${i.image?`<img src="${i.image}" alt="">`:`<svg viewBox="0 0 120 70"><use href="${iconFor((i.category||'')+' '+i.name)}"/></svg>`}</a>
         <div><h3><a href="product.html?sku=${encodeURIComponent(i.sku)}">${i.name}</a></h3><div class="meta">ລະຫັດ ${i.sku} · ${fmt(i.price)} / ຊິ້ນ</div>
           <div class="ctrl"><div class="qty"><button aria-label="ຫຼຸດ" onclick="chg(${k},-1)">−</button><span>${i.qty}</span><button aria-label="ເພີ່ມ" onclick="chg(${k},1)">+</button></div>
           <button class="rm" onclick="rm(${k})">ລຶບອອກ</button></div>${warn}</div>
-        <div class="line-price">${fmt(i.price*i.qty)}</div></div>`; }).join('')}</div>
+        <div class="line-price">${fmt(i.price*i.qty)}</div></div>`; };
+  root.innerHTML=`<div class="cart"><div>${cart.map(lineHtml).join('')}</div>
     <aside class="summary"><h2>ສະຫຼຸບຄຳສັ່ງຊື້</h2>
-      <div class="row"><span>ລາຄາສິນຄ້າ</span><span>${fmt(sub)}</span></div>
+      ${normal.length?`<div class="row"><span>ສິນຄ້າທົ່ວໄປ</span><span>${fmt(sub)}</span></div>`:''}
       ${disc?`<div class="row"><span>ສ່ວນຫຼຸດ (${coupon}) <button class="rm" onclick="setCoupon(null)">ລຶບ</button></span><span>−${fmt(disc)}</span></div>`:''}
+      ${cons.length?`<div class="row"><span>ສິນຄ້າຝາກຂາຍ (${cons.length})</span><span>${fmt(subC)}</span></div>`:''}
       <div class="row"><span>ການຮັບສິນຄ້າ</span><span>ຮັບທີ່ຮ້ານ ຟຣີ</span></div>
-      <div class="row total"><span>ລວມທັງໝົດ</span><span>${fmt(sub-disc)}</span></div>
-      ${disc?'':`<form class="coupon" onsubmit="event.preventDefault();setCoupon(this.c.value.trim().toUpperCase())"><input name="c" placeholder="ລະຫັດສ່ວນຫຼຸດ" aria-label="ລະຫັດສ່ວນຫຼຸດ"><button>ໃຊ້</button></form>`}
+      <div class="row total"><span>ລວມທັງໝົດ</span><span>${fmt(sub-disc+subC)}</span></div>
+      ${cons.length?`<p class="note" style="margin:8px 0">ສິນຄ້າຝາກຂາຍ: ບໍ່ໃຊ້ຄູປ໋ອງສ່ວນຫຼຸດ · ຊຳລະແຍກຜ່ານ QR ທະນາຄານ LDB ${normal.length?'(ສິນຄ້າທົ່ວໄປຈ່າຍ QR BCEL)':''} · ບໍ່ຕ້ອງເຂົ້າສູ່ລະບົບ</p>`:''}
+      ${disc||!normal.length?'':`<form class="coupon" onsubmit="event.preventDefault();setCoupon(this.c.value.trim().toUpperCase())"><input name="c" placeholder="ລະຫັດສ່ວນຫຼຸດ (ສະເພາະສິນຄ້າທົ່ວໄປ)" aria-label="ລະຫັດສ່ວນຫຼຸດ"><button>ໃຊ້</button></form>`}
       <a class="btn btn-black" href="checkout.html">ດຳເນີນການສັ່ງຊື້</a>
       <a class="btn btn-line" style="width:100%;border-radius:0;margin-top:8px" href="catalogue.html">ເລືອກຊື້ຕໍ່</a>
       <p class="note">ເຊັກສະຕັອກຈິງອີກຄັ້ງກ່ອນຢືນຢັນຄຳສັ່ງຊື້</p></aside></div>`;
@@ -409,7 +431,7 @@ function setCoupon(code){
   render(); if(code) toast('ໃຊ້ລະຫັດສ່ວນຫຼຸດແລ້ວ');
 }
 async function checkStock(){
-  const cart=getCart(); if(!cart.length) return;
+  const cart=getCart().filter(i=>!i.consign); if(!cart.length) return;
   try{
     const r=await fetch(`${API_URL}?action=checkStock&secret=${API_SECRET}&skus=${cart.map(i=>encodeURIComponent(i.sku)).join(',')}`);
     const j=await r.json(); const list=j.stock||j.data?.stock||j.data||[];
@@ -426,7 +448,7 @@ async function loadReco(){
 }
 document.addEventListener('currencychange',()=>{ render(); if(window._catalog.length) document.getElementById('reco').innerHTML=window._catalog.map(card).join(''); });
 const _setCart=setCart; setCart=c=>{ _setCart(c); if(document.getElementById('root')) render(); };
-render(); checkStock(); loadReco();
+render(); checkStock(); checkConsign(); loadReco();
 </script>
 </body>
 </html>
