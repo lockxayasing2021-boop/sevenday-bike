@@ -915,6 +915,7 @@ window.SD_DICT = (function(){ const R = {
 "ສະໝັກແລ້ວ {0} ຄົນ":["สมัครแล้ว {0} คน","{0} registered"],
 "ສະໝັກແລ້ວ":["สมัครแล้ว","Registered"],
 "/ {0} ຄົນ":["/ {0} คน","/ {0}"],
+"ສະແກນ QR OnePay (LAPNet — ຊຳລະຂ້າມທະນາຄານໄດ້)":["สแกน QR OnePay (LAPNet — ชำระข้ามธนาคารได้)","Scan OnePay QR (LAPNet — works with any bank)"],
 "ສະແກນ QR ຫຼື ໂອນເຂົ້າ Phongsavanh Bank":["สแกน QR หรือโอนเข้า Phongsavanh Bank","Scan the QR or transfer to Phongsavanh Bank"],
 "ຮັບຈຳນວນ {0}ຄົນ":["รับจำนวน {0} คน","Limited to {0} riders"],
 "ຮັບຈຳນວນ {0} ຄົນ":["รับจำนวน {0} คน","Limited to {0} riders"]

@@ -236,11 +236,11 @@ function payBox(r){
     <h2>ຊຳລະຄ່າສະໝັກ</h2>
     ${rejected ? `<div class="note bad">ສະລິບກ່ອນໜ້ານີ້ກວດບໍ່ຜ່ານ${lp && lp.note ? ': ' + evtEsc(lp.note) : ''}. ກະລຸນາແນບສະລິບໃໝ່.</div>` : ''}
     <div class="rq-pay">
-      <img src="events-assets/qr-event.png?v=2" width="882" height="1023" alt="LAO QR — SEVENDAY BIKE">
+      <img src="events-assets/qr-onepay.jpg" width="1284" height="1473" alt="LAO QR OnePay — 7 DAY BIKE">
       <div>
         <div style="font-size:14px;color:var(--grey-600)">ຍອດທີ່ຕ້ອງໂອນ</div>
         <div class="amt">${evtKip(r.total)}</div>
-        <div class="acct">ສະແກນ QR ຫຼື ໂອນເຂົ້າ Phongsavanh Bank<br><b>KITTIPHANH XAYASING</b><br><b id="acctNo">2000000002723</b><button class="copy" type="button" onclick="copyAcct(this)">ຄັດລອກ</button></div>
+        <div class="acct">ສະແກນ QR OnePay (LAPNet — ຊຳລະຂ້າມທະນາຄານໄດ້)<br><b>7 DAY BIKE</b></div>
         <label class="drop" id="drop"><input type="file" id="slip" accept="image/*,application/pdf"><b>ແນບສະລິບການໂອນ</b><br><span style="font-size:13px;color:var(--grey-600)" id="slipTxt">ຮູບ ຫຼື PDF ບໍ່ເກີນ 5MB</span><img id="slipPrev" alt="" hidden></label>
         <div class="f"><label for="ref">ເລກອ້າງອີງການໂອນ (ຖ້າມີ)</label><input id="ref" maxlength="60"></div>
         <div id="payErr" class="msg" hidden role="alert"></div>
