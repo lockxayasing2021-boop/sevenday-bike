@@ -361,6 +361,16 @@ function toTHB(v, c){ if (v === '' || v == null) return null; c = c || currency;
 
 function getCart(){ try{ return JSON.parse(localStorage.getItem('sevenday_cart')) || []; }catch(_){ return []; } }
 function setCart(c){ try{ localStorage.setItem('sevenday_cart', JSON.stringify(c)); }catch(_){} updateCartCount(); }
+/* ── ຂອງຝາກຂາຍໃນກະຕ່າດຽວກັນ (supabase/129): ຊິ້ນລະ 1 · ສູງສຸດ 3 ຊິ້ນ · ບໍ່ໃຊ້ຄູປ໋ອງ · ຈ່າຍ QR LDB ແຍກຈາກສິນຄ້າປົກກະຕິ ── */
+const SD_CONSIGN_MAX = 3;
+function sdAddConsign(it){
+  const c = getCart();
+  if (c.some(x => x.sku === it.code)) return 'dup';
+  if (c.filter(x => x.consign).length >= SD_CONSIGN_MAX) return 'max';
+  c.push({ sku: it.code, name: it.name, price: Number(it.priceThb) || 0, qty: 1, image: (it.photos && it.photos[0]) || it.image || '',
+    category: it.kind === 'bike' ? 'ລົດຖີບມືສອງ' : 'ອາໄຫຼ່/ອຸປະກອນມືສອງ', consign: true, grade: it.grade || '' });
+  setCart(c); return 'ok';
+}
 function updateCartCount(){ const el=document.getElementById('cartCount'); if(el) el.textContent=getCart().reduce((s,i)=>s+(i.qty||1),0); }
 function fmtIn(thb, c){
   if (thb == null || thb === '' || isNaN(thb)) return '';

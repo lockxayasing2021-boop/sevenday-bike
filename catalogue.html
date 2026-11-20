@@ -414,12 +414,17 @@ let _cons = null;
 async function loadConsign(){
   try{
     const r = await fetch(CW_API+'?op=list'); const j = await r.json();
-    if(r.ok && j.ok) _cons = (j.items||[]).filter(i=>i && i.code && !i.sold).map(i=>({
+    if(r.ok && j.ok) window._cons = _cons = (j.items||[]).filter(i=>i && i.code && !i.sold).map(i=>({
       sku:i.code, name:i.name||'', brand:'ຝາກຂາຍ', category:i.kind==='bike'?'ລົດຖີບມືສອງ':'ອາໄຫຼ່/ອຸປະກອນມືສອງ',
       type:'', price:Number(i.priceThb)||0, was:null, stock:1, unit:'', group:'used', sub:'used',
       image:((i.photos||[])[0])||'', sizes:[], colors:[], variants:0, consign:true, grade:i.grade||'' }));
   }catch(e){ console.warn(e); }
   return _cons||[];
+}
+function addConsignFromCard(code){
+  const p=(window._cons||[]).find(x=>x.sku===code); if(!p) return;
+  const r=sdAddConsign({code:p.sku,name:p.name,priceThb:p.price,photos:p.image?[p.image]:[],kind:p.category.indexOf('ລົດຖີບ')===0?'bike':'part',grade:p.grade});
+  toast(r==='max'?'ໃສ່ຂອງຝາກຂາຍໄດ້ສູງສຸດ 3 ຊິ້ນ':r==='dup'?'ຊິ້ນນີ້ຢູ່ໃນກະຕ່າແລ້ວ':'ໃສ່ກະຕ່າແລ້ວ · <a href="cart.html" style="text-decoration:underline">ເບິ່ງກະຕ່າ</a>');
 }
 const _baseCard = card;
 card = function(p){
@@ -429,7 +434,7 @@ card = function(p){
   return `<article class="card"><a class="card-img" href="${href}"><div class="badges"><span class="badge b-low">ຝາກຂາຍ${p.grade?' · ເກຣດ '+p.grade:''}</span></div>${img}</a>
     <span class="card-brand">ຝາກຂາຍ · ${p.category}</span><a class="card-name" href="${href}">${p.name}</a>
     <div class="price"><span class="now">${fmt(p.price)}</span></div>
-    <button class="add-btn" onclick="location.href='${href}'">ເບິ່ງລາຍລະອຽດ</button></article>`;
+    <button class="add-btn" onclick="addConsignFromCard('${p.sku}')">ໃສ່ກະຕ່າ</button></article>`;
 };
 
 const catParam = params.get('cat');

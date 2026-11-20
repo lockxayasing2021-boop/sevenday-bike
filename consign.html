@@ -351,7 +351,7 @@ const TX = {
   crumb: { lo: 'ຂອງຝາກຂາຍ', th: 'ของฝากขาย', en: 'Consignment' },
   h1: { lo: 'ຂອງມືສອງຝາກຂາຍ', th: 'ของมือสองฝากขาย', en: 'Pre-owned on consignment' },
   sub: { lo: 'ລົດຖີບ ແລະ ອາໄຫຼ່ມືສອງ ທີ່ລູກຄ້າຝາກຮ້ານຂາຍ — ຊ່າງຂອງຮ້ານກວດສະພາບແລ້ວທຸກຊິ້ນ', th: 'จักรยานและอะไหล่มือสองที่ลูกค้าฝากร้านขาย — ช่างของร้านตรวจสภาพแล้วทุกชิ้น', en: 'Pre-owned bikes and parts sold on behalf of customers — every item checked by our mechanics' },
-  note: { lo: 'ສັ່ງຊື້ອອນລາຍໄດ້: ເຂົ້າສູ່ລະບົບ → ເລືອກຮັບທີ່ຮ້ານ ຫຼື ສົ່ງຕ່າງແຂວງ → ໂອນເງິນ ແລ້ວສົ່ງສະລິບ ຫຼື ກົດ "ສົນໃຈຊິ້ນນີ້" ເພື່ອທັກຮ້ານທາງ WhatsApp', th: 'สั่งซื้อออนไลน์ได้: เข้าสู่ระบบ → เลือกรับที่ร้านหรือส่งต่างจังหวัด → โอนเงินแล้วส่งสลิป หรือกด "สนใจชิ้นนี้" เพื่อทักร้านทาง WhatsApp', en: 'Order online: log in → choose pickup or shipping → transfer and upload your slip — or tap "I\'m interested" to message us on WhatsApp' },
+  note: { lo: 'ສັ່ງຊື້ອອນລາຍໄດ້ ບໍ່ຕ້ອງເຂົ້າສູ່ລະບົບ: ກົດ "ໃສ່ກະຕ່າ" (ລວມກັບສິນຄ້າອື່ນໄດ້) → ກອກຊື່/ເບີໂທ → ສະແກນ QR ທະນາຄານ LDB ແລ້ວສົ່ງສະລິບທາງ WhatsApp — ແອດມິນກວດສະລິບ ແລ້ວນັດຮັບທີ່ຮ້ານ ຫຼື ຈັດສົ່ງ', th: 'สั่งซื้อออนไลน์ได้ ไม่ต้องล็อกอิน: กด "ใส่ตะกร้า" (รวมกับสินค้าอื่นได้) → กรอกชื่อ/เบอร์ → สแกน QR ธนาคาร LDB แล้วส่งสลิปทาง WhatsApp — แอดมินตรวจสลิปแล้วนัดรับที่ร้านหรือจัดส่ง', en: 'Order online, no login needed: tap "Add to cart" (can be combined with other items) → enter name/phone → scan the LDB bank QR and send your slip on WhatsApp — we verify it and arrange pickup or delivery' },
   all: { lo: 'ທັງໝົດ', th: 'ทั้งหมด', en: 'All' }, bike: { lo: 'ລົດຖີບ', th: 'จักรยาน', en: 'Bikes' }, part: { lo: 'ອາໄຫຼ່ ແລະ ອຸປະກອນ', th: 'อะไหล่และอุปกรณ์', en: 'Parts & gear' },
   legend: { lo: 'ເກຣດສະພາບ: A ດີທີ່ສຸດ → D ມີຮອຍໃຊ້ງານຫຼາຍ', th: 'เกรดสภาพ: A ดีที่สุด → D มีร่องรอยการใช้งานมาก', en: 'Condition grade: A best → D most wear' },
   grade: { lo: 'ເກຣດ', th: 'เกรด', en: 'Grade' }, sold: { lo: 'ຂາຍແລ້ວ', th: 'ขายแล้ว', en: 'Sold' },
@@ -369,6 +369,10 @@ const TX = {
   ctaReq: { lo: 'ສົ່ງຄຳຂໍຝາກຂາຍອອນລາຍ', th: 'ส่งคำขอฝากขายออนไลน์', en: 'Send a consignment request' },
   ctaMsg: { lo: 'ສະບາຍດີ ຢາກຝາກຂາຍຂອງ', th: 'สวัสดี อยากฝากขายของ', en: 'Hi, I\'d like to consign an item' },
   photo: { lo: 'ຮູບ', th: 'รูป', en: 'Photo' },
+  cartB: { lo: 'ໃສ່ກະຕ່າ', th: 'ใส่ตะกร้า', en: 'Add to cart' }, buyNowB: { lo: 'ຊື້ທັນທີ', th: 'ซื้อเลย', en: 'Buy now' },
+  inCartMsg: { lo: 'ຊິ້ນນີ້ຢູ່ໃນກະຕ່າແລ້ວ', th: 'ชิ้นนี้อยู่ในตะกร้าแล้ว', en: 'Already in your cart' },
+  maxCartMsg: { lo: 'ໃສ່ຂອງຝາກຂາຍໄດ້ສູງສຸດ 3 ຊິ້ນຕໍ່ຄັ້ງ', th: 'ใส่ของฝากขายได้สูงสุด 3 ชิ้นต่อครั้ง', en: 'Up to 3 consignment items per order' },
+  addedMsg: { lo: 'ໃສ່ກະຕ່າແລ້ວ', th: 'ใส่ตะกร้าแล้ว', en: 'Added to cart' },
   orderB: { lo: 'ສັ່ງຊື້ຊິ້ນນີ້', th: 'สั่งซื้อชิ้นนี้', en: 'Order this item' },
   loginB: { lo: 'ເຂົ້າສູ່ລະບົບເພື່ອສັ່ງຊື້', th: 'เข้าสู่ระบบเพื่อสั่งซื้อ', en: 'Log in to order' },
   askB: { lo: 'ຖາມຮ້ານກ່ຽວກັບຊິ້ນນີ້', th: 'ถามร้านเกี่ยวกับชิ้นนี้', en: 'Ask the shop about this item' }, askErr: { lo: 'ເປີດແຊັດບໍ່ໄດ້', th: 'เปิดแชตไม่ได้', en: 'Could not open the chat' },
@@ -434,7 +438,7 @@ function openItem(code, keep) {
     (i.grade ? '<div><span class="cw-gtag">' + esc(tx('grade')) + ' ' + esc(i.grade) + '</span></div>' : '') +
     (i.note ? '<div class="cw-flaw"><small>' + esc(tx('cond')) + '</small>' + esc(i.note) + '</div>' : '') +
     '<div class="cw-big">' + (i.sold ? '<s style="color:var(--grey-600)">' + esc(fmt(Number(i.priceThb))) + '</s>' : esc(fmt(Number(i.priceThb)))) + '</div>' +
-    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : (me() ? '<button type="button" class="btn btn-black" data-order="' + esc(i.code) + '">' + esc(tx('orderB')) + '</button>' : '<a class="btn btn-black" href="login.html">' + esc(tx('loginB')) + '</a>') + (me() ? '<button type="button" class="btn btn-line" data-ask="' + esc(i.code) + '">' + esc(tx('askB')) + '</button><div class="cw-err" id="cwAskErr" role="alert"></div>' : '') + '<a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
+    (i.sold ? '<div class="cw-flaw">' + esc(tx('soldMsg')) + '</div>' : '<button type="button" class="btn btn-black" data-cart="' + esc(i.code) + '">' + esc(tx('cartB')) + '</button><button type="button" class="btn btn-line" data-buynow="' + esc(i.code) + '">' + esc(tx('buyNowB')) + '</button><div class="cw-err" id="cwCartMsg" role="status"></div>' + (me() ? '<button type="button" class="btn btn-line" data-ask="' + esc(i.code) + '">' + esc(tx('askB')) + '</button><div class="cw-err" id="cwAskErr" role="alert"></div>' : '') + '<a class="btn btn-line" target="_blank" rel="noopener" href="' + esc(waLink(msg)) + '">' + esc(tx('interested')) + '</a>') +
     '</div></div>';
   $('cwModal').classList.add('open'); document.body.style.overflow = 'hidden';
 }
@@ -489,6 +493,16 @@ function draw2() { const keep = $('cwModal').innerHTML; draw(); $('cwModal').inn
 
 document.addEventListener('click', e => {
   const od = e.target.closest('[data-order]'); if (od) { orderForm(od.dataset.order); return; }
+  const ct = e.target.closest('[data-cart],[data-buynow]');
+  if (ct) {
+    const code = ct.dataset.cart || ct.dataset.buynow, it = (S.items || []).find(x => x.code === code); if (!it) return;
+    const r = sdAddConsign(it), m = $('cwCartMsg');
+    if (r === 'max') { if (m) m.textContent = tx('maxCartMsg'); return; }
+    if (ct.dataset.buynow) { location.href = 'checkout.html'; return; }
+    if (m) { m.textContent = tx(r === 'dup' ? 'inCartMsg' : 'addedMsg'); }
+    if (typeof toast === 'function') toast(tx(r === 'dup' ? 'inCartMsg' : 'addedMsg') + ' · <a href="cart.html" style="text-decoration:underline">' + esc(tx('cartB') === 'ໃສ່ກະຕ່າ' ? 'ເບິ່ງກະຕ່າ' : 'Cart') + '</a>');
+    return;
+  }
   const ak = e.target.closest('[data-ask]'); if (ak) { askShop(ak); return; }
   const f = e.target.closest('[data-f]'); if (f) { S.filter = f.dataset.f; draw(); return; }
   const c = e.target.closest('.cw-card'); if (c) { openItem(c.dataset.code); return; }
