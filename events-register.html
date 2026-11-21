@@ -36,7 +36,7 @@
 .evr{width:100%;border-collapse:collapse;font-size:15px}
 .evr th{text-align:left;font-size:12px;font-weight:700;color:var(--grey-600);padding:0 8px 6px 0}
 .evr td{padding:7px 8px 7px 0;border-top:1px solid var(--grey-300);vertical-align:top}
-.evr td.n{width:32px;color:var(--grey-600);font-variant-numeric:tabular-nums}
+.evr td.n{width:44px;font-weight:800;font-variant-numeric:tabular-nums}
 .evr td.t{color:var(--grey-900)}
 .evi .map{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:10px 14px;border:1.5px solid var(--black);border-radius:8px;font-weight:700}
 
@@ -303,13 +303,13 @@ const isBike = () => ['CYCLING'].includes(String(ev.event_type).toUpperCase());
     ${s.text ? `<p>${evtEsc(s.text)}</p>` : ''}
     ${s.map_url ? `<a class="map" href="${evtEsc(s.map_url)}" target="_blank" rel="noopener">📍 ເປີດແຜນທີ່</a>` : ''}
     </div></details>`).join('')}</section>`);
-  // ລາຍຊື່ນັກກິລາ (ຊື່ · ລຸ້ນ · ທີມ · ໄຊສ໌ເສື້ອ) — ບໍ່ສະແດງເບີໂທ/ວັນເກີດ · ເຈົ້າຂອງງານອະນຸມັດແລ້ວ (supabase/128)
+  // ລາຍຊື່ນັກກິລາ (BIB · ຊື່ · ລຸ້ນ · ທີມ · ໄຊສ໌ເສື້ອ) — ລຽງຕາມເລກ BIB ໃຫ້ກົງກັບ Start list ຂອງແອດມິນ (supabase/130) — ບໍ່ສະແດງເບີໂທ/ວັນເກີດ · ເຈົ້າຂອງງານອະນຸມັດແລ້ວ (supabase/128)
   try {
     const rr = await fetch('https://xukczixtojfmqhxepxwi.supabase.co/functions/v1/evt-roster?event_id=' + encodeURIComponent(eventId));
     const ro = await rr.json();
     if (ro && ro.ok && ro.enabled && ro.total > 0) $('evHead').insertAdjacentHTML('beforeend', `<section class="evi" id="roster" aria-label="ລາຍຊື່ນັກກິລາ"><h2>ລາຍຊື່ນັກກິລາ <span class="cnt">(${ro.total} ຄົນ)</span></h2>${ro.categories.map(c => `<details>
       <summary>${evtEsc(c.name || c.code)} <span class="cnt">· ${c.count} ຄົນ</span></summary><div class="b">
-      <table class="evr"><thead><tr><th></th><th>ຊື່ນັກກິລາ</th><th>ທີມ</th><th>ໄຊສ໌ເສື້ອ</th></tr></thead><tbody>${c.athletes.map((a, i) => `<tr><td class="n">${i + 1}</td><td>${evtEsc(a.name)}</td><td class="t">${evtEsc(a.team || '')}</td><td class="t">${evtEsc(a.size || '')}</td></tr>`).join('')}</tbody></table>
+      <table class="evr"><thead><tr><th>BIB</th><th>ຊື່ນັກກິລາ</th><th>ທີມ</th><th>ໄຊສ໌ເສື້ອ</th></tr></thead><tbody>${c.athletes.map((a, i) => `<tr><td class="n">${a.bib ? evtEsc(a.bib) : '-'}</td><td>${evtEsc(a.name)}</td><td class="t">${evtEsc(a.team || '')}</td><td class="t">${evtEsc(a.size || '')}</td></tr>`).join('')}</tbody></table>
       </div></details>`).join('')}</section>`);
   } catch (_) { /* ບໍ່ສະແດງລາຍຊື່ຖ້າໂຫຼດບໍ່ໄດ້ — ບໍ່ກະທົບການສະໝັກ */ }
   if (location.hash === '#detail') setTimeout(() => { const d = document.getElementById('detail'); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
