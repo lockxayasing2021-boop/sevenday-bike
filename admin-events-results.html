@@ -184,7 +184,7 @@ details summary::-webkit-details-marker{display:none}
             <div class="who" id="entryCat" style="font-weight:700"></div>
             <form class="entry" id="entryForm" autocomplete="off">
               <input id="bib" inputmode="numeric" placeholder="BIB" aria-label="BIB">
-              <input id="time" inputmode="numeric" placeholder="09:12:45" aria-label="เวลา">
+              <input id="time" inputmode="numeric" placeholder="234567" aria-label="เวลา">
               <select id="status" class="full" aria-label="สถานะ">
                 <option value="FINISHED">เข้าเส้นชัย (FINISHED)</option>
                 <option value="DNF">DNF — ไม่จบการแข่งขัน</option>
@@ -197,7 +197,7 @@ details summary::-webkit-details-marker{display:none}
               </div>
             </form>
             <div class="who" id="who"></div>
-            <p class="help">พิมพ์ BIB → Enter → พิมพ์เวลา → Enter. “เข้าเส้นตอนนี้” ใช้เวลานาฬิกาของเครื่องนี้ทันที. บันทึก BIB เดิมซ้ำ = แก้ไขผล</p>
+            <p class="help">พิมพ์ BIB → Enter → พิมพ์เวลาเป็นตัวเลขล้วน (2 ตัวท้าย = 1/100 วินาที, ก่อนหน้า = วินาที, นาที, ชั่วโมง เช่น 234567 = 23:45.67) → Enter. “เข้าเส้นตอนนี้” ใช้เวลานาฬิกาของเครื่องนี้ทันที. บันทึก BIB เดิมซ้ำ = แก้ไขผล</p>
           </div>
           <div class="feed" id="feed"></div>
         </div>
@@ -206,8 +206,8 @@ details summary::-webkit-details-marker{display:none}
           <details>
             <summary><h2>วางผลหลายรายการ <span class="btn sm">เปิด</span></h2></summary>
             <div class="bd">
-              <textarea id="bulk" placeholder="1 09:12:45&#10;2 09:15:02&#10;7 DNF&#10;12 DNS"></textarea>
-              <p class="help">1 บรรทัด = BIB ตามด้วยเวลา หรือ DNF / DNS / DSQ — ใช้รูปแบบเวลาตามที่เลือกด้านบน (วางจาก Excel ได้)</p>
+              <textarea id="bulk" placeholder="1 234567&#10;2 241502&#10;7 DNF&#10;12 DNS"></textarea>
+              <p class="help">1 บรรทัด = BIB ตามด้วยเวลา หรือ DNF / DNS / DSQ — ใช้รูปแบบเวลาตามที่เลือกด้านบน — พิมพ์ตัวเลขล้วนได้เช่นกัน เช่น 234567 = 23:45.67 (วางจาก Excel ได้)</p>
               <button class="btn primary" type="button" style="margin-top:8px;width:100%" onclick="saveBulk()">บันทึกทั้งหมด</button>
             </div>
           </details>
@@ -346,19 +346,42 @@ function render(){
 }
 
 // ── time helpers ──
-function secs(t){ const p = String(t || '').split(':').map(Number); return p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : p.length === 2 ? p[0]*60 + p[1] : 0; }
-function hms(s){ s = Math.max(0, s); const h = Math.floor(s/3600), m = Math.floor(s%3600/60), x = s%60; return (h ? h + ':' + String(m).padStart(2,'0') : m) + ':' + String(x).padStart(2,'0'); }
-// "091245" → "09:12:45" so staff can type digits only
+function secs(t){
+  const [w, f] = String(t || '').split('.'), p = w.split(':').map(Number), cs = f ? parseInt((f + '0').slice(0, 2), 10) / 100 : 0;
+  return (p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : p.length === 2 ? p[0]*60 + p[1] : 0) + cs;
+}
+function hms(s){
+  const tc = Math.round(Math.max(0, s) * 100), cc = tc % 100, ts = (tc - cc) / 100;
+  const h = Math.floor(ts/3600), m = Math.floor(ts%3600/60), x = ts%60;
+  return (h ? h + ':' + String(m).padStart(2,'0') : m) + ':' + String(x).padStart(2,'0') + (cc ? '.' + String(cc).padStart(2,'0') : '');
+}
+// ຮູບແບບເວລາທີ່ຮັບໄດ້: [ຊມ:]ນາທີ:ວິ ຫຼື ມີເສດ .ຮ້ອຍວິ (ເຊັ່ນ 23:45.67, 1:23:45.67)
+const TIME_RE = /^\d{1,3}(:\d{1,2}){1,2}(\.\d{1,2})?$/;
+// ພິມເລກລ້ວນໄດ້ ບໍ່ຕ້ອງມີຈຸດ: 2 ຫຼັກທ້າຍ = ເສດ 1/100 ວິ, ຕໍ່ມາ = ວິ, ຕໍ່ມາ = ນາທີ, ທີ່ເຫຼືອ = ຊົ່ວໂມງ
+//   234567 → 23:45.67 · 1234567 → 1:23:45.67 · (ໂໝດເວລານາຬິກາ) 09124567 → 09:12:45.67
 function normTime(v){
+  v = String(v || '').trim();
+  if (/^\d+$/.test(v)) {
+    if (v.length < 3) return v;
+    const cc = v.slice(-2), ss = v.slice(-4, -2) || '0', mm = v.slice(-6, -4) || '0', hh = v.slice(0, -6);
+    const S = String(parseInt(ss, 10)).padStart(2, '0'), M = String(parseInt(mm, 10));
+    if (mode === 'clock') return String(parseInt(hh || '0', 10)).padStart(2, '0') + ':' + M.padStart(2, '0') + ':' + S + '.' + cc;
+    return hh ? parseInt(hh, 10) + ':' + M.padStart(2, '0') + ':' + S + '.' + cc : M + ':' + S + '.' + cc;
+  }
+  if (TIME_RE.test(v)) return v;
+  return v.replace(/[.\s]/g, ':');
+}
+// ເວລາປ່ອຍຕົວ (ບໍ່ມີເສດ): "070000" → "07:00:00"
+function normStart(v){
   v = String(v || '').trim().replace(/[.\s]/g, ':');
   if (/^\d{5,6}$/.test(v)) v = v.padStart(6, '0').replace(/(\d\d)(\d\d)(\d\d)/, '$1:$2:$3');
-  else if (/^\d{3,4}$/.test(v)) v = v.padStart(4, '0').replace(/(\d\d)(\d\d)/, mode === 'clock' ? '$1:$2:00' : '$1:$2');
+  else if (/^\d{3,4}$/.test(v)) v = v.padStart(4, '0').replace(/(\d\d)(\d\d)/, '$1:$2:00');
   return v;
 }
 function setMode(m){
   mode = m; store.set('sd_res_mode', m);
   $('mClock').setAttribute('aria-pressed', m === 'clock'); $('mElapsed').setAttribute('aria-pressed', m === 'elapsed');
-  $('time').placeholder = m === 'clock' ? '09:12:45' : '2:12:45';
+  $('time').placeholder = m === 'clock' ? '09124567' : '234567';
   $('nowBtn').hidden = m !== 'clock';
 }
 setMode(store.get('sd_res_mode') || 'clock');
@@ -387,14 +410,14 @@ $('entryForm').addEventListener('submit', e => {
   const item = { bib_number: bib, status: st, category_id: cat };
   if (st === 'FINISHED') {
     const t = normTime($('time').value);
-    if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) { toast('ใส่เวลาให้ถูก เช่น 09:12:45'); return $('time').focus(); }
+    if (!TIME_RE.test(t)) { toast('ใส่เวลาให้ถูก เช่น 234567 = 23:45.67'); return $('time').focus(); }
     item[mode === 'clock' ? 'finish_time' : 'elapsed_time'] = t;
   }
   enqueue([item]); clearEntry();
 });
 function saveNow(){
   const bib = $('bib').value.trim(); if (!bib) { toast('ใส่ BIB ก่อน'); return $('bib').focus(); }
-  const d = new Date(), t = [d.getHours(), d.getMinutes(), d.getSeconds()].map(x => String(x).padStart(2, '0')).join(':');
+  const d = new Date(), t = [d.getHours(), d.getMinutes(), d.getSeconds()].map(x => String(x).padStart(2, '0')).join(':') + '.' + String(Math.floor(d.getMilliseconds()/10)).padStart(2, '0');
   enqueue([{ bib_number: bib, status: 'FINISHED', finish_time: t, category_id: cat }]); clearEntry();
 }
 function clearEntry(){ $('bib').value = ''; $('time').value = ''; $('status').value = 'FINISHED'; $('who').textContent = ''; $('bib').focus(); }
@@ -415,7 +438,7 @@ function saveBulk(){
     if (!bib || !val) return bad.push(l);
     const st = val.toUpperCase();
     if (['DNF','DNS','DSQ'].includes(st)) items.push({ bib_number: bib, status: st, category_id: cat });
-    else { const t = normTime(val); if (!/^\d{1,3}(:\d{2}){1,2}$/.test(t)) return bad.push(l); items.push({ bib_number: bib, status: 'FINISHED', category_id: cat, [mode === 'clock' ? 'finish_time' : 'elapsed_time']: t }); }
+    else { const t = normTime(val); if (!TIME_RE.test(t)) return bad.push(l); items.push({ bib_number: bib, status: 'FINISHED', category_id: cat, [mode === 'clock' ? 'finish_time' : 'elapsed_time']: t }); }
   });
   if (bad.length) return toast('อ่านไม่ได้ ' + bad.length + ' บรรทัด: ' + bad.slice(0, 3).join(' | '));
   if (!items.length) return;
@@ -423,7 +446,7 @@ function saveBulk(){
 }
 async function saveStarts(){
   const starts = {};
-  document.querySelectorAll('#starts input').forEach(i => starts[i.dataset.cat] = normTime(i.value));
+  document.querySelectorAll('#starts input').forEach(i => starts[i.dataset.cat] = normStart(i.value));
   try {
     const r = await post('evt.saveResults', { event_id: eventId, starts, entries: [] });
     if (r.errors.length) toast(r.errors[0].error); else toast('บันทึกเวลาปล่อยตัวแล้ว');
