@@ -5196,7 +5196,15 @@ function makeApp(ctx) {
     }
     function _secs(v, clock) {
       if (v instanceof Date) return v.getUTCHours() * 3600 + v.getUTCMinutes() * 60 + v.getUTCSeconds();
-      var t = String(v || "").trim().replace(/\./g, ":");
+      var t = String(v || "").trim();
+      var fm = /^(?:(\d{1,3}):)?(\d{1,3}):(\d{1,2})\.(\d{1,2})$/.exec(t);
+      if (fm) {
+        var fa = fm[1] === void 0 ? null : Number(fm[1]), fb = Number(fm[2]), fc = Number(fm[3]), cs = parseInt((fm[4] + "0").slice(0, 2), 10);
+        if (fc > 59) return null;
+        if (fa !== null && fb > 59) return null;
+        return (fa !== null ? fa * 3600 + fb * 60 + fc : fb * 60 + fc) + cs / 100;
+      }
+      t = t.replace(/\./g, ":");
       if (!/^\d{1,3}(:\d{1,2}){1,2}$/.test(t)) return null;
       var p = t.split(":").map(Number);
       if (p.slice(1).some(function(x) {
@@ -5207,8 +5215,9 @@ function makeApp(ctx) {
     }
     function _hms(sec) {
       if (sec === null || sec === void 0 || sec === "") return "";
-      var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60;
-      return h + ":" + (m < 10 ? "0" : "") + m + ":" + (x < 10 ? "0" : "") + x;
+      var tc = Math.round(sec * 100), cc = tc % 100, ts = (tc - cc) / 100;
+      var h = Math.floor(ts / 3600), m = Math.floor(ts % 3600 / 60), x = ts % 60;
+      return h + ":" + (m < 10 ? "0" : "") + m + ":" + (x < 10 ? "0" : "") + x + (cc ? "." + (cc < 10 ? "0" : "") + cc : "");
     }
     function _timeTxt(v) {
       return v instanceof Date ? _hms(_secs(v)) : String(v || "");
