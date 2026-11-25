@@ -465,6 +465,11 @@ const TX = {
   eEXT_PENDING: { lo: 'ມີຄຳຂໍທີ່ລໍຖ້າຢູ່ແລ້ວ', th: 'มีคำขอที่รออนุมัติอยู่แล้ว', en: 'A request is already pending' },
   eEXT_STATUS: { lo: 'ສັນຍານີ້ຕໍ່ບໍ່ໄດ້', th: 'สัญญานี้ต่อไม่ได้', en: 'This booking cannot be extended' },
   eEXT_PRICE: { lo: 'ຄິດລາຄາບໍ່ໄດ້ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'คิดราคาไม่ได้ — กรุณาติดต่อร้าน', en: 'Cannot price this — please contact the shop' },
+  eActiveH: { lo: 'ທ່ານມີສັນຍາເຊົ່າທີ່ກຳລັງເຊົ່າຢູ່', th: 'คุณมีสัญญาเช่าที่กำลังเช่าอยู่', en: 'You already have an active rental' },
+  eActiveBody: { lo: 'ຖ້າຕ້ອງການເຊົ່າຕໍ່ຄັນເດີມ ບໍ່ຕ້ອງຈອງໃໝ່ — ເປີດລິ້ງສຳເນົາສັນຍາທີ່ຮ້ານສົ່ງໃຫ້ທາງ WhatsApp ແລ້ວກົດ "ຂໍຕໍ່ສັນຍາເຊົ່າ" (ໃຊ້ເງິນມັດຈຳເດີມ) ຫຼື ທັກຫາຮ້ານ', th: 'ถ้าต้องการเช่าต่อคันเดิม ไม่ต้องจองใหม่ — เปิดลิงก์สำเนาสัญญาที่ร้านส่งให้ทาง WhatsApp แล้วกด "ขอต่อสัญญาเช่า" (ใช้มัดจำเดิม) หรือทักร้าน', en: 'To keep the same bike longer, do not book again — open the contract link the shop sent you on WhatsApp and tap "Extend rental" (your deposit stays), or message the shop' },
+  eActiveWa: { lo: 'ທັກຮ້ານເພື່ອຕໍ່ສັນຍາ', th: 'ทักร้านเพื่อต่อสัญญา', en: 'Message the shop to extend' },
+  eActiveNew: { lo: 'ຈອງຄັນໃໝ່ເພີ່ມ (ສັນຍາໃໝ່)', th: 'จองคันใหม่เพิ่ม (สัญญาใหม่)', en: 'Book another bike (new rental)' },
+  exOverdue: { lo: 'ເກີນກຳນົດຄືນແລ້ວ — ຍັງຂໍຕໍ່ໄດ້ ຄ່າເຊົ່ານັບຕໍ່ຈາກກຳນົດຄືນເດີມ (ຖ້າບໍ່ຕໍ່ ຈະຄິດຄ່າປັບຄືນຊ້າ)', th: 'เลยกำหนดคืนแล้ว — ยังขอต่อได้ ค่าเช่านับต่อจากกำหนดคืนเดิม (ถ้าไม่ต่อ จะคิดค่าปรับคืนช้า)', en: 'Past the return time — you can still extend; rent counts from the original return time (otherwise a late fee applies)' },
   eLIMIT: { lo: 'ສົ່ງຄຳຂໍຫຼາຍເກີນໄປ ລອງໃໝ່ມື້ອື່ນ', th: 'ส่งคำขอบ่อยเกินไป ลองใหม่พรุ่งนี้', en: 'Too many requests — try again tomorrow' },
   exFreeBikes: { lo: 'ເບິ່ງລົດທີ່ວ່າງ', th: 'ดูจักรยานที่ว่าง', en: 'See free bikes' },
   mineDev: { lo: 'ການຈອງໃນເຄື່ອງນີ້', th: 'การจองในเครื่องนี้', en: 'Bookings on this device' },
@@ -617,6 +622,10 @@ function draw() {
     '<div class="rw-note">' + esc(tx('notice').replace('{m}', S.noshow)) + '</div>' +
     '<div class="rw-sum"><span>' + esc(tx('est')) + '</span><span id="rwEst">' + esc(kip(est()) + approx(est())) + '</span></div>' +
     '<div class="rw-msg' + (S.msg ? ' on' : '') + '" id="rwMsg" role="alert">' + esc(S.msg) + '</div>' +
+    (S.active ? '<div class="rw-msg on" style="background:#fff8ea;border-color:#e0a030;color:#5a3d00"><b>' + esc(tx('eActiveH')) + '</b><br>' + esc(tx('eActiveBody')) +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><a class="btn btn-black" target="_blank" rel="noopener" href="https://wa.me/' + esc(SHOP.whatsapp) + '?text=' +
+      encodeURIComponent('Extend my rental / ຕໍ່ສັນຍາເຊົ່າ — ' + S.name.trim() + ' ' + S.phone.trim()) + '">' + esc(tx('eActiveWa')) + '</a>' +
+      '<button type="button" class="btn" id="rwNewAnyway">' + esc(tx('eActiveNew')) + '</button></div></div>' : '') +
     '<button class="btn btn-black" type="submit" id="rwSend" style="height:52px"' + (S.busy ? ' disabled' : '') + '>' + esc(S.busy ? tx('sending') : tx('send')) + '</button></div></form>';
   const re = () => { S.msg = ''; loadCatalog(); };
   $('rwSd').onchange = () => { S.sd = $('rwSd').value; if (!startOk(S.sd, S.st)) { const t = slots(S.sd).find(x => startOk(S.sd, x)); if (t) S.st = t; } if (!curPkg() && S.ed < S.sd) S.ed = S.sd; const L1 = slots(S.sd); if (L1.length && L1.indexOf(S.st) < 0) S.st = L1[L1.length - 1]; const L2 = slots(S.ed); if (!curPkg() && L2.length && L2.indexOf(S.et) < 0) S.et = L2[L2.length - 1]; re(); };
@@ -632,6 +641,7 @@ function draw() {
   $('rwForm').onsubmit = submit;
 }
 
+document.addEventListener('click', e => { if (e.target && e.target.id === 'rwNewAnyway') { S.newAnyway = true; S.active = false; submit({ preventDefault() {} }); } });
 function fail(m) { S.msg = m; const e = $('rwMsg'); if (e) { e.textContent = m; e.classList.add('on'); e.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }
 async function submit(ev) {
   ev.preventDefault(); if (S.busy) return;
@@ -649,10 +659,11 @@ async function submit(ev) {
     const r = await fetch(RW_API + '?op=book', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
       name: S.name.trim(), phone: S.phone.trim(), startAt: w[0].toISOString(), endAt: w[1].toISOString(), packageCode: S.pkg || undefined, depositType: S.dep, termsAccepted: !!(S.terms && S.agree), termsVersion: S.terms ? S.terms.version : undefined,
       assetIds: Array.from(S.sel), addons: selAdds().map(a => ({ key: a.key, qty: S.add[a.key] })), note: S.note.trim(),
-      requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '' }) });
+      requestId: S.rid, lang: sdLang(), hp: ($('rwHp') || {}).value || '', newAnyway: S.newAnyway ? 'true' : undefined }) });
     const j = await r.json().catch(() => ({}));
-    S.busy = false;
-    if (j.ok) { S.done = j; clearDraft(); saveMine(j.id, S.phone.trim()); try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    S.busy = false; S.active = false;
+    if (j.code === 'ACTIVE') { S.active = true; draw(); const a = $('rwNewAnyway'); if (a) a.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }   // ມີສັນຍາກຳລັງເຊົ່າ → ແນະນຳຕໍ່ສັນຍາເດີມ
+    if (j.ok) { S.newAnyway = false; S.done = j; clearDraft(); saveMine(j.id, S.phone.trim()); try { sessionStorage.removeItem('rw_rid'); } catch (_) {} draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     const map = { NAME: 'eName', PHONE: 'ePhone', TIME: 'eTime', HOURS: 'eHours', ITEMS: 'eItems', PACKAGE: 'ePkg', TERMS: 'eTermsNew', DEPOSIT: 'eDep', UNAVAILABLE: 'eUnav', LIMIT: 'eLimit', BUSY: 'eLimit', DISABLED: 'disabled' };
     S.msg = j.code === 'HOURS' ? hoursTxt('eHours') : tx(map[j.code] || 'eErr'); if (j.code === 'TERMS') S.agree = false; draw();
     if (j.code === 'UNAVAILABLE' || j.code === 'PACKAGE' || j.code === 'TERMS') loadCatalog();
@@ -707,8 +718,9 @@ function exHtml(b) {
     const k = e.code === 'QUEUE' || e.code === 'OVERDUE' || e.code === 'STATUS' ? e.code : 'STATUS';
     return h + '<div class="note warn">' + esc(exErr(k)) + '</div></div>';
   }
+  if (e.overdue) h += '<div class="note warn">' + esc(tx('exOverdue')) + '</div>';
   h += '<div class="note">' + esc(tx('exUntil')) + ' <b>' + esc(fdt(e.maxEnd)) + '</b></div>' +
-    '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" data-id="' + esc(b.id) + '" min="' + vteDate(b.endAt) + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
+    '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" data-id="' + esc(b.id) + '" min="' + [vteDate(b.endAt), vteDate(Date.now())].sort().pop() + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
     '<div class="field"><label>' + esc(tx('exNewT')) + '</label><select data-ex="t" data-id="' + esc(b.id) + '">' + extTimes(X.d).map(t => '<option' + (t === X.t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div></div>';
   if (X.msg) h += '<div class="rw-msg on">' + esc(X.msg) + '</div>';
   if (X.q && X.q.canExtend) h += '<div class="note ok">' + esc(tx('exExtra')) + ': <b>' + esc(kip(X.q.extraLak)) + '</b> · ' + esc(fdt(X.qEnd)) + '<br>' + esc(tx('exSentNote')) + '</div>' +
