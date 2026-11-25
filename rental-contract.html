@@ -361,6 +361,14 @@ form.cf .btn{border-radius:0;height:52px}
 .rw-add .qty button:disabled{border-color:var(--grey-300);color:var(--grey-300);cursor:not-allowed}.rw-add .qty b{min-width:18px;text-align:center}
 .rw-link{text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap}
 @media (max-width:860px){.rw-add .qty{width:100%;justify-content:flex-end}}
+.rw-ex{border:2px solid var(--black);padding:14px;margin:18px 0}
+.rw-ex h3{font-size:18px;margin:0 0 8px}
+.rw-ex .exrow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.rw-ex .exrow>*{flex:1 1 140px}
+.rw-ex .note{padding:10px;border:1px solid var(--grey-300);background:#f6f7fb;margin:8px 0;font-size:14px}
+.rw-ex .note.warn{border-color:#b45309;background:#fef3c7;color:#78350f}
+.rw-ex .note.ok{border-color:#166534;background:#f0fdf4;color:#14532d}
+@media print{.rw-ex{display:none}}
 .cp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;border:2px solid #000;padding:18px}
 .cp-grid div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--grey-300);padding:6px 0}.cp-grid span{color:var(--grey-600)}
 .cp-ok{background:var(--grey-100);border-left:4px solid #000;padding:14px 16px}
@@ -390,6 +398,35 @@ const TX = {
   terms: { lo: 'ຂໍ້ກຳນົດ ແລະ ສັນຍາເຊົ່າ', th: 'ข้อกำหนดและสัญญาเช่า', en: 'Terms & rental contract' }, print: { lo: 'ພິມ / ບັນທຶກເປັນ PDF', th: 'พิมพ์ / บันทึกเป็น PDF', en: 'Print / save as PDF' },
   loading: { lo: 'ກຳລັງໂຫຼດ…', th: 'กำลังโหลด…', en: 'Loading…' }, nf: { lo: 'ບໍ່ພົບສຳເນົາສັນຍາ — ລິ້ງອາດບໍ່ຖືກຕ້ອງ ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'ไม่พบสำเนาสัญญา — ลิงก์อาจไม่ถูกต้อง กรุณาติดต่อร้าน', en: 'Contract copy not found — the link may be wrong. Please contact the shop' },
   reserved: { lo: 'ຈອງແລ້ວ', th: 'จองแล้ว', en: 'Booked' }, active: { lo: 'ກຳລັງເຊົ່າ', th: 'กำลังเช่า', en: 'Rented out' }, returned: { lo: 'ຄືນລົດແລ້ວ', th: 'คืนรถแล้ว', en: 'Returned' }, closed: { lo: 'ປິດສັນຍາແລ້ວ', th: 'ปิดสัญญาแล้ว', en: 'Closed' }, cancelled: { lo: 'ຍົກເລີກ', th: 'ยกเลิก', en: 'Cancelled' },
+  exH: { lo: 'ຂໍຕໍ່ສັນຍາເຊົ່າ', th: 'ขอต่อสัญญาเช่า', en: 'Request an extension' },
+  exUntil: { lo: 'ຕໍ່ໄດ້ເຖິງ', th: 'ต่อได้ถึง', en: 'You can extend until' },
+  exNewD: { lo: 'ວັນຄືນລົດໃໝ່', th: 'คืนรถใหม่ (วัน)', en: 'New return date' }, exNewT: { lo: 'ເວລາ', th: 'เวลา', en: 'Time' },
+  exPick: { lo: 'ກະລຸນາເລືອກວັນຄືນລົດໃໝ່', th: 'กรุณาเลือกวันคืนรถใหม่', en: 'Please choose a new return date' },
+  exQuote: { lo: 'ເບິ່ງຄ່າເຊົ່າເພີ່ມ', th: 'ดูค่าเช่าเพิ่ม', en: 'See extra cost' },
+  exExtra: { lo: 'ຄ່າເຊົ່າເພີ່ມ', th: 'ค่าเช่าเพิ่ม', en: 'Extra rent' },
+  exSend: { lo: 'ສົ່ງຄຳຂໍຕໍ່ສັນຍາ', th: 'ส่งคำขอต่อสัญญา', en: 'Send extension request' },
+  exSentNote: { lo: 'ພະນັກງານຈະກວດ ແລະ ຢືນຢັນທາງ WhatsApp — ຍັງບໍ່ຖືວ່າຕໍ່ແລ້ວຈົນກວ່າຈະຢືນຢັນ', th: 'พนักงานจะตรวจและยืนยันทาง WhatsApp — ยังไม่ถือว่าต่อสัญญาจนกว่าจะยืนยัน', en: 'Staff will review and confirm via WhatsApp — the booking is not extended until confirmed' },
+  exPending: { lo: 'ສົ່ງຄຳຂໍແລ້ວ ລໍພະນັກງານຢືນຢັນ — ຂໍຄືນລົດວັນທີ', th: 'ส่งคำขอแล้ว รอพนักงานยืนยัน — ขอคืนรถวันที่', en: 'Request sent, awaiting staff — requested return' },
+  exApproved: { lo: 'ພະນັກງານອະນຸມັດຕໍ່ສັນຍາແລ້ວ', th: 'พนักงานอนุมัติการต่อสัญญาแล้ว', en: 'Extension approved by staff' },
+  exRejected: { lo: 'ຄຳຂໍຕໍ່ສັນຍາບໍ່ໄດ້ຮັບການອະນຸມັດ', th: 'คำขอต่อสัญญาไม่ได้รับอนุมัติ', en: 'Extension request was not approved' },
+  eEXT_QUEUE: { lo: 'ມີລູກຄ້າຈອງລົດຄັນນີ້ຕໍ່ຈາກທ່ານ ຈຶ່ງຕໍ່ສັນຍາບໍ່ໄດ້ — ກະລຸນານຳລົດມາຄືນກ່ອນ ແລ້ວເລືອກລົດຄັນໃໝ່ທີ່ວ່າງ', th: 'มีลูกค้าจองต่อจากคุณแล้ว จึงต่อสัญญาไม่ได้ — กรุณานำรถมาคืนก่อน แล้วเลือกจักรยานคันใหม่ที่ว่าง', en: 'Another booking follows yours, so it cannot be extended — please return the bike and choose a new free one' },
+  eEXT_OVERDUE: { lo: 'ເກີນກຳນົດຄືນແລ້ວ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'เลยกำหนดคืนแล้ว — กรุณาติดต่อร้าน', en: 'Past the return time — please contact the shop' },
+  eEXT_RANGE: { lo: 'ວັນ/ເວລາຄືນໃໝ່ໃຊ້ບໍ່ໄດ້ (ຕ້ອງຢູ່ໃນເວລາເປີດຮ້ານ ແລະ ຫຼັງຈາກວັນຄືນເດີມ)', th: 'วัน/เวลาคืนใหม่ใช้ไม่ได้ (ต้องอยู่ในเวลาเปิดร้านและหลังวันคืนเดิม)', en: 'That return time is not allowed (must be in opening hours and after the current return)' },
+  eEXT_PENDING: { lo: 'ມີຄຳຂໍທີ່ລໍຖ້າຢູ່ແລ້ວ', th: 'มีคำขอที่รออนุมัติอยู่แล้ว', en: 'A request is already pending' },
+  eEXT_STATUS: { lo: 'ສັນຍານີ້ຕໍ່ບໍ່ໄດ້', th: 'สัญญานี้ต่อไม่ได้', en: 'This booking cannot be extended' },
+  eEXT_PRICE: { lo: 'ຄິດລາຄາບໍ່ໄດ້ — ກະລຸນາຕິດຕໍ່ຮ້ານ', th: 'คิดราคาไม่ได้ — กรุณาติดต่อร้าน', en: 'Cannot price this — please contact the shop' },
+  eEXT_HOLIDAY: { lo: 'ວັນນັ້ນຮ້ານປິດ (ວັນພັກພິເສດ) ເລືອກວັນອື່ນ', th: 'วันนั้นร้านปิด (วันหยุดพิเศษ) เลือกวันอื่น', en: 'We are closed that day (special holiday) — choose another day' },
+  eEXT_CHANGED: { lo: 'ເວລາ/ລາຄາມີການປ່ຽນ ກະລຸນາໂຫຼດໃໝ່', th: 'เวลา/ราคามีการเปลี่ยน กรุณาโหลดใหม่', en: 'Time/price has changed — please reload' },
+  eLIMIT: { lo: 'ສົ່ງຄຳຂໍຫຼາຍເກີນໄປ ລອງໃໝ່ມື້ອື່ນ', th: 'ส่งคำขอบ่อยเกินไป ลองใหม่พรุ่งนี้', en: 'Too many requests — try again tomorrow' },
+  holExH: { lo: 'ຮ້ານປິດວັນພັກພິເສດ', th: 'ร้านปิดวันหยุดพิเศษ', en: 'Shop closed for a special holiday' },
+  holExBody: { lo: 'ບໍ່ສາມາດຄືນລົດວັນທີ {o} ໄດ້ ({h}) — ຕ້ອງຄືນວັນທີ {e} ຄ່າເຊົ່າເພີ່ມ {x} (ເພາະຍັງບໍ່ໄດ້ຄືນລົດໃນວັນພັກ)', th: 'ไม่สามารถคืนรถวันที่ {o} ได้ ({h}) — ต้องคืนวันที่ {e} ค่าเช่าเพิ่ม {x} (เพราะยังไม่ได้คืนรถในวันหยุด)', en: 'The bike cannot be returned on {o} ({h}) — please return on {e}. Extra rent {x} (the bike is not returned on the holiday).' },
+  holExGo: { lo: 'ຍອມຮັບ ແລະ ຕໍ່ວັນຄືນ', th: 'ยอมรับ และต่อวันคืน', en: 'Accept and extend' },
+  holExDone: { lo: 'ຕໍ່ວັນຄືນແລ້ວ', th: 'ต่อวันคืนเรียบร้อยแล้ว', en: 'Return date extended' },
+  holExConf: { lo: 'ຕິດຕໍ່ຮ້ານເພື່ອຈັດການວັນຄືນ (ຮ້ານປິດວັນພັກພິເສດ)', th: 'กรุณาติดต่อร้านเพื่อจัดการวันคืน (ร้านปิดวันหยุดพิเศษ)', en: 'Please contact the shop to arrange the return (closed for a holiday)' },
+  exDue: { lo: 'ຄ່າເຊົ່າທີ່ຕໍ່ສັນຍາແລ້ວ ຕ້ອງຊຳລະຕອນຄືນລົດ', th: 'ค่าเช่าที่ต่อสัญญาแล้ว ต้องชำระตอนคืนรถ', en: 'Extension rent to pay when you return the bike' },
+  exDueNote: { lo: 'ບໍ່ຫັກຈາກເງິນມັດຈຳ — ເງິນມັດຈຳຈະຄືນເຕັມ (ຖ້າບໍ່ມີຄ່າເສຍຫາຍ)', th: 'ไม่หักจากเงินมัดจำ — เงินมัดจำจะคืนเต็มจำนวน (ถ้าไม่มีค่าเสียหาย)', en: 'Not taken from your deposit — the deposit is returned in full (if there is no damage)' },
+  exPayLater: { lo: 'ຊຳລະຄ່າເຊົ່າເພີ່ມຕອນຄືນລົດ ບໍ່ຫັກຈາກເງິນມັດຈຳ', th: 'ชำระค่าเช่าเพิ่มตอนคืนรถ ไม่หักจากเงินมัดจำ', en: 'Pay the extra rent when you return the bike — not taken from your deposit' },
+  exFail: { lo: 'ດຳເນີນການບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ຕິດຕໍ່ຮ້ານ', th: 'ทำรายการไม่สำเร็จ — ลองใหม่ หรือติดต่อร้าน', en: 'Could not complete — try again or contact the shop' }
 };
 const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
 const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -407,14 +444,81 @@ function draw() {
     '<div><span>' + esc(tx('from')) + '</span><b>' + esc(fdt(D.startAt)) + '</b></div><div><span>' + esc(tx('to')) + '</span><b>' + esc(fdt(D.endAt)) + '</b></div>' +
     (D.rentLak ? '<div><span>' + esc(tx('rent')) + '</span><b>₭' + Math.round(D.rentLak).toLocaleString('en-US') + '</b></div>' : '') +
     '<div><span>' + esc(tx('dep')) + '</span><b>' + (D.depositType === 'passport' ? esc(tx('depPass')) : '฿' + Number(D.depositThb || 0).toLocaleString('en-US')) + '</b></div></div></section>' +
+    exHtml() +
     '<div class="cp-ok">' + esc(tx('acc').replace('{v}', T.version).replace('{t}', fdt(D.acceptedAt))) + '</div>' +
     '<section><h2>' + esc(tx('terms')) + '</h2><div class="cp-lang">' + [['lo', 'ລາວ'], ['th', 'ไทย'], ['en', 'EN']].map(x => '<button type="button" data-l="' + x[0] + '" class="' + (x[0] === l ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div><div class="rw-terms" style="max-height:none">' + esc(body) + '</div></section>' +
     '<p class="cp-act"><button class="btn btn-black" type="button" id="cpPrint">' + esc(tx('print')) + '</button></p>';
   root.querySelectorAll('.cp-lang button').forEach(b => b.onclick = () => { tl = b.dataset.l; draw(); });
   document.getElementById('cpPrint').onclick = () => window.print();
 }
+
+/* ===== ຕໍ່ສັນຍາ: ເປີດຈາກລິ້ງສຳເນົາສັນຍາ (id + ລະຫັດລັບ) ບໍ່ຕ້ອງພິມເບີໂທ/ເລກ · ຄ່າເຊົ່າເພີ່ມຊຳລະຕອນຄືນລົດ ບໍ່ຫັກມັດຈຳ ===== */
+const kip = v => '₭' + Math.round(Number(v) || 0).toLocaleString('en-US');
+const pad2 = n => String(n).padStart(2, '0');
+const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
+const vteDate = v => new Date(new Date(v).getTime() + 7 * 3600e3).toISOString().slice(0, 10);
+const X = { m: null, d: '', t: '16:00', q: null, qEnd: '', msg: '', busy: false, sent: false, hmsg: '', hbusy: false };
+const cfgHours = () => (X.m && X.m.cfg && X.m.cfg.hours) || { open: '09:00', close: '19:00' };
+const holOf = ds => { const l = (X.m && X.m.cfg && X.m.cfg.holidays) || []; const h = l.find(x => String(x.date).slice(0, 10) === ds); return h ? h.name : ''; };
+function hrsOn(ds) { const H = cfgHours(), w = H.weekend; if (!ds || !w) return H; const g = new Date(ds + 'T12:00:00').getDay(); return g === 0 || g === 6 ? w : H; }
+function slots(ds) { if (ds && holOf(ds)) return []; const h = hrsOn(ds), o = mins(h.open), c = mins(h.close), r = []; for (let m = o; m <= c; m += 30) r.push(pad2(Math.floor(m / 60)) + ':' + pad2(m % 60)); return r; }
+function exErr(code) { return TX['eEXT_' + code] ? tx('eEXT_' + code) : (TX['e' + code] ? tx('e' + code) : tx('exFail')); }
+async function rwPost(op, body) {
+  const r = await fetch(RW_API + '?op=' + op, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ id: qs.get('id') || '', k: qs.get('k') || '' }, body || {})) });
+  return r.json().catch(() => ({}));
+}
+async function loadMine() { try { const j = await rwPost('mine'); X.m = j && j.ok ? j : null; } catch (_) { X.m = null; } }
+function exHtml() {
+  const m = X.m; if (!m) return '';
+  const e = m.extend || {}, ext = m.extension, due = Number(m.extraDueLak || 0), h = m.holiday;
+  let o = '';
+  if (due > 0 && m.status !== 'closed' && m.status !== 'cancelled') o += '<div class="note ok"><b>' + esc(tx('exDue')) + ': ' + esc(kip(due)) + '</b><br>' + esc(tx('exDueNote')) + '</div>';
+  if (m.status !== 'active') return o ? '<section class="rw-ex">' + o + '</section>' : '';
+  o = '<h3>' + esc(tx('exH')) + '</h3>' + o;
+  if (h) {
+    o += '<div class="note warn"><b>🔒 ' + esc(tx('holExH')) + '</b><br>' + (h.conflict ? esc(tx('holExConf')) : esc(tx('holExBody').replace('{o}', fdt(m.endAt)).replace('{h}', h.holiday).replace('{e}', fdt(h.newEnd)).replace('{x}', kip(h.extraLak)))) + '</div>';
+    if (X.hmsg) o += '<div class="note warn">' + esc(X.hmsg) + '</div>';
+    if (!h.conflict) o += '<button class="btn btn-black" type="button" data-ex="holiday"' + (X.hbusy ? ' disabled' : '') + '>' + esc(tx('holExGo')) + '</button>';
+    return '<section class="rw-ex">' + o + '</section>';
+  }
+  if (ext && ext.status === 'pending') return '<section class="rw-ex">' + o + '<div class="note ok">' + esc(tx('exPending')) + ' <b>' + esc(fdt(ext.newEnd)) + '</b> · ' + esc(tx('exExtra')) + ' <b>' + esc(kip(ext.extraLak)) + '</b><br>' + esc(tx('exPayLater')) + '</div></section>';
+  if (ext && ext.status === 'approved' && !X.sent) o += '<div class="note ok">' + esc(tx(ext.kind === 'holiday' ? 'holExDone' : 'exApproved')) + '</div>';
+  if (ext && ext.status === 'rejected') o += '<div class="note warn">' + esc(tx('exRejected')) + (ext.reason ? ': ' + esc(ext.reason) : '') + '</div>';
+  if (!e.canExtend) return '<section class="rw-ex">' + o + '<div class="note warn">' + esc(exErr(e.code === 'QUEUE' || e.code === 'OVERDUE' ? e.code : 'STATUS')) + '</div></section>';
+  o += '<div class="note">' + esc(tx('exUntil')) + ' <b>' + esc(fdt(e.maxEnd)) + '</b></div>' +
+    '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" min="' + vteDate(m.endAt) + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
+    '<div class="field"><label>' + esc(tx('exNewT')) + '</label><select data-ex="t">' + slots(X.d).map(t => '<option' + (t === X.t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div></div>';
+  if (X.msg) o += '<div class="note warn">' + esc(X.msg) + '</div>';
+  if (X.q && X.q.canExtend) o += '<div class="note ok">' + esc(tx('exExtra')) + ': <b>' + esc(kip(X.q.extraLak)) + '</b> · ' + esc(fdt(X.qEnd)) + '<br>' + esc(tx('exPayLater')) + '<br>' + esc(tx('exSentNote')) + '</div>' +
+    '<button class="btn btn-black" type="button" data-ex="send"' + (X.busy ? ' disabled' : '') + '>' + esc(tx('exSend')) + '</button>';
+  else o += '<button class="btn btn-black" type="button" data-ex="quote"' + (X.busy ? ' disabled' : '') + '>' + esc(tx('exQuote')) + '</button>';
+  return '<section class="rw-ex">' + o + '</section>';
+}
+async function exAction(act) {
+  if (!X.d) { X.msg = tx('exPick'); draw(); return; }
+  const endAt = X.d + 'T' + X.t + ':00+07:00';
+  X.busy = true; X.msg = ''; draw();
+  try {
+    const j = await rwPost('extend', { endAt, confirm: act === 'send' ? 'true' : 'false' });
+    if (!j.ok) X.msg = exErr(j.code || 'ERROR');
+    else if (!j.quote || !j.quote.canExtend) { X.q = null; X.msg = exErr((j.quote && j.quote.code) || 'RANGE'); }
+    else if (act === 'quote') { X.q = j.quote; X.qEnd = endAt; }
+    else { X.q = null; X.sent = true; await loadMine(); }
+  } catch (_) { X.msg = tx('exFail'); }
+  X.busy = false; draw();
+}
+async function holAccept() {
+  const h = X.m && X.m.holiday; if (!h) return;
+  X.hbusy = true; X.hmsg = ''; draw();
+  try { const j = await rwPost('extend', { endAt: h.newEnd, confirm: 'true', holiday: 'true' }); if (!j.ok) X.hmsg = exErr(j.code || 'ERROR'); else await loadMine(); } catch (_) { X.hmsg = tx('exFail'); }
+  X.hbusy = false; draw();
+}
+document.getElementById('rw').addEventListener('change', e => { const t = e.target; if (!t.dataset || !t.dataset.ex) return; if (t.dataset.ex === 'd') { X.d = t.value; const L = slots(X.d); if (L.length && L.indexOf(X.t) < 0) X.t = L[L.length - 1]; } if (t.dataset.ex === 't') X.t = t.value; X.q = null; X.msg = ''; draw(); });
+document.getElementById('rw').addEventListener('click', e => { const t = e.target.closest('[data-ex]'); if (!t) return; if (t.dataset.ex === 'quote' || t.dataset.ex === 'send') exAction(t.dataset.ex); else if (t.dataset.ex === 'holiday') holAccept(); });
+
 (async () => {
   try { const j = await (await fetch(RW_API + '?op=copy&id=' + encodeURIComponent(qs.get('id') || '') + '&k=' + encodeURIComponent(qs.get('k') || ''))).json(); D = j && j.ok ? j : null; } catch (_) {}
+  if (D) await loadMine();
   loaded = true; draw();
 })();
 document.addEventListener('langchange', () => { tl = ''; draw(); });
