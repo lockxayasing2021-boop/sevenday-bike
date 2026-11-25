@@ -426,6 +426,7 @@ const TX = {
   exDue: { lo: 'ຄ່າເຊົ່າທີ່ຕໍ່ສັນຍາແລ້ວ ຕ້ອງຊຳລະຕອນຄືນລົດ', th: 'ค่าเช่าที่ต่อสัญญาแล้ว ต้องชำระตอนคืนรถ', en: 'Extension rent to pay when you return the bike' },
   exDueNote: { lo: 'ບໍ່ຫັກຈາກເງິນມັດຈຳ — ເງິນມັດຈຳຈະຄືນເຕັມ (ຖ້າບໍ່ມີຄ່າເສຍຫາຍ)', th: 'ไม่หักจากเงินมัดจำ — เงินมัดจำจะคืนเต็มจำนวน (ถ้าไม่มีค่าเสียหาย)', en: 'Not taken from your deposit — the deposit is returned in full (if there is no damage)' },
   exPayLater: { lo: 'ຊຳລະຄ່າເຊົ່າເພີ່ມຕອນຄືນລົດ ບໍ່ຫັກຈາກເງິນມັດຈຳ', th: 'ชำระค่าเช่าเพิ่มตอนคืนรถ ไม่หักจากเงินมัดจำ', en: 'Pay the extra rent when you return the bike — not taken from your deposit' },
+  exOverdue: { lo: 'ເກີນກຳນົດຄືນແລ້ວ — ຍັງຂໍຕໍ່ໄດ້ ຄ່າເຊົ່ານັບຕໍ່ຈາກກຳນົດຄືນເດີມ (ຖ້າບໍ່ຕໍ່ ຈະຄິດຄ່າປັບຄືນຊ້າ)', th: 'เลยกำหนดคืนแล้ว — ยังขอต่อได้ ค่าเช่านับต่อจากกำหนดคืนเดิม (ถ้าไม่ต่อ จะคิดค่าปรับคืนช้า)', en: 'Past the return time — you can still extend; rent counts from the original return time (otherwise a late fee applies)' },
   exFail: { lo: 'ດຳເນີນການບໍ່ສຳເລັດ — ລອງໃໝ່ ຫຼື ຕິດຕໍ່ຮ້ານ', th: 'ทำรายการไม่สำเร็จ — ลองใหม่ หรือติดต่อร้าน', en: 'Could not complete — try again or contact the shop' }
 };
 const tx = k => (TX[k] || {})[sdLang()] || (TX[k] || {}).lo || k;
@@ -485,8 +486,9 @@ function exHtml() {
   if (ext && ext.status === 'approved' && !X.sent) o += '<div class="note ok">' + esc(tx(ext.kind === 'holiday' ? 'holExDone' : 'exApproved')) + '</div>';
   if (ext && ext.status === 'rejected') o += '<div class="note warn">' + esc(tx('exRejected')) + (ext.reason ? ': ' + esc(ext.reason) : '') + '</div>';
   if (!e.canExtend) return '<section class="rw-ex">' + o + '<div class="note warn">' + esc(exErr(e.code === 'QUEUE' || e.code === 'OVERDUE' ? e.code : 'STATUS')) + '</div></section>';
+  if (e.overdue) o += '<div class="note warn">' + esc(tx('exOverdue')) + '</div>';
   o += '<div class="note">' + esc(tx('exUntil')) + ' <b>' + esc(fdt(e.maxEnd)) + '</b></div>' +
-    '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" min="' + vteDate(m.endAt) + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
+    '<div class="exrow"><div class="field"><label>' + esc(tx('exNewD')) + '</label><input type="date" data-ex="d" min="' + [vteDate(m.endAt), vteDate(Date.now())].sort().pop() + '" max="' + vteDate(e.maxEnd) + '" value="' + esc(X.d) + '"></div>' +
     '<div class="field"><label>' + esc(tx('exNewT')) + '</label><select data-ex="t">' + slots(X.d).map(t => '<option' + (t === X.t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div></div>';
   if (X.msg) o += '<div class="note warn">' + esc(X.msg) + '</div>';
   if (X.q && X.q.canExtend) o += '<div class="note ok">' + esc(tx('exExtra')) + ': <b>' + esc(kip(X.q.extraLak)) + '</b> · ' + esc(fdt(X.qEnd)) + '<br>' + esc(tx('exPayLater')) + '<br>' + esc(tx('exSentNote')) + '</div>' +
