@@ -444,7 +444,7 @@ function draw() {
     '<div><span>' + esc(tx('cust')) + '</span><b>' + esc(D.customerName) + '</b></div><div><span>' + esc(tx('items')) + '</span><b style="text-align:right">' + (D.items || []).map(i => esc(i.name + ' (' + i.assetNo + ')')).join('<br>') + '</b></div>' +
     '<div><span>' + esc(tx('from')) + '</span><b>' + esc(fdt(D.startAt)) + '</b></div><div><span>' + esc(tx('to')) + '</span><b>' + esc(fdt(D.endAt)) + '</b></div>' +
     (D.rentLak ? '<div><span>' + esc(tx('rent')) + '</span><b>₭' + Math.round(D.rentLak).toLocaleString('en-US') + '</b></div>' : '') +
-    '<div><span>' + esc(tx('dep')) + '</span><b>' + (D.depositType === 'passport' ? esc(tx('depPass')) : '฿' + Number(D.depositThb || 0).toLocaleString('en-US')) + '</b></div></div></section>' +
+    '<div><span>' + esc(tx('dep')) + '</span><b>' + (D.depositType === 'passport' ? esc(tx('depPass')) : (D.depositLines && D.depositLines.length) ? esc(D.depositLines.map(l => Number(l.amount).toLocaleString('en-US', { maximumFractionDigits: l.currency === 'LAK' ? 0 : 2 }) + ' ' + l.currency).join(' + ')) : '฿' + Number(D.depositThb || 0).toLocaleString('en-US')) + '</b></div></div></section>' +
     exHtml() +
     '<div class="cp-ok">' + esc(tx('acc').replace('{v}', T.version).replace('{t}', fdt(D.acceptedAt))) + '</div>' +
     '<section><h2>' + esc(tx('terms')) + '</h2><div class="cp-lang">' + [['lo', 'ລາວ'], ['th', 'ไทย'], ['en', 'EN']].map(x => '<button type="button" data-l="' + x[0] + '" class="' + (x[0] === l ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div><div class="rw-terms" style="max-height:none">' + esc(body) + '</div></section>' +
